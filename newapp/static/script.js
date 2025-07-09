@@ -1,0 +1,1 @@
+alert("Welcome to G.K College")

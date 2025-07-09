@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Student</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --danger: #e63946;
+            --success: #4cc9f0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* Navigation Bar - Matching Dashboard */
+        .navbar {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-title i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 80px auto 30px;
+        }
+
+        /* Search Card */
+        .search-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 0;
+            overflow: hidden;
+            margin-bottom: 30px;
+    
+        }
+
+        .card-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+            outline: none;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Student Details Card */
+        .student-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .student-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-body {
+            padding: 25px;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details-table th, 
+        .details-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .details-table th {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+            width: 30%;
+        }
+
+        .details-table tr:hover td {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        /* Error Message */
+        .error-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 30px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .error-icon {
+            font-size: 50px;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-weight: 500;
+            font-size: 18px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+            }
+            .search-input {
+                width: 100%;
+            }
+            .search-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .details-table th, 
+            .details-table td {
+                display: block;
+                width: 100%;
+            }
+            .details-table th {
+                background: none;
+                padding-bottom: 5px;
+            }
+            .details-table td {
+                padding-top: 5px;
+                padding-bottom: 15px;
+            }
+            .details-table tr {
+                border-bottom: 1px solid #eee;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .nav-links {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-around;
+            }
+            .nav-link {
+                padding: 5px 10px;
+                font-size: 14px;
+            }
+            .main-content {
+                padding: 15px;
+                margin-top: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-title">
+            <i class="fas fa-user-graduate"></i>
+            Student Management System
+        </div>
+        <div class="nav-links">
+            <a href="javascript:history.back()" class="nav-link">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="{% url 'logoutdoor' %}" class="nav-link" style="margin-right: 50px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Search Card -->
+        <div class="search-card">
+            <div class="card-header">
+                <i class="fas fa-search"></i> View Student Details
+            </div>
+            <div class="card-body">
+                <form method="POST" class="search-form">
+                    {% csrf_token %}
+                    <input type="text" name="roll_no" id="roll_no" 
+                           placeholder="Enter Student Roll Number" 
+                           class="search-input" required>
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Student Details -->
+        {% if student %}
+        <div class="student-card">
+            <div class="student-header">
+                <div class="student-title">
+                    <i class="fas fa-user-circle"></i>
+                    Student Information
+                </div>
+                <div class="student-id">
+                    Roll No: {{ student.Student_rollno }}
+                </div>
+            </div>
+            <div class="student-body">
+                <table class="details-table">
+                    <tr>
+                        <th>Student Name</th>
+                        <td>{{ student.Student_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Father's Name</th>
+                        <td>{{ student.Father_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone Number</th>
+                        <td>{{ student.phone_no }}</td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>{{ student.Address }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ student.Email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Course</th>
+                        <td>{{ student.course }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Error Message -->
+        {% if error_message %}
+        <div class="error-card">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h3 class="error-message">{{ error_message }}</h3>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Add focus effect to search input
+        const searchInput = document.getElementById('roll_no');
+        if (searchInput) {
+            searchInput.addEventListener('focus', function() {
+                this.style.borderColor = 'var(--accent)';
+                this.style.boxShadow = '0 0 0 3px rgba(72, 149, 239, 0.2)';
+            });
+            searchInput.addEventListener('blur', function() {
+                this.style.borderColor = '#ddd';
+                this.style.boxShadow = 'none';
+            });
+        }
+    </script>
+</body>
+</html>

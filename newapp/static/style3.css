@@ -1,0 +1,136 @@
+/* General Body Styling */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2); /* Light gradient background */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+}
+
+/* Navigation Bar Styling */
+.navbar {
+    background: linear-gradient(90deg, #1e3c72, #2a5298); /* Dark blue gradient */
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    border-color: #333;
+}
+
+.navbar .nav-title {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 10px;
+}
+
+
+.navbar .nav-links {
+    display: flex;
+    align-items: center;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 15px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar a:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #1e3c72;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Dashboard Container Styling */
+.container {
+    margin-top: 110px; /* To avoid overlap with the navbar */
+    padding: 30px;
+    width: 87%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+
+}
+
+/* Welcome Message */
+.container h2 {
+    font-size: 28px;
+    color:#1e3c72;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Buttons */
+.main-button {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    background: linear-gradient(90deg, #1e3c72, #2a5298); 
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.main-button:hover {
+    background: linear-gradient(90deg, #2a5298, #1e3c72);
+    box-shadow: 0 0 10px rgba(102, 166, 255, 0.5);
+}
+
+.main-button:active {
+    transform: scale(0.97);
+}
+
+/* Sub Buttons */
+.sub-buttons {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sub-buttons button {
+    width: 80%;
+    padding: 10px 15px;
+    margin: 5px 0;
+    background: #fff;
+    border: 2px solid #66a6ff;
+    border-radius: 8px;
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.sub-buttons button:hover {
+    background: linear-gradient(90deg, #2a5298);
+    color: #fff;
+}
+
+.sub-buttons button:active {
+    transform: scale(0.97);
+}

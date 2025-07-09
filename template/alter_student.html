@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alter Student</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --danger: #e63946;
+            --success: #4cc9f0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* Navigation Bar - Matching Dashboard */
+        .navbar {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-title i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .form-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .form-group input{
+            width: 93%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+            outline: none;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .error-message {
+            color: var(--danger);
+            background: #ffebee;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            .form-card {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .nav-links {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-around;
+            }
+            .nav-link {
+                padding: 5px 10px;
+                font-size: 14px;
+            }
+            .form-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-title">
+            <i class="fas fa-user-edit"></i>
+            Student Management System
+        </div>
+        <div class="nav-links">
+            <a href="javascript:history.back()" class="nav-link">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="{% url 'logoutdoor' %}" class="nav-link" style="margin-right: 50px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="form-card">
+            <div class="form-header">
+                <i class="fas fa-user-edit"></i> Alter Student Details
+            </div>
+            <div class="form-body">
+                <form method="POST" action="{% url 'alter_student' %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="roll_no">
+                            <i class="fas fa-id-card"></i> Roll Number
+                        </label>
+                        <input type="text" id="roll_no" name="roll_no" 
+                               placeholder="Enter student roll number" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="column">
+                            <i class="fas fa-list"></i> Field to Update
+                        </label>
+                        <select id="column" name="column" required>
+                            <option value="">-- Select Field --</option>
+                            <option value="Student_name">Student Name</option>
+                            <option value="Father_name">Father's Name</option>
+                            <option value="phone_no">Phone Number</option>
+                            <option value="Address">Address</option>
+                            <option value="Email">Email Address</option>
+                            <option value="course">Course/Class</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new_value">
+                            <i class="fas fa-pen"></i> New Value
+                        </label>
+                        <input type="text" id="new_value" name="new_value" 
+                               placeholder="Enter new value" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Update Student
+                    </button>
+                    
+                    {% if error_message %}
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i> {{ error_message }}
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add focus effects to form elements
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.parentNode.querySelector('label').style.color = 'var(--primary)';
+            });
+            element.addEventListener('blur', function() {
+                this.parentNode.querySelector('label').style.color = 'var(--dark)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Student Result</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --danger: #e63946;
+            --success: #4caf50;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar - Matching Dashboard */
+        .navbar {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-title i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            margin-left: -10px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+
+        /* Form Styling - Matching Other Forms */
+        .form-container {
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .form-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 93%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+            outline: none;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .search-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Student Details Styling */
+        .student-details {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .student-details h3 {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .student-info p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .student-info strong {
+            color: var(--dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* Error Message Styling */
+        .error-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            margin-top: 30px;
+        }
+
+        .error-icon {
+            font-size: 60px;
+            color: var(--danger);
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .student-info {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .nav-links {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-around;
+            }
+            .nav-link {
+                padding: 5px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-title">
+            <i class="fas fa-user-graduate"></i>
+            Result Management System
+        </div>
+        <div class="nav-links">
+            <a href="javascript:history.back()" class="nav-link">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="{% url 'logoutdoor' %}" class="nav-link" style="margin-right: 50px;"> 
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Search Form -->
+        <div class="form-container">
+            <div class="form-card">
+                <div class="form-header">
+                    <i class="fas fa-search"></i> View Student Result
+                </div>
+                <div class="form-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="roll_no">
+                                <i class="fas fa-id-card"></i> College Roll Number
+                            </label>
+                            <input type="text" name="roll_no" id="roll_no" placeholder="Enter Roll Number" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="search-btn">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        {% if error_message %}
+        <div class="error-container">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="error-message">
+                {{ error_message }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Student Details Sections -->
+        {% if bba %}
+        <div class="student-details">
+            <h3><i class="fas fa-graduation-cap"></i> BBA Student Details</h3>
+            <div class="student-info">
+                <p><strong><i class="fas fa-id-card"></i> Roll Number:</strong> {{ bba.rollno }}</p>
+                <p><strong><i class="fas fa-user"></i> Name:</strong> {{ bba.name }}</p>
+            </div>
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                </tr>
+                <tr>
+                    <td>Business Management</td>
+                    <td>{{ bba.management }}</td>
+                </tr>
+                <tr>
+                    <td>Business Economics</td>
+                    <td>{{ bba.economics }}</td>
+                </tr>
+                <tr>
+                    <td>Business Mathematics</td>
+                    <td>{{ bba.mathematics }}</td>
+                </tr>
+                <tr>
+                    <td>Principle of Accounting</td>
+                    <td>{{ bba.accounting }}</td>
+                </tr>
+                <tr>
+                    <td>Business Communication</td>
+                    <td>{{ bba.communication }}</td>
+                </tr>
+                <tr>
+                    <td>Fundamental of Computer</td>
+                    <td>{{ bba.computer }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if bca %}
+        <div class="student-details">
+            <h3><i class="fas fa-graduation-cap"></i> BCA Student Details</h3>
+            <div class="student-info">
+                <p><strong><i class="fas fa-id-card"></i> Roll Number:</strong> {{ bca.rollno }}</p>
+                <p><strong><i class="fas fa-user"></i> Name:</strong> {{ bca.name }}</p>
+            </div>
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                </tr>
+                <tr>
+                    <td>C Programming</td>
+                    <td>{{ bca.C }}</td>
+                </tr>
+                <tr>
+                    <td>Digital Electronics</td>
+                    <td>{{ bca.Digital_Electronics }}</td>
+                </tr>
+                <tr>
+                    <td>Mathematics -1</td>
+                    <td>{{ bca.mathematics_I }}</td>
+                </tr>
+                <tr>
+                    <td>Communication Skills</td>
+                    <td>{{ bca.communication }}</td>
+                </tr>
+                <tr>
+                    <td>Fundamental of Computer</td>
+                    <td>{{ bca.computer }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if bcom %}
+        <div class="student-details">
+            <h3><i class="fas fa-graduation-cap"></i> B.Com Student Details</h3>
+            <div class="student-info">
+                <p><strong><i class="fas fa-id-card"></i> Roll Number:</strong> {{ bcom.rollno }}</p>
+                <p><strong><i class="fas fa-user"></i> Name:</strong> {{ bcom.name }}</p>
+            </div>
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                </tr>
+                <tr>
+                    <td>Financial Accounting</td>
+                    <td>{{ bcom.Financial_Accounting }}</td>
+                </tr>
+                <tr>
+                    <td>Business Economics</td>
+                    <td>{{ bcom.Business_management }}</td>
+                </tr>
+                <tr>
+                    <td>Business Mathematics</td>
+                    <td>{{ bcom.mathematics }}</td>
+                </tr>
+                <tr>
+                    <td>Business Communication</td>
+                    <td>{{ bcom.communication }}</td>
+                </tr>
+                <tr>
+                    <td>Environmental Studies</td>
+                    <td>{{ bcom.environmental_studies }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if bsc %}
+        <div class="student-details">
+            <h3><i class="fas fa-graduation-cap"></i> B.Sc Student Details</h3>
+            <div class="student-info">
+                <p><strong><i class="fas fa-id-card"></i> Roll Number:</strong> {{ bsc.rollno }}</p>
+                <p><strong><i class="fas fa-user"></i> Name:</strong> {{ bsc.name }}</p>
+            </div>
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                </tr>
+                <tr>
+                    <td>Physics</td>
+                    <td>{{ bsc.Physics }}</td>
+                </tr>
+                <tr>
+                    <td>Chemistry</td>
+                    <td>{{ bsc.Chemistry }}</td>
+                </tr>
+                <tr>
+                    <td>Mathematics -1</td>
+                    <td>{{ bsc.mathematics_I }}</td>
+                </tr>
+                <tr>
+                    <td>Communication Skills</td>
+                    <td>{{ bsc.communication }}</td>
+                </tr>
+                <tr>
+                    <td>Environmental Science</td>
+                    <td>{{ bsc.Environmental_science }}</td>
+                </tr>
+                <tr>
+                    <td>Fundamental of Computer</td>
+                    <td>{{ bsc.computer }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if ba %}
+        <div class="student-details">
+            <h3><i class="fas fa-graduation-cap"></i> B.A Student Details</h3>
+            <div class="student-info">
+                <p><strong><i class="fas fa-id-card"></i> Roll Number:</strong> {{ ba.rollno }}</p>
+                <p><strong><i class="fas fa-user"></i> Name:</strong> {{ ba.name }}</p>
+            </div>
+            <table>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                </tr>
+                <tr>
+                    <td>English Literature</td>
+                    <td>{{ ba.english_literature }}</td>
+                </tr>
+                <tr>
+                    <td>Economics-Macro</td>
+                    <td>{{ ba.economics }}</td>
+                </tr>
+                <tr>
+                    <td>History</td>
+                    <td>{{ ba.history }}</td>
+                </tr>
+                <tr>
+                    <td>Sociology</td>
+                    <td>{{ ba.sociology }}</td>
+                </tr>
+                <tr>
+                    <td>Political Science</td>
+                    <td>{{ ba.political_science }}</td>
+                </tr>
+                <tr>
+                    <td>Hindi</td>
+                    <td>{{ ba.hindi }}</td>
+                </tr>
+                <tr>
+                    <td>Psychology</td>
+                    <td>{{ ba.psychology }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Add focus effects to form elements
+        document.querySelectorAll('input').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.parentNode.querySelector('label').style.color = 'var(--primary)';
+            });
+            element.addEventListener('blur', function() {
+                this.parentNode.querySelector('label').style.color = 'var(--dark)';
+            });
+        });
+    </script>
+</body>
+</html>

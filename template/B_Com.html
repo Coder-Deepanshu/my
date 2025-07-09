@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add B.Com Student Marks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-title i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .form-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .form-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+            outline: none;
+        }
+
+        /* Marks Table */
+        .marks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .marks-table th, 
+        .marks-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .marks-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        .marks-table tr:hover td {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .marks-table input {
+            width: 100px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .marks-table input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(72, 149, 239, 0.2);
+            outline: none;
+        }
+
+        .submit-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #38b6db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
+        }
+
+        .error-message {
+            color: #e63946;
+            background: #ffebee;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            .marks-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .nav-links {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-around;
+            }
+            .nav-link {
+                padding: 5px 10px;
+                font-size: 14px;
+            }
+            .form-body {
+                padding: 20px;
+            }
+            .marks-table th, 
+            .marks-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-title">
+            <i class="fas fa-graduation-cap"></i>
+            B.Com Marks Entry
+        </div>
+        <div class="nav-links">
+            <a href="javascript:history.back()" class="nav-link">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="{% url 'logoutdoor' %}" class="nav-link" style="margin-right: 50px;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="form-card">
+            <div class="form-header">
+                <i class="fas fa-edit"></i> Enter B.Com Student Marks
+            </div>
+            <div class="form-body">
+                {% if error_message %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i> {{ error_message }}
+                    </div>
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="rollno">
+                            <i class="fas fa-id-card"></i> Student Roll Number
+                        </label>
+                        {{ form.rollno }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">
+                            <i class="fas fa-user"></i> Student Name
+                        </label>
+                        {{ form.name }}
+                    </div>
+
+                    <table class="marks-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Financial Accounting</td>
+                                <td>{{ form.Financial_Accounting }}</td>
+                            </tr>
+                            <tr>
+                                <td>Business Management</td>
+                                <td>{{ form.Business_management }}</td>
+                            </tr>
+                            <tr>
+                                <td>Mathematics</td>
+                                <td>{{ form.mathematics }}</td>
+                            </tr>
+                            <tr>
+                                <td>Business Communication</td>
+                                <td>{{ form.communication }}</td>
+                            </tr>
+                            <tr>
+                                <td>Environmental Studies</td>
+                                <td>{{ form.environmental_studies }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Submit Marks
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add focus effects to form elements
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', function() {
+                const label = this.closest('.form-group')?.querySelector('label');
+                if (label) {
+                    label.style.color = 'var(--primary)';
+                }
+            });
+            input.addEventListener('blur', function() {
+                const label = this.closest('.form-group')?.querySelector('label');
+                if (label) {
+                    label.style.color = 'var(--dark)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

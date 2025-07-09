@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student ID Card</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .id-card {
+            width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #ffffff, #f3f3f3);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .id-card-header {
+            background-color: #004aad;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .id-card-body {
+            display: flex;
+            flex-direction: row;
+            align-items: center; /* Vertically center align */
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .profile-box {
+            width: 120px;
+            height: 120px;
+            border: 2px solid #66a6ff;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 60px;
+            background-color: #f9f9f9;
+        }
+
+        .id-card-content {
+            flex: 1;
+        }
+
+        .id-card-content p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .id-card-content p strong {
+            color: #004aad;
+            font-weight: 600;
+        }
+
+        .id-card .footer {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #555;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    {% if student %}
+    <div class="id-card">
+        <!-- Header -->
+        <div class="id-card-header">
+            Student ID Card
+        </div>
+
+        <!-- Body -->
+        <div class="id-card-body">
+            <!-- Profile Box -->
+            <div class="profile-box">
+                👤
+            </div>
+
+            <!-- ID Card Content -->
+            <div class="id-card-content">
+                <p><strong>Name:</strong> {{ student.Student_name }}</p>
+                <p><strong>Roll Number:</strong> {{ student.Student_rollno }}</p>
+                <p><strong>Father Name:</strong> {{ student.Father_name }}</p>
+                <p><strong>Course:</strong> {{ student.course }}</p>
+                <p><strong>Address:</strong> {{ student.Address }}</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Authorized by XYZ University</p>
+        </div>
+    </div>
+    {% else %}
+    <p class="error-message">{{ error_message }}</p>
+    {% endif %}
+</body>
+</html>

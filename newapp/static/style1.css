@@ -1,0 +1,362 @@
+/* General Body Styling */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 50vh;
+}
+
+/* Bubble Background */
+body::before,
+body::after {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    animation: float 6s infinite ease-in-out;
+    z-index: -1;
+}
+
+body::before {
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+body::after {
+    bottom: 15%;
+    right: 25%;
+    animation-delay: 3s;
+}
+
+/* Navigation Bar Styling */
+.navbar {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+    color: #66a6ff;
+}
+
+/* Container Styling */
+.container {
+    margin-top: 100px; 
+    /* margin-bottom: 50px;To avoid overlap with the navbar */
+    text-align: center;
+    padding: 20px;
+    width: 90%;
+    height: auto;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Welcome Message */
+.container h2 {
+    font-size: 28px;
+    color: #66a6ff;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Buttons */
+.main-button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: linear-gradient(135deg, #66a6ff, #89f7fe);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.main-button:hover {
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    box-shadow: 0 0 10px rgba(102, 166, 255, 0.5);
+}
+
+.main-button:active {
+    transform: scale(0.97);
+}
+
+/* Sub Buttons */
+.sub-buttons {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sub-buttons button {
+    /* width: 90%; */
+    padding: 10px 15px;
+    margin: 5px 0;
+    background: #fff;
+    /* border:    2px solid #66a6ff; */
+    border-radius: 8px;
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+/* .sub-buttons {
+    margin-top: 10px;
+} */
+
+
+.sub-buttons button:hover {
+    background: #66a6ff;
+    color: #fff;
+}
+
+.sub-buttons button:active {
+    transform: scale(0.97);
+}
+
+/* Dropdown Menu Styling */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-button {
+    background: linear-gradient(135deg, #66a6ff, #89f7fe);
+    color: white;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.dropdown-button:hover {
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    box-shadow: 0 0 10px rgba(102, 166, 255, 0.5);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-content a:hover {
+    background: #66a6ff;
+    color: white;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Hamburger Menu Styling */
+.hamburger-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.hamburger-button {
+    background: linear-gradient(135deg, #66a6ff, #89f7fe);
+    color: white;
+    padding: 10px 15px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.hamburger-button:hover {
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    box-shadow: 0 0 10px rgba(102, 166, 255, 0.5);
+}
+
+.hamburger-content {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.hamburger-content a {
+    color: #333;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.hamburger-content a:hover {
+    background: #66a6ff;
+    color: white;
+}
+
+/* Additional Bubbles */
+.bubble {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    animation: float infinite ease-in-out;
+    z-index: -1;
+}
+
+.bubble:nth-child(1) {
+    width: 100px;
+    height: 100px;
+    top: 20%;
+    left: 10%;
+    animation-duration: 8s;
+    animation-delay: 1s;
+}
+
+.bubble:nth-child(2) {
+    width: 150px;
+    height: 150px;
+    top: 40%;
+    left: 70%;
+    animation-duration: 10s;
+    animation-delay: 2s;
+}
+
+.bubble:nth-child(3) {
+    width: 80px;
+    height: 80px;
+    top: 60%;
+    left: 30%;
+    animation-duration: 12s;
+    animation-delay: 3s;
+}
+
+.bubble:nth-child(4) {
+    width: 120px;
+    height: 120px;
+    top: 80%;
+    left: 50%;
+    animation-duration: 14s;
+    animation-delay: 4s;
+}
+
+/* Floating Animation */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+    50% {
+        transform: translateY(-20px) translateX(10px);
+    }
+}
+
+/* Floating Action Button Container */
+.fab-container {
+    position: relative;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Main Floating Action Button */
+.fab-main {
+    background: linear-gradient(135deg, #66a6ff, #89f7fe);
+    color: white;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 5px 15px rgba(102, 166, 255, 0.3);
+}
+
+.fab-main:hover {
+    background: linear-gradient(135deg, #89f7fe, #66a6ff);
+    box-shadow: 0 8px 20px rgba(102, 166, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* Sub-Buttons for Floating Action Button */
+.fab-options {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.fab-options button {
+    background: #fff;
+    color: #333;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #66a6ff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 5px 10px rgba(102, 166, 255, 0.2);
+    width: 150px;
+}
+
+.fab-options button:hover {
+    background: #66a6ff;
+    color: white;
+    transform: scale(1.05);
+}
+
+.fab-options button:active {
+    transform: scale(0.95);
+}

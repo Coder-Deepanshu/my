@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Add a new student to the database">
+    <title>Add BBA Student Marks</title>
+    <link rel="stylesheet" href="{% static '/style1.css' %}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 200vh;
+        }
+
+        .container {
+            margin-top: 100px;
+            padding: 30px;
+            width: 600px;
+            max-width: 90%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #66a6ff;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 15px;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #66a6ff;
+            color: white;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: #66a6ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1ca8df;
+        }
+    </style>
+</head>
+<body>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="navbar">
+        <div>
+            <a href="#">Home 🏚</a>
+            <a href="javascript:history.back()">Back⬅</a>
+            <a href="{% url 'logoutdoor' %}">Logout📤</a>
+        </div>
+    </div>
+    <div class="container">
+        <h2>Enter BBA Student Marks</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="rollno">Student College Roll No.</label>
+            {{ form.rollno }}
+
+            <label for="name">Student Name</label>
+            {{ form.name }}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Principle of Management</td>
+                        <td>{{ form.management }}</td>
+                    </tr>
+                    <tr>
+                        <td>Principle of Accounting</td>
+                        <td>{{ form.accounting }}</td>
+                    </tr>
+                    <tr>
+                        <td>Business Communication</td>
+                        <td>{{ form.communication }}</td>
+                    </tr>
+                    <tr>
+                        <td>Business Mathematics</td>
+                        <td>{{ form.mathematics }}</td>
+                    </tr>
+                    <tr>
+                        <td>Fundamental of Computer</td>
+                        <td>{{ form.computer }}</td>
+                    </tr>
+                    <tr>
+                        <td>Business Economics</td>
+                        <td>{{ form.economics }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
