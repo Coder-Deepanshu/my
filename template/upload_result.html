@@ -248,7 +248,7 @@
     <nav class="navbar">
         <div class="nav-title">
             <i class="fas fa-graduation-cap"></i>
-            B.Com Marks Entry
+            Students Marks Entry
         </div>
         <div class="nav-links">
             <a href="javascript:history.back()" class="nav-link">
@@ -267,7 +267,7 @@
     <div class="main-content">
         <div class="form-card">
             <div class="form-header">
-                <i class="fas fa-edit"></i> Enter B.Com Student Marks
+                <i class="fas fa-edit"></i> Enter Student Marks
             </div>
             <div class="form-body">
                 {% if error_message %}
@@ -283,43 +283,69 @@
                         <label for="rollno">
                             <i class="fas fa-id-card"></i> Student Roll Number
                         </label>
-                        {{ form.rollno }}
+                        {{ rollno }}
                     </div>
 
                     <div class="form-group">
                         <label for="name">
                             <i class="fas fa-user"></i> Student Name
                         </label>
-                        {{ form.name }}
+                        {{ name }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">
+                            <i class="fas fa-user"></i> Student Course
+                        </label>
+                        {{ course }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">
+                            <i class="fas fa-user"></i> Student Semester
+                        </label>
+                        {{ semester }}
                     </div>
 
                     <table class="marks-table">
                         <thead>
                             <tr>
-                                <th>Subject</th>
-                                <th>Marks</th>
+                                <th>Subjects</th>
+                                <th>Input Marks</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Financial Accounting</td>
-                                <td>{{ form.Financial_Accounting }}</td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             <tr>
-                                <td>Business Management</td>
-                                <td>{{ form.Business_management }}</td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             <tr>
-                                <td>Mathematics</td>
-                                <td>{{ form.mathematics }}</td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             <tr>
-                                <td>Business Communication</td>
-                                <td>{{ form.communication }}</td>
+                                <td></td>
+                                <td></td>
                             </tr>
                             <tr>
-                                <td>Environmental Studies</td>
-                                <td>{{ form.environmental_studies }}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                             <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                             <tr>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                             <tr>
+                                <td></td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>

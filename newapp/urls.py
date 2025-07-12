@@ -16,18 +16,8 @@ urlpatterns = [
     path('generate-csv/', views.generate_csv, name='generate_csv'),
     path('view-student/', views.view_student, name='view_student'),
     path('delval/',views.DelValid,name="delvalid"),
-    path('BBA/',views.Bba,name='BBA'),
-    path('BCA/',views.Bca,name='BCA'),
-    path('B_Com/',views.Bcom,name='B_Com'),
-    path('B_Sc/',views.Bsc,name='B_Sc'),
-    path('B_A/',views.Ba,name='BA'),
-    path('add_result/',views.add_results,name='Add result'),
-    path('delete_result/',views.Delete_result,name='Delete Result'),
-    path('view_result/',views.View_result,name='view2'),
-    path('alter_student/', views.alter_student, name='alter_student'),
-    path('generate-id-card/',views.generate_id_card,name='generate_id_card'),
-    path('generate-degree/', views.generate_degree, name='generate_degree'),
-    path('add_student/',views.add_student,name='add_student')
+    path('add_student/',views.add_student,name='add_student'),
+    path('alter_student/',views.alter_student,name='alter_student')
 
 
 ]

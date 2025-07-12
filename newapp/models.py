@@ -2,11 +2,14 @@ from django.db import models
 
 # Create your models here.
 class Student_add(models.Model):
-    Student_rollno = models.CharField(max_length=30, null=False, unique=True)
+    Student_rollno = models.CharField(max_length=30,unique=True)
+    semester = models.CharField(max_length=30,default='I')
     Student_name = models.CharField(max_length=30)
     Father_name = models.CharField(max_length=30)
     phone_no = models.CharField(max_length=30, null=False, unique=True)
     Address = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)  # <-- default de diya
+    state=models.CharField(max_length=50)
     Email = models.EmailField(null=False)
     course = models.CharField(max_length=50, null=False)  # Added max_length
     tenth_dmc = models.FileField(null=False, upload_to='upload/', blank=True)  # Fixed blank=True
@@ -15,73 +18,6 @@ class Student_add(models.Model):
     class Meta:
         db_table = 'student'
 
-#  for BBA class
-class BBA(models.Model):
-    rollno = models.CharField(max_length=30, null=False)
-    name = models.CharField(max_length=30, null=False)
-    management = models.CharField(max_length=30, null=False)
-    economics = models.CharField(max_length=30, null=False)
-    accounting = models.CharField(max_length=30, null=False)
-    mathematics = models.CharField(max_length=30, null=False)
-    communication = models.CharField(max_length=30, null=False)
-    computer = models.CharField(max_length=30, null=False)
-
-    class Meta:
-        db_table = 'B.B.A'
-
-#  for BCA class
-class BCA(models.Model):
-  rollno = models.CharField(max_length=30, null=False)
-  name= models.CharField(max_length=30, null=False)
-  C= models.CharField(max_length=30, null=False)
-  Digital_Electronics= models.CharField(max_length=30, null=False)
-  mathematics_I= models.CharField(max_length=30, null=False)
-  communication= models.CharField(max_length=30, null=False)
-  computer= models.CharField(max_length=30, null=False)
-  class Meta:
-     db_table='B.C.A'
-
-# for Bsc
-class B_Sc(models.Model):
-  rollno = models.CharField(max_length=30, null=False)
-  name= models.CharField(max_length=30, null=False)
-  Physics= models.CharField(max_length=30, null=False)
-  Chemistry= models.CharField(max_length=30, null=False)
-  mathematics_I= models.CharField(max_length=30, null=False)
-  communication= models.CharField(max_length=30, null=False)
-  computer= models.CharField(max_length=30, null=False)
-  Environmental_science=models.CharField(max_length=30,null=False)
-  class Meta:
-     db_table='B.Sc'
-
-# for b.com
-class B_Com(models.Model):
-    rollno = models.CharField(max_length=30, null=False)
-    name = models.CharField(max_length=30, null=False)
-    Financial_Accounting = models.CharField(max_length=30, null=False)
-    Business_management = models.CharField(max_length=30, null=False)
-    mathematics = models.CharField(max_length=30, null=False)
-    communication = models.CharField(max_length=30, null=False)
-    environmental_studies = models.CharField(max_length=30, null=False)
-
-    class Meta:
-        db_table = 'B.Com'
-
-# for b.a
-class B_A(models.Model):
-    rollno = models.CharField(max_length=30, null=False)
-    name = models.CharField(max_length=30, null=False)
-    history = models.CharField(max_length=30, null=False)
-    political_science = models.CharField(max_length=30, null=False)
-    sociology = models.CharField(max_length=30, null=False)
-    psychology = models.CharField(max_length=30, null=False)
-    economics = models.CharField(max_length=30, null=False)
-    english_literature = models.CharField(max_length=30, null=False)
-    hindi = models.CharField(max_length=30, null=False)
-
-    class Meta:
-        db_table = 'B.A'
-
 from django.db import models
 
 class Student_percent(models.Model):
@@ -89,8 +25,8 @@ class Student_percent(models.Model):
     percentage = models.FloatField(null=True, blank=True)  # New field for percentage
 
 class result(models.Model):
-    roll_no=models.CharField(max_length=20)
-    course=models.CharField(max_length=20)
+    Student_rollno = models.CharField(max_length=100,unique=True)
+    course = models.CharField(max_length=50)
     one=models.CharField(max_length=20)
     two=models.CharField(max_length=20)
     three=models.CharField(max_length=20)
@@ -155,3 +91,16 @@ class result(models.Model):
     sixty_two=models.CharField(max_length=20)
     sixty_three=models.CharField(max_length=20)
     sixty_four=models.CharField(max_length=20)
+
+class subject(models.Model):
+    semester=models.CharField(max_length=200)
+    course=models.CharField(max_length=200)
+    I=models.CharField(max_length=200)
+    II=models.CharField(max_length=200)
+    III=models.CharField(max_length=200)
+    IV=models.CharField(max_length=200)
+    V=models.CharField(max_length=200)
+    VI=models.CharField(max_length=200)
+    VII=models.CharField(max_length=200)
+    VIII=models.CharField(max_length=200)
+
