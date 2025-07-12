@@ -77,18 +77,6 @@ WSGI_APPLICATION = 'newpro.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'myprojectdb',         # 🟢 Tera database name
-        'USER': 'postgres',              # 🟢 Tera PostgreSQL username
-        'PASSWORD': '9466',      # 🟢 Password
-        'HOST': 'localhost',
-        'PORT':'5432',
-        }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -107,7 +95,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
