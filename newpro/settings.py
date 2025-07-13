@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-&5$your_secret_key_here$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'deepanshu5757.pythonanywhere.com']
 
 
 # Application definition
@@ -77,21 +77,15 @@ WSGI_APPLICATION = 'newpro.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'myprojectdb',         # 🟢 Tera database name
-        'USER': 'postgres',              # 🟢 Tera PostgreSQL username
-        'PASSWORD': '9466',      # 🟢 Password
-        'HOST': 'localhost',
-        'PORT':'5432',
-        }
-}
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'myprojectdb',         # 🟢 Tera database name
+#         'USER': 'postgres',              # 🟢 Tera PostgreSQL username
+#         'PASSWORD': '9466',      # 🟢 Password
+#         'HOST': 'localhost',
+#         'PORT':'5432',
+#         }
 # }
 
 
@@ -113,7 +107,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -140,3 +139,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
