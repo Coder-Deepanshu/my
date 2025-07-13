@@ -29,8 +29,8 @@ class Addstudentform(forms.ModelForm):
             'state': forms.TextInput(attrs={'placeholder': 'Enter your State'}),
             'Email': forms.EmailInput(attrs={'placeholder': 'Enter Email Address (e.g., example@gmail.com)'}),
             'course': forms.Select(attrs={'placeholder': 'Select Course'}),
-            'tenth_dmc': forms.ClearableFileInput(attrs={'placeholder': 'Upload 10th Marksheet'}),
-            'twelth': forms.ClearableFileInput(attrs={'placeholder': 'Upload 12th Marksheet'}),
+            'tenth_dmc': forms.TextInput(attrs={'placeholder': 'Enter Your 10th Percentage'}),
+            'twelth': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'}),
         }
 
 # for delete data

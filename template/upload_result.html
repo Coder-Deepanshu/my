@@ -283,6 +283,7 @@
                         <label for="rollno">
                             <i class="fas fa-id-card"></i> Student Roll Number
                         </label>
+                        
                         {{ rollno }}
                     </div>
 
@@ -307,6 +308,8 @@
                         {{ semester }}
                     </div>
 
+                    <input type="hidden" name="roll_no" value="{{ rollno }}">
+
                     <table class="marks-table">
                         <thead>
                             <tr>
@@ -315,41 +318,16 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for subject in subjects %}
                             <tr>
-                                <td></td>
-                                <td></td>
+                                <td>{{ subject }}</td>
+                                <td>
+                                    <input type="number" name="marks{{ forloop.counter }}" min="0" max="100" required>
+                                </td>
                             </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                             <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                             <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                             <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
-
                     <button type="submit" class="submit-btn">
                         <i class="fas fa-save"></i> Submit Marks
                     </button>

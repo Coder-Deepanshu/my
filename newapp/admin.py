@@ -16,7 +16,7 @@ class StudentPercentAdmin(admin.ModelAdmin):
 @admin.register(result)
 class resultAdmin(admin.ModelAdmin):
     list_display = (
-        'Student_rollno',  # Use correct field name
+        'Student_rollno','course',  # Use correct field name
         # Remove 'course' from list_display
         'one','two','three','four','five','six','seven','eight','nine','ten',
         'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen',
