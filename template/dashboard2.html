@@ -14,6 +14,7 @@
             --dark: #212529;
             --gray: #6c757d;
             --light-gray: #e9ecef;
+            --accent: #4895ef;
         }
 
         * {
@@ -65,14 +66,14 @@
             display: flex;
             align-items: center;
             padding: 12px 20px;
-            color: var(--gray);
+            color: var(--dark);
             text-decoration: none;
             transition: all 0.3s;
         }
 
         .sidebar-menu a:hover, .sidebar-menu a.active {
             background-color: rgba(67, 97, 238, 0.1);
-            color: var(--primary);
+            color: var(--dark);
             border-left: 3px solid var(--primary);
         }
 
@@ -147,7 +148,7 @@
 
         .dropdown-menu a:hover {
             background: var(--light-gray);
-            color: var(--primary);
+            color: var(--dark);
         }
 
         .dropdown-menu a i {
@@ -278,25 +279,59 @@
                 grid-template-columns: 1fr;
             }
         }
+        .logo-container {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+              @media (max-width: 992px) {
+            .logo-container {
+                display: none;
+            }}
     </style>
+    {% load static %}
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>Student Portal</h3>
-        </div>
+         <div class="logo-container" style="margin-top: 20px;">
+                <div class="logo">Student<span>Portal</span></div>
+         </div>
         <ul class="sidebar-menu">
-            <li><a href="#" class="active"><i class="fas fa-user"></i> Profile</a></li>
-            <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
-            <li><a href="#"><i class="fas fa-calendar-alt"></i> Time Table</a></li>
-            <li><a href="#"><i class="fas fa-chart-line"></i> Result</a></li>
-            <li><a href="#"><i class="fas fa-money-bill-wave"></i> Fees</a></li>
-            <li><a href="#"><i class="fas fa-comments"></i> Chat</a></li>
-            <li><a href="#"><i class="fas fa-book"></i> Syllabus</a></li>
-            <li><a href="#"><i class="fas fa-exclamation-circle"></i> Fine</a></li>
-            <li><a href="#"><i class="fas fa-sticky-note"></i> Notes</a></li>
+            <li><a href="#" class="active"><i class="fas fa-user" style="color: var(--primary);"></i> Profile</a></li>
+            <li><a href="#"><i class="fas fa-calendar-check" style="color: var(--primary);"></i> Attendance</a></li>
+            <li><a href="#"><i class="fas fa-calendar-alt" style="color: var(--primary);"></i> Time Table</a></li>
+            <li><a href="#"><i class="fas fa-chart-line" style="color: var(--primary);"></i> Result</a></li>
+            <li><a href="#"><i class="fas fa-money-bill-wave" style="color: var(--primary);"></i> Fees</a></li>
+            <li><a href="#"><i class="fas fa-comments" style="color: var(--primary);"></i> Chat</a></li>
+            <li><a href="#"><i class="fas fa-book" style="color: var(--primary);"></i> Syllabus</a></li>
+            <li><a href="#"><i class="fas fa-exclamation-circle" style="color: var(--primary);"></i> Fine</a></li>
+            <li><a href="#"><i class="fas fa-sticky-note" style="color: var(--primary);"></i> Notes</a></li>
         </ul>
+        <div class="nav-item">
+                <a href="{% url 'logoutdoor' %}" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar">{{ username|slice:":1"|upper }}</div>
+                <div class="user-info">
+                    <h4>{{ username }}</h4>
+                    <p>Administrator</p>
+                </div>
+            </div>
     </div>
 
     <!-- Main Content -->
@@ -308,8 +343,8 @@
             </div>
             <div class="header-right">
                 <div class="user-profile" id="userProfile">
-                    <img src="https://via.placeholder.com/150" alt="User">
-                    <span>{{ username }}</span>
+                    <img src="{% static '/profile.png' %}" alt="User">
+                    <span style="font-size: 40px;">{{ username }}</span>
                 </div>
                 <div class="hamburger" id="hamburger">
                     <i class="fas fa-bars"></i>
@@ -318,10 +353,10 @@
 
             <!-- Dropdown Menu -->
             <div class="dropdown-menu" id="dropdownMenu">
-                <a href="#"><i class="fas fa-user"></i> Profile</a>
-                <a href="#"><i class="fas fa-info-circle"></i> About</a>
-                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-                <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="#"><i class="fas fa-user" style="color: var(--primary);"></i> Profile</a>
+                <a href="#"><i class="fas fa-info-circle" style="color: var(--primary);"></i> About</a>
+                <a href="#"><i class="fas fa-envelope" style="color: var(--primary);"></i> Contact</a>
+                <a href="#"><i class="fas fa-sign-out-alt" style="color: var(--primary);"></i> Logout</a>
             </div>
         </header>
 

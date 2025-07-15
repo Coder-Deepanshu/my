@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Faculty Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #fd7e14;
+            --info: #17a2b8;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-title i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .nav-links {
+            margin-left: -10px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+
+        /* Form Container */
+        .form-container {
+            flex-grow: 1;
+            padding: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .form-card, .details-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .form-header, .details-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .form-body, .details-body {
+            padding: 30px;
+        }
+
+        /* ID Check Form */
+        .id-check-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+            outline: none;
+        }
+
+        /* Faculty Details Display */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--dark);
+            min-width: 120px;
+        }
+
+        .detail-value {
+            color: #555;
+            flex-grow: 1;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        /* Messages */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid transparent;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .alert-danger {
+            color: var(--danger);
+            background: #f8d7da;
+            border-left-color: var(--danger);
+        }
+
+        .alert-info {
+            color: var(--info);
+            background: #d1ecf1;
+            border-left-color: var(--info);
+        }
+
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--light);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 0 auto 20px;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-item {
+                flex-direction: column;
+            }
+            
+            .detail-label {
+                margin-bottom: 5px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .nav-links {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .nav-link {
+                padding: 5px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-title">
+            <i class="fas fa-user-graduate"></i>
+            Faculty Management System
+        </div>
+        <div class="nav-links">
+            <a href="javascript:history.back()" class="nav-link">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="{% url 'logoutdoor' %}" class="nav-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Form Container -->
+        <div class="form-container">
+            {% if not faculty %}
+                <!-- Employee ID Check Form -->
+                <div class="form-card">
+                    <div class="form-header">
+                        <i class="fas fa-id-card"></i> Check Faculty Details
+                    </div>
+                    
+                    <div class="form-body">
+                        {% if error_message %}
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle"></i> {{ error_message }}
+                            </div>
+                        {% endif %}
+                        
+                        <form method="GET" action="{% url 'view_faculty' %}" class="id-check-form">
+                            <div class="form-group">
+                                <label for="employee_id">
+                                    <i class="fas fa-id-badge"></i> Enter Faculty ID
+                                </label>
+                                <input type="text" id="employee_id" name="employee_id" placeholder="e.g. FAC001" required>
+                            </div>
+                            
+                            <div style="text-align: center;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Search Faculty
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Faculty Details Display -->
+                <div class="details-card">
+                    <div class="details-header">
+                        <i class="fas fa-user-tie"></i> Faculty Details
+                    </div>
+                    
+                    <div class="details-body">
+                        <div style="text-align: center;">
+                            <img src="{% if faculty.profile_pic %}{{ faculty.profile_pic.url }}{% else %}{% static 'images/default_profile.png' %}{% endif %}" 
+                                 alt="Profile Photo" class="profile-photo">
+                            <h3>{{ faculty.name }}</h3>
+                            <p style="color: var(--primary); font-weight: 500;">{{ faculty.department }} Department</p>
+                        </div>
+                        
+                        <div class="details-grid">
+                            <!-- Personal Information -->
+                            <div class="detail-section">
+                                <div class="section-title">
+                                    <i class="fas fa-user-circle"></i> Personal Information
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Faculty ID:</div>
+                                    <div class="detail-value">{{ faculty.employee_id }}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Gender:</div>
+                                    <div class="detail-value">{{ faculty.get_gender_display }}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Date of Birth:</div>
+                                    <div class="detail-value">{{ faculty.dob }}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Phone:</div>
+                                    <div class="detail-value">{{ faculty.phone }}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Professional Information -->
+                            <div class="detail-section">
+                                <div class="section-title">
+                                    <i class="fas fa-briefcase"></i> Professional Information
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Department:</div>
+                                    <div class="detail-value">{{ faculty.department }}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Qualification:</div>
+                                    <div class="detail-value">{{ faculty.qualification }}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Experience:</div>
+                                    <div class="detail-value">{{ faculty.experience }} years</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Date of Joining:</div>
+                                    <div class="detail-value">{{ faculty.date_of_joining }}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Address Information -->
+                            <div class="detail-section">
+                                <div class="section-title">
+                                    <i class="fas fa-map-marker-alt"></i> Contact Information
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Address:</div>
+                                    <div class="detail-value">{{ faculty.address }}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">City:</div>
+                                    <div class="detail-value">{{ faculty.city }}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">State:</div>
+                                    <div class="detail-value">{{ faculty.state }}</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-label">Pin Code:</div>
+                                    <div class="detail-value">{{ faculty.pin_code }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <a href="{% url 'view_faculty' %}" class="btn btn-secondary">
+                                <i class="fas fa-search"></i> Search Another Faculty
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Add focus effects to form elements
+        document.querySelectorAll('input').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.parentNode.querySelector('label').style.color = 'var(--primary)';
+            });
+            element.addEventListener('blur', function() {
+                this.parentNode.querySelector('label').style.color = 'var(--dark)';
+            });
+        });
+    </script>
+</body>
+</html>

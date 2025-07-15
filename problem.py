@@ -127,20 +127,30 @@
 #     elif option==3:
 #         break  
             
-income = int(input("Enter your income: $ "))
-printy = f"Your income is: $ {income} for this month."
-print(printy)
+# income = int(input("Enter your income: $ "))
+# printy = f"Your income is: $ {income} for this month."
+# print(printy)
 
-print('--menu--')
-print('1. ADD Expense')
-print('2. View summary')
-print('3. Exit')
+# print('--menu--')
+# print('1. ADD Expense')
+# print('2. View summary')
+# print('3. Exit')
 
-choice = int(input('Enter your choice: '))
-if choice == 1:
-    expense = int(input("Enter the amount of the expense: $ "))
-    print(f"Your expense is: $ {expense} for this month.")
-    print(f"Enter your expense category: {'food', 'transport', 'entertainment', 'bills', 'savings'}: food")
+# choice = int(input('Enter your choice: '))
+# if choice == 1:
+#     expense = int(input("Enter the amount of the expense: $ "))
+#     print(f"Your expense is: $ {expense} for this month.")
+#     print(f"Enter your expense category: {'food', 'transport', 'entertainment', 'bills', 'savings'}: food")
+
+
+
+a='GK0'
+B=1
+
+c=int(a[2])+B
+print(c)
+
+print(a[0:2]+str(c))
         
 
 

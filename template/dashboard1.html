@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4a6fa5;
-            --primary-dark: #3a5a8a;
-            --secondary: #166088;
+            --primary:  #4361ee;
+            --primary-dark: #4895ef;
+            --secondary: #3f37c9;
             --light: #f8f9fa;
             --dark: #212529;
-            --gray: #6c757d;
+            --gray: #212529;
             --light-gray: #e9ecef;
+            --accent: #4895ef;
         }
 
         * {
@@ -65,14 +66,14 @@
             display: flex;
             align-items: center;
             padding: 12px 20px;
-            color: var(--gray);
+            color: var(--dark);
             text-decoration: none;
             transition: all 0.3s;
         }
 
         .sidebar-menu a:hover, .sidebar-menu a.active {
             background-color: rgba(74, 111, 165, 0.1);
-            color: var(--primary);
+            color: var(--dark);
             border-left: 3px solid var(--primary);
         }
 
@@ -92,7 +93,7 @@
 
         /* Header Styles */
         header {
-            background: white;
+            background: var(--primary);
             padding: 15px 25px;
             display: flex;
             justify-content: space-between;
@@ -102,8 +103,8 @@
         }
 
         .header-left h2 {
-            color: var(--primary);
-            font-size: 22px;
+            color: var(--light);
+            font-size: 25px;
         }
 
         .header-right {
@@ -147,7 +148,7 @@
 
         .dropdown-menu a:hover {
             background: var(--light-gray);
-            color: var(--primary);
+            color: var(--dark);
         }
 
         .dropdown-menu a i {
@@ -238,7 +239,7 @@
         }
 
         .btn:hover {
-            background: var(--primary-dark);
+            background: #564dfd;
         }
 
         /* Stats Section */
@@ -315,49 +316,173 @@
                 grid-template-columns: 1fr;
             }
         }
+        .logo-container {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+              @media (max-width: 992px) {
+            .logo-container {
+                display: none;
+            }}
+                    .nav-menu {
+            flex-grow: 1;
+            padding: 20px 0;
+
+            .nav-menu {
+                display: flex;
+                padding: 0;
+                overflow-x: auto;
+            }
+            .nav-item {
+                padding: 10px 15px;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+            .nav-item:hover, .nav-item.active {
+                border-left: none;
+                border-bottom: 3px solid var(--primary);
+            }
+            .user-profile {
+                display: none;
+            }
+        }
+        .nav-link {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px 0;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(67, 97, 238, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .user-profile {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .user-info h4 {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .user-info p {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #777;
+        }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-header">
-            <h3>Faculty Portal</h3>
-        </div>
+       <div class="logo-container" style="margin-top: 20px;">
+                <div class="logo">Faculty<span>Portal</span></div>
+            </div>
         <ul class="sidebar-menu">
-            <li><a href="#" class="active"><i class="fas fa-user"></i> Profile</a></li>
-            <li><a href="#"><i class="fas fa-comments"></i> Chat with Students</a></li>
-            <li><a href="#"><i class="fas fa-headset"></i> Chat with Admin</a></li>
-            <li><a href="#"><i class="fas fa-calendar-check"></i> Attendance</a></li>
-            <li><a href="#"><i class="fas fa-calendar-alt"></i> Time Table</a></li>
-            <li><a href="#"><i class="fas fa-money-bill-wave"></i> Salary</a></li>
-            <li><a href="#"><i class="fas fa-id-card"></i> ID Card</a></li>
-            <li><a href="#"><i class="fas fa-sticky-note"></i> Notes</a></li>
+            <li><a href="#" class="active"><i class="fas fa-user" style="color:var(--primary)"></i> Profile</a></li>
+            <li><a href="#"><i class="fas fa-comments" style="color:var(--primary)"></i> Chat with Students</a></li>
+            <li><a href="#"><i class="fas fa-headset" style="color:var(--primary)"></i> Chat with Admin</a></li>
+            <li><a href="#"><i class="fas fa-calendar-check" style="color:var(--primary)"></i> Attendance</a></li>
+            <li><a href="#"><i class="fas fa-calendar-alt" style="color:var(--primary)"></i> Time Table</a></li>
+            <li><a href="#"><i class="fas fa-money-bill-wave" style="color:var(--primary)"></i> Salary</a></li>
+            <li><a href="#"><i class="fas fa-id-card" style="color:var(--primary)"></i> ID Card</a></li>
+            <li><a href="#"><i class="fas fa-sticky-note" style="color:var(--primary)"></i> Notes</a></li>
         </ul>
+        <div class="nav-item">
+                <a href="{% url 'logoutdoor' %}" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar">{{ username|slice:":1"|upper }}</div>
+                <div class="user-info">
+                    <h4 style="font-size: large;">{{ username }}</h4>
+                    <p style="font-size: 18px;">Administrator</p>
+                </div>
+            </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Header -->
-        <header>
+        <header >
             <div class="header-left">
-                <h2>Faculty Dashboard</h2>
+                <h2 style="color:var(--light);">Dashboard</h2>
             </div>
             <div class="header-right">
                 <div class="user-profile" id="userProfile">
                     <img src="https://via.placeholder.com/150" alt="User">
-                    <span>Prof. Sharma</span>
+                    <span style="color: var(--light);">{{ username }}</span>
                 </div>
-                <div class="hamburger" id="hamburger">
+                <div class="hamburger" id="hamburger" style="color: var(--light);">
                     <i class="fas fa-bars"></i>
                 </div>
             </div>
 
             <!-- Dropdown Menu -->
             <div class="dropdown-menu" id="dropdownMenu">
-                <a href="#"><i class="fas fa-user"></i> Profile</a>
-                <a href="#"><i class="fas fa-info-circle"></i> About</a>
-                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
-                <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="#"><i class="fas fa-user" style="color:var(--primary)"></i> Profile</a>
+                <a href="#"><i class="fas fa-info-circle" style="color:var(--primary)"></i> About</a>
+                <a href="#"><i class="fas fa-envelope" style="color:var(--primary)"></i> Contact</a>
+                <a href="#"><i class="fas fa-sign-out-alt" style="color:var(--primary)"></i> Logout</a>
             </div>
         </header>
 
@@ -369,20 +494,20 @@
             <!-- Stats Cards -->
             <div class="stats-container">
                 <div class="stat-card">
-                    <h4>Classes Today</h4>
-                    <p>3</p>
+                    <h3 style="color:var(--primary);">Classes Today</h3>
+                    <p style="color: var(--dark);">3</p>
                 </div>
                 <div class="stat-card">
-                    <h4>Pending Approvals</h4>
-                    <p>12</p>
+                    <h3 style="color:var(--primary);">Pending Approvals</h3>
+                    <p style="color: var(--dark);">12</p>
                 </div>
                 <div class="stat-card">
-                    <h4>Unread Messages</h4>
-                    <p>5</p>
+                    <h3 style="color:var(--primary);">Unread Messages</h3>
+                    <p style="color: var(--dark);">5</p>
                 </div>
                 <div class="stat-card">
-                    <h4>Upcoming Events</h4>
-                    <p>2</p>
+                    <h3 style="color:var(--primary);">Upcoming Events</h3>
+                    <p style="color: var(--dark);">2</p>
                 </div>
             </div>
 

@@ -303,14 +303,16 @@
         }
 
         .action-button .button-text {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 500;
+            font-style: bold;
             color: var(--dark);
             margin-bottom: 5px;
         }
 
         .action-button .button-desc {
-            font-size: 13px;
+            font-size: 15px;
+            font: optional;
             color: #777;
             margin-top: 8px;
         }
@@ -695,12 +697,12 @@
                         <div class="icon" style="margin-left: 68px;">
                             <i class="fas fa-list-alt"></i>
                         </div>
-                        <div class="button-text">View Result</div>
+                        <div class="button-text" >View Result</div>
                         <div class="button-desc">Check student performance</div>
                     </button>
                 </form>
                 
-                      <form action="#" class="action-button">
+                    <form action="#" class="action-button">
                     <div class="icon">
                         <i class="fas fa-print"></i>
                     </div>
@@ -935,18 +937,18 @@
                         </div>
 
                           <div class="stat-card" data-tab="courses">
-                        <div class="stat-icon" style="background: var(--warning);">
-                            <i class="fas fa-book"></i>
+                        <div class="stat-icon" style="background: var(--danger);">
+                            <i class="fas fa-envelope" ></i>
                         </div>
                         <div class="stat-info">
                             <h3>1</h3>
-                            <p>Semester</p>
+                            <p>Unread Messages</p>
                         </div>
                         </div>
 
                       <div class="stat-card" data-tab="courses">
-                        <div class="stat-icon" style="background: var(--warning);">
-                            <i class="fas fa-book"></i>
+                        <div class="stat-icon" style="background: var(--success);">
+                            <i class="fas fa-ban"></i>
                         </div>
                         <div class="stat-info">
                             <h3>6</h3>
@@ -955,20 +957,21 @@
                     </div>   
                     <div class="stat-card" data-tab="courses">
                         <div class="stat-icon" style="background: var(--warning);">
-                            <i class="fas fa-book"></i>
+                            <i class="fas fa-building"></i>
                         </div>
                         <div class="stat-info">
                             <h3>6</h3>
                             <p>Total Departments</p>
                         </div>
                     </div>
+                </div>
+
                     <div class="section-title">
                     <i class="fas fa-bolt"></i> Quick Actions
                     </div>
-                </div>
-
+        
                 <div class="button-grid">
-                <form action="#" method="get" class="action-button">
+                <form action="{% url 'add_faculty' %}" method="get" class="action-button">
                     <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
                         <div class="icon" style="margin-left: 68px;">
                             <i class="fas fa-user-plus"></i>
@@ -978,7 +981,7 @@
                     </button>
                 </form>
                 
-                <form action="#" method="get" class="action-button">
+                <form action="{% url 'delete_faculty' %}" method="get" class="action-button">
                     <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
                         <div class="icon" style="margin-left: 68px;">
                             <i class="fas fa-user-minus"></i>
@@ -988,7 +991,7 @@
                     </button>
                 </form>
                 
-                <form action="#" method="get" class="action-button">
+                <form action="{% url 'view_faculty' %}" method="get" class="action-button">
                     <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
                         <div class="icon" style="margin-left: 68px;">
                             <i class="fas fa-search"></i>
@@ -1011,20 +1014,20 @@
                 <form action="#" method="get" class="action-button">
                     <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
                         <div class="icon" style="margin-left: 68px;">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-user-check"></i>
                         </div>
-                        <div class="button-text">All data</div>
-                        <div class="button-desc">See faculty details</div>
+                        <div class="button-text">Attendence</div>
+                        <div class="button-desc">Mark Attendence of Faculty</div>
                     </button>
                 </form>
 
                 <form action="#" method="get" class="action-button">
                     <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
                         <div class="icon" style="margin-left: 68px;">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-sitemap"></i>
                         </div>
                         <div class="button-text">Department</div>
-                        <div class="button-desc">Department wise faculty details</div>
+                        <div class="button-desc">See Department wise faculty details</div>
                     </button>
                 </form>
 
@@ -1034,17 +1037,53 @@
                             <i class="fas fa-history"></i>
                         </div>
                         <div class="button-text">History</div>
-                        <div class="button-desc">Faculty History details</div>
+                        <div class="button-desc">See Faculty History details</div>
                     </button>
                 </form>
 
                 <form action="#" method="get" class="action-button">
                     <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
                         <div class="icon" style="margin-left: 68px;">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-file-alt"></i>
                         </div>
-                        <div class="button-text">Data Analysis</div>
-                        <div class="button-desc">View Faculty data details</div>
+                        <div class="button-text">Reports</div>
+                        <div class="button-desc">View Faculty Reports details</div>
+                    </button>
+                </form>
+                <form action="#" method="get" class="action-button">
+                    <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
+                        <div class="icon" style="margin-left: 68px;">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="button-text">Salary</div>
+                        <div class="button-desc">View all Detail about Salary of Faculty</div>
+                    </button>
+                </form>
+                <form action="#" method="get" class="action-button">
+                    <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
+                        <div class="icon" style="margin-left: 68px;">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="button-text">Chat</div>
+                        <div class="button-desc">Chat with Faculty</div>
+                    </button>
+                </form>
+                <form action="#" method="get" class="action-button">
+                    <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
+                        <div class="icon" style="margin-left: 68px;">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="button-text">Time Table</div>
+                        <div class="button-desc">Add time table of faculty</div>
+                    </button>
+                </form>
+                <form action="#" method="get" class="action-button">
+                    <button type="submit" style="background: none; border: none; width: 100%; height: 100%; cursor: pointer;">
+                        <div class="icon" style="margin-left: 68px;">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="button-text">Send Notes</div>
+                        <div class="button-desc">Send Notes to Faculty according to semester and class</div>
                     </button>
                 </form>
                 </div>

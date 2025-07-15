@@ -105,3 +105,21 @@ class subject(models.Model):
     VII = models.CharField(max_length=200)
     VIII = models.CharField(max_length=200)
 
+class Faculty(models.Model):
+    name= models.CharField(max_length=100)  # for login
+    employee_id = models.CharField(max_length=20, unique=True)
+    department = models.CharField(max_length=100)
+    qualification = models.CharField(max_length=100)
+    experience = models.DecimalField(max_digits=4, decimal_places=1)  # e.g., 5.5 years
+    date_of_joining = models.DateField()
+    phone = models.CharField(max_length=15)
+    gender = models.CharField(max_length=10, choices=[('male','Male'),('female','Female'),('other','Other')])
+    dob = models.DateField()
+    address = models.TextField()
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    pin_code = models.CharField(max_length=10)
+
+    def _str_(self):
+        return f"{self.employee_id}"
+

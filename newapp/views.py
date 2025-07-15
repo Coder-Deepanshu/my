@@ -100,14 +100,6 @@ def logout_view(request):
     # Clear session data
     request.session.flush()
     return redirect('login')
-# for valid page
-def valid(request):
-    return render(request,'success.html')
-# for invalid form
-def invalid(request):
-    return render(request,'invalid.html')
-def DelValid(request):
-    return render(request,'deletestudentvalid.html')
 
 from .models import Student_add
 from .form import DeleteStudentForm
@@ -173,23 +165,13 @@ def alter_student(request):
 
     return render(request, 'alter_student.html', {'error_message': error_message})
 
-# to generate id card
-from django.shortcuts import render
+
 from .models import Student_add
-
-from django.shortcuts import render, redirect
 from .form import Addstudentform
-from .models import Student_add,result,subject
 from django.db import models
-
-from django.shortcuts import render, redirect
-from django.db import models
-from .models import Student_add, Student_percent, result, subject
-from .form import Addstudentform # Assuming you have this form defined
-
 def add_student(request):
     if request.method == 'POST':
-        form = Addstudentform(request.POST, request.FILES)
+        form = Addstudentform(request.POST)
         if form.is_valid():
             max_roll = Student_add.objects.aggregate(max_roll=models.Max('Student_rollno'))['max_roll']
             if max_roll is None:
@@ -217,3 +199,65 @@ def add_student(request):
         form = Addstudentform()
     return render(request, 'add_student.html', {'form': form})
 
+
+from django.shortcuts import render, redirect
+from .form import FacultyForm
+from .models import Faculty
+
+def add_faculty(request):
+    if request.method == 'POST':
+        form = FacultyForm(request.POST)
+        if form.is_valid():
+            max_id = Faculty.objects.aggregate(max_roll=models.Max('employee_id'))['max_roll']
+            if max_id is None:
+                max_id = 'GK20250'
+            else:
+                try:
+                    max_id = str(max_id)
+                except ValueError:
+                    max_id = 'GK20250'
+            faculty = form.save(commit=False)
+            faculty.employee_id = max_id[0:6]+str(int(max_id[6])+1)
+            faculty.save()
+            return render(request, 'add_faculty.html', {
+                'form': FacultyForm(),
+                'success_message': '    Faculty added successfully!'
+            })
+
+        else:
+            return render(request, 'add_faculty.html', {'form': form, 'error_message': form.errors})
+    else:
+        form = FacultyForm()
+    return render(request, 'add_faculty.html', {'form':form})
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Faculty  # or from your_app.models import Faculty
+
+
+def delete_faculty(request):
+    employee_id = request.GET.get('employee_id')
+    if employee_id:
+        faculty = get_object_or_404(Faculty, employee_id=employee_id)
+        return render(request, 'delete_faculty.html', {'faculty': faculty})
+    return render(request, 'delete_faculty.html')
+
+
+def confirm_delete_faculty(request, faculty_id):
+    faculty = get_object_or_404(Faculty, pk=faculty_id)
+    if request.method == 'POST':
+        faculty.delete()
+        messages.success(request, f'Faculty {faculty.name} deleted successfully!')
+        return redirect('delete_faculty')
+    return redirect('delete_faculty')
+
+def view_faculty(request):
+    faculty = None
+    error_message = None
+    if request.method == 'GET':
+        id= request.GET.get('employee_id')
+        try:
+            faculty = Faculty.objects.get(employee_id=id)
+        except Faculty.DoesNotExist:
+            error_message = "No Faculty found with the provided Employee ID."
+    return render(request, 'view_faculty.html', {'faculty': faculty, 'error_message': error_message})

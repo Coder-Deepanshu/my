@@ -112,14 +112,6 @@ class DeleteStudentForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'Enter Roll Number'}),
         label="Roll Number")
     
-#  for add_result 
-class add_result(forms.Form):
-    roll_no = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs={'placeholder': 'Enter Roll Number'}),
-        label="Roll Number")
-    
-
 #  for delete result
 class delete_result(forms.Form):
     roll_no = forms.CharField(
@@ -133,6 +125,27 @@ class view_result(forms.Form):
         max_length=30,
         widget=forms.TextInput(attrs={'placeholder': 'Enter Roll Number'}),
         label="Roll Number")
+    
+from .models import Faculty
+class FacultyForm(forms.ModelForm):
+    class Meta:
+        model = Faculty
+        fields = '__all__'
+        exclude = ('employee_id',)  # <-- sahi syntax
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Enter Full Name'}),
+            'department': forms.TextInput(attrs={'placeholder': 'Enter Department'}),
+            'qualification': forms.TextInput(attrs={'placeholder': 'Enter Qualification'}),
+            'experience': forms.NumberInput(attrs={'placeholder': 'Enter Experience (e.g., 5.5)'}),
+            'date_of_joining': forms.DateInput(attrs={'placeholder': 'YYYY-MM-DD', 'type': 'date'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Enter Phone Number'}),
+            'gender': forms.Select(attrs={'placeholder': 'Select Gender'}),
+            'dob': forms.DateInput(attrs={'placeholder': 'YYYY-MM-DD', 'type': 'date'}),
+            'address': forms.Textarea(attrs={'placeholder': 'Enter Address'}),
+            'city': forms.TextInput(attrs={'placeholder': 'Enter City'}),
+            'state': forms.TextInput(attrs={'placeholder': 'Enter State'}),
+            'pin_code': forms.TextInput(attrs={'placeholder': 'Enter Pin Code'}),
+        }
 
 
 
