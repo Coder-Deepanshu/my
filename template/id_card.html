@@ -3,123 +3,509 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student ID Card</title>
+    <title>Student ID Card Generator</title>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #1a252f;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --university-color: #3498db;
+        }
+        
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        .id-card {
-            width: 400px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            background: linear-gradient(135deg, #ffffff, #f3f3f3);
-            text-align: left;
-            position: relative;
-            overflow: hidden;
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
         }
-
-        .id-card-header {
-            background-color: #004aad;
-            color: white;
-            text-align: center;
-            padding: 15px 0;
-            font-size: 20px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .id-card-body {
-            display: flex;
-            flex-direction: row;
-            align-items: center; /* Vertically center align */
-            gap: 15px;
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
         }
-
-        .profile-box {
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .id-generator {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .form-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .preview-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .photo-upload {
+            text-align: center;
+            border: 2px dashed #ddd;
+            padding: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .photo-upload:hover {
+            border-color: var(--university-color);
+            background-color: #f8fafb;
+        }
+        
+        .photo-upload i {
+            font-size: 48px;
+            color: var(--university-color);
+            margin-bottom: 10px;
+        }
+        
+        .photo-preview {
+            width: 150px;
+            height: 180px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            display: none;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--university-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .id-card {
+            width: 350px;
+            height: 500px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            display: none;
+        }
+        
+        .id-card-header {
+            background-color: var(--university-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .id-card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .id-card-photo {
             width: 120px;
-            height: 120px;
-            border: 2px solid #66a6ff;
-            border-radius: 10px;
+            height: 150px;
+            border: 3px solid white;
+            border-radius: 5px;
+            object-fit: cover;
+            margin-top: -60px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            background-color: #ddd;
+        }
+        
+        .id-card-details {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .id-card-row {
+            display: flex;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .id-card-label {
+            font-weight: bold;
+            width: 120px;
+            color: var(--primary-color);
+        }
+        
+        .id-card-value {
+            flex: 1;
+        }
+        
+        .id-card-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .id-card-logo {
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: white;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 60px;
-            background-color: #f9f9f9;
-        }
-
-        .id-card-content {
-            flex: 1;
-        }
-
-        .id-card-content p {
-            margin: 8px 0;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .id-card-content p strong {
-            color: #004aad;
-            font-weight: 600;
-        }
-
-        .id-card .footer {
-            margin-top: 15px;
-            font-size: 12px;
-            color: #555;
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
-            font-style: italic;
-            text-align: center;
-        }
-
-        .error-message {
-            color: red;
             font-weight: bold;
-            text-align: center;
+            color: var(--university-color);
+            border: 2px solid var(--university-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .id-generator {
+                flex-direction: column;
+            }
+            
+            .preview-section {
+                order: -1;
+                margin-bottom: 30px;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    {% if student %}
-    <div class="id-card">
-        <!-- Header -->
-        <div class="id-card-header">
-            Student ID Card
-        </div>
-
-        <!-- Body -->
-        <div class="id-card-body">
-            <!-- Profile Box -->
-            <div class="profile-box">
-                👤
+    <div class="container">
+        <header>
+            <h1>Student ID Card Generator</h1>
+            <p>Create your official university ID card with photo</p>
+        </header>
+        
+        <div class="id-generator">
+            <div class="form-section">
+                <h2>Enter Your Details</h2>
+                
+                <div class="form-group">
+                    <label for="studentPhoto">Upload Your Photo</label>
+                    <div class="photo-upload" id="photoUpload">
+                        <i class="fas fa-user-circle"></i>
+                        <p>Click to upload your photo</p>
+                        <p style="font-size: 12px; color: #777;">(JPEG/PNG, Max 2MB)</p>
+                        <img id="photoPreview" class="photo-preview" alt="Photo Preview">
+                    </div>
+                    <input type="file" id="studentPhoto" accept="image/*" style="display: none;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="studentId">Student ID</label>
+                    <input type="text" id="studentId" placeholder="Enter your student ID">
+                </div>
+                
+                <div class="form-group">
+                    <label for="course">Course</label>
+                    <input type="text" id="course" placeholder="Enter your course">
+                </div>
+                
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" placeholder="Enter your department">
+                </div>
+                
+                <div class="form-group">
+                    <label for="validUntil">Valid Until</label>
+                    <input type="date" id="validUntil">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bloodGroup">Blood Group (Optional)</label>
+                    <select id="bloodGroup">
+                        <option value="">Select Blood Group</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="generateBtn">Generate ID Card</button>
+                    <button class="btn btn-secondary" id="resetBtn">Reset Form</button>
+                </div>
             </div>
-
-            <!-- ID Card Content -->
-            <div class="id-card-content">
-                <p><strong>Name:</strong> {{ student.Student_name }}</p>
-                <p><strong>Roll Number:</strong> {{ student.Student_rollno }}</p>
-                <p><strong>Father Name:</strong> {{ student.Father_name }}</p>
-                <p><strong>Course:</strong> {{ student.course }}</p>
-                <p><strong>Address:</strong> {{ student.Address }}</p>
+            
+            <div class="preview-section">
+                <div class="id-card" id="idCard">
+                    <div class="id-card-logo">U</div>
+                    <div class="id-card-header">
+                        <h2>UNIVERSITY ID CARD</h2>
+                        <p>Official Student Identification</p>
+                    </div>
+                    <div class="id-card-body">
+                        <img id="idCardPhoto" class="id-card-photo" alt="Student Photo">
+                        <div class="id-card-details">
+                            <div class="id-card-row">
+                                <span class="id-card-label">Name:</span>
+                                <span class="id-card-value" id="idName">-</span>
+                            </div>
+                            <div class="id-card-row">
+                                <span class="id-card-label">ID No:</span>
+                                <span class="id-card-value" id="idNumber">-</span>
+                            </div>
+                            <div class="id-card-row">
+                                <span class="id-card-label">Course:</span>
+                                <span class="id-card-value" id="idCourse">-</span>
+                            </div>
+                            <div class="id-card-row">
+                                <span class="id-card-label">Department:</span>
+                                <span class="id-card-value" id="idDepartment">-</span>
+                            </div>
+                            <div class="id-card-row">
+                                <span class="id-card-label">Valid Until:</span>
+                                <span class="id-card-value" id="idValid">-</span>
+                            </div>
+                            <div class="id-card-row">
+                                <span class="id-card-label">Blood Group:</span>
+                                <span class="id-card-value" id="idBlood">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="id-card-footer">
+                        <p>This card is property of University. If found, please return to Administration Office.</p>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p>Authorized by XYZ University</p>
         </div>
     </div>
-    {% else %}
-    <p class="error-message">{{ error_message }}</p>
-    {% endif %}
+
+    <script>
+        // DOM Elements
+        const photoUpload = document.getElementById('photoUpload');
+        const studentPhoto = document.getElementById('studentPhoto');
+        const photoPreview = document.getElementById('photoPreview');
+        const generateBtn = document.getElementById('generateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const idCard = document.getElementById('idCard');
+        
+        // Form fields
+        const fullName = document.getElementById('fullName');
+        const studentId = document.getElementById('studentId');
+        const course = document.getElementById('course');
+        const department = document.getElementById('department');
+        const validUntil = document.getElementById('validUntil');
+        const bloodGroup = document.getElementById('bloodGroup');
+        
+        // ID Card fields
+        const idCardPhoto = document.getElementById('idCardPhoto');
+        const idName = document.getElementById('idName');
+        const idNumber = document.getElementById('idNumber');
+        const idCourse = document.getElementById('idCourse');
+        const idDepartment = document.getElementById('idDepartment');
+        const idValid = document.getElementById('idValid');
+        const idBlood = document.getElementById('idBlood');
+        
+        // Event Listeners
+        photoUpload.addEventListener('click', () => {
+            studentPhoto.click();
+        });
+        
+        studentPhoto.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    photoPreview.src = event.target.result;
+                    photoPreview.style.display = 'block';
+                    photoUpload.querySelector('i').style.display = 'none';
+                    photoUpload.querySelector('p').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        generateBtn.addEventListener('click', () => {
+            if (!validateForm()) return;
+            
+            // Update ID Card with form data
+            if (photoPreview.src) {
+                idCardPhoto.src = photoPreview.src;
+            } else {
+                idCardPhoto.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="150" viewBox="0 0 120 150"%3E%3Crect width="120" height="150" fill="%23ddd"/%3E%3Ctext x="60" y="80" font-family="Arial" font-size="14" text-anchor="middle" fill="%23666"%3ENo Photo%3C/text%3E%3C/svg%3E';
+            }
+            
+            idName.textContent = fullName.value;
+            idNumber.textContent = studentId.value;
+            idCourse.textContent = course.value;
+            idDepartment.textContent = department.value;
+            
+            // Format date
+            const validDate = new Date(validUntil.value);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            idValid.textContent = validDate.toLocaleDateString('en-US', options);
+            
+            idBlood.textContent = bloodGroup.value || 'Not Specified';
+            
+            // Show ID Card
+            idCard.style.display = 'block';
+            
+            // Scroll to ID Card
+            idCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            // Reset form
+            studentPhoto.value = '';
+            photoPreview.src = '';
+            photoPreview.style.display = 'none';
+            photoUpload.querySelector('i').style.display = 'block';
+            photoUpload.querySelector('p').style.display = 'block';
+            
+            fullName.value = '';
+            studentId.value = '';
+            course.value = '';
+            department.value = '';
+            validUntil.value = '';
+            bloodGroup.value = '';
+            
+            // Hide ID Card
+            idCard.style.display = 'none';
+        });
+        
+        // Form validation
+        function validateForm() {
+            if (!fullName.value) {
+                alert('Please enter your full name');
+                fullName.focus();
+                return false;
+            }
+            
+            if (!studentId.value) {
+                alert('Please enter your student ID');
+                studentId.focus();
+                return false;
+            }
+            
+            if (!course.value) {
+                alert('Please enter your course');
+                course.focus();
+                return false;
+            }
+            
+            if (!department.value) {
+                alert('Please enter your department');
+                department.focus();
+                return false;
+            }
+            
+            if (!validUntil.value) {
+                alert('Please select validity date');
+                validUntil.focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Set default valid until date to 1 year from now
+        window.onload = function() {
+            const today = new Date();
+            const nextYear = new Date(today);
+            nextYear.setFullYear(today.getFullYear() + 1);
+            
+            const yyyy = nextYear.getFullYear();
+            const mm = String(nextYear.getMonth() + 1).padStart(2, '0');
+            const dd = String(nextYear.getDate()).padStart(2, '0');
+            
+            validUntil.value = `${yyyy}-${mm}-${dd}`;
+        };
+    </script>
 </body>
 </html>

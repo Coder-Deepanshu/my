@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from reportlab.pdfgen import canvas
 from .form import LoginForm
 from .models import Student_add, Student_percent
+from newapp.models import result
 
 def generate_csv(request):
     # Create the HttpResponse object with the appropriate CSV header.
@@ -48,29 +49,52 @@ def login_view(request):
     if request.method == 'POST':
         username=request.POST.get('username')
         password=request.POST.get('password')
-        # form = LoginForm(request.POST)
-    
-            # username = form.cleaned_data['username']
-            # user_id = form.cleaned_data['user_id']
-
-            # Custom authentication logic
-        if (username == "Deepanshu" and password == "12345") or (username == "Zyasha" and password == "12346") :  # Replace with your logic
+        role=request.POST.get('role')
+        if role =='admin':
+            if (username == "Deepanshu" and password == "12345") or (username == "Zyasha" and password == "12346") :  # Replace with your logic
                 # Set session data
-                request.session['username'] = username
+                request.session['username1'] = username
                 return redirect('dashboard')  # Redirect to the dashboard
-        else:
-                return redirect("invalid")
-    # else:
-    #     form = LoginForm()
+            else:
+                return redirect("home")
+        elif role=='faculty':
+            if(username == 'Shinaya' and password== "12345"):
+                request.session['username2']=username
+                return redirect('dashboard1')
+            else:
+                return redirect("home")
+        else :
+            if(username == 'Zyasha' and password== "12345"):
+                request.session['username2']=username
+                return redirect('dashboard2')
+            else:
+                return redirect("home")
+
     return render(request, 'home.html')
 
 def dashboard_view(request):
     # Check if the user is logged in
-    username = request.session.get('username')  # Retrieve username from session
+    username = request.session.get('username1')  # Retrieve username from session
     if username:
         return render(request, 'dashboard.html', {'username': username})
     else:
+        return redirect('login') 
+
+def dashboard1(request):
+    # Check if the user is logged in
+    username = request.session.get('username1')  # Retrieve username from session
+    if username:
+        return render(request, 'dashboard1.html', {'username': username})
+    else:
         return redirect('login')  # Redirect to login if not logged in
+    
+def dashboard2(request):
+    # Check if the user is logged in
+    username = request.session.get('username2')  # Retrieve username from session
+    if username:
+        return render(request, 'dashboard2.html', {'username': username})
+    else:
+        return redirect('login') 
 
 def logout_view(request):
     # Clear session data
@@ -99,7 +123,6 @@ def delete_student_view(request):
                 student = Student_add.objects.get(Student_rollno=roll_no)
                 student.delete()  # Delete the student
                      # Result table me entry create karo
-                from .models import result
                 result.objects.filter(Student_rollno=roll_no).delete()
                 return render(request,'delete_student.html',{'success_message':f'Student with Roll no.{roll_no} has been successfully deleted!'})  # Redirect to a success page
             except Student_add.DoesNotExist:
@@ -159,6 +182,11 @@ from .form import Addstudentform
 from .models import Student_add,result,subject
 from django.db import models
 
+from django.shortcuts import render, redirect
+from django.db import models
+from .models import Student_add, Student_percent, result, subject
+from .form import Addstudentform # Assuming you have this form defined
+
 def add_student(request):
     if request.method == 'POST':
         form = Addstudentform(request.POST, request.FILES)
@@ -167,18 +195,18 @@ def add_student(request):
             if max_roll is None:
                 max_roll = 0
             else:
-                max_roll = int(max_roll)
+                try:
+                    max_roll = int(max_roll)
+                except ValueError:
+                    max_roll = 0
             student = form.save(commit=False)
-            student.Student_rollno = max_roll + 1
+            student.Student_rollno = str(max_roll + 1)
             student.save()
-            
-            # Result table me entry create karo (Student_rollno string pass karo)
-            from .models import result
-            result.objects.create(
-                Student_rollno=str(student.Student_rollno),
-                course=student.course
+            # Result entry create karo
+            result.objects.get_or_create(
+                Student_rollno=student.Student_rollno,
+                defaults={'course': student.course}
             )
-            
             return render(request, 'add_student.html', {
                 'form': Addstudentform(),
                 'success_message': 'Student added successfully!'
@@ -189,78 +217,3 @@ def add_student(request):
         form = Addstudentform()
     return render(request, 'add_student.html', {'form': form})
 
-def check_rollno(request):
-    if request.method == 'POST':
-        rollno = request.POST.get('roll_no')
-        try:
-            student_detail = Student_add.objects.get(Student_rollno=rollno)
-            sem = student_detail.semester
-            course = student_detail.course
-            name = student_detail.Student_name
-
-            result_obj = result.objects.get(Student_rollno=rollno)
-
-            if sem == 'I':
-                subject_detail = subject.objects.get(course=course, semester=sem)
-                subjects = [
-                    subject_detail.I, subject_detail.II, subject_detail.III, subject_detail.IV,
-                    subject_detail.V, subject_detail.VI, subject_detail.VII, subject_detail.VIII
-                ]
-                return render(request, 'upload_result.html', {
-                    'rollno': rollno,
-                    'name': name,
-                    'course': course,
-                    'semester': sem,
-                    'subjects': subjects
-                })
-            else:
-                return render(request, 'add_result.html', {'error_message': 'Semester not supported.'})
-        except (Student_add.DoesNotExist, result.DoesNotExist, subject.DoesNotExist):
-            return render(request, 'add_result.html', {'error_message': 'Roll number not found or subject not found.'})
-    else:
-        return render(request, 'add_result.html')
-
-def upload_result(request):
-    if request.method == 'POST':
-        rollno = request.POST.get('roll_no')
-        marks = [request.POST.get(f'marks{i}') for i in range(1, 9)]
-        try:
-            # Get result entry for this rollno
-            result_obj = result.objects.get(Student_rollno=rollno)
-            result_obj.one = marks[0]
-            result_obj.two = marks[1]
-            result_obj.three = marks[2]
-            result_obj.four = marks[3]
-            result_obj.five = marks[4]
-            result_obj.six = marks[5]
-            result_obj.seven = marks[6]
-            result_obj.eight = marks[7]
-            result_obj.save()
-            return render(request, 'add_result.html', {'success_message': 'Marks uploaded successfully!'})
-        except result.DoesNotExist:
-            # Agar result entry nahi mili, dobara marks input form dikhao
-            try:
-                student_detail = Student_add.objects.get(Student_rollno=rollno)
-                sem = student_detail.semester
-                course = student_detail.course
-                name = student_detail.Student_name
-                if sem == 'I':
-                    subject_detail = subject.objects.get(course=course, semester=sem)
-                    subjects = [
-                        subject_detail.I, subject_detail.II, subject_detail.III, subject_detail.IV,
-                        subject_detail.V, subject_detail.VI, subject_detail.VII, subject_detail.VIII
-                    ]
-                    return render(request, 'upload_result.html', {
-                        'rollno': rollno,
-                        'name': name,
-                        'course': course,
-                        'semester': sem,
-                        'subjects': subjects,
-                        'error_message': 'Result entry not found. Please check roll number.'
-                    })
-                else:
-                    return render(request, 'add_result.html', {'error_message': 'Semester not supported.'})
-            except (Student_add.DoesNotExist, subject.DoesNotExist):
-                return render(request, 'add_result.html', {'error_message': 'Roll number or subject not found.'})
-    else:
-        return redirect('add_result')

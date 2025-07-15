@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Timetable</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6; /* Light gray background */
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px; /* Max width for the timetable */
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #2c3e50; /* Dark blue-gray for heading */
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 2.5em;
+        }
+
+        /* Timetable Specific Styles */
+        .timetable-wrapper {
+            overflow-x: auto; /* Enables horizontal scrolling on small screens */
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Removes space between table cells */
+            margin: 0 auto;
+            min-width: 700px; /* Ensures table doesn't get too squished on small screens */
+        }
+
+        th, td {
+            border: 1px solid #e0e0e0; /* Light gray border */
+            padding: 15px 10px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #3498db; /* Professional blue for headers */
+            color: white;
+            font-weight: 500;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            background-color: #ffffff;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        /* Alternating row colors for better readability */
+        tr:nth-child(even) td {
+            background-color: #f9f9f9; /* Slightly darker background for even rows */
+        }
+
+        /* Highlight current day/time (optional, can be done with JS) */
+        .current-day {
+            background-color: #eaf2f8 !important; /* Light blue highlight */
+            font-weight: 500;
+        }
+
+        .current-time {
+            background-color: #d6eaf8 !important; /* Slightly darker blue highlight */
+            font-weight: 500;
+            border-left: 3px solid #3498db;
+            border-right: 3px solid #3498db;
+        }
+
+        /* Styling for empty cells or breaks */
+        td.break {
+            background-color: #ecf0f1; /* Lighter gray for breaks */
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2em;
+                margin-bottom: 20px;
+            }
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            th, td {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>College Timetable</h1>
+
+        <div class="timetable-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Monday</th>
+                        <th>Tuesday</th>
+                        <th>Wednesday</th>
+                        <th>Thursday</th>
+                        <th>Friday</th>
+                        <th>Saturday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>09:00 - 10:00</td>
+                        <td>Mathematics<br>(Room 101)</td>
+                        <td>Physics<br>(Lab A)</td>
+                        <td>Chemistry<br>(Room 203)</td>
+                        <td>Mathematics<br>(Room 101)</td>
+                        <td>English<br>(Room 305)</td>
+                        <td class="break">Holiday</td>
+                    </tr>
+                    <tr>
+                        <td>10:00 - 11:00</td>
+                        <td>Physics<br>(Room 201)</td>
+                        <td>Mathematics<br>(Room 101)</td>
+                        <td>English<br>(Room 305)</td>
+                        <td>Physics<br>(Lab A)</td>
+                        <td>Chemistry<br>(Room 203)</td>
+                        <td class="break">Holiday</td>
+                    </tr>
+                    <tr>
+                        <td>11:00 - 12:00</td>
+                        <td>Chemistry<br>(Lab B)</td>
+                        <td>English<br>(Room 305)</td>
+                        <td>Mathematics<br>(Room 101)</td>
+                        <td>Chemistry<br>(Lab B)</td>
+                        <td>Physics<br>(Room 201)</td>
+                        <td class="break">Holiday</td>
+                    </tr>
+                    <tr>
+                        <td>12:00 - 13:00</td>
+                        <td class="break" colspan="6">Lunch Break</td>
+                        <td class="break">Holiday</td>
+                    </tr>
+                    <tr>
+                        <td>13:00 - 14:00</td>
+                        <td>Computer Science<br>(Lab C)</td>
+                        <td>Biology<br>(Room 401)</td>
+                        <td>Computer Science<br>(Lab C)</td>
+                        <td>Biology<br>(Room 401)</td>
+                        <td>Elective 1<br>(Room 502)</td>
+                        <td class="break">Holiday</td>
+                    </tr>
+                    <tr>
+                        <td>14:00 - 15:00</td>
+                        <td>Elective 2<br>(Room 501)</td>
+                        <td>Computer Science<br>(Lab C)</td>
+                        <td>Elective 2<br>(Room 501)</td>
+                        <td>English<br>(Room 305)</td>
+                        <td>Biology<br>(Room 401)</td>
+                        <td class="break">Holiday</td>
+                    </tr>
+                    <tr>
+                        <td>15:00 - 16:00</td>
+                        <td>Sports/Club<br>(Ground)</td>
+                        <td>Library Hour<br>(Library)</td>
+                        <td>Sports/Club<br>(Ground)</td>
+                        <td>Library Hour<br>(Library)</td>
+                        <td>Project Work<br>(Room 601)</td>
+                        <td class="break">Holiday</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Optional: Highlight current day (client-side)
+        document.addEventListener('DOMContentLoaded', () => {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const todayIndex = new Date().getDay(); // 0 for Sunday, 1 for Monday, etc.
+
+            // Find the header cell for today and add a class
+            // Note: Our table starts with Monday, so adjust index for Sunday being 0
+            if (todayIndex !== 0) { // Don't highlight Sunday if it's a holiday column
+                const headerRow = document.querySelector('thead tr');
+                if (headerRow) {
+                    // +1 because the first column is 'Time'
+                    const todayHeaderCell = headerRow.children[todayIndex];
+                    if (todayHeaderCell) {
+                        todayHeaderCell.classList.add('current-day');
+                    }
+                }
+
+                // Highlight all cells in the current day's column
+                const tableRows = document.querySelectorAll('tbody tr');
+                tableRows.forEach(row => {
+                    // +1 because the first cell in each row is 'Time'
+                    const cell = row.children[todayIndex];
+                    if (cell) {
+                        cell.classList.add('current-day');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

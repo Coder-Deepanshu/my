@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'newpro.wsgi.application'
 #         'PORT':'5432',
 #         }
 # }
-
+# Removed duplicate DATABASES definition to fix the unclosed dictionary issue.
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

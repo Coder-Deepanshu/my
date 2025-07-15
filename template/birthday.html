@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Celebration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #e63946;
+            --secondary-color: #457b9d;
+            --accent-color: #a8dadc;
+            --text-color: #2b2d42;
+            --light-bg: #f1faee;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--light-bg), var(--accent-color));
+            color: var(--text-color);
+            overflow: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            max-width: 560px;
+            width: 90%;
+            margin: 2rem auto;
+            transform: scale(0.98);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .container:hover {
+            transform: scale(1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1.25rem;
+            font-size: 1.8rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: #f8f9fa;
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--primary-color), #f72585);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(230, 57, 70, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, var(--secondary-color), #4895ef);
+            box-shadow: 0 4px 15px rgba(69, 123, 157, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(69, 123, 157, 0.5);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .profile-photo-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-photo {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.05);
+        }
+
+        .upload-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+
+        .upload-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .upload-btn i {
+            font-size: 1.2rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            animation: falling linear forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes falling {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.75rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .profile-photo {
+                width: 140px;
+                height: 140px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 0.65rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container welcome-container" id="welcomePage">
+        <h1>A Heartfelt Celebration</h1>
+        <p>To begin this special birthday journey, please enter the name of the amazing person we're celebrating today:</p>
+        <div class="input-group">
+            <input type="text" id="sisterName" placeholder="Enter name here" aria-label="Birthday person's name">
+        </div>
+        <button class="btn" onclick="startWishes()">Begin Celebration</button>
+    </div>
+
+    <div class="container birthday-container hidden" id="page1">
+        <h1 id="greetingText"></h1>
+        <p>Today is all about you! May your birthday be filled with joy, laughter, and wonderful moments that create lasting memories.</p>
+        <button class="btn" onclick="nextPage()">Continue</button>
+    </div>
+
+    <div class="container birthday-container hidden" id="page2">
+        <h2>Wishing You Abundance</h2>
+        <p>May this new chapter of your life bring you closer to your dreams, surrounded by love, success, and happiness in all that you do.</p>
+        <button class="btn" onclick="nextPage()">More Wishes</button>
+    </div>
+
+    <div class="container birthday-container hidden" id="page3">
+        <h2>You're Incredible</h2>
+        <p>The world is brighter with you in it. Your kindness, strength, and beautiful spirit inspire everyone around you.</p>
+        <button class="btn" onclick="nextPage()">Final Wish</button>
+    </div>
+
+    <div class="container birthday-container hidden" id="page4" style="margin-bottom: 420px;">
+        <div class="card">
+            <div class="profile-photo-container">
+                <img id="profileImage" src="https://via.placeholder.com/180" alt="Birthday Person" class="profile-photo">
+                <label class="upload-btn" for="fileInput">
+                    <i class="fas fa-camera"></i>
+                </label>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+            <h1>Happy Birthday, <span id="finalName"></span>!</h1>
+            <p>May your special day be as wonderful and extraordinary as you are. Sending you endless love and the warmest wishes on your birthday and always!</p>
+            <div>
+                <button class="btn" onclick="createHearts('small', true)">Small Hearts</button>
+                <button class="btn btn-secondary" onclick="createHearts('big', true)">Big Hearts</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        let sisterName = "";
+
+        // Profile photo: load from localStorage if exists
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load photo from localStorage
+            const savedPhoto = localStorage.getItem('profilePhoto');
+            if (savedPhoto) {
+                document.getElementById('profileImage').src = savedPhoto;
+            }
+
+            // Set up file upload
+            const fileInput = document.getElementById('fileInput');
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('profileImage').src = event.target.result;
+                        // Save photo to localStorage
+                        localStorage.setItem('profilePhoto', event.target.result);
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+
+            // Start some hearts automatically
+            setInterval(() => {
+                createHearts(Math.random() > 0.5 ? 'small' : 'big');
+            }, 800);
+        });
+
+        function startWishes() {
+            const nameInput = document.getElementById('sisterName');
+            sisterName = nameInput.value.trim();
+
+            if (sisterName) {
+                document.getElementById('welcomePage').classList.add('hidden');
+                document.getElementById('greetingText').textContent = `Happy Birthday, ${sisterName}!`;
+                document.getElementById('finalName').textContent = sisterName;
+                currentPage = 1;
+                document.getElementById(`page${currentPage}`).classList.remove('hidden');
+                createHearts('big', true);
+            } else {
+                alert('Please enter a name to continue this special celebration!');
+                nameInput.focus();
+            }
+        }
+
+        function nextPage() {
+            document.getElementById(`page${currentPage}`).classList.add('hidden');
+            currentPage++;
+
+            if (currentPage <= 4) {
+                document.getElementById(`page${currentPage}`).classList.remove('hidden');
+                if (currentPage === 4) {
+                    createHearts('big', true);
+                }
+            }
+        }
+
+        // Heart barish function: instant barish on button click
+        function createHearts(size, instant = false) {
+            const heartSizes = {
+                small: { min: 10, max: 20 },
+                big: { min: 30, max: 50 }
+            };
+            const colors = ['#e63946', '#ff006e', '#ff5e8a', '#ff85a1', '#f72585', '#b5179e'];
+            const heartCount = size === 'small' ? 25 : 12; // Button click par zyada hearts
+
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+
+                // Set random size
+                const sizeRange = heartSizes[size];
+                const fontSize = Math.random() * (sizeRange.max - sizeRange.min) + sizeRange.min;
+                heart.style.fontSize = `${fontSize}px`;
+
+                // Set random position
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = -50 + 'px';
+
+                // Set random color
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+                // Set random animation duration
+                const duration = instant ? (Math.random() * 2 + 2) : (Math.random() * 3 + 2);
+                heart.style.animationDuration = `${duration}s`;
+
+                document.body.appendChild(heart);
+
+                // Remove heart after animation
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+        }
+
+        // Handle keyboard input
+        document.getElementById('sisterName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startWishes();
+            }
+        });
+    </script>
+</body>
+</html>

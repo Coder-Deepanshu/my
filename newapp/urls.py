@@ -16,11 +16,11 @@ urlpatterns = [
     path('generate-csv/', views.generate_csv, name='generate_csv'),
     path('view-student/', views.view_student, name='view_student'),
     path('delval/',views.DelValid,name="delvalid"),
-    path('add_student/',views.add_student,name='add_student'),
     path('alter_student/',views.alter_student,name='alter_student'),
-    path('check_rollno/',views.check_rollno,name='check_rollno'),
-
-
+    path('add_student/', views.add_student, name='add_student'),
+    path('dashboard1/', views.dashboard1, name='dashboard1'),
+    path('dashboard2/', views.dashboard2, name='dashboard2'),
+   
 
 ]
 

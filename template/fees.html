@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Fee Portal</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .student-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        .fee-summary {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .card h3 {
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+        
+        .card .amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .paid {
+            color: #27ae60;
+        }
+        
+        .pending {
+            color: var(--accent-color);
+        }
+        
+        .fee-details {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .status-paid {
+            background-color: #d5f5e3;
+            color: #27ae60;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .status-pending {
+            background-color: #fadbd8;
+            color: var(--accent-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid, .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Student Fee Portal</h1>
+            <p>View and manage your fee details</p>
+        </header>
+        
+        <section class="student-info">
+            <h2>Student Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Student ID</div>
+                    <div>STU20230045</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Name</div>
+                    <div>Rahul Sharma</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Course</div>
+                    <div>B.Tech Computer Science</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Semester</div>
+                    <div>4th Semester</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Batch</div>
+                    <div>2022-2026</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Contact</div>
+                    <div>rahul.sharma@example.com</div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="fee-summary">
+            <h2>Fee Summary</h2>
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Total Fee</h3>
+                    <div class="amount">₹85,000</div>
+                </div>
+                <div class="card">
+                    <h3>Paid Amount</h3>
+                    <div class="amount paid">₹65,000</div>
+                </div>
+                <div class="card">
+                    <h3>Pending Amount</h3>
+                    <div class="amount pending">₹20,000</div>
+                </div>
+                <div class="card">
+                    <h3>Due Date</h3>
+                    <div class="amount">15 Aug 2023</div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="fee-details">
+            <h2>Fee Payment Details</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Receipt No.</th>
+                        <th>Payment Date</th>
+                        <th>Particulars</th>
+                        <th>Amount</th>
+                        <th>Payment Mode</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>RCPT20234501</td>
+                        <td>15 Jan 2023</td>
+                        <td>Tuition Fee - Semester 4</td>
+                        <td>₹25,000</td>
+                        <td>Online Transfer</td>
+                        <td><span class="status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>RCPT20234502</td>
+                        <td>15 Jan 2023</td>
+                        <td>Library Fee</td>
+                        <td>₹5,000</td>
+                        <td>Online Transfer</td>
+                        <td><span class="status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>RCPT20234503</td>
+                        <td>15 Jan 2023</td>
+                        <td>Examination Fee</td>
+                        <td>₹5,000</td>
+                        <td>Online Transfer</td>
+                        <td><span class="status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>RCPT20234504</td>
+                        <td>15 Mar 2023</td>
+                        <td>Tuition Fee - Semester 4</td>
+                        <td>₹20,000</td>
+                        <td>Cheque</td>
+                        <td><span class="status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>RCPT20234505</td>
+                        <td>15 Mar 2023</td>
+                        <td>Hostel Fee</td>
+                        <td>₹10,000</td>
+                        <td>Cheque</td>
+                        <td><span class="status-paid">Paid</span></td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>15 Aug 2023</td>
+                        <td>Tuition Fee - Semester 4</td>
+                        <td>₹20,000</td>
+                        <td>-</td>
+                        <td><span class="status-pending">Pending</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <footer>
+            <p>© 2023 University Fee Portal. All rights reserved.</p>
+            <p>For any queries, please contact accounts@university.edu</p>
+        </footer>
+    </div>
+</body>
+</html>
