@@ -56,19 +56,19 @@ def login_view(request):
                 request.session['username1'] = username
                 return redirect('dashboard')  # Redirect to the dashboard
             else:
-                return redirect("home")
+                return redirect("login")
         elif role=='faculty':
-            if(username == 'Shinaya' and password== "12345"):
+            if username == 'Kunal' and password== "12345":
                 request.session['username2']=username
                 return redirect('dashboard1')
             else:
-                return redirect("home")
+                return redirect("login")
         else :
-            if(username == 'Zyasha' and password== "12345"):
-                request.session['username2']=username
+            if username == 'Abhishek' and password== "12345":
+                request.session['username3']=username
                 return redirect('dashboard2')
             else:
-                return redirect("home")
+                return redirect("login")
 
     return render(request, 'home.html')
 
@@ -82,7 +82,7 @@ def dashboard_view(request):
 
 def dashboard1(request):
     # Check if the user is logged in
-    username = request.session.get('username1')  # Retrieve username from session
+    username = request.session.get('username2')  # Retrieve username from session
     if username:
         return render(request, 'dashboard1.html', {'username': username})
     else:
@@ -90,7 +90,7 @@ def dashboard1(request):
     
 def dashboard2(request):
     # Check if the user is logged in
-    username = request.session.get('username2')  # Retrieve username from session
+    username = request.session.get('username3')  # Retrieve username from session
     if username:
         return render(request, 'dashboard2.html', {'username': username})
     else:

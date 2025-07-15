@@ -3,143 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopkeeper Dashboard</title>
+    <title>ShopKart Pro - Shopkeeper Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-color: #4e73df;
-            --secondary-color: #1cc88a;
-            --danger-color: #e74a3b;
-            --warning-color: #f6c23e;
-            --info-color: #36b9cc;
+            --primary: #4361ee;
+            --primary-light: #3a86ff;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fc;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
         }
         
+        /* Sidebar Styling */
         .sidebar {
-            background: linear-gradient(180deg, var(--primary-color) 0%, #224abe 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
         
         .sidebar-brand {
-            height: 4.375rem;
-            text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: 800;
-            padding: 1.5rem 1rem;
-            text-align: center;
-            letter-spacing: 0.05rem;
-            z-index: 1;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-brand .logo-icon {
+            font-size: 1.75rem;
+            margin-right: 0.75rem;
+            color: white;
+        }
+        
+        .sidebar-brand .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: white;
+            letter-spacing: 0.5px;
         }
         
         .nav-item {
-            position: relative;
+            margin: 0.25rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
         }
         
-        .nav-item a {
-            color: rgba(255, 255, 255, 0.8);
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
         
-        .nav-item a:hover {
-            color: #fff;
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
         }
         
-        .nav-item.active a {
-            color: #fff;
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            padding: 0.75rem 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-link:hover {
+            color: white;
+        }
+        
+        .nav-link .bi {
+            font-size: 1.1rem;
+            margin-right: 0.75rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .nav-item.active .nav-link {
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            padding: 2rem;
+            background-color: #f5f7fb;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .header-title h1 {
             font-weight: 700;
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+            color: var(--dark);
         }
         
-        .nav-item.active::before {
-            content: "";
-            position: absolute;
-            height: 100%;
-            width: 0.25rem;
-            background-color: #fff;
-            left: 0;
-            top: 0;
+        .header-title p {
+            color: var(--gray);
+            margin-bottom: 0;
+            font-size: 0.9rem;
         }
         
-        .card {
-            border: none;
-            border-radius: 0.35rem;
-            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
-        }
-        
-        .card-header {
-            background-color: #f8f9fc;
-            border-bottom: 1px solid #e3e6f0;
-            padding: 1rem 1.35rem;
-            font-weight: 700;
-        }
-        
-        .card-body {
-            padding: 1.25rem;
-        }
-        
-        .bg-primary {
-            background-color: var(--primary-color) !important;
-        }
-        
-        .bg-success {
-            background-color: var(--secondary-color) !important;
-        }
-        
-        .bg-danger {
-            background-color: var(--danger-color) !important;
-        }
-        
-        .bg-warning {
-            background-color: var(--warning-color) !important;
-        }
-        
-        .bg-info {
-            background-color: var(--info-color) !important;
-        }
-        
+        /* Stats Cards */
         .stat-card {
-            border-left: 0.25rem solid;
-            color: #fff;
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+        
+        .stat-card.primary::before {
+            background-color: var(--primary);
+        }
+        
+        .stat-card.success::before {
+            background-color: var(--success);
+        }
+        
+        .stat-card.warning::before {
+            background-color: var(--warning);
+        }
+        
+        .stat-card.danger::before {
+            background-color: var(--danger);
         }
         
         .stat-card .card-body {
-            padding: 1rem 1.5rem;
+            padding: 1.5rem;
         }
         
-        .stat-card-icon {
-            font-size: 2rem;
-            opacity: 0.4;
+        .stat-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
         
-        .chart-area {
-            position: relative;
-            height: 10rem;
-            width: 100%;
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
         }
         
-        @media (min-width: 768px) {
-            .chart-area {
-                height: 20rem;
-            }
+        .stat-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
         
-        .dataTables_wrapper {
-            padding: 0;
+        .stat-change.positive {
+            color: var(--success);
         }
         
-        .dataTables_filter {
-            padding: 0 1.25rem;
+        .stat-change.negative {
+            color: var(--danger);
         }
         
-        .dataTables_info, .dataTables_paginate {
-            padding: 0.5rem 1.25rem;
+        .stat-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 2.5rem;
+            opacity: 0.2;
+            color: var(--dark);
         }
         
-        .table th {
+        /* Charts */
+        .chart-container {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            height: 100%;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-bottom: 0;
+        }
+        
+        .chart-actions .dropdown-toggle {
+            color: var(--gray);
+            border: none;
+            background: none;
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .chart-actions .dropdown-toggle:hover {
+            color: var(--dark);
+        }
+        
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            height: 100%;
+        }
+        
+        .table-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead th {
+            border-bottom: 1px solid var(--gray-light);
             border-top: none;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 0.75rem 1rem;
+        }
+        
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Buttons */
+        .btn {
+            border-radius: 0.5rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+                width: 100%;
+            }
+            
+            .main-content {
+                padding: 1.5rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-actions {
+                margin-top: 1rem;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -147,136 +351,127 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse bg-primary text-white p-0">
-                <div class="position-sticky pt-3">
-                    <a class="sidebar-brand d-flex align-items-center justify-content-center text-white mb-4" href="#">
-                        <i class="bi bi-shop me-2"></i>
-                        <span>Shop Dashboard</span>
-                    </a>
-                    
-                    <ul class="nav flex-column">
-                        <li class="nav-item active mb-2">
-                            <a class="nav-link ps-3" href="#">
-                                <i class="bi bi-speedometer2 me-2"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link ps-3" href="#">
-                                <i class="bi bi-box-seam me-2"></i>
-                                Inventory
-                            </a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link ps-3" href="#">
-                                <i class="bi bi-cart me-2"></i>
-                                Sales
-                            </a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link ps-3" href="#">
-                                <i class="bi bi-people me-2"></i>
-                                Customers
-                            </a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link ps-3" href="#">
-                                <i class="bi bi-graph-up me-2"></i>
-                                Reports
-                            </a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link ps-3" href="#">
-                                <i class="bi bi-gear me-2"></i>
-                                Settings
-                            </a>
-                        </li>
-                    </ul>
+            <div class="col-md-3 col-lg-2 sidebar p-0">
+                <div class="sidebar-brand">
+                    <i class="bi bi-shop logo-icon"></i>
+                    <span class="logo-text">ShopKart Pro</span>
                 </div>
+                
+                <ul class="nav flex-column mt-3">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-box-seam"></i>
+                            Inventory
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-cart"></i>
+                            Sales
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-people"></i>
+                            Customers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-graph-up"></i>
+                            Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-file-earmark-text"></i>
+                            Invoices
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="bi bi-gear"></i>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
             </div>
             
             <!-- Main Content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard Overview</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
+            <main class="col-md-9 col-lg-10 ms-sm-auto main-content">
+                <div class="header">
+                    <div class="header-title">
+                        <h1>Dashboard Overview</h1>
+                        <p>Welcome back! Here's what's happening with your store today.</p>
+                    </div>
+                    <div class="header-actions">
                         <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Today</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Week</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Month</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm">Today</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm">Week</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm">Month</button>
                         </div>
-                        <button type="button" class="btn btn-sm btn-primary">
-                            <i class="bi bi-plus-circle"></i> New Sale
+                        <button type="button" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i> New Sale
                         </button>
                     </div>
                 </div>
                 
                 <!-- Stats Cards -->
                 <div class="row mb-4">
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card border-left-primary shadow h-100 py-2">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card primary">
                             <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs font-weight-bold text-uppercase mb-1">
-                                            Today's Sales</div>
-                                        <div class="h5 mb-0 font-weight-bold">₹12,345</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="bi bi-currency-rupee stat-card-icon"></i>
-                                    </div>
+                                <div class="stat-title">Today's Sales</div>
+                                <div class="stat-value">₹12,345</div>
+                                <div class="stat-change positive">
+                                    <i class="bi bi-arrow-up me-1"></i> 12% from yesterday
                                 </div>
+                                <i class="bi bi-currency-rupee stat-icon"></i>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card border-left-success shadow h-100 py-2">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card success">
                             <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs font-weight-bold text-uppercase mb-1">
-                                            Today's Profit</div>
-                                        <div class="h5 mb-0 font-weight-bold">₹3,210</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="bi bi-graph-up stat-card-icon"></i>
-                                    </div>
+                                <div class="stat-title">Today's Profit</div>
+                                <div class="stat-value">₹3,210</div>
+                                <div class="stat-change positive">
+                                    <i class="bi bi-arrow-up me-1"></i> 8% from yesterday
                                 </div>
+                                <i class="bi bi-graph-up-arrow stat-icon"></i>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card border-left-info shadow h-100 py-2">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card warning">
                             <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs font-weight-bold text-uppercase mb-1">
-                                            Customers</div>
-                                        <div class="h5 mb-0 font-weight-bold">24</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="bi bi-people stat-card-icon"></i>
-                                    </div>
+                                <div class="stat-title">Customers</div>
+                                <div class="stat-value">24</div>
+                                <div class="stat-change negative">
+                                    <i class="bi bi-arrow-down me-1"></i> 3% from yesterday
                                 </div>
+                                <i class="bi bi-people stat-icon"></i>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card border-left-warning shadow h-100 py-2">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card danger">
                             <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col me-2">
-                                        <div class="text-xs font-weight-bold text-uppercase mb-1">
-                                            Pending Credit</div>
-                                        <div class="h5 mb-0 font-weight-bold">₹8,765</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="bi bi-credit-card stat-card-icon"></i>
-                                    </div>
+                                <div class="stat-title">Pending Credit</div>
+                                <div class="stat-value">₹8,765</div>
+                                <div class="stat-change positive">
+                                    <i class="bi bi-arrow-down me-1"></i> 5% from yesterday
                                 </div>
+                                <i class="bi bi-credit-card stat-icon"></i>
                             </div>
                         </div>
                     </div>
@@ -284,58 +479,70 @@
                 
                 <!-- Charts Row -->
                 <div class="row mb-4">
-                    <div class="col-lg-8 mb-4">
-                        <div class="card shadow">
-                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold">Sales Overview</h6>
-                                <div class="dropdown no-arrow">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink">
-                                        <li><a class="dropdown-item" href="#">This Week</a></li>
-                                        <li><a class="dropdown-item" href="#">This Month</a></li>
-                                        <li><a class="dropdown-item" href="#">This Year</a></li>
-                                    </ul>
+                    <div class="col-lg-8">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Sales Overview</h3>
+                                <div class="chart-actions">
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle" type="button" id="salesDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            This Month <i class="bi bi-chevron-down ms-1"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="salesDropdown">
+                                            <li><a class="dropdown-item" href="#">Today</a></li>
+                                            <li><a class="dropdown-item" href="#">This Week</a></li>
+                                            <li><a class="dropdown-item" href="#">This Month</a></li>
+                                            <li><a class="dropdown-item" href="#">This Year</a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <div class="chart-area">
-                                    <canvas id="salesChart"></canvas>
-                                </div>
+                            <div class="chart-area">
+                                <canvas id="salesChart" height="300"></canvas>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-lg-4 mb-4">
-                        <div class="card shadow">
-                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold">Inventory Status</h6>
-                                <div class="dropdown no-arrow">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink">
-                                        <li><a class="dropdown-item" href="#">All Items</a></li>
-                                        <li><a class="dropdown-item" href="#">Low Stock</a></li>
-                                        <li><a class="dropdown-item" href="#">Out of Stock</a></li>
-                                    </ul>
+                    <div class="col-lg-4">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Inventory Status</h3>
+                                <div class="chart-actions">
+                                    <div class="dropdown">
+                                        <button class="btn dropdown-toggle" type="button" id="inventoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            All Items <i class="bi bi-chevron-down ms-1"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="inventoryDropdown">
+                                            <li><a class="dropdown-item" href="#">All Items</a></li>
+                                            <li><a class="dropdown-item" href="#">Low Stock</a></li>
+                                            <li><a class="dropdown-item" href="#">Out of Stock</a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <div class="chart-pie pt-4 pb-2">
-                                    <canvas id="inventoryChart"></canvas>
-                                </div>
-                                <div class="mt-4 text-center small">
-                                    <span class="me-2">
-                                        <i class="bi bi-circle-fill text-primary"></i> In Stock
-                                    </span>
-                                    <span class="me-2">
-                                        <i class="bi bi-circle-fill text-warning"></i> Low Stock
-                                    </span>
-                                    <span class="me-2">
-                                        <i class="bi bi-circle-fill text-danger"></i> Out of Stock
-                                    </span>
+                            <div class="chart-pie">
+                                <canvas id="inventoryChart" height="250"></canvas>
+                            </div>
+                            <div class="chart-legend mt-4">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <span class="badge bg-primary mb-1">85</span>
+                                            <small class="text-muted">In Stock</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <span class="badge bg-warning mb-1">10</span>
+                                            <small class="text-muted">Low Stock</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <span class="badge bg-danger mb-1">5</span>
+                                            <small class="text-muted">Out of Stock</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -344,120 +551,170 @@
                 
                 <!-- Tables Row -->
                 <div class="row">
-                    <div class="col-lg-6 mb-4">
-                        <div class="card shadow">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold">Low Stock Items</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>Item</th>
-                                                <th>Category</th>
-                                                <th>Stock</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Maggi Noodles</td>
-                                                <td>Food</td>
-                                                <td class="text-warning">5</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-primary">Order</button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Colgate Toothpaste</td>
-                                                <td>Personal Care</td>
-                                                <td class="text-warning">3</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-primary">Order</button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Dettol Soap</td>
-                                                <td>Personal Care</td>
-                                                <td class="text-danger">0</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-primary">Order</button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Lays Chips</td>
-                                                <td>Snacks</td>
-                                                <td class="text-warning">4</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-primary">Order</button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Pepsi 1L</td>
-                                                <td>Beverages</td>
-                                                <td class="text-warning">2</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-primary">Order</button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                    <div class="col-lg-6">
+                        <div class="table-container">
+                            <h3 class="table-title">Low Stock Items</h3>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Category</th>
+                                            <th>Stock</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="https://via.placeholder.com/40" class="rounded me-3" alt="Maggi">
+                                                    <div>
+                                                        <strong>Maggi Noodles</strong>
+                                                        <div class="text-muted small">SKU: MG-001</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Food</td>
+                                            <td><span class="badge bg-warning">5 left</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Order</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="https://via.placeholder.com/40" class="rounded me-3" alt="Colgate">
+                                                    <div>
+                                                        <strong>Colgate Toothpaste</strong>
+                                                        <div class="text-muted small">SKU: CL-205</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Personal Care</td>
+                                            <td><span class="badge bg-warning">3 left</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Order</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="https://via.placeholder.com/40" class="rounded me-3" alt="Dettol">
+                                                    <div>
+                                                        <strong>Dettol Soap</strong>
+                                                        <div class="text-muted small">SKU: DT-112</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Personal Care</td>
+                                            <td><span class="badge bg-danger">Out of stock</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary">Order Now</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="https://via.placeholder.com/40" class="rounded me-3" alt="Lays">
+                                                    <div>
+                                                        <strong>Lays Chips</strong>
+                                                        <div class="text-muted small">SKU: LY-330</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>Snacks</td>
+                                            <td><span class="badge bg-warning">4 left</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Order</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="col-lg-6 mb-4">
-                        <div class="card shadow">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold">Customer Credits</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
-                                        <thead>
-                                            <tr>
-                                                <th>Customer</th>
-                                                <th>Phone</th>
-                                                <th>Credit</th>
-                                                <th>Since</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Ramesh Kumar</td>
-                                                <td>9876543210</td>
-                                                <td class="text-danger">₹1,250</td>
-                                                <td>5 days</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Suresh Patel</td>
-                                                <td>8765432109</td>
-                                                <td class="text-danger">₹2,340</td>
-                                                <td>12 days</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Mohan Sharma</td>
-                                                <td>7654321098</td>
-                                                <td class="text-danger">₹560</td>
-                                                <td>3 days</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Geeta Devi</td>
-                                                <td>6543210987</td>
-                                                <td class="text-danger">₹4,210</td>
-                                                <td>18 days</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Anil Gupta</td>
-                                                <td>9432109876</td>
-                                                <td class="text-danger">₹405</td>
-                                                <td>2 days</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                    <div class="col-lg-6">
+                        <div class="table-container">
+                            <h3 class="table-title">Customer Credits</h3>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer</th>
+                                            <th>Phone</th>
+                                            <th>Credit</th>
+                                            <th>Since</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                                        RK
+                                                    </div>
+                                                    <div>
+                                                        <strong>Ramesh Kumar</strong>
+                                                        <div class="text-muted small">Last purchase: 2 days ago</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>9876543210</td>
+                                            <td class="text-danger fw-bold">₹1,250</td>
+                                            <td>5 days</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3 bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                                        SP
+                                                    </div>
+                                                    <div>
+                                                        <strong>Suresh Patel</strong>
+                                                        <div class="text-muted small">Last purchase: 1 week ago</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>8765432109</td>
+                                            <td class="text-danger fw-bold">₹2,340</td>
+                                            <td>12 days</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3 bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                                        MS
+                                                    </div>
+                                                    <div>
+                                                        <strong>Mohan Sharma</strong>
+                                                        <div class="text-muted small">Last purchase: Yesterday</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>7654321098</td>
+                                            <td class="text-danger fw-bold">₹560</td>
+                                            <td>3 days</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3 bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                                        GD
+                                                    </div>
+                                                    <div>
+                                                        <strong>Geeta Devi</strong>
+                                                        <div class="text-muted small">Last purchase: 2 weeks ago</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>6543210987</td>
+                                            <td class="text-danger fw-bold">₹4,210</td>
+                                            <td>18 days</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -474,17 +731,19 @@
         var salesChart = new Chart(salesCtx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                labels: ['1 Jul', '2 Jul', '3 Jul', '4 Jul', '5 Jul', '6 Jul', '7 Jul', '8 Jul', '9 Jul', '10 Jul', '11 Jul', '12 Jul', '13 Jul', '14 Jul', '15 Jul'],
                 datasets: [{
                     label: 'Sales',
-                    data: [15000, 18000, 21000, 19000, 22000, 25000, 28000, 27000, 24000, 26000, 29000, 32000],
-                    backgroundColor: 'rgba(78, 115, 223, 0.05)',
-                    borderColor: 'rgba(78, 115, 223, 1)',
-                    pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                    data: [8500, 9200, 10500, 9700, 11200, 12500, 11800, 13200, 14500, 12800, 14200, 15600, 14800, 16200, 17500],
+                    backgroundColor: 'rgba(67, 97, 238, 0.05)',
+                    borderColor: 'rgba(67, 97, 238, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(67, 97, 238, 1)',
                     pointBorderColor: '#fff',
                     pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
-                    tension: 0.3
+                    pointHoverBorderColor: 'rgba(67, 97, 238, 1)',
+                    tension: 0.3,
+                    fill: true
                 }]
             },
             options: {
@@ -492,15 +751,32 @@
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '₹' + context.raw.toLocaleString('en-IN');
+                            }
+                        }
                     }
                 },
                 scales: {
                     y: {
-                        beginAtZero: true,
+                        beginAtZero: false,
+                        grid: {
+                            drawBorder: false,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
                         ticks: {
                             callback: function(value) {
-                                return '₹' + value.toLocaleString();
+                                return '₹' + value.toLocaleString('en-IN');
                             }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
                         }
                     }
                 }
@@ -515,9 +791,10 @@
                 labels: ['In Stock', 'Low Stock', 'Out of Stock'],
                 datasets: [{
                     data: [85, 10, 5],
-                    backgroundColor: ['#4e73df', '#f6c23e', '#e74a3b'],
-                    hoverBackgroundColor: ['#2e59d9', '#dda20a', '#be2617'],
-                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                    backgroundColor: ['#4361ee', '#f8961e', '#f72585'],
+                    hoverBackgroundColor: ['#3a56d4', '#e0871b', '#e02177'],
+                    borderWidth: 0,
+                    spacing: 2
                 }],
             },
             options: {
@@ -525,9 +802,17 @@
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + '%';
+                            }
+                        }
                     }
                 },
-                cutout: '70%',
+                cutout: '80%',
+                radius: '90%'
             },
         });
     </script>
