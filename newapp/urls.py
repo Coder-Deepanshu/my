@@ -21,6 +21,9 @@ urlpatterns = [
     path('delete-faculty/', views.delete_faculty, name='delete_faculty'),
     path('confirm-delete-faculty/<int:faculty_id>/', views.confirm_delete_faculty, name='confirm_delete_faculty'),
     path('view_faculty/', views.view_faculty, name='view_faculty'),
+    path('admin_attendance/', views.admin_attendance, name='admin_attendance'),
+    path('save-attendance/', views.save_attendance, name='save_attendance'),
+    path('faculty_attendance/', views.faculty_attendance, name='faculty_attendance'),
 
 ]
 

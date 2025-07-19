@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #f0f2ff;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --sidebar-bg: #2a3042;
+            --sidebar-text: #a6b0cf;
+            --sidebar-active: rgba(67, 97, 238, 0.2);
+            --sidebar-hover: #343b52;
+            --sidebar-icon: #6e84a3;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --box-shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Wide Container - Matching Dashboard Style */
+        .wide-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            height: 150px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wide-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .wide-container:hover::after {
+            opacity: 1;
+        }
+
+        .wide-container-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .selection-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .selection-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray);
+            min-width: 80px;
+        }
+
+        .selection-dropdown {
+            padding: 0.6rem 1rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--light-gray);
+            background: white;
+            font-size: 0.9rem;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 200px;
+        }
+
+        .selection-dropdown:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .view-btn {
+            padding: 0.6rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
+        }
+
+        .view-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .view-btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Details Panel - Matching Dashboard Style */
+        .details-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.75rem;
+            margin-top: 1rem;
+            display: none;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            animation: fadeIn 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .details-panel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .details-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .details-title i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .details-title span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .details-body {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detail-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            border-left: 3px solid var(--primary);
+            transition: var(--transition);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .detail-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .action-btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            border: none;
+            box-shadow: var(--box-shadow);
+        }
+
+        .action-btn i {
+            font-size: 0.95rem;
+        }
+
+        .edit-btn {
+            background: var(--warning);
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #e07c0a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(248, 150, 30, 0.3);
+        }
+
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #e31273;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(247, 37, 133, 0.3);
+        }
+
+        /* Bubbles Background (from your dashboard) */
+        .bubbles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(106, 163, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+            10% { opacity: 0.5; }
+            100% { transform: translateY(-1000px) translateX(100px) scale(1.5); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .wide-container-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .selection-group {
+                width: 100%;
+            }
+            
+            .selection-dropdown {
+                flex-grow: 1;
+            }
+            
+            .view-btn {
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .details-body {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Navigation Bar */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            box-shadow: var(--box-shadow-lg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .navbar:hover {
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-brand i {
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .nav-brand:hover i {
+            transform: rotate(-15deg) scale(1.1);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(-100%);
+            transition: var(--transition-slow);
+        }
+
+        .btn:hover::after {
+            transform: translateX(0);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--light);
+            border: 1px solid var(--light);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-success:hover {
+            background: var(--secondary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
+        }
+
+        .btn-warning:hover {
+            background: #e69009;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-icon {
+            padding: 0.625rem;
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-user-graduate floating"></i>
+            <span>Student Management</span>
+        </div>
+        <div class="nav-actions">
+            <button class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i>
+                <span class="btn-text">Back</span>
+            </button>
+            <button class="btn btn-outline">
+                <i class="fas fa-home"></i>
+                <span class="btn-text">Dashboard</span>
+            </button>
+            <a href="{% url 'logoutdoor' %}">
+            <button class="btn btn-primary pulse">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="btn-text">Logout</span>
+            </button>
+            </a>
+        </div>
+    </nav>
+    
+    <div class="container" style="margin-top: 50px;">
+        <!-- Wide Container -->
+        <div class="wide-container">
+            <div class="wide-container-header">
+                <div class="selection-group">
+                    <span class="selection-label"><i class="fas fa-graduation-cap"></i> Course:</span>
+                    <select class="selection-dropdown" id="courseSelect">
+                        <option value="">Select Course</option>
+                        <option value="btech">B.Tech</option>
+                        <option value="mba">MBA</option>
+                        <option value="bca">BCA</option>
+                        <option value="mca">MCA</option>
+                    </select>
+                </div>
+                
+                <div class="selection-group">
+                    <span class="selection-label"><i class="fas fa-calendar-alt"></i> Semester:</span>
+                    <select class="selection-dropdown" id="semesterSelect">
+                        <option value="">Select Semester</option>
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                    </select>
+                </div>
+                
+                <div class="selection-group">
+                    <span class="selection-label"><i class="fas fa-id-card"></i> Roll No:</span>
+                    <select class="selection-dropdown" id="rollNoSelect">
+                        <option value="">Select Roll No</option>
+                        <option value="101">101</option>
+                        <option value="102">102</option>
+                        <option value="103">103</option>
+                        <option value="104">104</option>
+                    </select>
+                </div>
+                
+                <button class="view-btn" id="viewBtn">
+                    <i class="fas fa-eye"></i> View Details
+                </button>
+            </div>
+        </div>
+        
+        <!-- Details Panel (Hidden by default) -->
+        <div class="details-panel" id="detailsPanel">
+            <div class="details-header">
+                <h3 class="details-title">
+                    <i class="fas fa-user-graduate"></i> Student Details: <span id="selectedRollNo">101</span>
+                </h3>
+            </div>
+            
+            <div class="details-body">
+                <div class="detail-card">
+                    <div class="detail-label">Full Name</div>
+                    <div class="detail-value" id="studentName">Rahul Sharma</div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-label">Course</div>
+                    <div class="detail-value" id="studentCourse">B.Tech (Computer Science)</div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-label">Semester</div>
+                    <div class="detail-value" id="studentSemester">Semester 3</div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-label">Roll Number</div>
+                    <div class="detail-value" id="studentRollNo">101</div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value" id="studentEmail">rahul.sharma@example.com</div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-label">Phone</div>
+                    <div class="detail-value" id="studentPhone">+91 9876543210</div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-label">Address</div>
+                    <div class="detail-value" id="studentAddress">123, ABC Street, New Delhi</div>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-label">Attendance</div>
+                    <div class="detail-value" id="studentAttendance">92%</div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn edit-btn" id="editBtn">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="action-btn delete-btn" id="deleteBtn">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const viewBtn = document.getElementById('viewBtn');
+        const detailsPanel = document.getElementById('detailsPanel');
+        const courseSelect = document.getElementById('courseSelect');
+        const semesterSelect = document.getElementById('semesterSelect');
+        const rollNoSelect = document.getElementById('rollNoSelect');
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        
+        // Sample student data (in a real app, this would come from an API)
+        const students = {
+            '101': {
+                name: 'Rahul Sharma',
+                course: 'B.Tech (Computer Science)',
+                semester: 'Semester 3',
+                rollNo: '101',
+                email: 'rahul.sharma@example.com',
+                phone: '+91 9876543210',
+                address: '123, ABC Street, New Delhi',
+                attendance: '92%'
+            },
+            '102': {
+                name: 'Priya Patel',
+                course: 'MBA (Marketing)',
+                semester: 'Semester 2',
+                rollNo: '102',
+                email: 'priya.patel@example.com',
+                phone: '+91 8765432109',
+                address: '456, XYZ Road, Mumbai',
+                attendance: '88%'
+            },
+            '103': {
+                name: 'Amit Singh',
+                course: 'BCA',
+                semester: 'Semester 4',
+                rollNo: '103',
+                email: 'amit.singh@example.com',
+                phone: '+91 7654321098',
+                address: '789, PQR Lane, Bangalore',
+                attendance: '95%'
+            },
+            '104': {
+                name: 'Neha Gupta',
+                course: 'MCA',
+                semester: 'Semester 1',
+                rollNo: '104',
+                email: 'neha.gupta@example.com',
+                phone: '+91 6543210987',
+                address: '321, LMN Avenue, Hyderabad',
+                attendance: '90%'
+            }
+        };
+        
+        // View Button Click Handler
+        viewBtn.addEventListener('click', () => {
+            const selectedRollNo = rollNoSelect.value;
+            
+            if (!courseSelect.value || !semesterSelect.value || !selectedRollNo) {
+                alert('Please select course, semester and roll number');
+                return;
+            }
+            
+            // Update details panel with selected student data
+            const student = students[selectedRollNo];
+            if (student) {
+                document.getElementById('selectedRollNo').textContent = student.rollNo;
+                document.getElementById('studentName').textContent = student.name;
+                document.getElementById('studentCourse').textContent = student.course;
+                document.getElementById('studentSemester').textContent = student.semester;
+                document.getElementById('studentRollNo').textContent = student.rollNo;
+                document.getElementById('studentEmail').textContent = student.email;
+                document.getElementById('studentPhone').textContent = student.phone;
+                document.getElementById('studentAddress').textContent = student.address;
+                document.getElementById('studentAttendance').textContent = student.attendance;
+                
+                // Show details panel
+                detailsPanel.style.display = 'block';
+            } else {
+                alert('Student data not found');
+            }
+        });
+        
+        // Edit Button Click Handler
+        editBtn.addEventListener('click', () => {
+            const rollNo = rollNoSelect.value;
+            alert(`Edit functionality for student ${rollNo} would be implemented here`);
+            // In a real app, this would open a form to edit student details
+        });
+        
+        // Delete Button Click Handler
+        deleteBtn.addEventListener('click', () => {
+            const rollNo = rollNoSelect.value;
+            if (confirm(`Are you sure you want to delete student ${rollNo}?`)) {
+                alert(`Delete functionality for student ${rollNo} would be implemented here`);
+                // In a real app, this would delete the student record
+                detailsPanel.style.display = 'none';
+            }
+        });
+        
+        // Update roll numbers based on course and semester selection
+        function updateRollNumbers() {
+            const course = courseSelect.value;
+            const semester = semesterSelect.value;
+            
+            // Clear existing options
+            rollNoSelect.innerHTML = '<option value="">Select Roll No</option>';
+            
+            if (course && semester) {
+                // In a real app, this would fetch roll numbers from an API based on course and semester
+                // For demo, we'll just show all roll numbers
+                Object.keys(students).forEach(rollNo => {
+                    const option = document.createElement('option');
+                    option.value = rollNo;
+                    option.textContent = rollNo;
+                    rollNoSelect.appendChild(option);
+                });
+            }
+        }
+        
+        // Add event listeners for course and semester changes
+        courseSelect.addEventListener('change', updateRollNumbers);
+        semesterSelect.addEventListener('change', updateRollNumbers);
+
+        // Generate random bubble positions and sizes
+        const bubbles = document.querySelectorAll('.bubble');
+        bubbles.forEach(bubble => {
+            // Random size between 50px and 200px
+            const size = Math.random() * 150 + 50;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            
+            // Random horizontal position
+            bubble.style.left = `${Math.random() * 100}%`;
+            
+            // Random animation duration between 10s and 20s
+            bubble.style.animationDuration = `${Math.random() * 10 + 10}s`;
+            
+            // Random delay up to 10s
+            bubble.style.animationDelay = `${Math.random() * 10}s`;
+        });
+    </script>
+</body>
+</html>

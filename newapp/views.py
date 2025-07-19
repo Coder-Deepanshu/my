@@ -116,12 +116,12 @@ def delete_student_view(request):
                 student.delete()  # Delete the student
                      # Result table me entry create karo
                 result.objects.filter(Student_rollno=roll_no).delete()
-                return render(request,'delete_student.html',{'success_message':f'Student with Roll no.{roll_no} has been successfully deleted!'})  # Redirect to a success page
+                return render(request,'add_student.html',{'success_message':f'Student with Roll no.{roll_no} has been successfully deleted!'})  # Redirect to a success page
             except Student_add.DoesNotExist:
-                return render(request, 'delete_student.html', {'error_message': f'Student  with Roll No {roll_no} does not exist.'})
+                return render(request, 'add_student.html', {'error_message': f'Student  with Roll No {roll_no} does not exist.'})
     else:
         form = DeleteStudentForm()
-    return render(request, 'delete_student.html', {'form': form})
+    return render(request, 'add_student.html', {'form': form})
 
 from django.shortcuts import render
 from .models import Student_add
@@ -135,7 +135,7 @@ def view_student(request):
             student = Student_add.objects.get(Student_rollno=roll_no)
         except Student_add.DoesNotExist:
             error_message = "No student found with the provided roll number."
-    return render(request, 'view_student.html', {'student': student, 'error_message': error_message})
+    return render(request, 'add_student.html', {'student': student, 'error_message': error_message})
 
 
 #  for altering student
@@ -163,43 +163,48 @@ def alter_student(request):
         except Student_add.DoesNotExist:
             error_message = "No student found with the provided roll number."
 
-    return render(request, 'alter_student.html', {'error_message': error_message})
+    return render(request, 'add_student.html', {'error_message': error_message})
 
 
 from .models import Student_add
-from .form import Addstudentform
 from django.db import models
 def add_student(request):
     if request.method == 'POST':
-        form = Addstudentform(request.POST)
-        if form.is_valid():
-            max_roll = Student_add.objects.aggregate(max_roll=models.Max('Student_rollno'))['max_roll']
-            if max_roll is None:
-                max_roll = 0
+        action=request.POST.get('action')
+        if action=='add':
+            if request.method =='POST':
+                name=request.POST.get('studentName')
+                father_name=request.get('fatherName')
+                dob=request.get('dob')
+                gender=request.get('gender')
+                phone=request.get('phoneNumber')
+                email=request.get('email')
+                address=request.get('address')
+                city=request.get('city')
+                state=request.get('state')
+                zip_code=request.get('zipCode')
+                country=request.get('country')
+                course=request.get('course')
+                tenth=request.get('tenthPercentage')
+                twelth=request.get('twelthPercentage')
+                date=request.get('admissionDate')
+                max_roll = Student_add.objects.aggregate(max_roll=models.Max('Student_rollno'))['max_roll']
+                if max_roll is None:
+                  max_roll = 0
+                else:
+                   try:
+                     max_roll = int(max_roll)
+                   except ValueError:
+                      max_roll = 0
+                rollno = str(max_roll + 1)
+                Student_add.objects.create(Student_rollno=rollno,Student_name=name,Father_name=father_name,birth=dob,gender=gender,phone_no=phone,Address=address,city=city,state=state,country=country,state_code=zip_code,Email=email,date_of_joining=date,course=course,tenth=tenth,twelth=twelth)
+            
+                return render(request, 'add_student.html', {'success_message': 'Student added successfully!'})
             else:
-                try:
-                    max_roll = int(max_roll)
-                except ValueError:
-                    max_roll = 0
-            student = form.save(commit=False)
-            student.Student_rollno = str(max_roll + 1)
-            student.save()
-            # Result entry create karo
-            result.objects.get_or_create(
-                Student_rollno=student.Student_rollno,
-                defaults={'course': student.course}
-            )
-            return render(request, 'add_student.html', {
-                'form': Addstudentform(),
-                'success_message': 'Student added successfully!'
-            })
-        else:
-            return render(request, 'add_student.html', {'form': form, 'error_message': form.errors})
-    else:
-        form = Addstudentform()
-    return render(request, 'add_student.html', {'form': form})
+                return render(request, 'add_student.html', {'error_message':'Please Enter valid Details!'})
+        # elif action=='view':
 
-
+   
 from django.shortcuts import render, redirect
 from .form import FacultyForm
 from .models import Faculty
@@ -261,3 +266,117 @@ def view_faculty(request):
         except Faculty.DoesNotExist:
             error_message = "No Faculty found with the provided Employee ID."
     return render(request, 'view_faculty.html', {'faculty': faculty, 'error_message': error_message})
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import JsonResponse
+from django.db.models import Count
+from datetime import datetime, date
+from .models import Faculty, Attendance
+from .form import AttendanceForm, DateSelectionForm, MonthYearForm
+
+def is_admin(user):
+    return user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+def admin_attendance(request):
+    today = date.today()
+    selected_date = today
+    
+    if request.method == 'POST' and 'date' in request.POST:
+        form = DateSelectionForm(request.POST)
+        if form.is_valid():
+            selected_date = form.cleaned_data['date']
+    else:
+        form = DateSelectionForm(initial={'date': today})
+    
+    faculties = Faculty.objects.all()
+    attendance_data = []
+    
+    for faculty in faculties:
+        attendance, created = Attendance.objects.get_or_create(
+            faculty=faculty,
+            date=selected_date,
+            defaults={'status': 'absent'}  # Default status if creating new
+        )
+        attendance_data.append({
+            'faculty': faculty,
+            'attendance': attendance,
+            'form': AttendanceForm(instance=attendance, prefix=str(faculty.id))
+        })
+    
+    context = {
+        'today': today,
+        'selected_date': selected_date,
+        'attendance_data': attendance_data,
+        'date_form': form,
+    }
+    return render(request, 'admin_attendance.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def save_attendance(request):
+    if request.method == 'POST':
+        faculty_id = request.POST.get('faculty_id')
+        date_str = request.POST.get('date')
+        status = request.POST.get('status')
+        remarks = request.POST.get('remarks')
+        
+        try:
+            faculty = Faculty.objects.get(id=faculty_id)
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+            
+            attendance, created = Attendance.objects.update_or_create(
+                faculty=faculty,
+                date=date_obj,
+                defaults={'status': status, 'remarks': remarks}
+            )
+            
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+@login_required
+def faculty_attendance(request):
+    faculty = request.user.faculty
+    today = date.today()
+    month = today.month
+    year = today.year
+    
+    if request.method == 'POST':
+        form = MonthYearForm(request.POST)
+        if form.is_valid():
+            month = int(form.cleaned_data['month'])
+            year = int(form.cleaned_data['year'])
+    else:
+        form = MonthYearForm(initial={'month': month, 'year': year})
+    
+    # Get attendance for the selected month/year
+    attendance_records = Attendance.objects.filter(
+        faculty=faculty,
+        date__year=year,
+        date__month=month
+    ).order_by('-date')
+    
+    # Calculate summary counts
+    summary = attendance_records.values('status').annotate(count=Count('status'))
+    summary_dict = {item['status']: item['count'] for item in summary}
+    
+    context = {
+        'faculty': faculty,
+        'attendance_records': attendance_records,
+        'form': form,
+        'summary': {
+            'present': summary_dict.get('present', 0),
+            'absent': summary_dict.get('absent', 0),
+            'leave': summary_dict.get('leave', 0),
+            'late': summary_dict.get('late', 0),
+        },
+        'current_month': month,
+        'current_year': year,
+    }
+    return render(request, 'faculty_attendance.html', context)

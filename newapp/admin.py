@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student_add, Student_percent,result,subject,Faculty
+from .models import Student_add, Student_percent,result,subject,Faculty,Attendance
 
 # Register the Student_add model
 @admin.register(Student_add)
@@ -41,7 +41,10 @@ class facultyadmin(admin.ModelAdmin):
     list_display=('name','employee_id','department','qualification','experience','date_of_joining','phone','gender','dob','address','city','state','pin_code')
     search_fields=('employee_id',)
 
-
+@admin.register(Attendance)
+class attendenceadmin(admin.ModelAdmin):
+    list_display=('faculty','date','status','remarks')
+    search_fields=('faculty',)
 
 
 

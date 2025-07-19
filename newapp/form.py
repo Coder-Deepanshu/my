@@ -14,24 +14,7 @@ class LoginForm(forms.Form):
     )
 
 from django import forms
-from .models import Student_add,result
-
-class Addstudentform(forms.ModelForm):
-    class Meta:
-        model = Student_add
-        exclude = ['Student_rollno','semester']  # <-- yahan sirf yeh line badli hai
-        widgets = {
-            'Student_name': forms.TextInput(attrs={'placeholder': 'Enter Full Name of the Student'}),
-            'Father_name': forms.TextInput(attrs={'placeholder': 'Enter Father\'s Name'}),
-            'phone_no': forms.TextInput(attrs={'placeholder': 'Enter Phone Number (e.g., 9876543210)'}),
-            'Address': forms.TextInput(attrs={'placeholder': 'Enter Residential Address'}),
-            'city': forms.TextInput(attrs={'placeholder': 'Enter your City Address'}),
-            'state': forms.TextInput(attrs={'placeholder': 'Enter your State'}),
-            'Email': forms.EmailInput(attrs={'placeholder': 'Enter Email Address (e.g., example@gmail.com)'}),
-            'course': forms.Select(attrs={'placeholder': 'Select Course'}),
-            'tenth_dmc': forms.TextInput(attrs={'placeholder': 'Enter Your 10th Percentage'}),
-            'twelth': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'}),
-        }
+from .models import result
 
 class uploadresultform(forms.ModelForm):
     class Meta:
@@ -148,6 +131,19 @@ class FacultyForm(forms.ModelForm):
         }
 
 
+from django import forms
+from .models import Attendance
 
+class AttendanceForm(forms.ModelForm):
+    class Meta:
+        model = Attendance
+        fields = ['status', 'remarks']
+        
+class DateSelectionForm(forms.Form):
+    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    
+class MonthYearForm(forms.Form):
+    month = forms.ChoiceField(choices=[(i, i) for i in range(1, 13)])
+    year = forms.ChoiceField(choices=[(i, i) for i in range(2020, 2030)])
 
 

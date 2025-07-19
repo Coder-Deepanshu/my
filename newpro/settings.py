@@ -140,3 +140,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Date input formats
+DATE_INPUT_FORMATS = [
+    '%d/%m/%Y',  # '25/10/2023'
+    '%Y-%m-%d',  # '2023-10-25'
+    '%m/%d/%Y',  # '10/25/2023'
+]
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]

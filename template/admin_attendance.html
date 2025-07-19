@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Attendance Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .attendance-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .status-btn {
+            width: 100px;
+        }
+        .date-header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2>Faculty Attendance Management</h2>
+                <p class="text-muted">Mark attendance for faculty members</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="input-group" style="max-width: 300px; float: right;">
+                    <input type="date" class="form-control" id="attendanceDate" value="{{ today|date:'Y-m-d' }}">
+                    <button class="btn btn-primary" onclick="loadAttendance()">Load</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card attendance-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Mark Attendance</h5>
+            </div>
+            <div class="card-body">
+                <div class="date-header">
+                    <h5 id="currentDateDisplay">{{ today|date:"F j, Y" }}</h5>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Faculty Name</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for faculty in faculties %}
+                            <tr>
+                                <td>{{ faculty.employee_id }}</td>
+                                <td>{{ faculty.name }}</td>
+                                <td>{{ faculty.department }}</td>
+                                <td>
+                                    <select class="form-select status-select" id="status_{{ faculty.id }}">
+                                        <option value="present">Present</option>
+                                        <option value="absent">Absent</option>
+                                        <option value="leave">On Leave</option>
+                                        <option value="late">Late Arrival</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control remarks-input" id="remarks_{{ faculty.id }}" placeholder="Optional remarks">
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-success save-btn" data-faculty-id="{{ faculty.id }}">Save</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="text-end mt-3">
+                    <button class="btn btn-primary" id="saveAllBtn">Save All Attendance</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('attendanceDate').addEventListener('change', function() {
+            const date = new Date(this.value);
+            document.getElementById('currentDateDisplay').textContent = date.toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+        });
+
+        function loadAttendance() {
+            const date = document.getElementById('attendanceDate').value;
+            // Implement AJAX to load attendance for selected date
+            console.log("Loading attendance for:", date);
+            // You would typically make an AJAX call here to fetch attendance data
+        }
+
+        document.querySelectorAll('.save-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const facultyId = this.getAttribute('data-faculty-id');
+                const status = document.getElementById(`status_${facultyId}`).value;
+                const remarks = document.getElementById(`remarks_${facultyId}`).value;
+                const date = document.getElementById('attendanceDate').value;
+                
+                // Implement AJAX to save attendance for this faculty
+                console.log(`Saving for faculty ${facultyId}:`, {date, status, remarks});
+                // Show success message
+                alert(`Attendance saved for faculty ID: ${facultyId}`);
+            });
+        });
+
+        document.getElementById('saveAllBtn').addEventListener('click', function() {
+            // Implement logic to save all attendance at once
+            alert('All attendance records saved successfully!');
+        });
+    </script>
+</body>
+</html>

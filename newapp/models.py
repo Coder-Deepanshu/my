@@ -3,17 +3,23 @@ from django.db import models
 # Create your models here.
 class Student_add(models.Model):
     Student_rollno = models.CharField(max_length=30, unique=True)
-    semester = models.CharField(max_length=30, default='1')
     Student_name = models.CharField(max_length=30)
     Father_name = models.CharField(max_length=30)
-    phone_no = models.CharField(max_length=30, null=False, unique=True)
+    birth=models.DateField()
+    gender=models.CharField(max_length=20,choices=[('Male','male'),('Female','female'),('Other','other')])
+    phone_no = models.DecimalField(max_digits=30, null=False, unique=True,decimal_places=0)
     Address = models.CharField(max_length=100)
+    semester = models.DecimalField(max_digits=30, default='1',decimal_places=2)
+    year=models.DecimalField(max_digits=30,default='1',decimal_places=4)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=50)
+    state_code=models.DecimalField(max_digits=10,decimal_places=0)
+    country=models.CharField(max_length=50)
     Email = models.EmailField(null=False)
+    date_of_joining=models.DateField()
     course = models.CharField(max_length=50, null=False)
-    tenth_dmc = models.CharField(null=False, blank=False, max_length=10)
-    twelth = models.CharField(null=False, blank=False, max_length=10)
+    tenth = models.DecimalField(null=False, blank=False, max_digits=10,decimal_places=2)
+    twelth = models.DecimalField(null=False, blank=False, max_digits=10,decimal_places=2)
 
     def __str__(self):
         return f"{self.Student_rollno}"
@@ -119,7 +125,25 @@ class Faculty(models.Model):
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
     pin_code = models.CharField(max_length=10)
+    
+    def __str__(self):
+        return f"{self.employee_id} - {self.name}"
 
-    def _str_(self):
-        return f"{self.employee_id}"
 
+class Attendance(models.Model):
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    date = models.DateField()
+    status = models.CharField(max_length=10, choices=[
+        ('present', 'Present'),
+        ('absent', 'Absent'),
+        ('leave', 'On Leave'),
+        ('late', 'Late Arrival')
+    ])
+    remarks = models.TextField(blank=True, null=True)
+    
+    class Meta:
+        unique_together = ('faculty', 'date')
+        ordering = ['-date']
+    
+    def __str__(self):
+        return f"{self.faculty.employee_id} - {self.date} - {self.status}"

@@ -10,14 +10,19 @@
     <style>
         :root {
             --primary: #4361ee;
+            --primary-dark: #3a56d4;
             --secondary: #3f37c9;
             --accent: #4895ef;
             --light: #f8f9fa;
-            --dark: #212529;
+            --dark: #2b2d42;
+            --darker: #1a1a2e;
             --danger: #e63946;
             --success: #4cc9f0;
             --warning: #f8961e;
             --info: #38a3a5;
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
         }
 
         * {
@@ -28,30 +33,46 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa, #e4e8f0);
+            background: linear-gradient(135deg, #f0f2f5, #e4e8f0);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: var(--dark);
         }
 
         .login-container {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
             width: 100%;
             max-width: 500px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            z-index: 2;
         }
 
         .login-header {
-            background: var(--primary);
-            color: white;
-            padding: 25px;
+            background: white;
+            color: var(--dark);
+            padding: 30px;
             text-align: center;
             position: relative;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
 
         .login-header h1 {
@@ -60,93 +81,123 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
+            color: var(--dark);
+        }
+
+        .login-header i {
+            font-size: 28px;
+            color: var(--primary);
         }
 
         .login-body {
             padding: 30px;
+            background: white;
         }
 
         .login-form {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
+            position: relative;
         }
 
         .form-group label {
             font-weight: 500;
             color: var(--dark);
             font-size: 14px;
-            transition: all 0.3s;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+            opacity: 0.7;
         }
 
         .form-group input {
-            padding: 12px 15px;
-            border: 1px solid #ddd;
+            padding: 14px 15px 14px 40px;
+            border: 1px solid #e0e3e8;
             border-radius: 8px;
             font-family: 'Poppins', sans-serif;
-            transition: all 0.3s;
+            transition: var(--transition);
+            font-size: 15px;
+            background-color: #f8fafc;
         }
 
         .form-group input:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.15);
             outline: none;
+            background-color: white;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 40px;
+            color: var(--dark);
+            opacity: 0.5;
+            font-size: 16px;
         }
 
         .role-selector {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: #f8fafc;
+            padding: 8px;
+            border-radius: 10px;
         }
 
         .role-btn {
             flex: 1;
             padding: 12px;
-            border: 2px solid #e9ecef;
+            border: none;
             border-radius: 8px;
-            background: white;
+            background: transparent;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             font-weight: 500;
             color: var(--dark);
+            font-size: 14px;
         }
 
         .role-btn i {
-            font-size: 18px;
+            font-size: 20px;
         }
 
         .role-btn:hover {
-            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             transform: translateY(-2px);
         }
 
         .role-btn.active {
-            border-color: var(--primary);
-            background: rgba(67, 97, 238, 0.1);
+            background: white;
             color: var(--primary);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
 
         .role-btn.admin.active {
-            border-color: var(--danger);
-            background: rgba(230, 57, 70, 0.1);
             color: var(--danger);
         }
 
         .role-btn.faculty.active {
-            border-color: var(--warning);
-            background: rgba(248, 150, 30, 0.1);
             color: var(--warning);
         }
 
@@ -154,46 +205,55 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 16px;
+            transition: var(--transition);
+            font-size: 15px;
             margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.15);
         }
 
         .login-btn:hover {
-            background: var(--secondary);
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+            box-shadow: 0 7px 14px rgba(67, 97, 238, 0.2);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
         }
 
         .login-btn.admin {
             background: var(--danger);
+            box-shadow: 0 4px 6px rgba(230, 57, 70, 0.15);
         }
 
         .login-btn.admin:hover {
-            background: #c1121f;
+            background: #d62839;
+            box-shadow: 0 7px 14px rgba(230, 57, 70, 0.2);
         }
 
         .login-btn.faculty {
             background: var(--warning);
+            box-shadow: 0 4px 6px rgba(248, 150, 30, 0.15);
         }
 
         .login-btn.faculty:hover {
-            background: #e76f51;
+            background: #f08000;
+            box-shadow: 0 7px 14px rgba(248, 150, 30, 0.2);
         }
 
         .form-links {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 25px;
             text-align: center;
         }
 
@@ -201,7 +261,8 @@
             color: var(--primary);
             text-decoration: none;
             font-size: 14px;
-            transition: all 0.3s;
+            transition: var(--transition);
+            font-weight: 500;
         }
 
         .form-link:hover {
@@ -212,8 +273,8 @@
         .error-message {
             color: var(--danger);
             background: #ffebee;
-            padding: 10px 15px;
-            border-radius: 6px;
+            padding: 12px 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
             font-weight: 500;
             text-align: center;
@@ -222,60 +283,103 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            border-left: 4px solid var(--danger);
         }
 
         .demo-credentials {
             background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 25px;
             font-size: 13px;
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         .demo-credentials h4 {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: var(--dark);
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 14px;
         }
 
         .demo-credentials ul {
             list-style: none;
-            padding-left: 5px;
         }
 
         .demo-credentials li {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.05);
+        }
+
+        .demo-credentials li:last-child {
+            border-bottom: none;
         }
 
         .demo-credentials .role {
-            font-weight: 500;
+            font-weight: 600;
             min-width: 70px;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-align: center;
         }
 
         .demo-credentials .admin {
+            background: rgba(230, 57, 70, 0.1);
             color: var(--danger);
         }
 
         .demo-credentials .faculty {
+            background: rgba(248, 150, 30, 0.1);
             color: var(--warning);
         }
 
         .demo-credentials .student {
+            background: rgba(67, 97, 238, 0.1);
             color: var(--primary);
+        }
+
+        .demo-credentials .credentials {
+            flex: 1;
+            font-family: monospace;
+        }
+
+        .login-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: #6c757d;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-container {
+            animation: fadeIn 0.5s ease-out;
         }
 
         /* Responsive */
         @media (max-width: 576px) {
             .login-body {
-                padding: 20px;
+                padding: 25px;
             }
             
             .role-selector {
                 flex-direction: column;
+            }
+            
+            .login-header {
+                padding: 25px 20px;
             }
         }
     </style>
@@ -283,7 +387,7 @@
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h1><i class="fas fa-user-shield"></i> Management System Login</h1>
+            <h1><i class="fas fa-user-graduate"></i> Student Management System</h1>
         </div>
         
         <div class="login-body">
@@ -314,12 +418,14 @@
                 
                 <div class="form-group">
                     <label for="id_username"><i class="fas fa-user"></i> Username</label>
+                    <i class="fas fa-user input-icon"></i>
                     <input type="text" name="username" id="id_username" 
                            placeholder="Enter your username" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="id_password"><i class="fas fa-lock"></i> Password</label>
+                    <i class="fas fa-lock input-icon"></i>
                     <input type="password" name="password" id="id_password" 
                            placeholder="Enter your password" required>
                 </div>
@@ -331,7 +437,20 @@
             
             <div class="form-links">
                 <a href="#" class="form-link">Forgot Password?</a>
+                <a href="#" class="form-link">Need Help Signing In?</a>
             </div>
+            
+            <div class="demo-credentials">
+                <ul>
+                    <li>
+                        <span class="role admin" style="margin-left: 140px;">Sign Up for Admin</span>  
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="login-footer">
+            © 2023 Student Management System | v2.1.0
         </div>
     </div>
 
@@ -341,6 +460,8 @@
         const roleInput = document.getElementById('role');
         const loginBtn = document.querySelector('.login-btn');
         const loginForm = document.getElementById('loginForm');
+        const headerIcon = document.querySelector('.login-header h1 i');
+        const headerTitle = document.querySelector('.login-header h1');
         
         roleBtns.forEach(btn => {
             btn.addEventListener('click', function() {
@@ -358,27 +479,40 @@
                 loginBtn.className = 'login-btn';
                 if (role === 'admin') {
                     loginBtn.classList.add('admin');
-                    document.querySelector('.login-header h1 i').className = 'fas fa-user-cog';
-                    document.querySelector('.login-header h1').innerHTML = '<i class="fas fa-user-cog"></i> Admin Login';
+                    headerIcon.className = 'fas fa-user-cog';
+                    headerTitle.innerHTML = '<i class="fas fa-user-cog"></i> Admin Dashboard';
                 } else if (role === 'faculty') {
                     loginBtn.classList.add('faculty');
-                    document.querySelector('.login-header h1 i').className = 'fas fa-chalkboard-teacher';
-                    document.querySelector('.login-header h1').innerHTML = '<i class="fas fa-chalkboard-teacher"></i> Faculty Login';
+                    headerIcon.className = 'fas fa-chalkboard-teacher';
+                    headerTitle.innerHTML = '<i class="fas fa-chalkboard-teacher"></i> Faculty Portal';
                 } else {
-                    document.querySelector('.login-header h1 i').className = 'fas fa-user-graduate';
-                    document.querySelector('.login-header h1').innerHTML = '<i class="fas fa-user-graduate"></i> Student Login';
+                    headerIcon.className = 'fas fa-user-graduate';
+                    headerTitle.innerHTML = '<i class="fas fa-user-graduate"></i> Student Portal';
                 }
             });
         });
          
         // Add focus effects to form elements
         document.querySelectorAll('input').forEach(input => {
+            const icon = input.previousElementSibling;
+            
             input.addEventListener('focus', function() {
                 this.parentNode.querySelector('label').style.color = 'var(--primary)';
+                icon.style.opacity = '1';
+                icon.style.color = 'var(--primary)';
             });
+            
             input.addEventListener('blur', function() {
                 this.parentNode.querySelector('label').style.color = 'var(--dark)';
+                icon.style.opacity = '0.5';
+                icon.style.color = 'var(--dark)';
             });
+        });
+        
+        // Add animation to form elements
+        document.querySelectorAll('.form-group').forEach((group, index) => {
+            group.style.animation = `fadeIn 0.5s ease-out ${index * 0.1}s forwards`;
+            group.style.opacity = '0';
         });
     </script>
 </body>
