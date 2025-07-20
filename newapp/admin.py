@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import Student_add, Student_percent,result,subject,Faculty,Attendance
+from .models import Student, Student_percent,result,subject,Faculty,Attendance
 
 # Register the Student_add model
-@admin.register(Student_add)
+@admin.register(Student)
 class StudentAddAdmin(admin.ModelAdmin):
-    list_display = ('Student_name', 'Student_rollno', 'course')
-    search_fields = ('Student_name', 'Student_rollno', 'course')
+    list_display = ('name', 'roll_no', 'course')
+    search_fields = ('name', 'roll_no', 'course')
 
 # Register the Student_percent model
 @admin.register(Student_percent)

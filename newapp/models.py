@@ -1,28 +1,30 @@
 from django.db import models
 
 # Create your models here.
-class Student_add(models.Model):
-    Student_rollno = models.CharField(max_length=30, unique=True)
-    Student_name = models.CharField(max_length=30)
-    Father_name = models.CharField(max_length=30)
-    birth=models.DateField()
-    gender=models.CharField(max_length=20,choices=[('Male','male'),('Female','female'),('Other','other')])
-    phone_no = models.DecimalField(max_digits=30, null=False, unique=True,decimal_places=0)
-    Address = models.CharField(max_length=100)
-    semester = models.DecimalField(max_digits=30, default='1',decimal_places=2)
-    year=models.DecimalField(max_digits=30,default='1',decimal_places=4)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=50)
-    state_code=models.DecimalField(max_digits=10,decimal_places=0)
-    country=models.CharField(max_length=50)
-    Email = models.EmailField(null=False)
-    date_of_joining=models.DateField()
-    course = models.CharField(max_length=50, null=False)
-    tenth = models.DecimalField(null=False, blank=False, max_digits=10,decimal_places=2)
-    twelth = models.DecimalField(null=False, blank=False, max_digits=10,decimal_places=2)
+from django.db import models
 
-    def __str__(self):
-        return f"{self.Student_rollno}"
+class Student(models.Model):
+    roll_no = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=100)
+    father_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    gender = models.CharField(max_length=10)
+    course = models.CharField(max_length=100)
+    birthday = models.DateField()
+    address = models.TextField()
+    semester = models.IntegerField(default=1)
+    year = models.IntegerField(default=1)
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    state_code = models.CharField(max_length=10)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    date_of_joining = models.DateField()
+    tenth_percent = models.DecimalField(max_digits=5, decimal_places=2)
+    twelfth_percent = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def _str_(self):
+        return self.name
 
 class Student_percent(models.Model):
     Student_rollno = models.CharField(max_length=20, unique=True)

@@ -144,13 +144,23 @@
 
 
 
-a='GK0'
-B=1
+# a='GK0'
+# B=1
 
-c=int(a[2])+B
-print(c)
+# c=int(a[2])+B
+# print(c)
 
-print(a[0:2]+str(c))
+# print(a[0:2]+str(c))
+
+import numpy as np
+
+A=np.array([[4,-2],[1,1]])
+
+eignvalue,eignvector=np.linalg.eig(A)
+
+print(eignvalue)
+
+print(eignvector)
         
 
 

@@ -1,49 +1,48 @@
-import csv
-from django.http import HttpResponse
+# import csv
+# from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from reportlab.pdfgen import canvas
-from .form import LoginForm
-from .models import Student_add, Student_percent
-from newapp.models import result
+# from reportlab.pdfgen import canvas
+# from .form import LoginForm
+# from newapp.models import result
 
-def generate_csv(request):
-    # Create the HttpResponse object with the appropriate CSV header.
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="data.csv"'
+# def generate_csv(request):
+#     # Create the HttpResponse object with the appropriate CSV header.
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename="data.csv"'
 
-    # Create a CSV writer object.
-    writer = csv.writer(response)
+#     # Create a CSV writer object.
+#     writer = csv.writer(response)
 
-    # Write the header row.
-    writer.writerow(['Column 1', 'Column 2', 'Column 3'])
+#     # Write the header row.
+#     writer.writerow(['Column 1', 'Column 2', 'Column 3'])
 
-    # Write some example data rows.
-    writer.writerow(['Row 1 Col 1', 'Row 1 Col 2', 'Row 1 Col 3'])
-    writer.writerow(['Row 2 Col 1', 'Row 2 Col 2', 'Row 2 Col 3'])
+#     # Write some example data rows.
+#     writer.writerow(['Row 1 Col 1', 'Row 1 Col 2', 'Row 1 Col 3'])
+#     writer.writerow(['Row 2 Col 1', 'Row 2 Col 2', 'Row 2 Col 3'])
 
-    return response
+#     return response
 
-def generate_pdf(request):
-    # Create the HttpResponse object with the appropriate PDF headers.
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="students.pdf"'
+# def generate_pdf(request):
+#     # Create the HttpResponse object with the appropriate PDF headers.
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = 'attachment; filename="students.pdf"'
 
-    # Create a PDF object using ReportLab.
-    p = canvas.Canvas(response)
+#     # Create a PDF object using ReportLab.
+#     p = canvas.Canvas(response)
 
-    # Write content to the PDF.
-    students = Student_add.objects.all()
-    y = 800  # Start position for writing
-    p.drawString(100, y, "Student List")
-    y -= 20
-    for student in students:
-        p.drawString(100, y, f"Roll No: {student.Student_rollno}, Name: {student.Student_name}, Class: {student.course}")
-        y -= 20
+#     # Write content to the PDF.
+#     students = Student_add.objects.all()
+#     y = 800  # Start position for writing
+#     p.drawString(100, y, "Student List")
+#     y -= 20
+#     for student in students:
+#         p.drawString(100, y, f"Roll No: {student.Student_rollno}, Name: {student.Student_name}, Class: {student.course}")
+#         y -= 20
 
-    # Finalize the PDF.
-    p.showPage()
-    p.save()
-    return response
+#     # Finalize the PDF.
+#     p.showPage()
+#     p.save()
+#     return response
 
 def login_view(request):
     if request.method == 'POST':
@@ -101,113 +100,95 @@ def logout_view(request):
     request.session.flush()
     return redirect('login')
 
-from .models import Student_add
-from .form import DeleteStudentForm
 
-def delete_student_view(request):
-    if request.method == 'POST':
-        form = DeleteStudentForm(request.POST)
-        if form.is_valid():
-            roll_no = form.cleaned_data['roll_no']
+from django.shortcuts import render, redirect
+from .models import Student
+from django.contrib import messages
 
-            # Check if the student exists in the database
+def student_functions(request):
+    context = {}
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        # Add student
+        if action == "add":
             try:
-                student = Student_add.objects.get(Student_rollno=roll_no)
-                student.delete()  # Delete the student
-                     # Result table me entry create karo
-                result.objects.filter(Student_rollno=roll_no).delete()
-                return render(request,'add_student.html',{'success_message':f'Student with Roll no.{roll_no} has been successfully deleted!'})  # Redirect to a success page
-            except Student_add.DoesNotExist:
-                return render(request, 'add_student.html', {'error_message': f'Student  with Roll No {roll_no} does not exist.'})
-    else:
-        form = DeleteStudentForm()
-    return render(request, 'add_student.html', {'form': form})
+                Student.objects.create(
+                    roll_no=request.POST.get("roll_no"),
+                    name=request.POST.get("name"),
+                    father_name=request.POST.get("father_name"),
+                    email=request.POST.get("email"),
+                    phone=request.POST.get("phone"),
+                    gender=request.POST.get("gender"),
+                    course=request.POST.get("course"),
+                    birthday=request.POST.get("birthday"),
+                    address=request.POST.get("address"),
+                    city=request.POST.get("city"),
+                    state=request.POST.get("state"),
+                    state_code=request.POST.get("state_code"),
+                    country=request.POST.get("coountry"),
+                    date_of_joining=request.POST.get("date_of_joining"),
+                    tenth_percent=request.POST.get("tenth_percent"),
+                    twelfth_percent=request.POST.get("twelfth_percent"),
+                )
+                messages.success(request, "Student added successfully!")
+            except Exception as e:
+                messages.error(request, f"Error: {str(e)}")
 
-from django.shortcuts import render
-from .models import Student_add
-# for viewing the student details
-def view_student(request):
-    student = None
-    error_message = None
-    if request.method == 'POST':
-        roll_no = request.POST.get('roll_no')
-        try:
-            student = Student_add.objects.get(Student_rollno=roll_no)
-        except Student_add.DoesNotExist:
-            error_message = "No student found with the provided roll number."
-    return render(request, 'add_student.html', {'student': student, 'error_message': error_message})
+        # View student
+        elif action == "view":
+            roll = request.POST.get("roll_no")
+            try:
+                student = Student.objects.get(roll_no=roll)
+                context["student"] = student
+            except Student.DoesNotExist:
+                messages.error(request, "No student found with this roll number.")
+
+        # Delete student
+        elif action == "delete":
+            roll = request.POST.get("roll_no")
+            try:
+                student = Student.objects.get(roll_no=roll)
+                student.delete()
+                messages.success(request, "Student deleted successfully.")
+            except Student.DoesNotExist:
+                messages.error(request, "Student not found.")
+
+        # Alter student
+        elif action == "alter":
+            try:
+                student = Student.objects.get(roll_no=request.POST.get("roll_no"))
+                student.name = request.POST.get("name")
+                student.father_name = request.POST.get("father_name")
+                student.email = request.POST.get("email")
+                student.phone = request.POST.get("phone")
+                student.gender = request.POST.get("gender")
+                student.course = request.POST.get("course")
+                student.birthday = request.POST.get("birthday")
+                student.address = request.POST.get("address")
+                student.semester = request.POST.get("semester")
+                student.year = request.POST.get("year")
+                student.city = request.POST.get("city")
+                student.state = request.POST.get("state")
+                student.country = request.POST.get("country",'India')
+                student.state_code = request.POST.get("state_code")
+                student.date_of_joining = request.POST.get("date_of_joining")
+                student.tenth_percent = request.POST.get("tenth_percent")
+                student.twelfth_percent = request.POST.get("twelfth_percent")
+                student.save()
+                messages.success(request, "Student details updated.")
+            except Student.DoesNotExist:
+                messages.error(request, "Student not found.")
+
+    return render(request, "student_page.html", context)
 
 
-#  for altering student
-def alter_student(request):
-    error_message = None
-    if request.method == 'POST':
-        roll_no = request.POST.get('roll_no')
-        column = request.POST.get('column')
-        new_value = request.POST.get('new_value')
 
-        try:
-            student = Student_add.objects.get(Student_rollno=roll_no)
-            setattr(student, column, new_value)
-            student.save()
-
-            if column == "course":
-                try:
-                    student_result = result.objects.get(Student_rollno=student.Student_rollno)
-                    student_result.course = new_value
-                    student_result.save()
-                except result.DoesNotExist:
-                    pass
-
-            return redirect('dashboard')
-        except Student_add.DoesNotExist:
-            error_message = "No student found with the provided roll number."
-
-    return render(request, 'add_student.html', {'error_message': error_message})
-
-
-from .models import Student_add
-from django.db import models
-def add_student(request):
-    if request.method == 'POST':
-        action=request.POST.get('action')
-        if action=='add':
-            if request.method =='POST':
-                name=request.POST.get('studentName')
-                father_name=request.get('fatherName')
-                dob=request.get('dob')
-                gender=request.get('gender')
-                phone=request.get('phoneNumber')
-                email=request.get('email')
-                address=request.get('address')
-                city=request.get('city')
-                state=request.get('state')
-                zip_code=request.get('zipCode')
-                country=request.get('country')
-                course=request.get('course')
-                tenth=request.get('tenthPercentage')
-                twelth=request.get('twelthPercentage')
-                date=request.get('admissionDate')
-                max_roll = Student_add.objects.aggregate(max_roll=models.Max('Student_rollno'))['max_roll']
-                if max_roll is None:
-                  max_roll = 0
-                else:
-                   try:
-                     max_roll = int(max_roll)
-                   except ValueError:
-                      max_roll = 0
-                rollno = str(max_roll + 1)
-                Student_add.objects.create(Student_rollno=rollno,Student_name=name,Father_name=father_name,birth=dob,gender=gender,phone_no=phone,Address=address,city=city,state=state,country=country,state_code=zip_code,Email=email,date_of_joining=date,course=course,tenth=tenth,twelth=twelth)
-            
-                return render(request, 'add_student.html', {'success_message': 'Student added successfully!'})
-            else:
-                return render(request, 'add_student.html', {'error_message':'Please Enter valid Details!'})
-        # elif action=='view':
-
-   
 from django.shortcuts import render, redirect
 from .form import FacultyForm
 from .models import Faculty
+from django.db import models
 
 def add_faculty(request):
     if request.method == 'POST':
