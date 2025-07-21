@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary:#3a56d4; ;
+            --primary:#3a56d4;
             --primary-dark:  #2f4ac0;
             --primary-light: #e0e7ff;
             --secondary: #10b981;
@@ -295,19 +295,12 @@
         .card-body {
             padding: 1.5rem;
         }
-        .detail-grid{
-            display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-
+    
          /* Form Styles */
         .form-group {
             margin-bottom: 1.25rem;
             position: relative;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+    
         }
 
         .form-label {
@@ -321,7 +314,7 @@
         
 
         .form-control {
-            width: 50%;
+            width: 100%;
             padding: 0.75rem 1rem;
             border: 1px solid var(--light-gray);
             border-radius: var(--border-radius);
@@ -795,14 +788,17 @@
             <span>Student Management</span>
         </div>
         <div class="nav-actions">
-            <button class="btn btn-outline">
+            <button class="btn btn-outline" >
                 <i class="fas fa-arrow-left"></i>
                 <span class="btn-text">Back</span>
             </button>
+            <a href="{% url 'dashboard' %}">
             <button class="btn btn-outline">
                 <i class="fas fa-home"></i>
                 <span class="btn-text">Dashboard</span>
             </button>
+            </a>
+
             <a href="{% url 'logoutdoor' %}">
             <button class="btn btn-primary pulse">
                 <i class="fas fa-sign-out-alt"></i>
@@ -881,27 +877,27 @@
                     <div class="form-page active" id="page1">
                         <div class="detail-grid">
                             <div class="form-group">
-                                <div class="col-md-6 mb-3">
+                                
                                 <label for="roll_no" class="form-label"><i class="fas fa-id-card"></i> Roll Number</label>
                                 <input type="text" id="roll_no" name="roll_no" class="form-control" required>
                                 <div class="error-message" id="roll_no-error">Please enter a valid roll number</div>
-                                </div>
+                                
                             </div>
                             
                             <div class="form-group">
-                                <div class="col-md-6 mb-3">
+        
                                 <label for="name" class="form-label"><i class="fas fa-user"></i> Full Name</label>
                                 <input type="text" id="name" name="name" class="form-control" required>
                                 <div class="error-message" id="name-error">Please enter student's full name</div>
-                                </div>
+                               
                             </div>
                             
                             <div class="form-group">
-                                <div class="col-md-6 mb-3">
+                                
                                 <label for="father_name" class="form-label"><i class="fas fa-user-friends"></i>Father's Name</label>
                                 <input type="text" id="father_name" name="father_name" class="form-control" required>
                                 <div class="error-message" id="father_name-error">Please enter father's name</div>
-                                </div>
+                                
                             </div>
                             
                             <div class="form-group">
