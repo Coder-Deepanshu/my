@@ -83,31 +83,7 @@ class uploadresultform(forms.ModelForm):
             'sixty_two': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'}),
             'sixty_three': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'}),
             'sixty_four': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'})
-                }
-
-# for delete data
-from django import forms
-
-class DeleteStudentForm(forms.Form):
-    roll_no = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs={'placeholder': 'Enter Roll Number'}),
-        label="Roll Number")
-    
-#  for delete result
-class delete_result(forms.Form):
-    roll_no = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs={'placeholder': 'Enter Roll Number'}),
-        label="Roll Number")
-
-# for view the result
-class view_result(forms.Form):
-    roll_no = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs={'placeholder': 'Enter Roll Number'}),
-        label="Roll Number")
-    
+                }    
 from .models import Faculty
 class FacultyForm(forms.ModelForm):
     class Meta:
@@ -144,5 +120,35 @@ class DateSelectionForm(forms.Form):
 class MonthYearForm(forms.Form):
     month = forms.ChoiceField(choices=[(i, i) for i in range(1, 13)])
     year = forms.ChoiceField(choices=[(i, i) for i in range(2020, 2030)])
+
+from django import forms
+from .models import Student
+
+class StudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = '__all__'
+        widgets = {
+            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
+            'date_of_joining': forms.DateInput(attrs={'type': 'date'}),
+            'address': forms.Textarea(attrs={'rows': 3}),
+        }
+
+from django import forms
+
+class BulkStudentEditForm(forms.Form):
+    FIELD_CHOICES = [
+        ('father_name','Father_name'),
+        ('course', 'Course'),
+        ('year', 'Year'),
+        ('semester', 'Semester'),
+        ('address', 'Address'),
+        ('city', 'City'),
+        ('state', 'State'),
+        ('country', 'Country'),
+    ]
+    
+    field = forms.ChoiceField(choices=FIELD_CHOICES)
+    value = forms.CharField(max_length=100)
 
 

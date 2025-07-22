@@ -3,6 +3,16 @@ from django.db import models
 # Create your models here.
 from django.db import models
 
+from django.db import models
+
+class Course(models.Model):
+    name = models.CharField(max_length=100)
+    no_of_years = models.IntegerField()
+    no_of_semesters = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
 class Student(models.Model):
     roll_no = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
@@ -10,7 +20,7 @@ class Student(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=15)
     gender = models.CharField(max_length=10)
-    course = models.CharField(max_length=100)
+    course = models.CharField(max_length=100)  # Changed to ForeignKey
     birthday = models.DateField()
     address = models.TextField()
     semester = models.IntegerField(default=1)
@@ -23,12 +33,8 @@ class Student(models.Model):
     tenth_percent = models.DecimalField(max_digits=5, decimal_places=2)
     twelfth_percent = models.DecimalField(max_digits=5, decimal_places=2)
 
-    def _str_(self):
-        return self.name
-
-class Student_percent(models.Model):
-    Student_rollno = models.CharField(max_length=20, unique=True)
-    percentage = models.FloatField(null=True, blank=True)
+    def __str__(self):
+        return f"{self.name} ({self.roll_no})"
 
 class result(models.Model):
     Student_rollno = models.CharField(max_length=20,unique=True,null=False,default=1)
@@ -149,3 +155,4 @@ class Attendance(models.Model):
     
     def __str__(self):
         return f"{self.faculty.employee_id} - {self.date} - {self.status}"
+    

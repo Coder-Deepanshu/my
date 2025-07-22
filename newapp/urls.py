@@ -21,6 +21,12 @@ urlpatterns = [
     path('admin_attendance/', views.admin_attendance, name='admin_attendance'),
     path('save-attendance/', views.save_attendance, name='save_attendance'),
     path('faculty_attendance/', views.faculty_attendance, name='faculty_attendance'),
+    path('students/', views.student_filter_page,name='students'),
+    path('get_course_details/', views.get_course_details),
+    path('filter_students/', views.filter_students),
+    path('student/<int:id>/delete/', views.delete_students, name='delete_student'),
+    path('bulk_update_students/', views.bulk_update_students, name='bulk_update_students'),
+
 
 ]
 

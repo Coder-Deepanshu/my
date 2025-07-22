@@ -100,7 +100,7 @@ def logout_view(request):
     request.session.flush()
     return redirect('login')
 
-
+# for single students operations 
 from django.shortcuts import render, redirect
 from .models import Student
 from django.contrib import messages
@@ -183,8 +183,7 @@ def student_functions(request):
 
     return render(request, "student_page.html", context)
 
-
-
+#  for faculty 
 from django.shortcuts import render, redirect
 from .form import FacultyForm
 from .models import Faculty
@@ -361,3 +360,102 @@ def faculty_attendance(request):
         'current_year': year,
     }
     return render(request, 'faculty_attendance.html', context)
+
+#  for multiple student filtering
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from .models import Student, Course
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+
+def student_filter_page(request):
+    try:
+        # Get all courses from Course model (not from Student records)
+        courses = Course.objects.all().values_list('name', flat=True)
+        return render(request, 'student_filter.html', {'courses': courses})
+    except Exception as e:
+        messages.error(request, f"Error loading courses: {str(e)}")
+        return render(request, 'student_filter.html', {'courses': []})
+
+def get_course_details(request):
+    try:
+        course_name = request.GET.get('course_name')
+        if not course_name:
+            return JsonResponse({'error': 'Course name is required'}, status=400)
+            
+        course = Course.objects.get(name=course_name)
+        return JsonResponse({
+            'years': list(range(1, course.no_of_years + 1)),
+            'semesters': list(range(1, course.no_of_semesters + 1))
+        })
+    except Course.DoesNotExist:
+        return JsonResponse({'error': 'Course not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def filter_students(request):
+    filters = {
+        'course': request.GET.get('course', 'all'),
+        'year': request.GET.get('year', 'all'),
+        'semester': request.GET.get('semester', 'all'),
+        'roll_no': request.GET.get('roll_no', '')
+    }
+
+    students = Student.objects.all()
+    
+    if filters['course'] != 'all':
+        students = students.filter(course=filters['course'])
+    if filters['year'] != 'all':
+        students = students.filter(year=filters['year'])
+    if filters['semester'] != 'all':
+        students = students.filter(semester=filters['semester'])
+    if filters['roll_no']:
+        students = students.filter(roll_no__icontains=filters['roll_no'])
+
+    html = render_to_string('student_result_partial.html', {'students': students})
+    return JsonResponse({'html': html})
+
+@csrf_exempt
+def bulk_update_students(request):
+    if request.method == 'POST':
+        student_ids = request.POST.getlist('student_ids[]')
+        
+        # Prepare update data - only include fields that have values
+        update_data = {}
+        fields_to_update = ['father_name',
+            'course', 'year', 'semester', 
+            'address', 'city', 'state', 'country'
+        ]
+        
+        for field in fields_to_update:
+            if request.POST.get(field):
+                if field in ['year', 'semester']:
+                    update_data[field] = int(request.POST.get(field))
+                else:
+                    update_data[field] = request.POST.get(field)
+        
+        if not update_data:
+            return JsonResponse({'error': 'No fields to update'}, status=400)
+            
+        try:
+            # Only update if we have both student IDs and data to update
+            if student_ids and update_data:
+                Student.objects.filter(id__in=student_ids).update(**update_data)
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'error': 'No students selected or no data to update'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+@csrf_exempt
+def delete_students(request):
+    if request.method == 'POST':
+        student_ids = request.POST.getlist('student_ids[]')
+        try:
+            Student.objects.filter(id__in=student_ids).delete()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request'}, status=400)

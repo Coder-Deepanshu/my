@@ -1318,21 +1318,21 @@
             <h3 class="menu-title">System</h3>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link" data-tab="system-tab">
+                    <a href="#" class="menu-link" data-tab="setting-tab">
                         <i class="fas fa-sliders-h menu-icon"></i>
                         <span class="menu-text">Settings</span>
                     </a>
                 </li>
                 
                 <li class="menu-item">
-                    <a href="#" class="menu-link" data-tab="report-tab">
+                    <a href="#" class="menu-link" data-tab="grade-tab">
                         <i class="fas fa-chart-bar menu-icon"></i>
-                        <span class="menu-text">Reports</span>
+                        <span class="menu-text">Grade</span>
                     </a>
                 </li>
                 
                 <li class="menu-item">
-                    <a href="#" class="menu-link" data-tab="notifications-tab">
+                    <a href="#" class="menu-link" data-tab="notification-tab">
                         <i class="fas fa-comment-alt menu-icon"></i>
                         <span class="menu-text">Notifications</span>
                     </a>
@@ -1668,7 +1668,7 @@
                         </div>
                         <h3 class="student-action-title">All Students</h3>
                         <p class="student-action-desc">View and manage complete student list</p>
-                        <button class="student-action-btn">Open</button>
+                        <a href="{% url 'students' %}" class="student-action-btn">Open</a>
                     </div>
                     
                     <div class="student-action-card">
@@ -1742,16 +1742,17 @@
                         <p class="student-action-desc">View faculty history and logs</p>
                         <button class="student-action-btn">Open</button>
                     </div>
+                    
                 </div>
             </div>
 
             <!-- for result -->
-             <!-- faculty -->
+             
              <div id="result-tab" class="tab-content">
                 <div class="header-1">
                     <div class="page-title">
                         <h1>Result Management</h1>
-                        <p>Manage all faculty-related activities and information</p>
+                        <p>Manage all Result-related activities and information</p>
                     </div>
                     
                     <div class="search-bar">
@@ -1760,14 +1761,14 @@
                     </div>
                 </div>
                 
-                <!-- faculty Action Cards -->
+                <!-- result Action Cards -->
                 <div class="student-actions">
                     <div class="student-action-card">
                         <div class="student-action-icon">
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user-check"></i>
                         </div>
-                        <h3 class="student-action-title">Single Faculty</h3>
-                        <p class="student-action-desc">View and edit individual faculty records</p>
+                        <h3 class="student-action-title">Single Student</h3>
+                        <p class="student-action-desc">View and alter Student result uploded by faculty</p>
                         <a href="#" class="student-action-btn">Open</a>
                     </div>
                     
@@ -1775,30 +1776,382 @@
                         <div class="student-action-icon">
                             <i class="fas fa-users"></i>
                         </div>
-                        <h3 class="student-action-title">All Faculty</h3>
-                        <p class="student-action-desc">View and manage complete faculty list</p>
+                        <h3 class="student-action-title">All Students</h3>
+                        <p class="student-action-desc">View and alter all Students result list</p>
                         <button class="student-action-btn">Open</button>
                     </div>
                     
                     <div class="student-action-card">
                         <div class="student-action-icon">
-                            <i class="fas fa-calendar-check"></i>
+                            <i class="fas fa-check-circle"></i>
                         </div>
-                        <h3 class="student-action-title">Attendance</h3>
-                        <p class="student-action-desc">Manage faculty attendance records</p>
+                        <h3 class="student-action-title">Passed Students</h3>
+                        <p class="student-action-desc">View passed students</p>
                         <button class="student-action-btn">Open</button>
                     </div>
                     
                     <div class="student-action-card">
                         <div class="student-action-icon">
-                            <i class="fas fa-history"></i>
+                            <i class="fas fa-times-circle"></i>
                         </div>
-                        <h3 class="student-action-title">History</h3>
-                        <p class="student-action-desc">View faculty history and logs</p>
+                        <h3 class="student-action-title">Failed Students</h3>
+                        <p class="student-action-desc">View and manage Failed Students</p>
                         <button class="student-action-btn">Open</button>
                     </div>
                 </div>
             </div>
+
+            <!-- for faculty setting -->
+             <div id="facultySetting-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Faculty Setting</h1>
+                        <p>Manage all Setting-related to activities and information of Faculty</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search students...">
+                    </div>
+                </div>
+                
+                <!-- faculty setting Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                        <h3 class="student-action-title">Department</h3>
+                        <p class="student-action-desc">Create Department First for Faculty</p>
+                        <a href="#" class="student-action-btn">Open</a>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <h3 class="student-action-title">Room</h3>
+                        <p class="student-action-desc">Create and Enter Rooms and Labs</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-id-badge"></i>
+                        </div>
+                        <h3 class="student-action-title">Positions</h3>
+                        <p class="student-action-desc">Create and Positions of faculty</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <h3 class="student-action-title">Salary</h3>
+                        <p class="student-action-desc">Create and Enter Salary for Postions of Faculty</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- for student setting -->
+             <div id="studentSetting-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Student Setting</h1>
+                        <p>Manage all Setting-related to activities and information of Student</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search students...">
+                    </div>
+                </div>
+                
+                <!-- student setting Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="student-action-title">Subjects</h3>
+                        <p class="student-action-desc">Create and Enter Subjects for the courses firstly</p>
+                        <a href="#" class="student-action-btn">Open</a>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="student-action-title">Course</h3>
+                        <p class="student-action-desc">Create and enter Course with subjects</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <h3 class="student-action-title">Fees</h3>
+                        <p class="student-action-desc">Create and define fees per course</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h3 class="student-action-title">Expenses/Fines</h3>
+                        <p class="student-action-desc">Create and define fines on Student</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <h3 class="student-action-title">Notes</h3>
+                        <p class="student-action-desc">Create Notes for Subjects under Courses</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- for schedule -->
+             <div id="schedule-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Schedule Management</h1>
+                        <p>Manage all Setting-related to activities and information of Schedule</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search students...">
+                    </div>
+                </div>
+                
+                <!-- schedule Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="student-action-title">Class</h3>
+                        <p class="student-action-desc">Alter and View Class Schedule Under Course</p>
+                        <a href="#" class="student-action-btn">Open</a>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3 class="student-action-title">Exam</h3>
+                        <p class="student-action-desc">Create Exam Schedule with subjects and classes</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h3 class="student-action-title">Faculty</h3>
+                        <p class="student-action-desc">Create Faculty Schedule first</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <h3 class="student-action-title">Holidays</h3>
+                        <p class="student-action-desc">Create Holiday message for students and faculty</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- for payment -->
+             <div id="payment-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Payment Management</h1>
+                        <p>Manage all Payment-related activities and information</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search students...">
+                    </div>
+                </div>
+                
+                <!-- payment Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <h3 class="student-action-title">Fine Payment</h3>
+                        <p class="student-action-desc">View and alter fine of student</p>
+                        <a href="#" class="student-action-btn">Open</a>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h3 class="student-action-title">Salary Payment</h3>
+                        <p class="student-action-desc">Pay and view the Salarty of Faculty</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <h3 class="student-action-title">Fees Payment</h3>
+                        <p class="student-action-desc">View and pay fees with fine</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h3 class="student-action-title">Total Payment</h3>
+                        <p class="student-action-desc">View all details about payment and recieved Money</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- for setting -->
+             <div id="setting-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Setting Management</h1>
+                        <p>Manage all Setting related to activities and information period and messages</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search students...">
+                    </div>
+                </div>
+                
+                <!-- setting Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3 class="student-action-title">Semester Setting</h3>
+                        <p class="student-action-desc">Change Semester and year after time period</p>
+                        <a href="#" class="student-action-btn">Open</a>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-gifts"></i>
+                        </div>
+                        <h3 class="student-action-title">Birthday Wishes</h3>
+                        <p class="student-action-desc">Wish birthday and create card for faculty and student </p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h3 class="student-action-title">Upload Notes</h3>
+                        <p class="student-action-desc">Upload notes for Students</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="student-action-title">Backup</h3>
+                        <p class="student-action-desc">Made backup of data to safe</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- for Grade -->
+             <div id="grade-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Grade Management</h1>
+                        <p>Manage all Grades-related activities and information</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search students...">
+                    </div>
+                </div>
+                
+                <!-- report Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <h3 class="student-action-title">Grades</h3>
+                        <p class="student-action-desc">View grades marked by faculty for students</p>
+                        <a href="#" class="student-action-btn">Open</a>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h3 class="student-action-title">Assignment</h3>
+                        <p class="student-action-desc">See the pending assignment of student under course</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- for notifications -->
+             <div id="notification-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Notification</h1>
+                        <p>Manage all Notification-related activities and information</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search students...">
+                    </div>
+                </div>
+                
+                <!-- notifications Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <h3 class="student-action-title">Chat with faculty</h3>
+                        <p class="student-action-desc">Chat with faculty about any topic</p>
+                        <a href="#" class="student-action-btn">Open</a>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="student-action-title">Chat with Student</h3>
+                        <p class="student-action-desc">Chat with Student on any problem or complaint</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
     
@@ -1942,6 +2295,25 @@
                     pageTitle.textContent = 'Faculty';
                 }else if (tabId === 'result-tab') {
                     pageTitle.textContent = 'Results';
+                }
+                else if (tabId === 'facultySetting-tab') {
+                    pageTitle.textContent = 'Faculty Setting';
+                }
+                else if (tabId === 'studentSetting-tab') {
+                    pageTitle.textContent = 'Student Setting';
+                }
+                else if (tabId === 'schedule-tab') {
+                    pageTitle.textContent = 'Schedule';
+                }
+                else if (tabId === 'payment') {
+                    pageTitle.textContent = 'Payment';
+                }
+                else if (tabId === 'setting-tab') {
+                    pageTitle.textContent = 'Settings';
+                }else if (tabId === 'grade-tab') {
+                    pageTitle.textContent = 'Grade';
+                }else if (tabId === 'notification-tab') {
+                    pageTitle.textContent = 'Notifications';
                 }
                 
                 // Close sidebar on mobile

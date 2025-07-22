@@ -152,16 +152,50 @@
 
 # print(a[0:2]+str(c))
 
+# import numpy as np
+
+# A=np.array([[4,-2],[1,1]])
+
+# eignvalue,eignvector=np.linalg.eig(A)
+
+# print(eignvalue)
+
+# print(eignvector)
+
 import numpy as np
-
-A=np.array([[4,-2],[1,1]])
-
-eignvalue,eignvector=np.linalg.eig(A)
-
-print(eignvalue)
-
-print(eignvector)
-        
+import matplotlib.pyplot as plt
+# Sample data: y = 2x + 1 with some noise
+np.random.seed(42)
+X = np.array([1, 2, 3, 4, 5])
+Y = np.array([3, 5, 7, 9, 11]) + np.random.randn(5) * 0.5
+# Initial parameter values
+m = 0
+c = 0
+# Learning rate
+alpha = 0.01
+# Number of iterations
+epochs = 1000
+# Store costs and parameters to plot
+costs = []
+m_history = []
+c_history = []
+n = len(X)
+for i in range(epochs):
+# Predictions with current parameters
+  Y_pred = m * X + c
+# Calculate current cost
+  cost = (1/n) * sum((Y - Y_pred) ** 2)
+  costs.append(cost)
+  m_history.append(m)
+  c_history.append(c)
+# Calculate gradients
+  dm = -(2/n) * sum(X * (Y - Y_pred))
+  dc = -(2/n) * sum(Y - Y_pred)
+# Update parameters
+  m = m - alpha * dm
+  c = c - alpha * dc
+print(f"Final parameters: m = {m:.4f}, c = {c:.4f}")
+print(f"Final cost: {costs[-1]:.4f}")
 
 
         

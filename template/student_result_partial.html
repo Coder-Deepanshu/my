@@ -1,0 +1,44 @@
+<table class="table table-striped table-hover">
+  <thead class="table-light">
+    <tr>
+      <th width="50">
+        <input type="checkbox" id="selectAll">
+      </th>
+      <th>Roll No</th>
+      <th>Name</th>
+      <th>Father's Name</th>
+      <th>Course</th>
+      <th>Year</th>
+      <th>Semester</th>
+      <th>DOB</th>
+      <th>DOJ</th>
+      <th>Full Address</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if students %}
+      {% for student in students %}
+      <tr>
+        <td>
+          <input type="checkbox" class="student-checkbox" data-id="{{ student.id }}">
+        </td>
+        <td>{{ student.roll_no }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.father_name }}</td>
+        <td>{{ student.course }}</td>
+        <td>{{ student.year }}</td>
+        <td>{{ student.semester }}</td>
+        <td>{{ student.birthday|date:"d/m/Y" }}</td>
+        <td>{{ student.date_of_joining|date:"d/m/Y" }}</td>
+        <td>{{ student.address|truncatechars:30 }}, {{ student.city }}, {{ student.state }}-{{ student.state_code }}, {{ state.country }}</td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="10" class="text-center py-4 text-muted">
+          No students found matching your criteria
+        </td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
