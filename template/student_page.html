@@ -6,10 +6,11 @@
     <title>Student Management System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary:#3a56d4;
-            --primary-dark:  #2f4ac0;
+            --primary: #3a56d4;
+            --primary-dark: #2f4ac0;
             --primary-light: #e0e7ff;
             --secondary: #10b981;
             --secondary-dark: #059669;
@@ -21,11 +22,14 @@
             --dark: #111827;
             --gray: #6b7280;
             --light-gray: #e5e7eb;
+            --sidebar-width: 250px;
+            --sidebar-collapsed-width: 80px;
+            --header-height: 60px;
+            --transition-speed: 0.3s;
             --border-radius: 0.5rem;
             --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --box-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -40,6 +44,134 @@
             color: var(--dark);
             line-height: 1.6;
             overflow-x: hidden;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #2c3e50;
+            color: white;
+            transition: all var(--transition-speed) ease;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+        
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            background-color: #1a252f;
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+            overflow-y: auto;
+            height: calc(100vh - var(--header-height));
+        }
+        
+        .sidebar-menu .nav-link {
+            color: #ecf0f1;
+            border-radius: 0;
+            margin: 2px 10px;
+            padding: 10px 15px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-menu .nav-link:hover {
+            background-color: #34495e;
+        }
+        
+        .sidebar-menu .nav-link.active {
+            background-color: var(--primary);
+        }
+        
+        .sidebar-menu .nav-link i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            min-width: 25px;
+        }
+        
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
+        
+        .sidebar.collapsed .nav-link i {
+            margin-right: 0;
+            font-size: 1.4rem;
+        }
+        
+        .sidebar.collapsed .sidebar-header h3 {
+            display: none;
+        }
+
+        /* Main content area */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition-speed) ease;
+            min-height: 100vh;
+            background-color: #f5f7fa;
+        }
+        
+        .main-content.expanded {
+            margin-left: var(--sidebar-collapsed-width);
+        }
+
+        /* Header styling */
+        .top-header {
+            height: var(--header-height);
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+        
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+            cursor: pointer;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* Content styling */
+        .content-wrapper {
+            padding: 20px;
         }
 
         /* Navigation Bar */
@@ -108,7 +240,7 @@
             height: 100%;
             background: rgba(255, 255, 255, 0.1);
             transform: translateX(-100%);
-            transition: var(--transition-slow);
+            transition: var(--transition);
         }
 
         .btn:hover::after {
@@ -300,7 +432,6 @@
         .form-group {
             margin-bottom: 1.25rem;
             position: relative;
-    
         }
 
         .form-label {
@@ -312,7 +443,6 @@
             transition: var(--transition);
         }
         
-
         .form-control {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -323,6 +453,7 @@
             font-size: 0.9375rem;
             background-color: #f9fafb;
         }
+        
         .form-control:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
@@ -466,7 +597,6 @@
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 1.5rem;
-            
         }
 
         .section-card {
@@ -476,8 +606,6 @@
             overflow: hidden;
             transition: var(--transition);
             border-left: 4px solid var(--primary);
-            width: 300px;
-            margin-left: 100px;
         }
 
         .section-card:hover {
@@ -719,6 +847,18 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
             .container {
                 padding: 0 1rem;
             }
@@ -781,259 +921,440 @@
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-brand">
-            <i class="fas fa-user-graduate floating"></i>
-            <span>Student Management</span>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Student Management</h3>
         </div>
-        <div class="nav-actions">
-            <button class="btn btn-outline" >
-                <i class="fas fa-arrow-left"></i>
-                <span class="btn-text">Back</span>
-            </button>
-            <a href="{% url 'dashboard' %}">
-            <button class="btn btn-outline">
-                <i class="fas fa-home"></i>
-                <span class="btn-text">Dashboard</span>
-            </button>
-            </a>
-
-            <a href="{% url 'logoutdoor' %}">
-            <button class="btn btn-primary pulse">
-                <i class="fas fa-sign-out-alt"></i>
-                <span class="btn-text">Logout</span>
-            </button>
-            </a>
+        <div class="sidebar-menu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Students</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-book"></i>
+                        <span>Courses</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
 
     <!-- Main Content -->
-    <div class="container" id="mainContainer">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">Student Management</h1>
-            <div class="action-container">
-                <button class="btn btn-primary" id="addStudentBtn">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Add Student</span>
-                </button>
-                <button class="btn btn-warning" id="viewStudentBtn">
-                    <i class="fas fa-search"></i>
-                    <span>View Student</span>
-                </button>
+    <div class="main-content" id="mainContent">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="hamburger-btn" id="hamburgerBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="user-profile">
+                <img src="https://via.placeholder.com/40" alt="User Profile">
+                <span>Admin User</span>
             </div>
-        </div>
+        </header>
 
-        <!-- Alert Messages -->
-        {% if messages %}
-        <div id="alertContainer">
-            {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <!-- Add Student Form (Multi-step) -->
-        <div class="card" id="addStudentForm" style="display: none;">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-user-plus"></i>
-                    Add New Student
-                </h2>
-                <button class="btn btn-icon btn-outline" onclick="hideForm('addStudentForm')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="card-body">
-                <!-- Form Steps Indicator -->
-                <div class="form-steps">
-                    <div class="step active" id="step1">
-                        <div class="step-number">1</div>
-                        <div class="step-label">Personal Info</div>
-                    </div>
-                    <div class="step" id="step2">
-                        <div class="step-number">2</div>
-                        <div class="step-label">Contact Details</div>
-                    </div>
-                    <div class="step" id="step3">
-                        <div class="step-number">3</div>
-                        <div class="step-label">Academic Info</div>
-                    </div>
-                    <div class="step" id="step4">
-                        <div class="step-number">4</div>
-                        <div class="step-label">Review & Submit</div>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">Student Management</h1>
+                    <div class="action-container">
+                        <button class="btn btn-primary" id="addStudentBtn">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Add Student</span>
+                        </button>
+                        <button class="btn btn-warning" id="viewStudentBtn">
+                            <i class="fas fa-search"></i>
+                            <span>View Student</span>
+                        </button>
                     </div>
                 </div>
 
-                <form method="POST" action="{% url 'student' %}" id="multiStepForm">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="add">
-                    
-                    <!-- Step 1: Personal Information -->
-                    <div class="form-page active" id="page1">
-                        <div class="detail-grid">
-                            <div class="form-group">
-                                
-                                <label for="roll_no" class="form-label"><i class="fas fa-id-card"></i> Roll Number</label>
-                                <input type="text" id="roll_no" name="roll_no" class="form-control" required>
-                                <div class="error-message" id="roll_no-error">Please enter a valid roll number</div>
-                                
-                            </div>
-                            
-                            <div class="form-group">
-        
-                                <label for="name" class="form-label"><i class="fas fa-user"></i> Full Name</label>
-                                <input type="text" id="name" name="name" class="form-control" required>
-                                <div class="error-message" id="name-error">Please enter student's full name</div>
-                               
-                            </div>
-                            
-                            <div class="form-group">
-                                
-                                <label for="father_name" class="form-label"><i class="fas fa-user-friends"></i>Father's Name</label>
-                                <input type="text" id="father_name" name="father_name" class="form-control" required>
-                                <div class="error-message" id="father_name-error">Please enter father's name</div>
-                                
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="birthday" class="form-label"><i class="fas fa-birthday-cake"></i> Date of Birth</label>
-                                <input type="date" id="birthday" name="birthday" class="form-control" required>
-                                <div class="error-message" id="birthday-error">Please select date of birth</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="gender" class="form-label"><i class="fas fa-venus-mars"></i>Gender</label>
-                                <select id="gender" name="gender" class="form-control" required>
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <div class="error-message" id="gender-error">Please select gender</div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="hideForm('addStudentForm')" style="background: var(--gray); color: white;">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="validateStep(1)">
-                                Next <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
+                <!-- Alert Messages -->
+                {% if messages %}
+                <div id="alertContainer">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                        {{ message }}
                     </div>
-                    
-                    <!-- Step 2: Contact Details -->
-                    <div class="form-page" id="page2">
-                        <div class="detail-grid">
-                            <div class="form-group">
-                                <label for="phone" class="form-label"><i class="fas fa-phone"></i>Phone Number</label>
-                                <input type="tel" id="phone" name="phone" class="form-control" required>
-                                <div class="error-message" id="phone-error">Please enter a valid phone number</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="email" class="form-label"><i class="fas fa-envelope"></i>Email Address</label>
-                                <input type="email" id="email" name="email" class="form-control" required>
-                                <div class="error-message" id="email-error">Please enter a valid email address</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="address" class="form-label"><i class="fas fa-home"></i>Street Address</label>
-                                <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
-                                <div class="error-message" id="address-error">Please enter address</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="city" class="form-label"><i class="fas fa-city"></i>City</label>
-                                <input type="text" id="city" name="city" class="form-control" required>
-                                <div class="error-message" id="city-error">Please enter city</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="state" class="form-label"><i class="fas fa-flag"></i> State</label>
-                                <input type="text" id="state" name="state" class="form-control" required>
-                                <div class="error-message" id="state-error">Please enter state</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="state_code" class="form-label"><i class="fas fa-barcode"></i>State Code</label>
-                                <input type="text" id="state_code" name="state_code" class="form-control" required>
-                                <div class="error-message" id="state_code-error">Please enter state code</div>
-                            </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
+                <!-- Add Student Form (Multi-step) -->
+                <div class="card" id="addStudentForm" style="display: none;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-user-plus"></i>
+                            Add New Student
+                        </h2>
+                        <button class="btn btn-icon btn-outline" onclick="hideForm('addStudentForm')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Form Steps Indicator -->
+                        <div class="form-steps">
+                            <div class="step active" id="step1">
+                                <div class="step-number">1</div>
+                                <div class="step-label">Personal Info</div>
+                            </div>
+                            <div class="step" id="step2">
+                                <div class="step-number">2</div>
+                                <div class="step-label">Contact Details</div>
+                            </div>
+                            <div class="step" id="step3">
+                                <div class="step-number">3</div>
+                                <div class="step-label">Academic Info</div>
+                            </div>
+                            <div class="step" id="step4">
+                                <div class="step-number">4</div>
+                                <div class="step-label">Review & Submit</div>
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{% url 'student' %}" id="multiStepForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="add">
+                            
+                            <!-- Step 1: Personal Information -->
+                            <div class="form-page active" id="page1">
+                                <div class="detail-grid">
+                                    <div class="form-group">
+                                        
+                                        <label for="roll_no" class="form-label"><i class="fas fa-id-card"></i> Roll Number</label>
+                                        <input type="text" id="roll_no" name="roll_no" class="form-control" required>
+                                        <div class="error-message" id="roll_no-error">Please enter a valid roll number</div>
+                                        
+                                    </div>
+                                    
+                                    <div class="form-group">
+            
+                                        <label for="name" class="form-label"><i class="fas fa-user"></i> Full Name</label>
+                                        <input type="text" id="name" name="name" class="form-control" required>
+                                        <div class="error-message" id="name-error">Please enter student's full name</div>
+                                       
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        
+                                        <label for="father_name" class="form-label"><i class="fas fa-user-friends"></i>Father's Name</label>
+                                        <input type="text" id="father_name" name="father_name" class="form-control" required>
+                                        <div class="error-message" id="father_name-error">Please enter father's name</div>
+                                        
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="birthday" class="form-label"><i class="fas fa-birthday-cake"></i> Date of Birth</label>
+                                        <input type="date" id="birthday" name="birthday" class="form-control" required>
+                                        <div class="error-message" id="birthday-error">Please select date of birth</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="gender" class="form-label"><i class="fas fa-venus-mars"></i>Gender</label>
+                                        <select id="gender" name="gender" class="form-control" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <div class="error-message" id="gender-error">Please select gender</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="hideForm('addStudentForm')" style="background: var(--gray); color: white;">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="validateStep(1)">
+                                        Next <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Step 2: Contact Details -->
+                            <div class="form-page" id="page2">
+                                <div class="detail-grid">
+                                    <div class="form-group">
+                                        <label for="phone" class="form-label"><i class="fas fa-phone"></i>Phone Number</label>
+                                        <input type="tel" id="phone" name="phone" class="form-control" required>
+                                        <div class="error-message" id="phone-error">Please enter a valid phone number</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="email" class="form-label"><i class="fas fa-envelope"></i>Email Address</label>
+                                        <input type="email" id="email" name="email" class="form-control" required>
+                                        <div class="error-message" id="email-error">Please enter a valid email address</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="address" class="form-label"><i class="fas fa-home"></i>Street Address</label>
+                                        <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
+                                        <div class="error-message" id="address-error">Please enter address</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="city" class="form-label"><i class="fas fa-city"></i>City</label>
+                                        <input type="text" id="city" name="city" class="form-control" required>
+                                        <div class="error-message" id="city-error">Please enter city</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="state" class="form-label"><i class="fas fa-flag"></i> State</label>
+                                        <input type="text" id="state" name="state" class="form-control" required>
+                                        <div class="error-message" id="state-error">Please enter state</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="state_code" class="form-label"><i class="fas fa-barcode"></i>State Code</label>
+                                        <input type="text" id="state_code" name="state_code" class="form-control" required>
+                                        <div class="error-message" id="state_code-error">Please enter state code</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="country" class="form-label"><i class="fas fa-globe"></i>Country</label>
+                                        <input type="text" id="country" name="country" class="form-control" value="India" required>
+                                        <div class="error-message" id="country-error">Please enter country</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="prevStep(2)">
+                                        <i class="fas fa-arrow-left"></i> Previous
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="validateStep(2)">
+                                        Next <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Step 3: Academic Information -->
+                            <div class="form-page" id="page3">
+                                <div class="detail-grid">
+                                    <div class="form-group">
+                                        <label for="course" class="form-label"><i class="fas fa-book"></i>Course</label>
+                                        <select id="course" name="course" class="form-control" required>
+                                            <option value="">-- Select Course --</option>
+                                            <option value="B.Com">Bachelor of Commerce</option>
+                                            <option value="B.Sc">Bachelor of Science</option>
+                                            <option value="B.A">Bachelor of Arts</option>
+                                            <option value="B.C.A">Bachelor of Computer Application</option>
+                                            <option value="B.B.A">Bachelor of Business Administration</option>
+                                        </select>
+                                        <div class="error-message" id="course-error">Please select course</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="date_of_joining" class="form-label"><i class="fas fa-calendar-check"></i>Date of Joining</label>
+                                        <input type="date" id="date_of_joining" name="date_of_joining" class="form-control" required>
+                                        <div class="error-message" id="date_of_joining-error">Please select date of joining</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="tenth_percent" class="form-label"><i class="fas fa-percentage"></i>10th Percentage</label>
+                                        <input type="number" id="tenth_percent" name="tenth_percent" min="0" max="100" step="0.01" class="form-control" required>
+                                        <div class="error-message" id="tenth_percent-error">Please enter valid percentage (0-100)</div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="twelfth_percent" class="form-label"><i class="fas fa-percentage"></i>12th Percentage</label>
+                                        <input type="number" id="twelfth_percent" name="twelfth_percent" min="0" max="100" step="0.01" class="form-control" required>
+                                        <div class="error-message" id="twelfth_percent-error">Please enter valid percentage (0-100)</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="prevStep(3)">
+                                        <i class="fas fa-arrow-left"></i> Previous
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="validateStep(3)">
+                                        Next <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Step 4: Review and Submit -->
+                            <div class="form-page" id="page4">
+                                <div class="review-container">
+                                    <!-- Personal Information Section -->
+                                    <div class="section-card">
+                                        <div class="section-header">
+                                            <i class="fas fa-user"></i>
+                                            Personal Information
+                                        </div>
+                                        <div class="section-body">
+                                            <div class="detail-row">
+                                                <span class="detail-label">Roll Number:</span>
+                                                <span class="detail-value" id="review-rollno"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Full Name:</span>
+                                                <span class="detail-value" id="review-name"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Father's Name:</span>
+                                                <span class="detail-value" id="review-father"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Date of Birth:</span>
+                                                <span class="detail-value" id="review-dob"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Gender:</span>
+                                                <span class="detail-value" id="review-gender"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contact Information Section -->
+                                    <div class="section-card">
+                                        <div class="section-header">
+                                            <i class="fas fa-address-book"></i>
+                                            Contact Details
+                                        </div>
+                                        <div class="section-body">
+                                            <div class="detail-row">
+                                                <span class="detail-label">Phone:</span>
+                                                <span class="detail-value" id="review-phone"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Email:</span>
+                                                <span class="detail-value" id="review-email"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Address:</span>
+                                                <span class="detail-value" id="review-address"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Academic Information Section -->
+                                    <div class="section-card">
+                                        <div class="section-header">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            Academic Information
+                                        </div>
+                                        <div class="section-body">
+                                            <div class="detail-row">
+                                                <span class="detail-label">Course:</span>
+                                                <span class="detail-value" id="review-course"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">Admission Date:</span>
+                                                <span class="detail-value" id="review-admission"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">10th Percentage:</span>
+                                                <span class="detail-value" id="review-tenth"></span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span class="detail-label">12th Percentage:</span>
+                                                <span class="detail-value" id="review-twelth"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="prevStep(4)">
+                                        <i class="fas fa-arrow-left"></i> Previous
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save"></i> Submit
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-text" id="progressText">Step 1 of 4 - Personal Information</div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- View Student Form -->
+                <div class="card" id="viewStudentForm" style="display: none;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-search"></i>
+                            Find Student
+                        </h2>
+                        <button class="btn btn-icon btn-outline" onclick="hideForm('viewStudentForm')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'student' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="view">
                             <div class="form-group">
-                                <label for="country" class="form-label"><i class="fas fa-globe"></i>Country</label>
-                                <input type="text" id="country" name="country" class="form-control" value="India" required>
-                                <div class="error-message" id="country-error">Please enter country</div>
+                                <label for="searchRollNumber" class="form-label">Enter Roll Number</label>
+                                <input type="text" id="searchRollNumber" name="roll_no" class="form-control" placeholder="e.g. STU2023001" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="hideForm('viewStudentForm')" style="background: var(--gray); color: white;">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Student Details -->
+                {% if student %}
+                <div class="card student-details active" id="studentDetails">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-user-graduate"></i>
+                            Student Details
+                        </h2>
+                        <button class="btn btn-icon btn-outline" onclick="hideStudentDetails()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="photo-section">
+                            <div class="photo-container">
+                                <img src="https://ui-avatars.com/api/?name={{ student.name }}&background=4f46e5&color=fff&size=120" alt="Student Photo" class="student-photo" style="border-radius:50%;height: 200px;width: 200px;">
+                            </div>
+                            <div class="photo-actions">
+                                <button class="btn btn-icon btn-primary">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                                <button class="btn btn-icon btn-secondary">
+                                    <i class="fas fa-upload"></i>
+                                </button>
                             </div>
                         </div>
                         
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="prevStep(2)">
-                                <i class="fas fa-arrow-left"></i> Previous
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="validateStep(2)">
-                                Next <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Step 3: Academic Information -->
-                    <div class="form-page" id="page3">
-                        <div class="detail-grid">
-                            <div class="form-group">
-                                <label for="course" class="form-label"><i class="fas fa-book"></i>Course</label>
-                                <select id="course" name="course" class="form-control" required>
-                                    <option value="">-- Select Course --</option>
-                                    <option value="B.Com">Bachelor of Commerce</option>
-                                    <option value="B.Sc">Bachelor of Science</option>
-                                    <option value="B.A">Bachelor of Arts</option>
-                                    <option value="B.C.A">Bachelor of Computer Application</option>
-                                    <option value="B.B.A">Bachelor of Business Administration</option>
-                                </select>
-                                <div class="error-message" id="course-error">Please select course</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="date_of_joining" class="form-label"><i class="fas fa-calendar-check"></i>Date of Joining</label>
-                                <input type="date" id="date_of_joining" name="date_of_joining" class="form-control" required>
-                                <div class="error-message" id="date_of_joining-error">Please select date of joining</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="tenth_percent" class="form-label"><i class="fas fa-percentage"></i>10th Percentage</label>
-                                <input type="number" id="tenth_percent" name="tenth_percent" min="0" max="100" step="0.01" class="form-control" required>
-                                <div class="error-message" id="tenth_percent-error">Please enter valid percentage (0-100)</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="twelfth_percent" class="form-label"><i class="fas fa-percentage"></i>12th Percentage</label>
-                                <input type="number" id="twelfth_percent" name="twelfth_percent" min="0" max="100" step="0.01" class="form-control" required>
-                                <div class="error-message" id="twelfth_percent-error">Please enter valid percentage (0-100)</div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="prevStep(3)">
-                                <i class="fas fa-arrow-left"></i> Previous
-                            </button>
-                            <button type="button" class="btn btn-primary" onclick="validateStep(3)">
-                                Next <i class="fas fa-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Step 4: Review and Submit -->
-                    <div class="form-page" id="page4">
                         <div class="review-container">
                             <!-- Personal Information Section -->
-                            <div class="section-card" style="margin-left: 50px;">
+                            <div class="section-card">
                                 <div class="section-header">
                                     <i class="fas fa-user"></i>
                                     Personal Information
@@ -1041,29 +1362,29 @@
                                 <div class="section-body">
                                     <div class="detail-row">
                                         <span class="detail-label">Roll Number:</span>
-                                        <span class="detail-value" id="review-rollno"></span>
+                                        <span class="detail-value">{{ student.roll_no }}</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Full Name:</span>
-                                        <span class="detail-value" id="review-name"></span>
+                                        <span class="detail-value">{{ student.name }}</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Father's Name:</span>
-                                        <span class="detail-value" id="review-father"></span>
+                                        <span class="detail-value">{{ student.father_name }}</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Date of Birth:</span>
-                                        <span class="detail-value" id="review-dob"></span>
+                                        <span class="detail-value">{{ student.birthday }}</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Gender:</span>
-                                        <span class="detail-value" id="review-gender"></span>
+                                        <span class="detail-value">{{ student.gender }}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Contact Information Section -->
-                            <div class="section-card" style="margin-left: 120px;">
+                            <div class="section-card">
                                 <div class="section-header">
                                     <i class="fas fa-address-book"></i>
                                     Contact Details
@@ -1071,21 +1392,21 @@
                                 <div class="section-body">
                                     <div class="detail-row">
                                         <span class="detail-label">Phone:</span>
-                                        <span class="detail-value" id="review-phone"></span>
+                                        <span class="detail-value">{{ student.phone }}</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Email:</span>
-                                        <span class="detail-value" id="review-email"></span>
+                                        <span class="detail-value">{{ student.email }}</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Address:</span>
-                                        <span class="detail-value" id="review-address"></span>
+                                        <span class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}, {{ student.country }}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Academic Information Section -->
-                            <div class="section-card" style="margin-left: 190px;">
+                            <div class="section-card">
                                 <div class="section-header">
                                     <i class="fas fa-graduation-cap"></i>
                                     Academic Information
@@ -1093,399 +1414,289 @@
                                 <div class="section-body">
                                     <div class="detail-row">
                                         <span class="detail-label">Course:</span>
-                                        <span class="detail-value" id="review-course"></span>
+                                        <span class="detail-value">{{ student.course }}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Semester:</span>
+                                        <span class="detail-value">{{ student.semester }}</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Year:</span>
+                                        <span class="detail-value">{{ student.year }}</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Admission Date:</span>
-                                        <span class="detail-value" id="review-admission"></span>
+                                        <span class="detail-value">{{ student.date_of_joining }}</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">10th Percentage:</span>
-                                        <span class="detail-value" id="review-tenth"></span>
+                                        <span class="detail-value">{{ student.tenth_percent }}%</span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">12th Percentage:</span>
-                                        <span class="detail-value" id="review-twelth"></span>
+                                        <span class="detail-value">{{ student.twelfth_percent }}%</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Status:</span>
+                                        <span class="detail-value">
+                                            <span class="status-badge status-active">
+                                                <i class="fas fa-check-circle"></i> Active
+                                            </span>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="prevStep(4)">
-                                <i class="fas fa-arrow-left"></i> Previous
+                            <button class="btn btn-outline" onclick="hideStudentDetails()" style="background: var(--gray); color: white;">
+                                <i class="fas fa-arrow-left"></i> Back
                             </button>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save"></i> Submit
+                            <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ student.roll_no }}')">
+                                <i class="fas fa-edit"></i> Edit Details
+                            </button>
+                            <button class="btn btn-danger" onclick="showDeleteModal('{{ student.roll_no }}', '{{ student.name }}', '{{ student.course }}')">
+                                <i class="fas fa-trash-alt"></i> Delete Record
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="progress-text" id="progressText">Step 1 of 4 - Personal Information</div>
-                </form>
+                </div>
+                {% endif %}
+
+                <!-- Edit Student Form -->
+                {% if student %}
+                <div class="card" id="editStudentForm" style="display: none;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-user-edit"></i>
+                            Edit Student Details
+                        </h2>
+                        <button class="btn btn-icon btn-outline" onclick="hideForm('editStudentForm')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'student' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="alter">
+                            <input type="hidden" name="roll_no" value="{{ student.roll_no }}">
+                            
+                            <div class="review-container">
+                                <!-- Personal Information Section -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-user"></i>
+                                        Personal Information
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="form-group">
+                                            <label for="editRollNumber" class="form-label">Roll Number</label>
+                                            <input type="text" id="editRollNumber" class="form-control" value="{{ student.roll_no }}" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editName" class="form-label">Full Name</label>
+                                            <input type="text" id="editName" name="name" class="form-control" value="{{ student.name }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editFatherName" class="form-label">Father's Name</label>
+                                            <input type="text" id="editFatherName" name="father_name" class="form-control" value="{{ student.father_name }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editBirthday" class="form-label">Date of Birth</label>
+                                            <input type="date" id="editBirthday" name="birthday" class="form-control" value="{{ student.birthday|date:'Y-m-d' }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editGender" class="form-label">Gender</label>
+                                            <select id="editGender" name="gender" class="form-control" required>
+                                                <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+                                                <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+                                                <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contact Information Section -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-address-book"></i>
+                                        Contact Details
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="form-group">
+                                            <label for="editPhone" class="form-label">Phone Number</label>
+                                            <input type="tel" id="editPhone" name="phone" class="form-control" value="{{ student.phone }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editEmail" class="form-label">Email Address</label>
+                                            <input type="email" id="editEmail" name="email" class="form-control" value="{{ student.email }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editAddress" class="form-label">Address</label>
+                                            <textarea id="editAddress" name="address" class="form-control" rows="3" required>{{ student.address }}</textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editCity" class="form-label">City</label>
+                                            <input type="text" id="editCity" name="city" class="form-control" value="{{ student.city }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editState" class="form-label">State</label>
+                                            <input type="text" id="editState" name="state" class="form-control" value="{{ student.state }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editStateCode" class="form-label">State Code</label>
+                                            <input type="text" id="editStateCode" name="state_code" class="form-control" value="{{ student.state_code }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editCountry" class="form-label">Country</label>
+                                            <input type="text" id="editCountry" name="country" class="form-control" value="{{ student.country }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Academic Information Section -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Academic Information
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="form-group">
+                                            <label for="editCourse" class="form-label">Course</label>
+                                            <select id="editCourse" name="course" class="form-control" required>
+                                                <option value="B.Com" {% if student.course == 'B.Com' %}selected{% endif %}>Bachelor of Commerce</option>
+                                                <option value="B.Sc" {% if student.course == 'B.Sc' %}selected{% endif %}>Bachelor of Science</option>
+                                                <option value="B.A" {% if student.course == 'B.A' %}selected{% endif %}>Bachelor of Arts</option>
+                                                <option value="B.C.A" {% if student.course == 'B.C.A' %}selected{% endif %}>Bachelor of Computer Application</option>
+                                                <option value="B.B.A" {% if student.course == 'B.B.A' %}selected{% endif %}>Bachelor of Business Administration</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editSemester" class="form-label">Semester</label>
+                                            <input type="text" id="editSemester" name="semester" class="form-control" value="{{ student.semester }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editYear" class="form-label">Year</label>
+                                            <input type="text" id="editYear" name="year" class="form-control" value="{{ student.year }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editDateOfJoining" class="form-label">Date of Joining</label>
+                                            <input type="date" id="editDateOfJoining" name="date_of_joining" class="form-control" value="{{ student.date_of_joining|date:'Y-m-d' }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editTenthPercent" class="form-label">10th Percentage</label>
+                                            <input type="number" id="editTenthPercent" name="tenth_percent" min="0" max="100" step="0.01" class="form-control" value="{{ student.tenth_percent }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editTwelfthPercent" class="form-label">12th Percentage</label>
+                                            <input type="number" id="editTwelfthPercent" name="twelfth_percent" min="0" max="100" step="0.01" class="form-control" value="{{ student.twelfth_percent }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="hideForm('editStudentForm')" style="background: var(--gray); color: white;">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
 
-        <!-- View Student Form -->
-        <div class="card" id="viewStudentForm" style="display: none;">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-search"></i>
-                    Find Student
-                </h2>
-                <button class="btn btn-icon btn-outline" onclick="hideForm('viewStudentForm')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{% url 'student' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="view">
-                    <div class="form-group">
-                        <label for="searchRollNumber" class="form-label">Enter Roll Number</label>
-                        <input type="text" id="searchRollNumber" name="roll_no" class="form-control" placeholder="e.g. STU2023001" required>
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-outline" onclick="hideForm('viewStudentForm')" style="background: var(--gray); color: white;">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Search
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Student Details -->
-        {% if student %}
-        <div class="card student-details active" id="studentDetails">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-user-graduate"></i>
-                    Student Details
-                </h2>
-                <button class="btn btn-icon btn-outline" onclick="hideStudentDetails()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="card-body">
-                <div class="photo-section">
-                    <div class="photo-container" >
-                        <img src="https://ui-avatars.com/api/?name={{ student.name }}&background=4f46e5&color=fff&size=120" alt="Student Photo" class="student-photo" style="border-radius:50%;height: 200px;width: 200px;">
-                    </div>
-                    <div class="photo-actions">
-                        <button class="btn btn-icon btn-primary">
-                            <i class="fas fa-camera"></i>
-                        </button>
-                        <button class="btn btn-icon btn-secondary">
-                            <i class="fas fa-upload"></i>
-                        </button>
-                    </div>
+        <!-- Delete Confirmation Modal -->
+        <div class="modal" id="deleteModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Confirm Deletion
+                    </h3>
                 </div>
-                
-                <div class="review-container">
-                    <!-- Personal Information Section -->
-                    <div class="section-card" style="margin-left: 50px;">
-                        <div class="section-header">
-                            <i class="fas fa-user"></i>
-                            Personal Information
+                <div class="modal-body">
+                    <p class="modal-message" id="deleteModalMessage">
+                        Are you sure you want to delete this student record? This action cannot be undone.
+                    </p>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Roll Number</div>
+                            <div class="detail-value" id="modal-rollno"></div>
                         </div>
-                        <div class="section-body">
-                            <div class="detail-row">
-                                <span class="detail-label">Roll Number:</span>
-                                <span class="detail-value">{{ student.roll_no }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Full Name:</span>
-                                <span class="detail-value">{{ student.name }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Father's Name:</span>
-                                <span class="detail-value">{{ student.father_name }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Date of Birth:</span>
-                                <span class="detail-value">{{ student.birthday }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Gender:</span>
-                                <span class="detail-value">{{ student.gender }}</span>
-                            </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Student Name</div>
+                            <div class="detail-value" id="modal-name"></div>
                         </div>
-                    </div>
-
-                    <!-- Contact Information Section -->
-                    <div class="section-card" style="margin-left:120px;">
-                        <div class="section-header">
-                            <i class="fas fa-address-book"></i>
-                            Contact Details
-                        </div>
-                        <div class="section-body">
-                            <div class="detail-row">
-                                <span class="detail-label">Phone:</span>
-                                <span class="detail-value">{{ student.phone }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Email:</span>
-                                <span class="detail-value">{{ student.email }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Address:</span>
-                                <span class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}, {{ student.country }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Academic Information Section -->
-                    <div class="section-card" style="margin-left: 190px;">
-                        <div class="section-header">
-                            <i class="fas fa-graduation-cap"></i>
-                            Academic Information
-                        </div>
-                        <div class="section-body">
-                            <div class="detail-row">
-                                <span class="detail-label">Course:</span>
-                                <span class="detail-value">{{ student.course }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Semester:</span>
-                                <span class="detail-value">{{ student.semester }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Year:</span>
-                                <span class="detail-value">{{ student.year }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Admission Date:</span>
-                                <span class="detail-value">{{ student.date_of_joining }}</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">10th Percentage:</span>
-                                <span class="detail-value">{{ student.tenth_percent }}%</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">12th Percentage:</span>
-                                <span class="detail-value">{{ student.twelfth_percent }}%</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Status:</span>
-                                <span class="detail-value">
-                                    <span class="status-badge status-active">
-                                        <i class="fas fa-check-circle"></i> Active
-                                    </span>
-                                </span>
-                            </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Course</div>
+                            <div class="detail-value" id="modal-course"></div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="form-actions">
-                    <button class="btn btn-outline" onclick="hideStudentDetails()" style="background: var(--gray); color: white;">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </button>
-                    <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ student.roll_no }}')">
-                        <i class="fas fa-edit"></i> Edit Details
-                    </button>
-                    <button class="btn btn-danger" onclick="showDeleteModal('{{ student.roll_no }}', '{{ student.name }}', '{{ student.course }}')">
-                        <i class="fas fa-trash-alt"></i> Delete Record
-                    </button>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Edit Student Form -->
-        {% if student %}
-        <div class="card" id="editStudentForm" style="display: none;">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-user-edit"></i>
-                    Edit Student Details
-                </h2>
-                <button class="btn btn-icon btn-outline" onclick="hideForm('editStudentForm')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{% url 'student' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="alter">
-                    <input type="hidden" name="roll_no" value="{{ student.roll_no }}">
-                    
-                    <div class="review-container">
-                        <!-- Personal Information Section -->
-                        <div class="section-card" style="margin-left: 50px;">
-                            <div class="section-header">
-                                <i class="fas fa-user"></i>
-                                Personal Information
-                            </div>
-                            <div class="section-body">
-                                <div class="form-group">
-                                    <label for="editRollNumber" class="form-label">Roll Number</label>
-                                    <input type="text" id="editRollNumber" class="form-control" value="{{ student.roll_no }}" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editName" class="form-label">Full Name</label>
-                                    <input type="text" id="editName" name="name" class="form-control" value="{{ student.name }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editFatherName" class="form-label">Father's Name</label>
-                                    <input type="text" id="editFatherName" name="father_name" class="form-control" value="{{ student.father_name }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editBirthday" class="form-label">Date of Birth</label>
-                                    <input type="date" id="editBirthday" name="birthday" class="form-control" value="{{ student.birthday|date:'Y-m-d' }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editGender" class="form-label">Gender</label>
-                                    <select id="editGender" name="gender" class="form-control" required>
-                                        <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
-                                        <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
-                                        <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Contact Information Section -->
-                        <div class="section-card" style="margin-left: 120px;">
-                            <div class="section-header">
-                                <i class="fas fa-address-book"></i>
-                                Contact Details
-                            </div>
-                            <div class="section-body">
-                                <div class="form-group">
-                                    <label for="editPhone" class="form-label">Phone Number</label>
-                                    <input type="tel" id="editPhone" name="phone" class="form-control" value="{{ student.phone }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editEmail" class="form-label">Email Address</label>
-                                    <input type="email" id="editEmail" name="email" class="form-control" value="{{ student.email }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editAddress" class="form-label">Address</label>
-                                    <textarea id="editAddress" name="address" class="form-control" rows="3" required>{{ student.address }}</textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editCity" class="form-label">City</label>
-                                    <input type="text" id="editCity" name="city" class="form-control" value="{{ student.city }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editState" class="form-label">State</label>
-                                    <input type="text" id="editState" name="state" class="form-control" value="{{ student.state }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editStateCode" class="form-label">State Code</label>
-                                    <input type="text" id="editStateCode" name="state_code" class="form-control" value="{{ student.state_code }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editCountry" class="form-label">Country</label>
-                                    <input type="text" id="editCountry" name="country" class="form-control" value="{{ student.country }}" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Academic Information Section -->
-                        <div class="section-card" style="margin-left: 190px;">
-                            <div class="section-header">
-                                <i class="fas fa-graduation-cap"></i>
-                                Academic Information
-                            </div>
-                            <div class="section-body">
-                                <div class="form-group">
-                                    <label for="editCourse" class="form-label">Course</label>
-                                    <select id="editCourse" name="course" class="form-control" required>
-                                        <option value="B.Com" {% if student.course == 'B.Com' %}selected{% endif %}>Bachelor of Commerce</option>
-                                        <option value="B.Sc" {% if student.course == 'B.Sc' %}selected{% endif %}>Bachelor of Science</option>
-                                        <option value="B.A" {% if student.course == 'B.A' %}selected{% endif %}>Bachelor of Arts</option>
-                                        <option value="B.C.A" {% if student.course == 'B.C.A' %}selected{% endif %}>Bachelor of Computer Application</option>
-                                        <option value="B.B.A" {% if student.course == 'B.B.A' %}selected{% endif %}>Bachelor of Business Administration</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editSemester" class="form-label">Semester</label>
-                                    <input type="text" id="editSemester" name="semester" class="form-control" value="{{ student.semester }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editYear" class="form-label">Year</label>
-                                    <input type="text" id="editYear" name="year" class="form-control" value="{{ student.year }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editDateOfJoining" class="form-label">Date of Joining</label>
-                                    <input type="date" id="editDateOfJoining" name="date_of_joining" class="form-control" value="{{ student.date_of_joining|date:'Y-m-d' }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editTenthPercent" class="form-label">10th Percentage</label>
-                                    <input type="number" id="editTenthPercent" name="tenth_percent" min="0" max="100" step="0.01" class="form-control" value="{{ student.tenth_percent }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="editTwelfthPercent" class="form-label">12th Percentage</label>
-                                    <input type="number" id="editTwelfthPercent" name="twelfth_percent" min="0" max="100" step="0.01" class="form-control" value="{{ student.twelfth_percent }}" required>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-outline" onclick="hideForm('editStudentForm')" style="background: var(--gray); color: white;">
-                            <i class="fas fa-times"></i> Cancel
+                <div class="modal-footer">
+                    <form method="POST" action="{% url 'student' %}" id="deleteForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="roll_no" id="modal-rollno-input">
+                        <button type="button" class="btn btn-outline" onclick="hideDeleteModal()" style="background: var(--gray); color: white;">
+                            Cancel
                         </button>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Save Changes
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt"></i> Delete
                         </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Confirm Deletion
-                </h3>
-            </div>
-            <div class="modal-body">
-                <p class="modal-message" id="deleteModalMessage">
-                    Are you sure you want to delete this student record? This action cannot be undone.
-                </p>
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">Roll Number</div>
-                        <div class="detail-value" id="modal-rollno"></div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Student Name</div>
-                        <div class="detail-value" id="modal-name"></div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Course</div>
-                        <div class="detail-value" id="modal-course"></div>
-                    </div>
+                    </form>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <form method="POST" action="{% url 'student' %}" id="deleteForm">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="roll_no" id="modal-rollno-input">
-                    <button type="button" class="btn btn-outline" onclick="hideDeleteModal()" style="background: var(--gray); color: white;">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt"></i> Delete
-                    </button>
-                </form>
             </div>
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toggle sidebar
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        let sidebarCollapsed = false;
+
+        hamburgerBtn.addEventListener('click', function() {
+            sidebarCollapsed = !sidebarCollapsed;
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            // Change icon based on state
+            const icon = this.querySelector('i');
+            if (sidebarCollapsed) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-justify');
+            } else {
+                icon.classList.remove('fa-justify');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Mobile sidebar toggle
+        function handleMobileSidebar() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+                hamburgerBtn.querySelector('i').classList.remove('fa-justify');
+                hamburgerBtn.querySelector('i').classList.add('fa-bars');
+                sidebarCollapsed = false;
+            }
+        }
+
+        // Initial check for mobile
+        handleMobileSidebar();
+        
+        // Resize handler
+        window.addEventListener('resize', handleMobileSidebar);
+
         // DOM Elements
         const addStudentBtn = document.getElementById('addStudentBtn');
         const viewStudentBtn = document.getElementById('viewStudentBtn');
@@ -1495,7 +1706,7 @@
         const editStudentForm = document.getElementById('editStudentForm');
         const alertContainer = document.getElementById('alertContainer');
         const deleteModal = document.getElementById('deleteModal');
-        const mainContainer = document.getElementById('mainContainer');
+        const mainContainer = document.getElementById('mainContent');
 
         // Event Listeners
         addStudentBtn.addEventListener('click', () => showForm('addStudentForm'));
