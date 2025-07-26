@@ -6,28 +6,22 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # urls for login
     path('', views.login_view, name='login'),
-    path('dashboard/', views.dashboard_view, name='dashboard'),
     path('logout/', views.logout_view, name='logoutdoor'),
-    # path('generate-pdf/', views.generate_pdf, name='generate_pdf'),
-    # path('generate-csv/', views.generate_csv, name='generate_csv'),
-    path("student/", views.student_functions, name="student"),
+    # urls for dashboards
+    path('dashboard/', views.dashboard_view, name='dashboard'),
     path('dashboard1/', views.dashboard1, name='dashboard1'),
-    path('dashboard2/', views.dashboard2, name='dashboard2'),
-    path('add_faculty/', views.add_faculty, name='add_faculty'),
-    path('delete-faculty/', views.delete_faculty, name='delete_faculty'),
-    path('confirm-delete-faculty/<int:faculty_id>/', views.confirm_delete_faculty, name='confirm_delete_faculty'),
-    path('view_faculty/', views.view_faculty, name='view_faculty'),
-    path('admin_attendance/', views.admin_attendance, name='admin_attendance'),
-    path('save-attendance/', views.save_attendance, name='save_attendance'),
-    path('faculty_attendance/', views.faculty_attendance, name='faculty_attendance'),
+    path('dashboard2/', views.dashboard2, name='dashboard2'), 
+    # urls for student functions
+    path("student/", views.student_functions, name="student"),
     path('students/', views.student_filter_page,name='students'),
     path('get_course_details/', views.get_course_details),
     path('filter_students/', views.filter_students),
     path('student/<int:id>/delete/', views.delete_students, name='delete_student'),
     path('bulk_update_students/', views.bulk_update_students, name='bulk_update_students'),
-
-
+    # urls for faculty functions 
+    path("faculty_functions/", views.faculty_functions, name="faculty_functions"),
 ]
 
 if settings.DEBUG:

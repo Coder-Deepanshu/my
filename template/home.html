@@ -391,10 +391,13 @@
         </div>
         
         <div class="login-body">
-            {% if form.errors %}
+            <!-- Added proper message display -->
+            {% if messages %}
+                {% for message in messages %}
                 <div class="error-message">
-                    <i class="fas fa-exclamation-circle"></i> Invalid username or password
+                    <i class="fas fa-exclamation-circle"></i> {{ message }}
                 </div>
+                {% endfor %}
             {% endif %}
             
             <div class="role-selector">
@@ -420,7 +423,8 @@
                     <label for="id_username"><i class="fas fa-user"></i> Username</label>
                     <i class="fas fa-user input-icon"></i>
                     <input type="text" name="username" id="id_username" 
-                           placeholder="Enter your username" required>
+                           placeholder="Enter your username" required
+                           value="{{ request.POST.username|default:'' }}">
                 </div>
                 
                 <div class="form-group">
@@ -454,6 +458,7 @@
         </div>
     </div>
 
+    <!-- Rest of your JavaScript remains the same -->
     <script>
         // Role selection functionality
         const roleBtns = document.querySelectorAll('.role-btn');
@@ -516,4 +521,3 @@
         });
     </script>
 </body>
-</html>

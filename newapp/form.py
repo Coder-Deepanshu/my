@@ -1,18 +1,4 @@
 from django import forms
-
-class LoginForm(forms.Form):
-    username = forms.CharField(
-        max_length=100,
-        label="",
-        widget=forms.TextInput(attrs={'placeholder': 'Enter your Username'})
-    )
-    user_id = forms.CharField(
-        max_length=100,
-        label="",
-        widget=forms.TextInput(attrs={'placeholder': 'Enter your User ID'})
-    )
-
-from django import forms
 from .models import result
 
 class uploadresultform(forms.ModelForm):
@@ -84,46 +70,43 @@ class uploadresultform(forms.ModelForm):
             'sixty_three': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'}),
             'sixty_four': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'})
                 }    
-from .models import Faculty
+from .models import Faculty_Add
 class FacultyForm(forms.ModelForm):
     class Meta:
-        model = Faculty
+        model = Faculty_Add
         fields = '__all__'
         exclude = ('employee_id',)  # <-- sahi syntax
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Enter Full Name'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Enter Email'}),
+            'father_name': forms.TextInput(attrs={'placeholder': "Enter Father's Name"}),
             'department': forms.TextInput(attrs={'placeholder': 'Enter Department'}),
-            'qualification': forms.TextInput(attrs={'placeholder': 'Enter Qualification'}),
-            'experience': forms.NumberInput(attrs={'placeholder': 'Enter Experience (e.g., 5.5)'}),
+            'position': forms.TextInput(attrs={'placeholder': 'Enter Position'}),
+            'experience': forms.NumberInput(attrs={'placeholder': 'e.g., 5.5'}),
             'date_of_joining': forms.DateInput(attrs={'placeholder': 'YYYY-MM-DD', 'type': 'date'}),
             'phone': forms.TextInput(attrs={'placeholder': 'Enter Phone Number'}),
+            'qualification':forms.TextInput(attrs={'placeholder':'Enter Qualification'}),
+            # Select Dropdowns
             'gender': forms.Select(attrs={'placeholder': 'Select Gender'}),
             'dob': forms.DateInput(attrs={'placeholder': 'YYYY-MM-DD', 'type': 'date'}),
             'address': forms.Textarea(attrs={'placeholder': 'Enter Address'}),
             'city': forms.TextInput(attrs={'placeholder': 'Enter City'}),
             'state': forms.TextInput(attrs={'placeholder': 'Enter State'}),
             'pin_code': forms.TextInput(attrs={'placeholder': 'Enter Pin Code'}),
+
+            'category': forms.Select(attrs={'placeholder': 'Select Category'}),
+            'nationality': forms.Select(attrs={'placeholder': 'Select Nationality'}),
+            'religion': forms.Select(attrs={'placeholder': 'Select Religion'}),
+
+            'adhar_no': forms.NumberInput(attrs={'placeholder': 'Enter Aadhar Number'}),
+            'pan_no': forms.TextInput(attrs={'placeholder': 'Enter PAN Number'}),
+
+            'status': forms.Select(attrs={'placeholder': 'Select Marital Status'}),
+
         }
-
-
-from django import forms
-from .models import Attendance
-
-class AttendanceForm(forms.ModelForm):
-    class Meta:
-        model = Attendance
-        fields = ['status', 'remarks']
-        
-class DateSelectionForm(forms.Form):
-    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    
-class MonthYearForm(forms.Form):
-    month = forms.ChoiceField(choices=[(i, i) for i in range(1, 13)])
-    year = forms.ChoiceField(choices=[(i, i) for i in range(2020, 2030)])
-
+# for adding students
 from django import forms
 from .models import Student
-
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
@@ -136,6 +119,7 @@ class StudentForm(forms.ModelForm):
 
 from django import forms
 
+# for editing bulk students
 class BulkStudentEditForm(forms.Form):
     FIELD_CHOICES = [
         ('father_name','Father_name'),

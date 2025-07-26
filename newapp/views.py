@@ -44,31 +44,74 @@ from django.shortcuts import render, redirect
 #     p.save()
 #     return response
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Student,Faculty_Add  # assuming Student model is imported
+
 def login_view(request):
     if request.method == 'POST':
-        username=request.POST.get('username')
-        password=request.POST.get('password')
-        role=request.POST.get('role')
-        if role =='admin':
-            if (username == "Deepanshu" and password == "12345") or (username == "Zyasha" and password == "12346") :  # Replace with your logic
-                # Set session data
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        role = request.POST.get('role')
+        
+        if not username or not password or not role:
+            messages.error(request, "Please fill all the fields")
+            return redirect('login')
+        
+        if role == 'admin':
+            if (username == "Deepanshu" and password == "12345") or (username == "Zyasha" and password == "12346"):
                 request.session['username1'] = username
-                return redirect('dashboard')  # Redirect to the dashboard
+                return redirect('dashboard')
             else:
-                return redirect("login")
-        elif role=='faculty':
-            if username == 'Kunal' and password== "12345":
-                request.session['username2']=username
-                return redirect('dashboard1')
-            else:
-                return redirect("login")
-        else :
-            if username == 'Abhishek' and password== "12345":
-                request.session['username3']=username
-                return redirect('dashboard2')
-            else:
-                return redirect("login")
-
+                messages.error(request, "Invalid admin credentials")
+                return redirect('login')
+                
+        elif role == 'faculty':
+            try:
+                faculty_phone = Faculty_Add.objects.all().values_list('phone', flat=True)
+                if username in faculty_phone:
+                    faculty_detail=Faculty_Add.objects.get(phone=username)
+                    faculty_employee_id=faculty_detail.employee_id
+                    if password==faculty_employee_id:
+                       request.session['username2'] =  faculty_detail.name
+                       return redirect('dashboard1')
+                    else:
+                       messages.error(request, "Invalid faculty credentials")
+                       return redirect('login')
+                else:
+                    messages.error(request, "Invalid faculty credentials")
+                    return redirect('login')
+                    
+            except Student.DoesNotExist:
+                messages.error(request, "Faculty not found")
+                return redirect('login')
+            except Exception as e:
+                messages.error(request, f"An error occurred: {str(e)}")
+                return redirect('login')
+                
+        elif role == 'student':
+            try:
+                student_emails = Student.objects.all().values_list('email', flat=True)
+                if username in student_emails:
+                    student_detail=Student.objects.get(email=username)
+                    student_phone=student_detail.phone
+                    if password == student_phone:
+                      request.session['username3'] = student_detail.name
+                      return redirect('dashboard2')
+                    else:
+                      messages.error(request, "Invalid student credentials")
+                      return redirect('login')
+                else:
+                    messages.error(request, "Invalid student credentials")
+                    return redirect('login')
+                    
+            except Student.DoesNotExist:
+                messages.error(request, "Student not found")
+                return redirect('login')
+            except Exception as e:
+                messages.error(request, f"An error occurred: {str(e)}")
+                return redirect('login')
+    
     return render(request, 'home.html')
 
 def dashboard_view(request):
@@ -183,184 +226,6 @@ def student_functions(request):
 
     return render(request, "student_page.html", context)
 
-#  for faculty 
-from django.shortcuts import render, redirect
-from .form import FacultyForm
-from .models import Faculty
-from django.db import models
-
-def add_faculty(request):
-    if request.method == 'POST':
-        form = FacultyForm(request.POST)
-        if form.is_valid():
-            max_id = Faculty.objects.aggregate(max_roll=models.Max('employee_id'))['max_roll']
-            if max_id is None:
-                max_id = 'GK20250'
-            else:
-                try:
-                    max_id = str(max_id)
-                except ValueError:
-                    max_id = 'GK20250'
-            faculty = form.save(commit=False)
-            faculty.employee_id = max_id[0:6]+str(int(max_id[6])+1)
-            faculty.save()
-            return render(request, 'add_faculty.html', {
-                'form': FacultyForm(),
-                'success_message': '    Faculty added successfully!'
-            })
-
-        else:
-            return render(request, 'add_faculty.html', {'form': form, 'error_message': form.errors})
-    else:
-        form = FacultyForm()
-    return render(request, 'add_faculty.html', {'form':form})
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import Faculty  # or from your_app.models import Faculty
-
-
-def delete_faculty(request):
-    employee_id = request.GET.get('employee_id')
-    if employee_id:
-        faculty = get_object_or_404(Faculty, employee_id=employee_id)
-        return render(request, 'delete_faculty.html', {'faculty': faculty})
-    return render(request, 'delete_faculty.html')
-
-
-def confirm_delete_faculty(request, faculty_id):
-    faculty = get_object_or_404(Faculty, pk=faculty_id)
-    if request.method == 'POST':
-        faculty.delete()
-        messages.success(request, f'Faculty {faculty.name} deleted successfully!')
-        return redirect('delete_faculty')
-    return redirect('delete_faculty')
-
-def view_faculty(request):
-    faculty = None
-    error_message = None
-    if request.method == 'GET':
-        id= request.GET.get('employee_id')
-        try:
-            faculty = Faculty.objects.get(employee_id=id)
-        except Faculty.DoesNotExist:
-            error_message = "No Faculty found with the provided Employee ID."
-    return render(request, 'view_faculty.html', {'faculty': faculty, 'error_message': error_message})
-
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import JsonResponse
-from django.db.models import Count
-from datetime import datetime, date
-from .models import Faculty, Attendance
-from .form import AttendanceForm, DateSelectionForm, MonthYearForm
-
-def is_admin(user):
-    return user.is_superuser
-
-@login_required
-@user_passes_test(is_admin)
-def admin_attendance(request):
-    today = date.today()
-    selected_date = today
-    
-    if request.method == 'POST' and 'date' in request.POST:
-        form = DateSelectionForm(request.POST)
-        if form.is_valid():
-            selected_date = form.cleaned_data['date']
-    else:
-        form = DateSelectionForm(initial={'date': today})
-    
-    faculties = Faculty.objects.all()
-    attendance_data = []
-    
-    for faculty in faculties:
-        attendance, created = Attendance.objects.get_or_create(
-            faculty=faculty,
-            date=selected_date,
-            defaults={'status': 'absent'}  # Default status if creating new
-        )
-        attendance_data.append({
-            'faculty': faculty,
-            'attendance': attendance,
-            'form': AttendanceForm(instance=attendance, prefix=str(faculty.id))
-        })
-    
-    context = {
-        'today': today,
-        'selected_date': selected_date,
-        'attendance_data': attendance_data,
-        'date_form': form,
-    }
-    return render(request, 'admin_attendance.html', context)
-
-@login_required
-@user_passes_test(is_admin)
-def save_attendance(request):
-    if request.method == 'POST':
-        faculty_id = request.POST.get('faculty_id')
-        date_str = request.POST.get('date')
-        status = request.POST.get('status')
-        remarks = request.POST.get('remarks')
-        
-        try:
-            faculty = Faculty.objects.get(id=faculty_id)
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-            
-            attendance, created = Attendance.objects.update_or_create(
-                faculty=faculty,
-                date=date_obj,
-                defaults={'status': status, 'remarks': remarks}
-            )
-            
-            return JsonResponse({'success': True})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
-
-@login_required
-def faculty_attendance(request):
-    faculty = request.user.faculty
-    today = date.today()
-    month = today.month
-    year = today.year
-    
-    if request.method == 'POST':
-        form = MonthYearForm(request.POST)
-        if form.is_valid():
-            month = int(form.cleaned_data['month'])
-            year = int(form.cleaned_data['year'])
-    else:
-        form = MonthYearForm(initial={'month': month, 'year': year})
-    
-    # Get attendance for the selected month/year
-    attendance_records = Attendance.objects.filter(
-        faculty=faculty,
-        date__year=year,
-        date__month=month
-    ).order_by('-date')
-    
-    # Calculate summary counts
-    summary = attendance_records.values('status').annotate(count=Count('status'))
-    summary_dict = {item['status']: item['count'] for item in summary}
-    
-    context = {
-        'faculty': faculty,
-        'attendance_records': attendance_records,
-        'form': form,
-        'summary': {
-            'present': summary_dict.get('present', 0),
-            'absent': summary_dict.get('absent', 0),
-            'leave': summary_dict.get('leave', 0),
-            'late': summary_dict.get('late', 0),
-        },
-        'current_month': month,
-        'current_year': year,
-    }
-    return render(request, 'faculty_attendance.html', context)
-
 #  for multiple student filtering
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
@@ -459,3 +324,126 @@ def delete_students(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+# for single faculty
+from django.db import models
+from django.contrib import messages
+from django.shortcuts import render
+from .models import Faculty_Add  # Make sure you have this model defined
+
+def faculty_functions(request):
+    context = {}
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        # Add faculty
+        if action == "add":
+            try:
+                # Auto-generate employee ID
+                max_id = Faculty_Add.objects.aggregate(max_id=models.Max('employee_id'))['max_id']
+                
+                if max_id is None:
+                    employee_id = 'GK20250'  # Initial ID
+                else:
+                    try:
+                        # Extract numeric part and increment
+                        numeric_part = int(max_id[2:])  # Remove 'GK' prefix
+                        employee_id = f'GK{numeric_part + 1}'
+                    except (ValueError, IndexError):
+                        employee_id = 'GK20250'  # Fallback if format is wrong
+
+                # Create faculty with all required fields
+                Faculty_Add.objects.create(
+                    employee_id=employee_id,
+                    name=request.POST.get("name"),
+                    father_name=request.POST.get("father_name"),
+                    email=request.POST.get("email"),
+                    phone=request.POST.get("phone"),
+                    position=request.POST.get("position"),
+                    gender=request.POST.get("gender"),
+                    department=request.POST.get("department"),
+                    qualification=request.POST.get("qualification"),
+                    address=request.POST.get("address"),
+                    city=request.POST.get("city"),
+                    state=request.POST.get("state"),
+                    pin_code=request.POST.get("pin_code"),
+                    country=request.POST.get("country", "India"),
+                    date_of_joining=request.POST.get("date_of_joining"),
+                    experience=request.POST.get("experience"),
+                    dob=request.POST.get("dob"),
+                    category=request.POST.get("category"),
+                    nationality=request.POST.get("nationality", "Indian"),
+                    religion=request.POST.get("religion"),
+                    adhar_no=request.POST.get("adhar_no"),
+                    pan_no=request.POST.get("pan_no"),
+                    status=request.POST.get("status", "Active")
+                )
+                messages.success(request, "Faculty added successfully!")
+            except Exception as e:
+                messages.error(request, f"Error adding faculty: {str(e)}")
+
+        # View faculty
+        elif action == "view":
+            emp_id = request.POST.get("employee_id")
+            try:
+                faculty = Faculty_Add.objects.get(employee_id=emp_id)
+                context["faculty"] = faculty
+            except Faculty_Add.DoesNotExist:
+                messages.error(request, "No faculty found with this ID.")
+            except Exception as e:
+                messages.error(request, f"Error viewing faculty: {str(e)}")
+
+        # Delete faculty
+        elif action == "delete":
+            emp_id = request.POST.get("employee_id")
+            try:
+                faculty = Faculty_Add.objects.get(employee_id=emp_id)
+                faculty.delete()
+                messages.success(request, "Faculty deleted successfully.")
+            except Faculty_Add.DoesNotExist:
+                messages.error(request, "Faculty not found.")
+            except Exception as e:
+                messages.error(request, f"Error deleting faculty: {str(e)}")
+
+        # Alter faculty
+        elif action == "alter":
+            emp_id = request.POST.get("employee_id")
+            try:
+                faculty = Faculty_Add.objects.get(employee_id=emp_id)
+                
+                # Update all fields
+                faculty.name = request.POST.get("name")
+                faculty.father_name = request.POST.get("father_name")
+                faculty.email = request.POST.get("email")
+                faculty.phone = request.POST.get("phone")
+                faculty.position = request.POST.get("position")
+                faculty.gender = request.POST.get("gender")
+                faculty.department = request.POST.get("department")
+                faculty.qualification = request.POST.get("qualification")
+                faculty.address = request.POST.get("address")
+                faculty.city = request.POST.get("city")
+                faculty.state = request.POST.get("state")
+                faculty.pin_code = request.POST.get("pin_code")
+                faculty.country = request.POST.get("country", "India")
+                faculty.date_of_joining = request.POST.get("date_of_joining")
+                faculty.experience = request.POST.get("experience")
+                faculty.dob = request.POST.get("dob")
+                faculty.category = request.POST.get("category")
+                faculty.nationality = request.POST.get("nationality", "Indian")
+                faculty.religion = request.POST.get("religion")
+                faculty.adhar_no = request.POST.get("adhar_no")
+                faculty.pan_no = request.POST.get("pan_no")
+                faculty.status = request.POST.get("status", "Active")
+                
+                faculty.save()
+                messages.success(request, "Faculty details updated successfully.")
+            except Faculty_Add.DoesNotExist:
+                messages.error(request, "Faculty not found.")
+            except Exception as e:
+                messages.error(request, f"Error updating faculty: {str(e)}")
+
+    return render(request, "faculty_page.html", context)
+
+
+

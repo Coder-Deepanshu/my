@@ -1228,6 +1228,34 @@
             display: block;
         }
     </style>
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        .chart-card {
+            flex: 1 1 45%;
+            min-width: 300px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        .chart-header {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+    </style>
 </head>
 <body>
     <div class="bubbles">
@@ -1526,34 +1554,24 @@
                     </div>
                 </div>
                 
-                <!-- Charts Section -->
-                <div class="charts-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-                    <!-- Line Chart Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Student Enrollment Trend</h3>
-                            <div class="card-icon primary">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="lineChart" height="450"></canvas>
-                        </div>
-                    </div>
-                    
-                    <!-- Pie Chart Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Department Distribution</h3>
-                            <div class="card-icon success">
-                                <i class="fas fa-chart-pie"></i>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="pieChart" height="450"></canvas>
-                        </div>
-                    </div>
-                </div>
+               <div class="dashboard-charts">
+    <!-- Pie Chart Card -->
+    <div class="chart-card">
+        <div class="chart-header">Revenue Sources</div>
+        <div class="chart-container">
+            <canvas id="revenuePie"></canvas>
+        </div>
+    </div>
+
+    <!-- Bar Chart Card -->
+    <div class="chart-card">
+        <div class="chart-header">Monthly Performance</div>
+        <div class="chart-container">
+            <canvas id="performanceBar"></canvas>
+        </div>
+    </div>
+</div>
+
                 
                 <!-- Recent Activity -->
                 <div class="recent-activity">
@@ -1697,7 +1715,7 @@
                         </div>
                         <h3 class="student-action-title">Single Faculty</h3>
                         <p class="student-action-desc">View and edit individual faculty records</p>
-                        <a href="#" class="student-action-btn">Open</a>
+                        <a href="{% url 'faculty_functions' %}" class="student-action-btn">Open</a>
                     </div>
                     
                     <div class="student-action-card">
@@ -2484,5 +2502,98 @@
             }
         });
     </script>
+    <script>
+    // Revenue Pie Chart
+    new Chart(document.getElementById('revenuePie'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Product Sales', 'Services', 'Subscriptions', 'Advertising'],
+            datasets: [{
+                data: [45, 25, 20, 10],
+                backgroundColor: [
+                    '#4e73df',
+                    '#1cc88a',
+                    '#36b9cc',
+                    '#f6c23e'
+                ],
+                hoverBackgroundColor: [
+                    '#2e59d9',
+                    '#17a673',
+                    '#2c9faf',
+                    '#dda20a'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 20,
+                        font: {
+                            size: 13
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Performance Bar Chart
+    new Chart(document.getElementById('performanceBar'), {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: '2023',
+                data: [21500, 18900, 24000, 27800, 22900, 31500],
+                backgroundColor: '#4e73df',
+                hoverBackgroundColor: '#2e59d9',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawBorder: false,
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '$' + context.raw.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
 </body>
 </html>
