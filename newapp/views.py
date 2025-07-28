@@ -52,14 +52,15 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        user_id=request.POST.get('userId')
         role = request.POST.get('role')
         
-        if not username or not password or not role:
+        if not username or not password or not role or not user_id:
             messages.error(request, "Please fill all the fields")
             return redirect('login')
         
         if role == 'admin':
-            if (username == "Deepanshu" and password == "12345") or (username == "Zyasha" and password == "12346"):
+            if username == "Deepanshu" and password == "12345" and user_id=='AD20250':
                 request.session['username1'] = username
                 return redirect('dashboard')
             else:
@@ -68,12 +69,15 @@ def login_view(request):
                 
         elif role == 'faculty':
             try:
-                faculty_phone = Faculty_Add.objects.all().values_list('phone', flat=True)
-                if username in faculty_phone:
-                    faculty_detail=Faculty_Add.objects.get(phone=username)
+                faculty_email = Faculty_Add.objects.all().values_list('email', flat=True)
+                if username in faculty_email:
+                    faculty_detail=Faculty_Add.objects.get(email=username)
                     faculty_employee_id=faculty_detail.employee_id
-                    if password==faculty_employee_id:
+                    faculty_phone=faculty_detail.phone
+                    if password==faculty_phone and user_id == faculty_employee_id:
                        request.session['username2'] =  faculty_detail.name
+                       request.session['faculty_id']= faculty_employee_id
+                       request.session['role'] = role
                        return redirect('dashboard1')
                     else:
                        messages.error(request, "Invalid faculty credentials")
@@ -95,8 +99,11 @@ def login_view(request):
                 if username in student_emails:
                     student_detail=Student.objects.get(email=username)
                     student_phone=student_detail.phone
-                    if password == student_phone:
+                    student_rollno=student_detail.roll_no
+                    if password == student_phone and user_id == student_rollno:
                       request.session['username3'] = student_detail.name
+                      request.session['student_rollno'] = student_rollno
+                      request.session['role'] = role
                       return redirect('dashboard2')
                     else:
                       messages.error(request, "Invalid student credentials")
@@ -113,6 +120,17 @@ def login_view(request):
                 return redirect('login')
     
     return render(request, 'home.html')
+
+def profile_details(request):
+    role = request.session.get('role')
+    if role == 'faculty':
+        faculty_id=request.session.get('faculty_id')
+        faculty_details=Faculty_Add.objects.get(employee_id=faculty_id)
+        return render(request,'profile.html',{'detail':faculty_details})
+    elif role == 'student':
+        student_id=request.session.get('student_rollno')
+        student_details=Student.objects.get(roll_no=student_id)
+        return render(request,'profile.html',{'detail':student_details})
 
 def dashboard_view(request):
     # Check if the user is logged in
@@ -157,12 +175,30 @@ def student_functions(request):
         # Add student
         if action == "add":
             try:
+                # Auto-generate employee ID
+                max_id = Student.objects.aggregate(max_id=models.Max('roll_no'))['max_id']
+                
+                if max_id is None:
+                    roll_no = 'ST20250'  # Initial ID
+                else:
+                    try:
+                        # Extract numeric part and increment
+                        numeric_part = int(max_id[2:])  # Remove 'GK' prefix
+                        roll_no = f'ST{numeric_part + 1}'
+                    except (ValueError, IndexError):
+                        roll_no = 'ST20250'  # Fallback if format is wrong
+                email=request.POST.get("email")
+                phone=request.POST.get("phone")
                 Student.objects.create(
-                    roll_no=request.POST.get("roll_no"),
+                    roll_no=roll_no,
                     name=request.POST.get("name"),
                     father_name=request.POST.get("father_name"),
-                    email=request.POST.get("email"),
-                    phone=request.POST.get("phone"),
+                    mother_name=request.POST.get('mother_name'),
+                    occupation=request.POST.get('occupation'),
+                    income=request.POST.get('income'),
+                    email=email,
+                    phone=phone,
+                    parent_phone=request.POST.get("parent_phone"),
                     gender=request.POST.get("gender"),
                     course=request.POST.get("course"),
                     birthday=request.POST.get("birthday"),
@@ -174,6 +210,17 @@ def student_functions(request):
                     date_of_joining=request.POST.get("date_of_joining"),
                     tenth_percent=request.POST.get("tenth_percent"),
                     twelfth_percent=request.POST.get("twelfth_percent"),
+                    adhar_no=request.POST.get("adhar_no"),
+                    pan_no=request.POST.get("pan_no"),
+                    family_id=request.POST.get("family_id"),
+                    family_id_phone_no=request.POST.get("family_id_phone_no"),
+                    category=request.POST.get("category"),
+                    nationality=request.POST.get("nationality"),
+                    religion=request.POST.get("religion"),
+                    status=request.POST.get("status"),
+                    user_id=roll_no, 
+                    username=email,
+                    password=phone,
                 )
                 messages.success(request, "Student added successfully!")
             except Exception as e:

@@ -426,6 +426,12 @@
                            placeholder="Enter your username" required
                            value="{{ request.POST.username|default:'' }}">
                 </div>
+                <div class="form-group">
+                    <label for="id_user"><i class="fas fa-id-badge"></i> User ID</label>
+                    <i class="fas fa-id-badge input-icon"></i>
+                    <input type="password" name="userId" id="id_user" 
+                           placeholder="Enter your user id" required>
+                </div>
                 
                 <div class="form-group">
                     <label for="id_password"><i class="fas fa-lock"></i> Password</label>

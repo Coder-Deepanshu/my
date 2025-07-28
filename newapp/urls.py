@@ -22,6 +22,9 @@ urlpatterns = [
     path('bulk_update_students/', views.bulk_update_students, name='bulk_update_students'),
     # urls for faculty functions 
     path("faculty_functions/", views.faculty_functions, name="faculty_functions"),
+    # urls for profile
+    path("profile_details/", views.profile_details, name="profile_details"),
+
 ]
 
 if settings.DEBUG:

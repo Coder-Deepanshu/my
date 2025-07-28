@@ -7,6 +7,7 @@ from django.db import models
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
+    department=models.CharField(max_length=50)
     no_of_years = models.IntegerField()
     no_of_semesters = models.IntegerField()
 
@@ -14,11 +15,16 @@ class Course(models.Model):
         return self.name
 
 class Student(models.Model):
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     roll_no = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
     father_name = models.CharField(max_length=100)
+    mother_name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
+    parent_phone=models.CharField(max_length=15)
+    occupation=models.CharField(max_length=50)
+    income=models.CharField(max_length=20)
     gender = models.CharField(max_length=10)
     course = models.CharField(max_length=100)  # Changed to ForeignKey
     birthday = models.DateField()
@@ -28,10 +34,49 @@ class Student(models.Model):
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
     state_code = models.CharField(max_length=10)
-    country = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True,default='India')
     date_of_joining = models.DateField()
     tenth_percent = models.DecimalField(max_digits=5, decimal_places=2)
     twelfth_percent = models.DecimalField(max_digits=5, decimal_places=2)
+    category = models.CharField(max_length=10, choices=[
+        ('Genral', 'General'),
+        ('BC(A)', 'BC(A)'),
+        ('BC(B)', 'BC(B)'),
+        ('SC', 'SC'),
+        ('ST', 'ST'),
+        ('Others', 'Others')
+    ])
+
+    # Nationality & Religion
+    nationality = models.CharField(max_length=20, choices=[
+        ('Indian', 'Indian'),
+        ('NRI', 'NRI'),
+        ('Other', 'Other')
+    ])
+    religion = models.CharField(max_length=20, choices=[
+        ('Hindu', 'Hindu'),
+        ('Muslim', 'Muslim'),
+        ('Sikh', 'Sikh'),
+        ('Christian', 'Christian'),
+        ('Jain', 'Jain'),
+        ('Buddhist', 'Buddhist'),
+        ('Other', 'Other')
+    ])
+
+    # Identity Info
+    adhar_no = models.BigIntegerField()
+    pan_no = models.CharField(max_length=20,null=True)
+    family_id=models.CharField(max_length=20)
+    family_id_phone_no=models.CharField(max_length=15)
+
+    # Marital Status
+    status = models.CharField(max_length=15, choices=[
+        ('married', 'Married'),
+        ('unmarried', 'Unmarried')
+    ], default='unmarried')
+    user_id=models.CharField(max_length=10)
+    username=models.EmailField()
+    password=models.CharField(max_length=15)
 
     def __str__(self):
         return f"{self.name} ({self.roll_no})"

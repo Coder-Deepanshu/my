@@ -1006,6 +1006,7 @@
                 font-size: 1.3rem;
             }
         }
+        
     </style>
 </head>
 <body>
@@ -1036,7 +1037,7 @@
             <h3 class="menu-title">Main</h3>
             <ul class="menu-list">
                 <li class="menu-item active">
-                    <a href="#" class="menu-link active">
+                    <a href="{% url 'dashboard2' %}" class="menu-link active">
                         <i class="fas fa-tachometer-alt menu-icon"></i>
                         <span class="menu-text">Dashboard</span>
                     </a>
@@ -1046,7 +1047,7 @@
             <h3 class="menu-title">Academics</h3>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="{% url 'profile_details' %}" class="menu-link">
                         <i class="fas fa-user-graduate menu-icon"></i>
                         <span class="menu-text">My Profile</span>
                     </a>

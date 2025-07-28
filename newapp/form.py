@@ -70,55 +70,8 @@ class uploadresultform(forms.ModelForm):
             'sixty_three': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'}),
             'sixty_four': forms.TextInput(attrs={'placeholder': 'Enter Your 12th Percentage'})
                 }    
-from .models import Faculty_Add
-class FacultyForm(forms.ModelForm):
-    class Meta:
-        model = Faculty_Add
-        fields = '__all__'
-        exclude = ('employee_id',)  # <-- sahi syntax
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Enter Full Name'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'Enter Email'}),
-            'father_name': forms.TextInput(attrs={'placeholder': "Enter Father's Name"}),
-            'department': forms.TextInput(attrs={'placeholder': 'Enter Department'}),
-            'position': forms.TextInput(attrs={'placeholder': 'Enter Position'}),
-            'experience': forms.NumberInput(attrs={'placeholder': 'e.g., 5.5'}),
-            'date_of_joining': forms.DateInput(attrs={'placeholder': 'YYYY-MM-DD', 'type': 'date'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Enter Phone Number'}),
-            'qualification':forms.TextInput(attrs={'placeholder':'Enter Qualification'}),
-            # Select Dropdowns
-            'gender': forms.Select(attrs={'placeholder': 'Select Gender'}),
-            'dob': forms.DateInput(attrs={'placeholder': 'YYYY-MM-DD', 'type': 'date'}),
-            'address': forms.Textarea(attrs={'placeholder': 'Enter Address'}),
-            'city': forms.TextInput(attrs={'placeholder': 'Enter City'}),
-            'state': forms.TextInput(attrs={'placeholder': 'Enter State'}),
-            'pin_code': forms.TextInput(attrs={'placeholder': 'Enter Pin Code'}),
-
-            'category': forms.Select(attrs={'placeholder': 'Select Category'}),
-            'nationality': forms.Select(attrs={'placeholder': 'Select Nationality'}),
-            'religion': forms.Select(attrs={'placeholder': 'Select Religion'}),
-
-            'adhar_no': forms.NumberInput(attrs={'placeholder': 'Enter Aadhar Number'}),
-            'pan_no': forms.TextInput(attrs={'placeholder': 'Enter PAN Number'}),
-
-            'status': forms.Select(attrs={'placeholder': 'Select Marital Status'}),
-
-        }
-# for adding students
-from django import forms
-from .models import Student
-class StudentForm(forms.ModelForm):
-    class Meta:
-        model = Student
-        fields = '__all__'
-        widgets = {
-            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
-            'date_of_joining': forms.DateInput(attrs={'type': 'date'}),
-            'address': forms.Textarea(attrs={'rows': 3}),
-        }
 
 from django import forms
-
 # for editing bulk students
 class BulkStudentEditForm(forms.Form):
     FIELD_CHOICES = [
