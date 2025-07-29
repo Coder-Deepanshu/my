@@ -24,6 +24,8 @@ urlpatterns = [
     path("faculty_functions/", views.faculty_functions, name="faculty_functions"),
     # urls for profile
     path("profile_details/", views.profile_details, name="profile_details"),
+    # for id card
+    path("id_card/", views.id_card, name="id_card"),
 
 ]
 

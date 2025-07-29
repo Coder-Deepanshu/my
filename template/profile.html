@@ -979,7 +979,7 @@
                 </li>
                 
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="{% url 'id_card' %}" class="menu-link">
                         <i class="fas fa-id-card menu-icon"></i>
                         <span class="menu-text">ID Card</span>
                     </a>
@@ -1043,14 +1043,22 @@
         <div class="content" >
         <div class="profile-container">
             <!-- Sidebar -->
-            <div class="profile-sidebar">
-                <div class="profile-picture-container">
-                    <img src="https://via.placeholder.com/150" alt="Student Photo" class="profile-picture">
-                    <button class="profile-upload-btn" title="Upload Profile Picture">
-                        <i class="fas fa-camera"></i>
-                        <input type="file" accept="image/*" style="display: none;">
-                    </button>
-                </div>
+            <div  class="profile-sidebar">
+            <div class="profile-picture-container">
+                {% if detail.profile_picture %}
+                <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="profile-picture">
+                {% else %}
+                <img src="https://via.placeholder.com/150" alt="Student Photo" class="profile-picture">
+                {% endif %}
+    
+                <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
+                <i class="fas fa-camera"></i>
+                </button>
+                <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                </form>
+            </div>
                 <h2 class="student-name">{{ detail.name }}</h2>
                 <p class="student-id">ID: {{ detail.roll_no }}</p>
                 
@@ -1275,25 +1283,19 @@
             mainContent.classList.toggle('sidebar-active');
         });
 
-        // Profile picture upload functionality
-        const uploadBtn = document.querySelector('.profile-upload-btn');
-        const fileInput = uploadBtn.querySelector('input[type="file"]');
+        // Profile picture preview functionality
+document.getElementById('profile_picture_upload').addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
         const profilePicture = document.querySelector('.profile-picture');
         
-        uploadBtn.addEventListener('click', () => {
-            fileInput.click();
-        });
+        reader.onload = function(e) {
+            profilePicture.src = e.target.result;
+        }
         
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    profilePicture.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        reader.readAsDataURL(this.files[0]);
+    }
+});
 
         // Generate random bubble positions and sizes
         const bubbles = document.querySelectorAll('.bubble');

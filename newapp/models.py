@@ -39,7 +39,7 @@ class Student(models.Model):
     tenth_percent = models.DecimalField(max_digits=5, decimal_places=2)
     twelfth_percent = models.DecimalField(max_digits=5, decimal_places=2)
     category = models.CharField(max_length=10, choices=[
-        ('Genral', 'General'),
+        ('General', 'General'),
         ('BC(A)', 'BC(A)'),
         ('BC(B)', 'BC(B)'),
         ('SC', 'SC'),
@@ -71,9 +71,9 @@ class Student(models.Model):
 
     # Marital Status
     status = models.CharField(max_length=15, choices=[
-        ('married', 'Married'),
-        ('unmarried', 'Unmarried')
-    ], default='unmarried')
+        ('Married', 'Married'),
+        ('Unmarried', 'Unmarried')
+    ], default='Unmarried')
     user_id=models.CharField(max_length=10)
     username=models.EmailField()
     password=models.CharField(max_length=15)

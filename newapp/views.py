@@ -132,6 +132,48 @@ def profile_details(request):
         student_details=Student.objects.get(roll_no=student_id)
         return render(request,'profile.html',{'detail':student_details})
 
+# for uploading picture 
+def profile_details(request):
+    role = request.session.get('role')
+    if role == 'student':
+       try:
+        student = Student.objects.get(roll_no=request.session.get('student_rollno'))
+       except Student.DoesNotExist:
+        return redirect('dashboard2')
+    
+       if request.method == 'POST' and 'profile_picture' in request.FILES:
+         student.profile_picture = request.FILES['profile_picture']
+         student.save()
+         messages.success(request, 'Profile picture updated successfully!')
+         return redirect('profile_details')
+    
+    context = {
+        'detail': student,
+    }
+    return render(request, 'profile.html', context)
+
+# for id card
+def id_card(request):
+    role=request.session.get('role')
+    context = {}
+    
+    try:
+        # Check user type and add appropriate details to context
+        if role == 'student':
+            student = Student.objects.get(roll_no=request.session.get('student_rollno'))
+            context['detail'] = student
+            context['user_type'] = 'student'
+        elif role == 'faculty':
+            faculty = Faculty_Add.objects.get(employee_id=request.session.get('faculty_id'))
+            context['faculty_detail'] = faculty
+            context['user_type'] = 'faculty'
+            
+    except (Student.DoesNotExist, Faculty_Add.DoesNotExist):
+        return redirect('logoutdoor')
+    
+    return render(request, 'id_card.html', context)
+
+# for admin dashboard
 def dashboard_view(request):
     # Check if the user is logged in
     username = request.session.get('username1')  # Retrieve username from session
@@ -140,6 +182,7 @@ def dashboard_view(request):
     else:
         return redirect('login') 
 
+# for faculty dashboard
 def dashboard1(request):
     # Check if the user is logged in
     username = request.session.get('username2')  # Retrieve username from session
@@ -147,7 +190,8 @@ def dashboard1(request):
         return render(request, 'dashboard1.html', {'username': username})
     else:
         return redirect('login')  # Redirect to login if not logged in
-    
+
+# for student dashboard
 def dashboard2(request):
     # Check if the user is logged in
     username = request.session.get('username3')  # Retrieve username from session
@@ -156,6 +200,7 @@ def dashboard2(request):
     else:
         return redirect('login') 
 
+# for logout from account
 def logout_view(request):
     # Clear session data
     request.session.flush()
@@ -251,8 +296,12 @@ def student_functions(request):
                 student = Student.objects.get(roll_no=request.POST.get("roll_no"))
                 student.name = request.POST.get("name")
                 student.father_name = request.POST.get("father_name")
+                student.mother_name = request.POST.get("mother_name")
+                student.occupation = request.POST.get("occupation")
+                student.income = request.POST.get("income")
                 student.email = request.POST.get("email")
                 student.phone = request.POST.get("phone")
+                student.parent_phone = request.POST.get("parent_phone")
                 student.gender = request.POST.get("gender")
                 student.course = request.POST.get("course")
                 student.birthday = request.POST.get("birthday")
@@ -266,6 +315,14 @@ def student_functions(request):
                 student.date_of_joining = request.POST.get("date_of_joining")
                 student.tenth_percent = request.POST.get("tenth_percent")
                 student.twelfth_percent = request.POST.get("twelfth_percent")
+                student.adhar_no = request.POST.get("adhar_no")
+                student.pan_no = request.POST.get("pan_no")
+                student.family_id = request.POST.get("family_id")
+                student.family_id_phone_no = request.POST.get("family_id_phone_no)")
+                student.category = request.POST.get("category")
+                student.nationality = request.POST.get("nationality")
+                student.religion = request.POST.get("religion")
+                student.status = request.POST.get("status")
                 student.save()
                 messages.success(request, "Student details updated.")
             except Student.DoesNotExist:
