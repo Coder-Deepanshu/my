@@ -25,3 +25,16 @@
 # array1=np.array([[1,2],[3,4]])
 
 # print(array1*2)
+import pandas as pd
+df = pd.read_csv('newpro/tesla.csv')
+
+# print(df.head())
+
+# print(df.shape)
+
+# print(df.info())
+
+# print(df.describe())
+
+ID='ST20250'
+print(ID[0:2])

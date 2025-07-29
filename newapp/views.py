@@ -121,6 +121,70 @@ def login_view(request):
     
     return render(request, 'home.html')
 
+# for forget password:
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt  # Still needed for other potential AJAX requests
+def forget_password(request):
+    if request.method == 'GET':
+        college_id = request.GET.get('collegeId')
+        ID_str=str(college_id)
+        try:
+         if ID_str[0:2] == 'ST':
+            student_detail = Student.objects.get(roll_no=college_id)
+            return JsonResponse({
+                'success': True,
+                'username': student_detail.username,
+                'user_id': student_detail.user_id,
+                'password': student_detail.password  # Make sure this field exists in your model
+            })
+         elif ID_str[0:2] == 'GK':
+             faculty_detail = Faculty_Add.objects.get(employee_id=college_id)
+             return JsonResponse({
+                'success': True,
+                'username': faculty_detail.email,
+                'user_id': faculty_detail.employee_id,
+                'password': faculty_detail.phone  # Make sure this field exists in your model
+            })
+        except (Student.DoesNotExist,Faculty_Add.DoesNotExist):
+            return JsonResponse({
+                'success': False,
+                'error': 'User not found'
+            }, status=404)
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+
+def admin_signup(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        user_id = request.POST.get('user_id')
+        password = request.POST.get('password')
+        
+        # Here you should validate the admin credentials
+        # For example, check against a secret admin code or existing admin credentials
+        
+        # This is just example validation - replace with your actual logic
+        if username == "Deepanshu" and password == "12345" and user_id =="AD20250":
+            # Store admin authentication in session
+            request.session['admin_authenticated'] = True
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'error': 'Invalid admin credentials'})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+def add_new_admin(request):
+    # Check if admin is authenticated
+    if not request.session.get('admin_authenticated'):
+        return redirect('login')  # Or your login page
+    
+    # Render the add new admin page
+    return render(request, 'admin_page.html')  # Create this template
+
 def profile_details(request):
     role = request.session.get('role')
     if role == 'faculty':

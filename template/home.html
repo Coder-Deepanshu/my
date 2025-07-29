@@ -358,6 +358,111 @@
             border-top: 1px solid rgba(0,0,0,0.05);
         }
 
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-title i {
+            font-size: 24px;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-btn {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        /* Admin signup form specific */
+        .admin-signup-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        /* Help info modal */
+        .help-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .help-info-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .help-info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .help-info-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-info-desc {
+            font-size: 14px;
+            color: var(--dark);
+            padding-left: 28px;
+        }
+
         /* Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -381,7 +486,51 @@
             .login-header {
                 padding: 25px 20px;
             }
+            
+            .modal-content {
+                padding: 20px;
+            }
         }
+        /* Admin Signup Button Styles */
+.demo-credentials ul {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+}
+
+.demo-credentials li {
+    margin-bottom: 0;
+    border-bottom: none;
+    width: 100%;
+    justify-content: center;
+}
+
+#adminSignupLink {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: rgba(230, 57, 70, 0.1);
+    color: var(--danger);
+    border-radius: 8px;
+    transition: var(--transition);
+    text-align: center;
+    margin: 0 auto;
+    width: auto;
+    min-width: 200px;
+}
+
+#adminSignupLink:hover {
+    background-color: rgba(230, 57, 70, 0.2);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(230, 57, 70, 0.1);
+}
+
+@media (max-width: 576px) {
+    #adminSignupLink {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+}
     </style>
 </head>
 <body>
@@ -446,14 +595,14 @@
             </form>
             
             <div class="form-links">
-                <a href="#" class="form-link">Forgot Password?</a>
-                <a href="#" class="form-link">Need Help Signing In?</a>
+                <a href="#" class="form-link" id="forgotPasswordLink">Forgot Password?</a>
+                <a href="#" class="form-link" id="needHelpLink">Need Help Signing In?</a>
             </div>
             
             <div class="demo-credentials">
                 <ul>
                     <li>
-                        <span class="role admin" style="margin-left: 140px;">Sign Up for Admin</span>  
+                        <a href="#" class="role admin" id="adminSignupLink" style="margin-left: 110px; text-decoration: none; color: inherit;">Sign Up for Admin</a>  
                     </li>
                 </ul>
             </div>
@@ -464,7 +613,101 @@
         </div>
     </div>
 
-    <!-- Rest of your JavaScript remains the same -->
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotPasswordModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-title">
+                <i class="fas fa-key"></i> Recover Your Account
+            </div>
+            <form class="modal-form" id="forgotPasswordForm" method="GET">
+                <div class="form-group">
+                    <label for="collegeId" name="collegeId"><i class="fas fa-university"></i> College ID</label>
+                    <i class="fas fa-university input-icon"></i>
+                    <input type="text" id="collegeId" placeholder="Enter your college ID" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-paper-plane"></i> Submit
+                </button>
+            </form>
+            <div id="recoveryResult" style="margin-top: 20px; display: none;">
+                <!-- Results will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Need Help Modal -->
+    <div class="modal" id="needHelpModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-title">
+                <i class="fas fa-question-circle"></i> Login Help
+            </div>
+            <div class="help-info">
+                <div class="help-info-item">
+                    <div class="help-info-title">
+                        <i class="fas fa-user"></i> Username
+                    </div>
+                    <div class="help-info-desc">
+                        Your username is the email address you registered with the college.
+                    </div>
+                </div>
+                <div class="help-info-item">
+                    <div class="help-info-title">
+                        <i class="fas fa-id-card"></i> User ID
+                    </div>
+                    <div class="help-info-desc">
+                        Your User ID is your college registration ID provided by the institution.
+                    </div>
+                </div>
+                <div class="help-info-item">
+                    <div class="help-info-title">
+                        <i class="fas fa-lock"></i> Password
+                    </div>
+                    <div class="help-info-desc">
+                        Your password is your registered phone number (without country code).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Signup Modal -->
+<div class="modal" id="adminSignupModal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-title">
+            <i class="fas fa-user-cog"></i> Admin Registration
+        </div>
+        <form class="modal-form admin-signup-form" id="adminSignupForm" method="POST" action="{% url 'admin_signup' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="adminUsername"><i class="fas fa-user"></i> Username</label>
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="adminUsername" name="username" placeholder="Choose a username" required>
+            </div>
+            <div class="form-group">
+                <label for="adminUserId"><i class="fas fa-id-badge"></i> Admin ID</label>
+                <i class="fas fa-id-badge input-icon"></i>
+                <input type="text" id="adminUserId" name="user_id" placeholder="Enter admin ID" required>
+            </div>
+            <div class="form-group">
+                <label for="adminPassword"><i class="fas fa-lock"></i> Password</label>
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="adminPassword" name="password" placeholder="Create a password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm your password" required>
+            </div>
+            <button type="submit" class="login-btn admin modal-btn">
+                <i class="fas fa-user-plus"></i> Register as Admin
+            </button>
+        </form>
+    </div>
+</div>
+
     <script>
         // Role selection functionality
         const roleBtns = document.querySelectorAll('.role-btn');
@@ -525,5 +768,168 @@
             group.style.animation = `fadeIn 0.5s ease-out ${index * 0.1}s forwards`;
             group.style.opacity = '0';
         });
+
+        // Modal functionality
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const needHelpLink = document.getElementById('needHelpLink');
+        const adminSignupLink = document.getElementById('adminSignupLink');
+        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+        const needHelpModal = document.getElementById('needHelpModal');
+        const adminSignupModal = document.getElementById('adminSignupModal');
+        const closeButtons = document.querySelectorAll('.close-modal');
+
+        // Open modals
+        forgotPasswordLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            forgotPasswordModal.style.display = 'flex';
+        });
+
+        needHelpLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            needHelpModal.style.display = 'flex';
+        });
+
+        adminSignupLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            adminSignupModal.style.display = 'flex';
+        });
+
+        // Close modals
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+
+        // Close when clicking outside modal content
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Forgot password form submission
+document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const collegeId = document.getElementById('collegeId').value;
+    const resultDiv = document.getElementById('recoveryResult');
+    
+    // Show loading state
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--primary);"></i>
+            <p>Searching for your account...</p>
+        </div>
+    `;
+
+    // Send GET request to Django view
+    fetch(`/forget_password/?collegeId=${encodeURIComponent(collegeId)}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            resultDiv.innerHTML = `
+                <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #4caf50;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i class="fas fa-check-circle" style="color: #4caf50; font-size: 20px;"></i>
+                        <h4 style="margin: 0; color: #2e7d32;">Account Recovery Information</h4>
+                    </div>
+                    <div style="font-size: 14px;">
+                        <p><strong>Username:</strong> ${data.username}</p>
+                        <p><strong>User ID:</strong> ${data.user_id}</p>
+                        <p><strong>Password:</strong> ${data.password}</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <div style="background: #ffebee; padding: 15px; border-radius: 8px; border-left: 4px solid #f44336;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #f44336; font-size: 20px;"></i>
+                        <h4 style="margin: 0; color: #c62828;">Account Not Found</h4>
+                    </div>
+                    <div style="font-size: 14px;">
+                        <p>${data.error || 'No account found with the provided College ID. Please try again or contact support.'}</p>
+                    </div>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        resultDiv.innerHTML = `
+            <div style="background: #ffebee; padding: 15px; border-radius: 8px; border-left: 4px solid #f44336;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <i class="fas fa-exclamation-triangle" style="color: #f44336; font-size: 20px;"></i>
+                    <h4 style="margin: 0; color: #c62828;">Error</h4>
+                </div>
+                <div style="font-size: 14px;">
+                    <p>An error occurred while processing your request. Please try again later.</p>
+                </div>
+            </div>
+        `;
+        console.error('Error:', error);
+    });
+});
+
+       // Admin signup form submission
+document.getElementById('adminSignupForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('adminUsername').value;
+    const userId = document.getElementById('adminUserId').value;
+    const password = document.getElementById('adminPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
+    
+    // Prepare form data
+    const formData = new FormData(this);
+    
+    // Send request to server
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Redirect to add new admin page if credentials are correct
+            window.location.href = "{% url 'add_new_admin' %}";
+        } else {
+            alert(data.error || 'Admin registration failed. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    })
+    .finally(() => {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+    });
+});
     </script>
 </body>
+</html>

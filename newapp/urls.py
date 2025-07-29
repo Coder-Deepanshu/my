@@ -26,6 +26,9 @@ urlpatterns = [
     path("profile_details/", views.profile_details, name="profile_details"),
     # for id card
     path("id_card/", views.id_card, name="id_card"),
+    path('forget_password/', views.forget_password, name='forget_password'),
+    path('admin-signup/', views.admin_signup, name='admin_signup'),
+    path('add-new-admin/', views.add_new_admin, name='add_new_admin'),
 
 ]
 
