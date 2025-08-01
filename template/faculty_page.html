@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty Management | Faculty Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-       <style>
+    <style>
         :root {
             /* Primary Colors */
             --primary: #3a56d4;
@@ -605,6 +605,7 @@
             border-radius: var(--border-radius);
             font-size: 0.95rem;
             transition: var(--transition);
+            background-color: white;
         }
 
         .form-control:focus {
@@ -1137,6 +1138,14 @@
                         </div>
                         <div class="step" id="step4">
                             <div class="step-number">4</div>
+                            <div class="step-label">Government IDs</div>
+                        </div>
+                        <div class="step" id="step5">
+                            <div class="step-number">5</div>
+                            <div class="step-label">Caste & National Identity</div>
+                        </div>
+                        <div class="step" id="step6">
+                            <div class="step-number">6</div>
                             <div class="step-label">Review & Submit</div>
                         </div>
                     </div>
@@ -1160,11 +1169,16 @@
                                     <input type="text" id="father_name" name="father_name" class="form-control" required>
                                     <div class="error-message" id="father_name-error">Please enter father's name</div>
                                 </div>
+                                <div class="form-group">
+                                    <label for="mother_name" class="form-label">Mother's Name</label>
+                                    <input type="text" id="mother_name" name="mother_name" class="form-control" required>
+                                    <div class="error-message" id="mother_name-error">Please enter mother's name</div>
+                                </div>
                                 
                                 <div class="form-group">
-                                    <label for="dob" class="form-label">Date of Birth</label>
-                                    <input type="date" id="dob" name="dob" class="form-control" required>
-                                    <div class="error-message" id="dob-error">Please select date of birth</div>
+                                    <label for="birthday" class="form-label">Date of Birth</label>
+                                    <input type="date" id="birthday" name="birthday" class="form-control" required>
+                                    <div class="error-message" id="birthday-error">Please select date of birth</div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -1261,8 +1275,14 @@
 
                                 <div class="form-group">
                                     <label for="phone" class="form-label">Phone Number</label>
-                                    <input type="phone" id="phone" name="phone" class="form-control" required>
+                                    <input type="tel" id="phone" name="phone" class="form-control" required>
                                     <div class="error-message" id="phone-error">Please enter a valid Phone Number</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="other_phone_no" class="form-label">Alternate Phone Number</label>
+                                    <input type="tel" id="other_phone_no" name="other_phone_no" class="form-control" required>
+                                    <div class="error-message" id="other_phone_no-error">Please enter a valid Phone Number</div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -1294,7 +1314,47 @@
                                     <input type="text" id="country" name="country" class="form-control" value="India" required>
                                     <div class="error-message" id="country-error">Please enter country</div>
                                 </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(3)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="validateStep(3)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 4.Government IDs -->
+                         <div class="form-page" id="page4">
+                            <div class="detail-grid">                                
+                                <div class="form-group">
+                                    <label for="adhar_no" class="form-label">Aadhar Number</label>
+                                    <input type="text" id="adhar_no" name="adhar_no" class="form-control" required>
+                                    <div class="error-message" id="adhar_no-error">Please enter Aadhar number</div>
+                                </div>
                                 
+                                <div class="form-group">
+                                    <label for="pan_no" class="form-label">PAN Number</label>
+                                    <input type="text" id="pan_no" name="pan_no" class="form-control" required>
+                                    <div class="error-message" id="pan_no-error">Please enter PAN number</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(4)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="validateStep(4)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 5.Caste & National Identity -->
+                        <div class="form-page" id="page5">
+                            <div class="detail-grid">
                                 <div class="form-group">
                                     <label for="category" class="form-label">Category</label>
                                     <select id="category" name="category" class="form-control" required>
@@ -1335,40 +1395,28 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="adhar_no" class="form-label">Aadhar Number</label>
-                                    <input type="text" id="adhar_no" name="adhar_no" class="form-control" required>
-                                    <div class="error-message" id="adhar_no-error">Please enter Aadhar number</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="pan_no" class="form-label">PAN Number</label>
-                                    <input type="text" id="pan_no" name="pan_no" class="form-control" required>
-                                    <div class="error-message" id="pan_no-error">Please enter PAN number</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="status" class="form-label">Status</label>
-                                    <select id="status" name="status" class="form-control" required>
-                                        <option value="">Select Status</option>
+                                    <label for="martial_status" class="form-label">Martial Status</label>
+                                    <select id="martial_status" name="martial_status" class="form-control" required>
+                                        <option value="">Select  Status</option>
                                         <option value="Married">Married</option>
                                         <option value="Unmarried">Unmarried</option>
                                     </select>
-                                    <div class="error-message" id="status-error">Please select status</div>
+                                    <div class="error-message" id="martial_status-error">Please select martial status</div>
                                 </div>
                             </div>
                             
                             <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="prevStep(3)">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(5)">
                                     <i class="fas fa-arrow-left"></i> Previous
                                 </button>
-                                <button type="button" class="btn btn-primary" onclick="validateStep(3)">
+                                <button type="button" class="btn btn-primary" onclick="validateStep(5)">
                                     Next <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
                         </div>
                         
-                        <!-- Step 4: Review and Submit -->
-                        <div class="form-page" id="page4">
+                        <!-- Step 6: Review and Submit -->
+                        <div class="form-page" id="page6">
                             <div class="review-container">
                                 <!-- Personal Information Section -->
                                 <div class="section-card">
@@ -1386,8 +1434,12 @@
                                             <span class="detail-value" id="review-father"></span>
                                         </div>
                                         <div class="detail-row">
+                                            <span class="detail-label">Mother's Name:</span>
+                                            <span class="detail-value" id="review-mother"></span>
+                                        </div>
+                                        <div class="detail-row">
                                             <span class="detail-label">Date of Birth:</span>
-                                            <span class="detail-value" id="review-dob"></span>
+                                            <span class="detail-value" id="review-birthday"></span>
                                         </div>
                                         <div class="detail-row">
                                             <span class="detail-label">Gender:</span>
@@ -1442,9 +1494,57 @@
                                             <span class="detail-value" id="review-phone"></span>
                                         </div>
                                         <div class="detail-row">
+                                            <span class="detail-label">Alternate Phone:</span>
+                                            <span class="detail-value" id="review-other_phone_no"></span>
+                                        </div>
+                                        <div class="detail-row">
                                             <span class="detail-label">Address:</span>
                                             <span class="detail-value" id="review-address"></span>
                                         </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">City:</span>
+                                            <span class="detail-value" id="review-city"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">State:</span>
+                                            <span class="detail-value" id="review-state"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">PIN Code:</span>
+                                            <span class="detail-value" id="review-pin_code"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Country:</span>
+                                            <span class="detail-value" id="review-country"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Government IDs -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-address-card"></i>
+                                        Government IDs
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Aadhar No:</span>
+                                            <span class="detail-value" id="review-adhar_no"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">PAN No:</span>
+                                            <span class="detail-value" id="review-pan_no"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Caste & National Identity -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-address-card"></i>
+                                        Caste & National Identity
+                                    </div>
+                                    <div class="section-body">
                                         <div class="detail-row">
                                             <span class="detail-label">Category:</span>
                                             <span class="detail-value" id="review-category"></span>
@@ -1454,23 +1554,19 @@
                                             <span class="detail-value" id="review-nationality"></span>
                                         </div>
                                         <div class="detail-row">
-                                            <span class="detail-label">Aadhar No:</span>
-                                            <span class="detail-value" id="review-adhar_no"></span>
+                                            <span class="detail-label">Religion:</span>
+                                            <span class="detail-value" id="review-religion"></span>
                                         </div>
                                         <div class="detail-row">
-                                            <span class="detail-label">PAN No:</span>
-                                            <span class="detail-value" id="review-pan_no"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Status:</span>
-                                            <span class="detail-value" id="review-status"></span>
+                                            <span class="detail-label">Martial Status:</span>
+                                            <span class="detail-value" id="review-martial_status"></span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="prevStep(4)">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(6)">
                                     <i class="fas fa-arrow-left"></i> Previous
                                 </button>
                                 <button type="submit" class="btn btn-success">
@@ -1478,8 +1574,6 @@
                                 </button>
                             </div>
                         </div>
-                        
-                        <div class="progress-text" id="progressText">Step 1 of 4 - Personal Information</div>
                     </form>
                 </div>
             </div>
@@ -1500,8 +1594,8 @@
                         {% csrf_token %}
                         <input type="hidden" name="action" value="view">
                         <div class="form-group">
-                            <label for="searchEmployeeId" class="form-label">Enter Employee ID</label>
-                            <input type="text" id="searchEmployeeId" name="employee_id" class="form-control" placeholder="e.g. GK20251" required>
+                            <label for="searchcollegeId" class="form-label">Enter Employee ID</label>
+                            <input type="text" id="searchcollegeId" name="college_id" class="form-control" placeholder="e.g. GK20251" required>
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn btn-outline" onclick="hideForm('viewStudentForm')">
@@ -1559,8 +1653,12 @@
                                     <span class="detail-value">{{ faculty.father_name }}</span>
                                 </div>
                                 <div class="detail-row">
+                                    <span class="detail-label">Mother's Name:</span>
+                                    <span class="detail-value">{{ faculty.mother_name }}</span>
+                                </div>
+                                <div class="detail-row">
                                     <span class="detail-label">Date of Birth:</span>
-                                    <span class="detail-value">{{ faculty.dob }}</span>
+                                    <span class="detail-value">{{ faculty.birthday }}</span>
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">Gender:</span>
@@ -1612,7 +1710,7 @@
                                     <span class="detail-label">Status:</span>
                                     <span class="detail-value">
                                         <span class="badge" style="background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: var(--border-radius);">
-                                            <i class="fas fa-check-circle"></i> {{ faculty.status }}
+                                            <i class="fas fa-check-circle"></i> Active
                                         </span>
                                     </span>
                                 </div>
@@ -1635,6 +1733,10 @@
                                     <span class="detail-value">{{ faculty.phone }}</span>
                                 </div>
                                 <div class="detail-row">
+                                    <span class="detail-label">Alternate Phone:</span>
+                                    <span class="detail-value">{{ faculty.other_phone_no }}</span>
+                                </div>
+                                <div class="detail-row">
                                     <span class="detail-label">Address:</span>
                                     <span class="detail-value">{{ faculty.address }}, {{ faculty.city }}, {{ faculty.state }} - {{ faculty.pin_code }}, {{ faculty.country }}</span>
                                 </div>
@@ -1647,6 +1749,52 @@
                                     <span class="detail-value">{{ faculty.pan_no }}</span>
                                 </div>
                             </div>
+
+                            <!-- Caste & National Identity -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <i class="fas fa-address-card"></i>
+                                Caste & National Identity 
+                            </div>
+                            <div class="section-body">
+                            <div class="detail-row">
+                                    <span class="detail-label">Martial Status:</span>
+                                    <span class="detail-value">{{ faculty.martial_status }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Category:</span>
+                                    <span class="detail-value">{{ faculty.category }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Nationality:</span>
+                                    <span class="detail-value">{{ faculty.nationality }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Religion:</span>
+                                    <span class="detail-value">{{ faculty.religion }}</span>
+                                </div>
+                             </div>
+                        </div>
+                         <!-- login Identity -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <i class="fas fa-address-card"></i>
+                                Login Information
+                            </div>
+                            <div class="section-body">
+                            <div class="detail-row">
+                                    <span class="detail-label">User Name:</span>
+                                    <span class="detail-value">{{ faculty.username }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">User ID:</span>
+                                    <span class="detail-value">{{ faculty.user_id }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Password:</span>
+                                    <span class="detail-value">{{ faculty.password }}</span>
+                                </div>
+                             </div>
                         </div>
                     </div>
                     
@@ -1654,10 +1802,10 @@
                         <button class="btn btn-outline" onclick="hideStudentDetails()">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ faculty.employee_id }}')">
+                        <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ faculty.college_id }}')">
                             <i class="fas fa-edit"></i> Edit Details
                         </button>
-                        <button class="btn btn-danger" onclick="showDeleteModal('{{ faculty.employee_id }}', '{{ faculty.name }}', '{{ faculty.department }}')">
+                        <button class="btn btn-danger" onclick="showDeleteModal('{{ faculty.college_id }}', '{{ faculty.name }}', '{{ faculty.department }}')">
                             <i class="fas fa-trash"></i> Delete Record
                         </button>
                     </div>
@@ -1681,7 +1829,7 @@
                     <form method="POST" action="{% url 'faculty_functions' %}">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="alter">
-                        <input type="hidden" name="employee_id" value="{{ faculty.employee_id }}">
+                        <input type="hidden" name="college_id" value="{{ faculty.college_id }}">
                         
                         <div class="review-container">
                             <!-- Personal Information Section -->
@@ -1700,8 +1848,12 @@
                                         <input type="text" id="editFatherName" name="father_name" class="form-control" value="{{ faculty.father_name }}" required>
                                     </div>
                                     <div class="form-group">
+                                        <label for="editMotherName" class="form-label">Mother's Name</label>
+                                        <input type="text" id="editMotherName" name="mother_name" class="form-control" value="{{ faculty.mother_name }}" required>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="editDob" class="form-label">Date of Birth</label>
-                                        <input type="date" id="editDob" name="dob" class="form-control" value="{{ faculty.dob|date:'Y-m-d' }}" required>
+                                        <input type="date" id="editDob" name="birthday" class="form-control" value="{{ faculty.birthday|date:'Y-m-d' }}" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="editGender" class="form-label">Gender</label>
@@ -1710,25 +1862,6 @@
                                             <option value="Female" {% if faculty.gender == 'Female' %}selected{% endif %}>Female</option>
                                             <option value="Other" {% if faculty.gender == 'Other' %}selected{% endif %}>Other</option>
                                         </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editCategory" class="form-label">Category</label>
-                                        <select id="editCategory" name="category" class="form-control" required>
-                                            <option value="General" {% if faculty.category == 'General' %}selected{% endif %}>General</option>
-                                            <option value="BC(A)" {% if faculty.category == 'BC(A)' %}selected{% endif %}>BC(A)</option>
-                                            <option value="BC(B)" {% if faculty.category == 'BC(B)' %}selected{% endif %}>BC(B)</option>
-                                            <option value="SC" {% if faculty.category == 'SC' %}selected{% endif %}>SC</option>
-                                            <option value="ST" {% if faculty.category == 'ST' %}selected{% endif %}>ST</option>
-                                            <option value="Other" {% if faculty.category == 'Other' %}selected{% endif %}>Other</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editNationality" class="form-label">Nationality</label>
-                                        <input type="text" id="editNationality" name="nationality" class="form-control" value="{{ faculty.nationality }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editReligion" class="form-label">Religion</label>
-                                        <input type="text" id="editReligion" name="religion" class="form-control" value="{{ faculty.religion }}" required>
                                     </div>
                                 </div>
                             </div>
@@ -1775,13 +1908,6 @@
                                         <label for="editExperience" class="form-label">Experience (years)</label>
                                         <input type="number" id="editExperience" name="experience" min="0" max="50" class="form-control" value="{{ faculty.experience }}" required>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="editStatus" class="form-label">Status</label>
-                                        <select id="editStatus" name="status" class="form-control" required>
-                                            <option value="Married" {% if faculty.status == 'Married' %}selected{% endif %}>Married</option>
-                                            <option value="Unmarried" {% if faculty.status == 'Unmarried' %}selected{% endif %}>Unmarried</option>
-                                        </select>
-                                    </div>
                                 </div>
                             </div>
 
@@ -1799,6 +1925,10 @@
                                     <div class="form-group">
                                         <label for="editPhone" class="form-label">Phone Number</label>
                                         <input type="tel" id="editPhone" name="phone" class="form-control" value="{{ faculty.phone }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editOtherPhone" class="form-label">Alternate Phone</label>
+                                        <input type="tel" id="editOtherPhone" name="other_phone_no" class="form-control" value="{{ faculty.other_phone_no }}" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="editAddress" class="form-label">Address</label>
@@ -1820,6 +1950,16 @@
                                         <label for="editCountry" class="form-label">Country</label>
                                         <input type="text" id="editCountry" name="country" class="form-control" value="{{ faculty.country }}" required>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Government IDs -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <i class="fas fa-id-card"></i>
+                                    Government IDs
+                                </div>
+                                <div class="section-body">
                                     <div class="form-group">
                                         <label for="editAdharNo" class="form-label">Aadhar Number</label>
                                         <input type="text" id="editAdharNo" name="adhar_no" class="form-control" value="{{ faculty.adhar_no }}" required>
@@ -1827,6 +1967,13 @@
                                     <div class="form-group">
                                         <label for="editPanNo" class="form-label">PAN Number</label>
                                         <input type="text" id="editPanNo" name="pan_no" class="form-control" value="{{ faculty.pan_no }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editstatus" class="form-label">Martial Status</label>
+                                        <select id="editstatus" name="status" class="form-control" required>
+                                            <option value="married" {% if faculty.position == 'married' %}selected{% endif %}>Married</option>
+                                            <option value="unmarried" {% if faculty.position == 'unmarried' %}selected{% endif %}>Unmarried</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -1862,7 +2009,7 @@
                     <div class="detail-grid">
                         <div class="form-group">
                             <label class="form-label">Employee ID</label>
-                            <div class="form-control" id="modal-employee_id"></div>
+                            <div class="form-control" id="modal-college_id"></div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Faculty Name</label>
@@ -1878,7 +2025,7 @@
                     <form method="POST" action="{% url 'faculty_functions' %}" id="deleteForm">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="employee_id" id="modal-employee_id-input">
+                        <input type="hidden" name="college_id" id="modal-college_id-input">
                         <button type="button" class="btn btn-outline" onclick="hideDeleteModal()">
                             Cancel
                         </button>
@@ -1962,11 +2109,11 @@
         }
 
         // Show delete confirmation modal
-        function showDeleteModal(employeeId, name, department) {
-            document.getElementById('modal-employee_id').textContent = employeeId;
+        function showDeleteModal(collegeId, name, department) {
+            document.getElementById('modal-college_id').textContent = collegeId;
             document.getElementById('modal-name').textContent = name;
             document.getElementById('modal-department').textContent = department;
-            document.getElementById('modal-employee_id-input').value = employeeId;
+            document.getElementById('modal-college_id-input').value = collegeId;
             
             // Show modal
             deleteModal.style.display = 'flex';
@@ -1979,11 +2126,11 @@
         }
 
         // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-            if (alertContainer) {
+        if (alertContainer) {
+            setTimeout(() => {
                 alertContainer.innerHTML = '';
-            }
-        }, 5000);
+            }, 5000);
+        }
 
         // Multi-step form functionality
         function nextStep(currentStep) {
@@ -1997,11 +2144,8 @@
             document.getElementById(`page${nextStep}`).classList.add('active');
             document.getElementById(`step${nextStep}`).classList.add('active');
             
-            // Update progress text
-            updateProgressText(nextStep);
-            
             // If we're going to the review page, populate the review fields
-            if (nextStep === 4) {
+            if (nextStep === 6) {
                 populateReviewFields();
             }
         }
@@ -2016,9 +2160,6 @@
             document.getElementById(`page${prevStep}`).classList.add('active');
             document.getElementById(`step${prevStep}`).classList.add('active');
             document.getElementById(`step${prevStep}`).classList.remove('completed');
-            
-            // Update progress text
-            updateProgressText(prevStep);
         }
 
         function validateStep(step) {
@@ -2059,12 +2200,33 @@
                 
                 if ((input.id === 'experience') && input.value.trim()) {
                     const experience = parseInt(input.value);
-                    if (isNaN(experience) || experience < 0 || experience > 50) {
+                    if (isNaN(experience)) {
                         input.classList.add('error');
                         document.getElementById(`${input.id}-error`).style.display = 'block';
                         isValid = false;
                     }
                 }
+                // Validate Aadhar number format (12 digits)
+            if (input.id === 'adhar_no' && input.value.trim() && !/^[0-9]{12}$/.test(input.value)) {
+                input.classList.add('error');
+                const errorElement = document.getElementById('adhar_no-error');
+                if (errorElement) {
+                    errorElement.textContent = 'Aadhar number must be 12 digits';
+                    errorElement.style.display = 'block';
+                }
+                isValid = false;
+            }
+            
+            // Validate PAN number format (10 alphanumeric characters)
+            if (input.id === 'pan_no' && input.value.trim() && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(input.value)) {
+                input.classList.add('error');
+                const errorElement = document.getElementById('pan_no-error');
+                if (errorElement) {
+                    errorElement.textContent = 'Please enter a valid PAN number (format: ABCDE1234F)';
+                    errorElement.style.display = 'block';
+                }
+                isValid = false;
+            }
             });
             
             if (!isValid) {
@@ -2081,17 +2243,12 @@
             return true;
         }
 
-        function updateProgressText(step) {
-            const progressText = document.getElementById('progressText');
-            const stepNames = ['', 'Personal Information', 'Professional Details', 'Contact & Other Info', 'Review & Submit'];
-            progressText.textContent = `Step ${step} of 4 - ${stepNames[step]}`;
-        }
-
         function populateReviewFields() {
             // Personal Info
             document.getElementById('review-name').textContent = document.getElementById('name').value;
             document.getElementById('review-father').textContent = document.getElementById('father_name').value;
-            document.getElementById('review-dob').textContent = formatDate(document.getElementById('dob').value);
+            document.getElementById('review-mother').textContent = document.getElementById('mother_name').value;
+            document.getElementById('review-birthday').textContent = formatDate(document.getElementById('birthday').value);
             document.getElementById('review-gender').textContent = document.getElementById('gender').value;
             
             // Professional Details
@@ -2104,12 +2261,22 @@
             // Contact & Other Info
             document.getElementById('review-email').textContent = document.getElementById('email').value;
             document.getElementById('review-phone').textContent = document.getElementById('phone').value;
-            document.getElementById('review-address').textContent = `${document.getElementById('address').value}, ${document.getElementById('city').value}, ${document.getElementById('state').value} - ${document.getElementById('pin_code').value}, ${document.getElementById('country').value}`;
-            document.getElementById('review-category').textContent = document.getElementById('category').value;
-            document.getElementById('review-nationality').textContent = document.getElementById('nationality').value;
+            document.getElementById('review-other_phone_no').textContent = document.getElementById('other_phone_no').value;
+            document.getElementById('review-address').textContent = document.getElementById('address').value;
+            document.getElementById('review-city').textContent = document.getElementById('city').value;
+            document.getElementById('review-state').textContent = document.getElementById('state').value;
+            document.getElementById('review-pin_code').textContent = document.getElementById('pin_code').value;
+            document.getElementById('review-country').textContent = document.getElementById('country').value;
+            
+            // Government IDs
             document.getElementById('review-adhar_no').textContent = document.getElementById('adhar_no').value;
             document.getElementById('review-pan_no').textContent = document.getElementById('pan_no').value;
-            document.getElementById('review-status').textContent = document.getElementById('status').value;
+            
+            // Caste & National Identity
+            document.getElementById('review-category').textContent = document.getElementById('category').value;
+            document.getElementById('review-nationality').textContent = document.getElementById('nationality').value;
+            document.getElementById('review-religion').textContent = document.getElementById('religion').value;
+            document.getElementById('review-martial_status').textContent = document.getElementById('martial_status').value;
         }
 
         function formatDate(dateString) {
@@ -2120,7 +2287,7 @@
 
         function resetMultiStepForm() {
             // Reset all steps to initial state
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 6; i++) {
                 document.getElementById(`page${i}`).classList.remove('active');
                 document.getElementById(`step${i}`).classList.remove('active', 'completed');
             }
@@ -2128,9 +2295,6 @@
             // Show first step
             document.getElementById('page1').classList.add('active');
             document.getElementById('step1').classList.add('active');
-            
-            // Reset progress text
-            updateProgressText(1);
             
             // Reset form fields
             document.getElementById('multiStepForm').reset();
@@ -2144,22 +2308,13 @@
             document.querySelectorAll('.form-control.error').forEach(el => {
                 el.classList.remove('error');
             });
-            
-            // Generate employee ID
-            generateEmployeeId();
         }
-        
-        function generateEmployeeId() {
-            // This is a placeholder - in a real app, you might get this from the server
-            const currentYear = new Date().getFullYear().toString().slice(-2);
-            const randomNum = Math.floor(100 + Math.random() * 900);
-            const employeeId = `GK${currentYear}${randomNum}`;
-            document.getElementById('employee_id').value = employeeId;
-        }
+
+        // Back button functionality
         $(document).on('click', '.menu-link.active', function(e) {
-          e.preventDefault();
-          window.history.back();
-      });
+            e.preventDefault();
+            window.history.back();
+        });
     </script>
 </body>
 </html>

@@ -924,12 +924,13 @@
             <div class="logo-container">
                 <div class="logo">
                     <i class="fas fa-user-graduate logo-icon"></i>
-                    <span>Student<span>Portal</span></span>
+                    <span>{{ user_type }}<span>Portal</span></span>
                 </div>
             </div>
         </div>
         
         <div class="sidebar-menu">
+            {% if user_type == 'Student' %}
             <h3 class="menu-title">Main</h3>
             <ul class="menu-list">
                 <li class="menu-item">
@@ -939,6 +940,17 @@
                     </a>
                 </li>
             </ul>
+            {% elif user_type == 'Faculty' %}
+            <h3 class="menu-title">Main</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{% url 'dashboard1' %}" class="menu-link">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
             
             <h3 class="menu-title">Academics</h3>
             <ul class="menu-list">
@@ -981,7 +993,7 @@
 
     <div class="id-card-container">
         <!-- Student ID Card -->
-         {% if user_type == 'student' %}
+         {% if user_type == 'Student' %}
         <div class="id-card student" style="margin-top: 140px;margin-right: -120px;">
             <div class="id-card-bg"></div>
             <div class="id-card-bg-pattern"></div>
@@ -999,7 +1011,7 @@
                 
                 <div class="id-card-qr">
                     <!-- QR Code for Student ID -->
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STUDENT-{{ detail.roll_no }}" alt="QR Code">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STUDENT-{{ detail.college_id }}" alt="QR Code">
                 </div>
             </div>
             
@@ -1011,7 +1023,7 @@
                     <div class="id-card-details">
                         <div class="id-card-detail-row">
                             <div class="id-card-detail-label">ID Number:</div>
-                            <div class="id-card-detail-value">{{ detail.roll_no }}</div>
+                            <div class="id-card-detail-value">{{ detail.college_id }}</div>
                         </div>
                         <div class="id-card-detail-row">
                             <div class="id-card-detail-label">Course:</div>
@@ -1037,7 +1049,7 @@
         {% endif %}
         
         <!-- Faculty ID Card (Conditional) -->
-        {% if user_type == 'faculty' %}
+        {% if user_type == 'Faculty' %}
         <div class="id-card faculty" style="margin-top: 140px;margin-right: -120px;">
             <div class="id-card-bg"></div>
             <div class="id-card-bg-pattern"></div>
@@ -1047,35 +1059,35 @@
                     <i class="fas fa-chalkboard-teacher"></i>
                 </div>
                 
-                {% if faculty_detail.profile_picture %}
-                    <img src="{{ faculty_detail.profile_picture.url }}" alt="Faculty Photo" class="id-card-photo">
+                {% if detail.profile_picture %}
+                    <img src="{{ detail.profile_picture.url }}" alt="Faculty Photo" class="id-card-photo">
                 {% else %}
-                    <img src="https://ui-avatars.com/api/?name={{ faculty_detail.name }}&background=f8961e&color=fff" alt="Faculty Photo" class="id-card-photo">
+                    <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=f8961e&color=fff" alt="Faculty Photo" class="id-card-photo">
                 {% endif %}
                 
                 <div class="id-card-qr">
                     <!-- QR Code for Faculty ID -->
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FACULTY-{{ faculty_detail.employee_id }}" alt="QR Code">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FACULTY-{{ detail.college_id }}" alt="QR Code">
                 </div>
             </div>
             
             <div class="id-card-right">
                 <div>
                     <div class="id-card-title">FACULTY ID CARD</div>
-                    <div class="id-card-name">{{ faculty_detail.name }}</div>
+                    <div class="id-card-name">{{ detail.name }}</div>
                     
                     <div class="id-card-details">
                         <div class="id-card-detail-row">
                             <div class="id-card-detail-label">Employee ID:</div>
-                            <div class="id-card-detail-value">{{ faculty_detail.employee_id }}</div>
+                            <div class="id-card-detail-value">{{ detail.college_id }}</div>
                         </div>
                         <div class="id-card-detail-row">
                             <div class="id-card-detail-label">Department:</div>
-                            <div class="id-card-detail-value">{{ faculty_detail.department }}</div>
+                            <div class="id-card-detail-value">{{ detail.department }}</div>
                         </div>
                         <div class="id-card-detail-row">
                             <div class="id-card-detail-label">Designation:</div>
-                            <div class="id-card-detail-value">{{ faculty_detail.position }}</div>
+                            <div class="id-card-detail-value">{{ detail.position }}</div>
                         </div>
                         <div class="id-card-detail-row">
                             <div class="id-card-detail-label">Valid Until:</div>

@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models import Student,result,subject,Faculty_Add,Course
+from .models import Student,result,subject,Faculty,Course
 
 # Register the Student_add model
 @admin.register(Student)
 class StudentAddAdmin(admin.ModelAdmin):
-    list_display = ('name', 'roll_no', 'course')
-    search_fields = ('name', 'roll_no', 'course')
+    list_display = ('name', 'college_id', 'course')
+    search_fields = ('name', 'college_id', 'course')
 
 @admin.register(Course)
 class coursesAdmin(admin.ModelAdmin):
@@ -37,9 +37,9 @@ class subjectadmin(admin.ModelAdmin):
     list_display=('semester','course','I','II','III','IV','V','VI','VII','VIII')
     search_fields=('semester','course')
 
-@admin.register(Faculty_Add)
+@admin.register(Faculty)
 class facultyadmin(admin.ModelAdmin):
-    list_display=('name','employee_id','department','qualification','experience','date_of_joining','phone','gender','dob','address','city','state','pin_code')
+    list_display=('name','college_id','department','qualification','experience','date_of_joining','phone','gender','birthday','address','city','state','state_code')
     search_fields=('employee_id',)
 
 

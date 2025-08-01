@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Guru Kirpa Beverage | GST Sales Report</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      margin: 40px;
+      background-color: #fff;
+      color: #000;
+    }
+
+    .report-box {
+      max-width: 1000px;
+      margin: auto;
+      padding: 30px;
+      border: 1px solid #000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #000;
+      padding-bottom: 10px;
+    }
+
+    .logo {
+      height: 70px;
+    }
+
+    .title h1 {
+      margin: 10px 0;
+      text-align: center;
+      font-size: 24px;
+      text-transform: uppercase;
+    }
+
+    .report-details {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .report-details div {
+      margin-bottom: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+
+    table, th, td {
+      border: 1px solid #000;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e8e8e8;
+    }
+
+    .total-row {
+      font-weight: bold;
+      background-color: #f9f9f9;
+    }
+
+    .download-btn {
+      margin-top: 20px;
+      background-color: #007b3e;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .download-btn:hover {
+      background-color: #005f2f;
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-box" id="report">
+    <div class="header">
+      <img src="https://i.ibb.co/BBd9PPh/guru-kirpa-logo.png" alt="Guru Kirpa Logo" class="logo" />
+      <div>
+        <strong>Date:</strong> <span id="date"></span>
+      </div>
+    </div>
+
+    <div class="title">
+      <h1>Guru Kirpa Beverage</h1>
+      <div style="text-align:center;">GST Sales Report (Tally Format)</div>
+    </div>
+
+    <div class="report-details">
+      <div><strong>Report Period:</strong> July 1, 2025 - July 30, 2025</div>
+      <div><strong>Prepared By:</strong> Sales Department</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Product</th>
+          <th>HSN Code</th>
+          <th>Qty</th>
+          <th>Rate (₹)</th>
+          <th>Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Mineral Water 1L</td>
+          <td>2202</td>
+          <td>500</td>
+          <td>20</td>
+          <td>10,000</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Energy Drink 500ml</td>
+          <td>2202</td>
+          <td>350</td>
+          <td>45</td>
+          <td>15,750</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Soda Bottle 750ml</td>
+          <td>2202</td>
+          <td>200</td>
+          <td>30</td>
+          <td>6,000</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="5">Subtotal</td>
+          <td>₹31,750</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="5">Add: CGST @ 9%</td>
+          <td>₹2,857.50</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="5">Add: SGST @ 9%</td>
+          <td>₹2,857.50</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="5"><strong>Grand Total</strong></td>
+          <td><strong>₹37,465.00</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="no-print">
+      <button class="download-btn" onclick="downloadPDF()">Download as PDF</button>
+    </div>
+  </div>
+
+  <!-- html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    document.getElementById("date").innerText = new Date().toLocaleDateString();
+
+    function downloadPDF() {
+      const element = document.getElementById("report");
+      document.querySelector('.no-print').style.display = 'none';
+
+      const opt = {
+        margin: 0.5,
+        filename: 'GuruKirpa_GST_Sales_Report.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        document.querySelector('.no-print').style.display = 'block';
+      });
+    }
+  </script>
+</body>
+</html>

@@ -881,6 +881,25 @@
                 display: none;
             }
         }
+        .messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
     </style>
 </head>
 <body>
@@ -896,6 +915,8 @@
         <div class="bubble"></div>
     </div>
     <!-- Sidebar -->
+
+    {% if student %}
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo-container">
@@ -1024,7 +1045,7 @@
                 
                 <div class="user-dropdown">
                     <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
-                    <span class="user-dropdown-name">{{ detail.name }}</span>
+                    <span class="user-dropdown-name">{{ student.name }}</span>
                     <div class="user-dropdown-menu">
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-user mr-2"></i> Profile
@@ -1040,18 +1061,27 @@
                 </div>
             </div>
         </header>
+        {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
         <div class="content" >
         <div class="profile-container">
             <!-- Sidebar -->
             <div  class="profile-sidebar">
             <div class="profile-picture-container">
-                {% if detail.profile_picture %}
-                <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="profile-picture">
+                {% if student.profile_picture %}
+                <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="profile-picture">
                 {% else %}
                 <img src="https://via.placeholder.com/150" alt="Student Photo" class="profile-picture">
                 {% endif %}
     
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
                 {% csrf_token %}
                 <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
                 <i class="fas fa-camera"></i>
@@ -1059,13 +1089,13 @@
                 <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
                 </form>
             </div>
-                <h2 class="student-name">{{ detail.name }}</h2>
-                <p class="student-id">ID: {{ detail.roll_no }}</p>
+                <h2 class="student-name">{{ student.name }}</h2>
+                <p class="student-id">ID: {{ student.college_id }}</p>
                 
                 <div class="profile-info">
                     <div class="info-item">
                         <div class="info-label">Course</div>
-                        <div class="info-value">{{ detail.course }}</div>
+                        <div class="info-value">{{ student.course }}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Batch</div>
@@ -1073,7 +1103,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label">Semester</div>
-                        <div class="info-value">{{ detail.semester }} Semester</div>
+                        <div class="info-value">{{ student.semester }} Semester</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Department</div>
@@ -1096,19 +1126,19 @@
                             <h3><i class="fas fa-id-card"></i> Basic Details</h3>
                             <div class="detail-row">
                                 <div class="detail-label">Full Name:</div>
-                                <div class="detail-value">{{ detail.name }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Student ID:</div>
-                                <div class="detail-value">{{ detail.roll_no }}</div>
+                                <div class="detail-value">{{ student.name }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Date of Birth:</div>
-                                <div class="detail-value">{{ detail.birthday }}</div>
+                                <div class="detail-value">{{ student.birthday }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Date of Joining:</div>
+                                <div class="detail-value">{{ student.date_of_joining }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Gender:</div>
-                                <div class="detail-value">{{ detail.gender }}</div>
+                                <div class="detail-value">{{ student.gender }}</div>
                             </div>
                         </div>
                         
@@ -1116,15 +1146,19 @@
                             <h3><i class="fas fa-address-book"></i> Contact Details</h3>
                             <div class="detail-row">
                                 <div class="detail-label">Email:</div>
-                                <div class="detail-value">{{ detail.email }}</div>
+                                <div class="detail-value">{{ student.email }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Phone:</div>
-                                <div class="detail-value">+91 {{ detail.phone }}</div>
+                                <div class="detail-value">+91 {{ student.phone }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Parent Contact:</div>
+                                <div class="detail-value">+91 {{ student.other_phone_no }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Address:</div>
-                                <div class="detail-value">{{ detail.address }}, {{ detail.city }}, {{ detail.state }} - {{ detail.state_code }}</div>
+                                <div class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}</div>
                             </div>
                         </div>
                         
@@ -1132,92 +1166,72 @@
                             <h3><i class="fas fa-users"></i> Family Details</h3>
                             <div class="detail-row">
                                 <div class="detail-label">Father's Name:</div>
-                                <div class="detail-value">Mr. {{ detail.father_name }}</div>
+                                <div class="detail-value">Mr. {{ student.father_name }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Mother's Name:</div>
-                                <div class="detail-value">Mrs. {{ detail.mother_name }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Parent Contact:</div>
-                                <div class="detail-value">+91 {{ detail.parent_phone }}</div>
+                                <div class="detail-value">Mrs. {{ student.mother_name }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Father Occupation:</div>
-                                <div class="detail-value">{{ detail.occupation }}</div>
+                                <div class="detail-value">{{ student.occupation }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Income:</div>
-                                <div class="detail-value">Rs. {{ detail.income }}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-card">
-                            <h3><i class="fas fa-university"></i> Academic Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Admission Date:</div>
-                                <div class="detail-value">{{ detail.date_of_joining }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Current Semester:</div>
-                                <div class="detail-value">Semester - {{ detail.semester }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Current Year:</div>
-                                <div class="detail-value">Year - {{ detail.year }}</div>
+                                <div class="detail-value">Rs. {{ student.income }}</div>
                             </div>
                         </div>
                         <div class="detail-card">
                             <h3><i class="fas fa-dna"></i>Caste & National Identity</h3>
                             <div class="detail-row">
                                 <div class="detail-label">Category:</div>
-                                <div class="detail-value">{{ detail.category }}</div>
+                                <div class="detail-value">{{ student.category }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Nationality:</div>
-                                <div class="detail-value">{{ detail.nationality }}</div>
+                                <div class="detail-value">{{ student.nationality }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Religion:</div>
-                                <div class="detail-value">{{ detail.religion }}</div>
+                                <div class="detail-value">{{ student.religion }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Martial Status:</div>
-                                <div class="detail-value">{{ detail.status }}</div>
+                                <div class="detail-value">{{ student.martial_status }}</div>
                             </div>
                         </div>
                        <div class="detail-card">
                             <h3><i class="fas fa-lock"></i> Login Details</h3>
                             <div class="detail-row">
                                 <div class="detail-label">User Name:</div>
-                                <div class="detail-value">{{ detail.email }}</div>
+                                <div class="detail-value">{{ student.username }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">User ID:</div>
-                                <div class="detail-value">{{ detail.roll_no }}</div>
+                                <div class="detail-value">{{ student.user_id }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Password:</div>
-                                <div class="detail-value">{{ detail.phone }}</div>
+                                <div class="detail-value">{{ student.password }}</div>
                             </div>
                         </div>
                         <div class="detail-card">
                             <h3><i class="fas fa-passport"></i>Government IDs</h3>
                             <div class="detail-row">
                                 <div class="detail-label">Adhar Number:</div>
-                                <div class="detail-value">{{ detail.adhar_no }}</div>
+                                <div class="detail-value">{{ student.adhar_no }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Pan ID:</div>
-                                <div class="detail-value">{{ detail.pan_no }}</div>
+                                <div class="detail-value">{{ student.pan_no }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Family ID Number:</div>
-                                <div class="detail-value">{{ detail.family_id }}</div>
+                                <div class="detail-value">{{ student.family_id }}</div>
                             </div>
                             <div class="detail-row">
                                 <div class="detail-label">Family ID Mobile No:</div>
-                                <div class="detail-value">{{ detail.family_id_phone_no }}</div>
+                                <div class="detail-value">{{ student.family_id_phone_no }}</div>
                             </div>
                         </div>
                     </div>
@@ -1270,8 +1284,310 @@
         </div>
         </div>
     </main>
-  
+    {% elif faculty %}
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-user-graduate logo-icon"></i>
+                    <span>Faculty<span>Portal</span></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar-menu">
+            <h3 class="menu-title">Main</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{% url 'dashboard2' %}" class="menu-link">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <h3 class="menu-title">Academics</h3>
+            <ul class="menu-list">
+                <li class="menu-item active">
+                    <a href="{% url 'profile_details' %}" class="menu-link active">
+                        <i class="fas fa-user-graduate menu-icon"></i>
+                        <span class="menu-text">My Profile</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-calendar-check menu-icon"></i>
+                        <span class="menu-text">Attendance</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-book menu-icon"></i>
+                        <span class="menu-text">Courses</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-tasks menu-icon"></i>
+                        <span class="menu-text">Assignments</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-chart-line menu-icon"></i>
+                        <span class="menu-text">Grades</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-calendar-alt menu-icon"></i>
+                        <span class="menu-text">Schedule</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <h3 class="menu-title">Services</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-comments menu-icon"></i>
+                        <span class="menu-text">Messages</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-file-invoice-dollar menu-icon"></i>
+                        <span class="menu-text">Fees</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="{% url 'id_card' %}" class="menu-link">
+                        <i class="fas fa-id-card menu-icon"></i>
+                        <span class="menu-text">ID Card</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-footer">
+            <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=4361ee&color=fff" alt="User" class="user-avatar">
+            <div class="user-info">
+                <div class="user-name">{{ faculty.name }}</div>
+                <div class="user-role">Faculty</div>
+            </div>
+            <a href="{% url 'logoutdoor' %}">
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+            </a>
+        </div>
+    </aside>
+    
+    
+        <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">
+                    <i class="fas fa-user-graduate"></i>
+                    Faculty Profile
+                </h1>
+            </div>
+            
+            <div class="header-right">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                
+                <div class="user-dropdown">
+                    <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
+                    <span class="user-dropdown-name">{{ faculty.name }}</span>
+                    <div class="user-dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user mr-2"></i> Profile
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logoutdoor' %}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+        <div class="content" >
+        <div class="profile-container">
+            <!-- Sidebar -->
+            <div  class="profile-sidebar">
+            <div class="profile-picture-container">
+                {% if faculty.profile_picture %}
+                <img src="{{ faculty.profile_picture.url }}" alt="Faculty Photo" class="profile-picture">
+                {% else %}
+                <img src="https://via.placeholder.com/150" alt="Faculty Photo" class="profile-picture">
+                {% endif %}
+    
+                <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
+                {% csrf_token %}
+                <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
+                <i class="fas fa-camera"></i>
+                </button>
+                <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                </form>
+            </div>
+                <h2 class="student-name">{{ faculty.name }}</h2>
+                <p class="student-id">ID: {{ faculty.college_id }}</p>
+                
+                <div class="profile-info">
+                    <div class="info-item">
+                        <div class="info-label">Position</div>
+                        <div class="info-value">{{ faculty.position }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Department</div>
+                        <div class="info-value">{{ faculty.department }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Joining Date</div>
+                        <div class="info-value">{{ faculty.date_of_joining }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Status</div>
+                        <div class="info-value status-active">Active</div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Main Content -->
+            <div class="profile-main">
+                <div class="personal-info">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+                    
+                    <div class="personal-details">
+                        <div class="detail-card">
+                            <h3><i class="fas fa-id-card"></i> Basic Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Full Name:</div>
+                                <div class="detail-value">{{ faculty.name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Faculty ID:</div>
+                                <div class="detail-value">{{ faculty.college_id }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Date of Birth:</div>
+                                <div class="detail-value">{{ faculty.birthday }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Gender:</div>
+                                <div class="detail-value">{{ faculty.gender }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-address-book"></i> Contact Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Email:</div>
+                                <div class="detail-value">{{ faculty.email }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Phone:</div>
+                                <div class="detail-value">+91 {{ faculty.phone }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Phone 2:</div>
+                                <div class="detail-value">+91 {{ faculty.other_phone_no }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Address:</div>
+                                <div class="detail-value">{{ faculty.address }}, {{ faculty.city }}, {{ faculty.state }} - {{ faculty.state_code }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-users"></i> Family & ID Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Father's Name:</div>
+                                <div class="detail-value">Mr. {{ faculty.father_name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Mother's Name:</div>
+                                <div class="detail-value">Mrs. {{ faculty.mother_name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Adhar Number:</div>
+                                <div class="detail-value">{{ faculty.adhar_no }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Pan ID:</div>
+                                <div class="detail-value">{{ faculty.pan_no }}</div>
+                            </div>
+                        </div>
+                    
+                        <div class="detail-card">
+                            <h3><i class="fas fa-dna"></i>Caste & National Identity</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Category:</div>
+                                <div class="detail-value">{{ faculty.category }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Nationality:</div>
+                                <div class="detail-value">{{ faculty.nationality }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Religion:</div>
+                                <div class="detail-value">{{ faculty.religion }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Martial Status:</div>
+                                <div class="detail-value">{{ faculty.martial_status }}</div>
+                            </div>
+                        </div>
+                       <div class="detail-card">
+                            <h3><i class="fas fa-lock"></i> Login Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">User Name:</div>
+                                <div class="detail-value">{{ faculty.email }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">User ID:</div>
+                                <div class="detail-value">{{ faculty.college_id }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Password:</div>
+                                <div class="detail-value">{{ faculty.phone }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+        </div>
+    </main>
+    {% endif %}
     <script>
         // Toggle Sidebar
         const toggleSidebar = document.querySelector('.toggle-sidebar');

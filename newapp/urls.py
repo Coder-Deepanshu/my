@@ -29,7 +29,7 @@ urlpatterns = [
     path('forget_password/', views.forget_password, name='forget_password'),
     path('admin-signup/', views.admin_signup, name='admin_signup'),
     path('add-new-admin/', views.add_new_admin, name='add_new_admin'),
-
+    path('profile_upload/', views.profile_upload, name='profile_upload'),
 ]
 
 if settings.DEBUG:

@@ -16,15 +16,15 @@ class Course(models.Model):
 
 class Student(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
-    roll_no = models.CharField(max_length=20, unique=True)
+    college_id = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
     father_name = models.CharField(max_length=100)
     mother_name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
-    parent_phone=models.CharField(max_length=15)
-    occupation=models.CharField(max_length=50)
-    income=models.CharField(max_length=20)
+    other_phone_no=models.CharField(max_length=15,null=True)
+    occupation=models.CharField(max_length=50,null=True)
+    income=models.CharField(max_length=20,null=True)
     gender = models.CharField(max_length=10)
     course = models.CharField(max_length=100)  # Changed to ForeignKey
     birthday = models.DateField()
@@ -66,11 +66,11 @@ class Student(models.Model):
     # Identity Info
     adhar_no = models.BigIntegerField()
     pan_no = models.CharField(max_length=20,null=True)
-    family_id=models.CharField(max_length=20)
-    family_id_phone_no=models.CharField(max_length=15)
+    family_id=models.CharField(max_length=20,null=True)
+    family_id_phone_no=models.CharField(max_length=15,null=True)
 
     # Marital Status
-    status = models.CharField(max_length=15, choices=[
+    martial_status = models.CharField(max_length=15, choices=[
         ('Married', 'Married'),
         ('Unmarried', 'Unmarried')
     ], default='Unmarried')
@@ -79,7 +79,93 @@ class Student(models.Model):
     password=models.CharField(max_length=15)
 
     def __str__(self):
-        return f"{self.name} ({self.roll_no})"
+        return f"{self.name} ({self.college_id})"
+
+class Faculty(models.Model):
+    # Basic Info
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    college_id=models.CharField(max_length=15,unique=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    father_name = models.CharField(max_length=100)
+    mother_name = models.CharField(max_length=100)
+    department = models.CharField(max_length=50)
+    position = models.CharField(max_length=100)
+    qualification=models.CharField(max_length=50)
+
+    # Experience & Joining
+    experience = models.DecimalField(max_digits=4, decimal_places=1)  # e.g., 5.5 years
+    date_of_joining = models.DateField()
+
+    # Contact Info
+    phone = models.CharField(max_length=15)
+    other_phone_no = models.CharField(max_length=15,null=True)
+    gender = models.CharField(max_length=10, choices=[
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other')
+    ])
+    birthday = models.DateField()
+    address = models.TextField()
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    state_code = models.CharField(max_length=10,null=True)
+    country = models.CharField(max_length=30, choices=[
+    ('India', 'India'),
+    ('USA', 'USA'),
+    ('UK', 'UK'),
+    ('Canada', 'Canada'),
+    ('Australia', 'Australia'),
+    ('Germany', 'Germany'),
+    ('France', 'France'),
+    ('Japan', 'Japan'),
+    ('China', 'China'),
+    ('Other', 'Other')
+])
+
+    # Category
+    category = models.CharField(max_length=10, choices=[
+        ('Genral', 'General'),
+        ('BC(A)', 'BC(A)'),
+        ('BC(B)', 'BC(B)'),
+        ('SC', 'SC'),
+        ('ST', 'ST'),
+        ('Others', 'Others')
+    ])
+
+    # Nationality & Religion
+    nationality = models.CharField(max_length=20, choices=[
+        ('Indian', 'Indian'),
+        ('NRI', 'NRI'),
+        ('Other', 'Other')
+    ])
+    religion = models.CharField(max_length=20, choices=[
+        ('Hindu', 'Hindu'),
+        ('Muslim', 'Muslim'),
+        ('Sikh', 'Sikh'),
+        ('Christian', 'Christian'),
+        ('Jain', 'Jain'),
+        ('Buddhist', 'Buddhist'),
+        ('Other', 'Other')
+    ])
+
+    # Identity Info
+    adhar_no = models.BigIntegerField()
+    pan_no = models.CharField(max_length=20)
+
+    # Marital Status
+    martial_status = models.CharField(max_length=15, choices=[
+        ('married', 'Married'),
+        ('unmarried', 'Unmarried')
+    ], default='unmarried')
+    user_id=models.CharField(max_length=50,null=True,)
+    username=models.EmailField()
+    password=models.CharField(max_length=15,null=True)
+
+
+
+    def _str_(self):
+        return self.name
 
 class result(models.Model):
     Student_rollno = models.CharField(max_length=20,unique=True,null=False,default=1)
@@ -163,84 +249,4 @@ class subject(models.Model):
     VI = models.CharField(max_length=200)
     VII = models.CharField(max_length=200)
     VIII = models.CharField(max_length=200)
-
-from django.db import models
-
-class Faculty_Add(models.Model):
-    # Basic Info
-    employee_id=models.CharField(max_length=15,unique=True)
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    father_name = models.CharField(max_length=100)
-    department = models.CharField(max_length=50)
-    position = models.CharField(max_length=100)
-    qualification=models.CharField(max_length=50)
-
-    # Experience & Joining
-    experience = models.DecimalField(max_digits=4, decimal_places=1)  # e.g., 5.5 years
-    date_of_joining = models.DateField()
-
-    # Contact Info
-    phone = models.CharField(max_length=15)
-    gender = models.CharField(max_length=10, choices=[
-        ('male', 'Male'),
-        ('female', 'Female'),
-        ('other', 'Other')
-    ])
-    dob = models.DateField()
-    address = models.TextField()
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    pin_code = models.CharField(max_length=10)
-    country = models.CharField(max_length=30, choices=[
-    ('India', 'India'),
-    ('USA', 'USA'),
-    ('UK', 'UK'),
-    ('Canada', 'Canada'),
-    ('Australia', 'Australia'),
-    ('Germany', 'Germany'),
-    ('France', 'France'),
-    ('Japan', 'Japan'),
-    ('China', 'China'),
-    ('Other', 'Other')
-])
-
-    # Category
-    category = models.CharField(max_length=10, choices=[
-        ('Genral', 'General'),
-        ('BC(A)', 'BC(A)'),
-        ('BC(B)', 'BC(B)'),
-        ('SC', 'SC'),
-        ('ST', 'ST'),
-        ('Others', 'Others')
-    ])
-
-    # Nationality & Religion
-    nationality = models.CharField(max_length=20, choices=[
-        ('Indian', 'Indian'),
-        ('NRI', 'NRI'),
-        ('Other', 'Other')
-    ])
-    religion = models.CharField(max_length=20, choices=[
-        ('Hindu', 'Hindu'),
-        ('Muslim', 'Muslim'),
-        ('Sikh', 'Sikh'),
-        ('Christian', 'Christian'),
-        ('Jain', 'Jain'),
-        ('Buddhist', 'Buddhist'),
-        ('Other', 'Other')
-    ])
-
-    # Identity Info
-    adhar_no = models.BigIntegerField()
-    pan_no = models.CharField(max_length=20)
-
-    # Marital Status
-    status = models.CharField(max_length=15, choices=[
-        ('married', 'Married'),
-        ('unmarried', 'Unmarried')
-    ], default='unmarried')
-
-    def _str_(self):
-        return self.name
 

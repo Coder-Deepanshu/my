@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Guru Kirpa Beverage | Purchase Report</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      margin: 40px;
+      background-color: #fff;
+      color: #000;
+    }
+
+    .report-box {
+      max-width: 1000px;
+      margin: auto;
+      padding: 30px;
+      border: 1px solid #000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px dashed #000;
+      padding-bottom: 10px;
+    }
+
+    .logo {
+      height: 70px;
+    }
+
+    .title h1 {
+      margin: 10px 0;
+      text-align: center;
+      font-size: 24px;
+      text-transform: uppercase;
+    }
+
+    .report-details {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .report-details div {
+      margin-bottom: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+    }
+
+    table, th, td {
+      border: 1px solid #000;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e8e8e8;
+    }
+
+    .total-row {
+      font-weight: bold;
+      background-color: #f9f9f9;
+    }
+
+    .download-btn {
+      margin-top: 20px;
+      background-color: #007b3e;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .download-btn:hover {
+      background-color: #005f2f;
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-box" id="report">
+    <div class="header">
+      <img src="https://i.ibb.co/BBd9PPh/guru-kirpa-logo.png" alt="Guru Kirpa Logo" class="logo" />
+      <div>
+        <strong>Date:</strong> <span id="date"></span>
+      </div>
+    </div>
+
+    <div class="title">
+      <h1>Guru Kirpa Beverage</h1>
+      <div style="text-align:center;">GST Purchase Report (Tally Format)</div>
+    </div>
+
+    <div class="report-details">
+      <div><strong>Report Period:</strong> July 1, 2025 - July 30, 2025</div>
+      <div><strong>Prepared By:</strong> Accounts Department</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Item</th>
+          <th>Supplier</th>
+          <th>HSN Code</th>
+          <th>Qty</th>
+          <th>Rate (₹)</th>
+          <th>Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Plastic Bottles</td>
+          <td>XYZ Packaging Ltd.</td>
+          <td>3923</td>
+          <td>1000</td>
+          <td>5</td>
+          <td>5,000</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Labels & Stickers</td>
+          <td>Print World</td>
+          <td>4821</td>
+          <td>2000</td>
+          <td>2</td>
+          <td>4,000</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Sugar</td>
+          <td>Punjab Sugar Mills</td>
+          <td>1701</td>
+          <td>1500</td>
+          <td>20</td>
+          <td>30,000</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="6">Subtotal</td>
+          <td>₹39,000</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="6">Add: CGST @ 9%</td>
+          <td>₹3,510.00</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="6">Add: SGST @ 9%</td>
+          <td>₹3,510.00</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="6"><strong>Grand Total</strong></td>
+          <td><strong>₹46,020.00</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="no-print">
+      <button class="download-btn" onclick="downloadPDF()">Download as PDF</button>
+    </div>
+  </div>
+
+  <!-- html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    document.getElementById("date").innerText = new Date().toLocaleDateString();
+
+    function downloadPDF() {
+      const element = document.getElementById("report");
+      document.querySelector('.no-print').style.display = 'none';
+
+      const opt = {
+        margin: 0.5,
+        filename: 'GuruKirpa_Purchase_Report.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        document.querySelector('.no-print').style.display = 'block';
+      });
+    }
+  </script>
+</body>
+</html>
+// Toggle sidebar
+const toggleSidebar = document.querySelector('.toggle-sidebar');
+const sidebar = document.querySelector('.sidebar');
+
+if (toggleSidebar && sidebar) {
+    toggleSidebar.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+    });
+}
+
+// DOM Elements
+const addStudentBtn = document.getElementById('addStudentBtn');
+const viewStudentBtn = document.getElementById('viewStudentBtn');
+const addStudentForm = document.getElementById('addStudentForm');
+const viewStudentForm = document.getElementById('viewStudentForm');
+const studentDetails = document.getElementById('studentDetails');
+const editStudentForm = document.getElementById('editStudentForm');
+const alertContainer = document.getElementById('alertContainer');
+const deleteModal = document.getElementById('deleteModal');
+const helpModal = document.getElementById('helpModal');
+const settingsModal = document.getElementById('settingsModal');
+const helpBtn = document.getElementById('helpBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+
+// Event Listeners
+if (addStudentBtn) addStudentBtn.addEventListener('click', () => showForm('addStudentForm'));
+if (viewStudentBtn) viewStudentBtn.addEventListener('click', () => showForm('viewStudentForm'));
+
+// Help Button Functionality
+if (helpBtn) {
+    helpBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        showHelpModal();
+    });
+}
+
+// Settings Button Functionality
+if (settingsBtn) {
+    settingsBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        showSettingsModal();
+    });
+}
+
+// Close modals when clicking outside
+window.addEventListener('click', function(event) {
+    if (event.target.className === 'modal') {
+        event.target.style.display = 'none';
+    }
+});
+
+// Show form function
+function showForm(formId) {
+    // Hide all forms first
+    [addStudentForm, viewStudentForm, studentDetails, editStudentForm].forEach(form => {
+        if (form) form.style.display = 'none';
+    });
+    
+    // Show the requested form
+    const formToShow = document.getElementById(formId);
+    if (formToShow) formToShow.style.display = 'block';
+    
+    // Reset multi-step form if showing add student form
+    if (formId === 'addStudentForm') {
+        resetMultiStepForm();
+    }
+}
+
+// Hide form function
+function hideForm(formId) {
+    const form = document.getElementById(formId);
+    if (form) form.style.display = 'none';
+}
+
+// Show student details
+function showStudentDetails() {
+    hideForm('viewStudentForm');
+    if (studentDetails) {
+        studentDetails.style.display = 'block';
+        studentDetails.classList.add('active');
+    }
+}
+
+// Hide student details
+function hideStudentDetails() {
+    if (studentDetails) {
+        studentDetails.style.display = 'none';
+        studentDetails.classList.remove('active');
+    }
+}
+
+// Show edit form
+function showEditForm(rollNo) {
+    hideForm('studentDetails');
+    if (editStudentForm) {
+        editStudentForm.style.display = 'block';
+    }
+}
+
+// Show delete confirmation modal
+function showDeleteModal(collegeId, name, course) {
+    if (deleteModal) {
+        document.getElementById('modal-collegeId').textContent = collegeId;
+        document.getElementById('modal-name').textContent = name;
+        document.getElementById('modal-course').textContent = course;
+        document.getElementById('modal-collegeId-input').value = collegeId;
+        deleteModal.style.display = 'flex';
+    }
+}
+
+// Hide delete confirmation modal
+function hideDeleteModal() {
+    if (deleteModal) deleteModal.style.display = 'none';
+}
+
+// Show help modal with scroll fix
+function showHelpModal() {
+    if (helpModal) {
+        helpModal.style.display = 'flex';
+        
+        // Fix for scrolling issue
+        const modalContent = helpModal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.maxHeight = '80vh';
+            modalContent.style.overflowY = 'auto';
+        }
+    }
+}
+
+// Hide help modal
+function hideHelpModal() {
+    if (helpModal) helpModal.style.display = 'none';
+}
+
+// Show settings modal
+function showSettingsModal() {
+    if (settingsModal) {
+        settingsModal.style.display = 'flex';
+        
+        // Initialize settings with current values
+        const themeSelect = settingsModal.querySelector('#themePreference');
+        const emailNotif = settingsModal.querySelector('#emailNotifications');
+        const systemNotif = settingsModal.querySelector('#systemNotifications');
+        const recordsPerPage = settingsModal.querySelector('#recordsPerPage');
+        
+        // Get current settings from localStorage or use defaults
+        const currentTheme = localStorage.getItem('themePreference') || 'Light Theme';
+        const currentEmailNotif = localStorage.getItem('emailNotifications') !== 'false';
+        const currentSystemNotif = localStorage.getItem('systemNotifications') !== 'false';
+        const currentRecordsPerPage = localStorage.getItem('recordsPerPage') || '25';
+        
+        // Set the values in the form
+        if (themeSelect) themeSelect.value = currentTheme;
+        if (emailNotif) emailNotif.checked = currentEmailNotif;
+        if (systemNotif) systemNotif.checked = currentSystemNotif;
+        if (recordsPerPage) recordsPerPage.value = currentRecordsPerPage;
+    }
+}
+
+// Hide settings modal
+function hideSettingsModal() {
+    if (settingsModal) settingsModal.style.display = 'none';
+}
+
+// Save settings function
+function saveSettings() {
+    const themeSelect = document.getElementById('themePreference');
+    const emailNotif = document.getElementById('emailNotifications');
+    const systemNotif = document.getElementById('systemNotifications');
+    const recordsPerPage = document.getElementById('recordsPerPage');
+    
+    if (themeSelect && emailNotif && systemNotif && recordsPerPage) {
+        localStorage.setItem('themePreference', themeSelect.value);
+        localStorage.setItem('emailNotifications', emailNotif.checked);
+        localStorage.setItem('systemNotifications', systemNotif.checked);
+        localStorage.setItem('recordsPerPage', recordsPerPage.value);
+        
+        // Apply theme immediately
+        applyTheme(themeSelect.value);
+        
+        // Show success message
+        alert('Settings saved successfully!');
+        hideSettingsModal();
+    }
+}
+
+// Apply theme function
+function applyTheme(theme) {
+    document.body.className = theme.toLowerCase().replace(' ', '-') + '-theme';
+}
+
+// Auto-hide alerts after 5 seconds
+if (alertContainer) {
+    setTimeout(() => {
+        alertContainer.innerHTML = '';
+    }, 5000);
+}
+
+// Multi-step form functionality
+function nextStep(currentStep) {
+    // Hide current step
+    const currentPage = document.getElementById(`page${currentStep}`);
+    const currentStepEl = document.getElementById(`step${currentStep}`);
+    
+    if (currentPage) currentPage.classList.remove('active');
+    if (currentStepEl) {
+        currentStepEl.classList.remove('active');
+        currentStepEl.classList.add('completed');
+    }
+    
+    // Show next step
+    const nextStepNum = currentStep + 1;
+    const nextPage = document.getElementById(`page${nextStepNum}`);
+    const nextStepEl = document.getElementById(`step${nextStepNum}`);
+    
+    if (nextPage) nextPage.classList.add('active');
+    if (nextStepEl) nextStepEl.classList.add('active');
+    
+    // Update progress text
+    updateProgressText(nextStepNum);
+    
+    // If we're going to the review page, populate the review fields
+    if (nextStepNum === 6) {
+        populateReviewFields();
+    }
+}
+
+function prevStep(currentStep) {
+    // Hide current step
+    const currentPage = document.getElementById(`page${currentStep}`);
+    const currentStepEl = document.getElementById(`step${currentStep}`);
+    
+    if (currentPage) currentPage.classList.remove('active');
+    if (currentStepEl) currentStepEl.classList.remove('active');
+    
+    // Show previous step
+    const prevStepNum = currentStep - 1;
+    const prevPage = document.getElementById(`page${prevStepNum}`);
+    const prevStepEl = document.getElementById(`step${prevStepNum}`);
+    
+    if (prevPage) prevPage.classList.add('active');
+    if (prevStepEl) {
+        prevStepEl.classList.add('active');
+        prevStepEl.classList.remove('completed');
+    }
+    
+    // Update progress text
+    updateProgressText(prevStepNum);
+}
+
+function validateStep(step) {
+    // Simple validation - check if required fields are filled
+    let isValid = true;
+    const currentPage = document.getElementById(`page${step}`);
+    
+    if (!currentPage) return false;
+    
+    const requiredInputs = currentPage.querySelectorAll('input[required], select[required], textarea[required]');
+    
+    // Reset all error states first
+    requiredInputs.forEach(input => {
+        input.classList.remove('error');
+        const errorElement = document.getElementById(`${input.id}-error`);
+        if (errorElement) errorElement.style.display = 'none';
+    });
+    
+    // Validate each required field
+    requiredInputs.forEach(input => {
+        if (!input.value.trim()) {
+            input.classList.add('error');
+            const errorElement = document.getElementById(`${input.id}-error`);
+            if (errorElement) errorElement.style.display = 'block';
+            isValid = false;
+        }
+        
+        // Additional validation for specific fields
+        if (input.id === 'email' && input.value.trim() && !/^\S+@\S+\.\S+$/.test(input.value)) {
+            input.classList.add('error');
+            const errorElement = document.getElementById('email-error');
+            if (errorElement) {
+                errorElement.textContent = 'Please enter a valid email address';
+                errorElement.style.display = 'block';
+            }
+            isValid = false;
+        }
+        
+        if ((input.id === 'phone' || input.id === 'other_phone_no') && input.value.trim() && !/^[0-9]{10,15}$/.test(input.value)) {
+            input.classList.add('error');
+            const errorElement = document.getElementById(`${input.id}-error`);
+            if (errorElement) {
+                errorElement.textContent = 'Please enter a valid phone number';
+                errorElement.style.display = 'block';
+            }
+            isValid = false;
+        }
+        
+        if ((input.id === 'tenth_percent' || input.id === 'twelfth_percent') && input.value.trim()) {
+            const percent = parseFloat(input.value);
+            if (isNaN(percent) || percent < 0 || percent > 100) {
+                input.classList.add('error');
+                const errorElement = document.getElementById(`${input.id}-error`);
+                if (errorElement) errorElement.style.display = 'block';
+                isValid = false;
+            }
+        }
+        
+        // Validate Aadhar number format (12 digits)
+        if (input.id === 'adhar_no' && input.value.trim() && !/^[0-9]{12}$/.test(input.value)) {
+            input.classList.add('error');
+            const errorElement = document.getElementById('adhar_no-error');
+            if (errorElement) {
+                errorElement.textContent = 'Aadhar number must be 12 digits';
+                errorElement.style.display = 'block';
+            }
+            isValid = false;
+        }
+        
+        // Validate PAN number format (10 alphanumeric characters)
+        if (input.id === 'pan_no' && input.value.trim() && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(input.value)) {
+            input.classList.add('error');
+            const errorElement = document.getElementById('pan_no-error');
+            if (errorElement) {
+                errorElement.textContent = 'Please enter a valid PAN number (format: ABCDE1234F)';
+                errorElement.style.display = 'block';
+            }
+            isValid = false;
+        }
+    });
+    
+    if (!isValid) {
+        // Scroll to the first error
+        const firstError = currentPage.querySelector('.error');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return false;
+    }
+    
+    // If validation passed, proceed to next step
+    nextStep(step);
+    return true;
+}
+
+function updateProgressText(step) {
+    const progressText = document.getElementById('progressText');
+    if (!progressText) return;
+    
+    const stepNames = ['', 'Personal Information', 'Contact Details', 'Academic Information', 
+                     'Government IDs', 'Caste & National Identity', 'Review & Submit'];
+    progressText.textContent = `Step ${step} of 6 - ${stepNames[step]}`;
+}
+
+function populateReviewFields() {
+    // Helper function to safely get value
+    function getValue(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : '';
+    }
+
+    // Personal Info
+    document.getElementById('review-name').textContent = getValue('name');
+    document.getElementById('review-father').textContent = getValue('father_name');
+    document.getElementById('review-mother').textContent = getValue('mother_name');
+    document.getElementById('review-occupation').textContent = getValue('occupation');
+    document.getElementById('review-income').textContent = getValue('income');
+    document.getElementById('review-birthday').textContent = formatDate(getValue('birthday'));
+    document.getElementById('review-gender').textContent = getValue('gender');
+    
+    // Contact Details
+    document.getElementById('review-phone').textContent = getValue('phone');
+    document.getElementById('review-other_phone_no').textContent = getValue('other_phone_no');
+    document.getElementById('review-email').textContent = getValue('email');
+    document.getElementById('review-address').textContent = 
+        `${getValue('address')}, ${getValue('city')}, ${getValue('state')} - ${getValue('state_code')}, ${getValue('country')}`;
+    
+    // Academic Info
+    document.getElementById('review-course').textContent = getValue('course');
+    document.getElementById('review-admission').textContent = formatDate(getValue('date_of_joining'));
+    document.getElementById('review-tenth').textContent = getValue('tenth_percent') + '%';
+    document.getElementById('review-twelth').textContent = getValue('twelfth_percent') + '%';
+    
+    // Government IDs
+    document.getElementById('review-adhar_no').textContent = getValue('adhar_no');
+    document.getElementById('review-pan_no').textContent = getValue('pan_no') || 'Not Provided';
+    document.getElementById('review-family_id').textContent = getValue('family_id') || 'Not Provided';
+    document.getElementById('review-family_id_phone_no').textContent = getValue('family_id_phone_no') || 'Not Provided';
+    
+    // Caste & National Identity
+    document.getElementById('review-category').textContent = getValue('category');
+    document.getElementById('review-nationality').textContent = getValue('nationality');
+    document.getElementById('review-religion').textContent = getValue('religion');
+    document.getElementById('review-martial_status').textContent = getValue('martial_status');
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function resetMultiStepForm() {
+    // Reset all steps to initial state
+    for (let i = 1; i <= 6; i++) {
+        const pageEl = document.getElementById(`page${i}`);
+        const stepEl = document.getElementById(`step${i}`);
+        
+        if (pageEl) pageEl.classList.remove('active');
+        if (stepEl) stepEl.classList.remove('active', 'completed');
+    }
+    
+    // Show first step
+    const firstPage = document.getElementById('page1');
+    const firstStep = document.getElementById('step1');
+    
+    if (firstPage) firstPage.classList.add('active');
+    if (firstStep) firstStep.classList.add('active');
+    
+    // Reset progress text
+    updateProgressText(1);
+    
+    // Reset form fields
+    const form = document.getElementById('multiStepForm');
+    if (form) form.reset();
+    
+    // Clear all error messages
+    document.querySelectorAll('.error-message').forEach(el => {
+        el.style.display = 'none';
+    });
+    
+    // Remove error classes
+    document.querySelectorAll('.form-control.error').forEach(el => {
+        el.classList.remove('error');
+    });
+}    
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+    // Apply saved theme
+    const savedTheme = localStorage.getItem('themePreference') || 'Light Theme';
+    applyTheme(savedTheme);
+    
+    // Set up settings form submit handler
+    const settingsForm = document.getElementById('settingsForm');
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveSettings();
+        });
+    }
+    
+    // Set default country to India
+    const countryField = document.getElementById('country');
+    if (countryField) countryField.value = 'India';
+    
+    // Set current date as default for date_of_joining
+    const today = new Date().toISOString().split('T')[0];
+    const joiningDateField = document.getElementById('date_of_joining');
+    if (joiningDateField) joiningDateField.value = today;
+    
+    // Set minimum date for birthday (at least 15 years ago)
+    const minBirthDate = new Date();
+    minBirthDate.setFullYear(minBirthDate.getFullYear() - 15);
+    const birthdayField = document.getElementById('birthday');
+    if (birthdayField) {
+        birthdayField.max = minBirthDate.toISOString().split('T')[0];
+    }
+});

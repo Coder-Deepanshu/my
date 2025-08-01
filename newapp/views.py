@@ -46,7 +46,7 @@ from django.shortcuts import render, redirect
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Student,Faculty_Add  # assuming Student model is imported
+from .models import Student,Faculty  # assuming Student model is imported
 
 def login_view(request):
     if request.method == 'POST':
@@ -69,14 +69,14 @@ def login_view(request):
                 
         elif role == 'faculty':
             try:
-                faculty_email = Faculty_Add.objects.all().values_list('email', flat=True)
+                faculty_email = Faculty.objects.all().values_list('email', flat=True)
                 if username in faculty_email:
-                    faculty_detail=Faculty_Add.objects.get(email=username)
-                    faculty_employee_id=faculty_detail.employee_id
+                    faculty_detail=Faculty.objects.get(email=username)
+                    faculty_college_id=faculty_detail.college_id
                     faculty_phone=faculty_detail.phone
-                    if password==faculty_phone and user_id == faculty_employee_id:
+                    if password==faculty_phone and user_id == faculty_college_id:
                        request.session['username2'] =  faculty_detail.name
-                       request.session['faculty_id']= faculty_employee_id
+                       request.session['faculty_college_id']= faculty_college_id
                        request.session['role'] = role
                        return redirect('dashboard1')
                     else:
@@ -99,10 +99,10 @@ def login_view(request):
                 if username in student_emails:
                     student_detail=Student.objects.get(email=username)
                     student_phone=student_detail.phone
-                    student_rollno=student_detail.roll_no
-                    if password == student_phone and user_id == student_rollno:
+                    student_college_id=student_detail.college_id
+                    if password == student_phone and user_id == student_college_id:
                       request.session['username3'] = student_detail.name
-                      request.session['student_rollno'] = student_rollno
+                      request.session['student_college_id'] = student_college_id
                       request.session['role'] = role
                       return redirect('dashboard2')
                     else:
@@ -132,7 +132,7 @@ def forget_password(request):
         ID_str=str(college_id)
         try:
          if ID_str[0:2] == 'ST':
-            student_detail = Student.objects.get(roll_no=college_id)
+            student_detail = Student.objects.get(college_id=college_id)
             return JsonResponse({
                 'success': True,
                 'username': student_detail.username,
@@ -140,20 +140,22 @@ def forget_password(request):
                 'password': student_detail.password  # Make sure this field exists in your model
             })
          elif ID_str[0:2] == 'GK':
-             faculty_detail = Faculty_Add.objects.get(employee_id=college_id)
+             faculty_detail = Faculty.objects.get(college_id=college_id)
              return JsonResponse({
                 'success': True,
-                'username': faculty_detail.email,
-                'user_id': faculty_detail.employee_id,
-                'password': faculty_detail.phone  # Make sure this field exists in your model
+                'username': faculty_detail.username,
+                'user_id': faculty_detail.user_id,
+                'password': faculty_detail.password  # Make sure this field exists in your model
             })
-        except (Student.DoesNotExist,Faculty_Add.DoesNotExist):
+        except (Student.DoesNotExist,Faculty.DoesNotExist):
             return JsonResponse({
                 'success': False,
                 'error': 'User not found'
             }, status=404)
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
+
+# for admin signup
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -163,11 +165,6 @@ def admin_signup(request):
         username = request.POST.get('username')
         user_id = request.POST.get('user_id')
         password = request.POST.get('password')
-        
-        # Here you should validate the admin credentials
-        # For example, check against a secret admin code or existing admin credentials
-        
-        # This is just example validation - replace with your actual logic
         if username == "Deepanshu" and password == "12345" and user_id =="AD20250":
             # Store admin authentication in session
             request.session['admin_authenticated'] = True
@@ -177,6 +174,8 @@ def admin_signup(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
+
+# for admin add page
 def add_new_admin(request):
     # Check if admin is authenticated
     if not request.session.get('admin_authenticated'):
@@ -185,36 +184,47 @@ def add_new_admin(request):
     # Render the add new admin page
     return render(request, 'admin_page.html')  # Create this template
 
+# profile details
 def profile_details(request):
     role = request.session.get('role')
     if role == 'faculty':
-        faculty_id=request.session.get('faculty_id')
-        faculty_details=Faculty_Add.objects.get(employee_id=faculty_id)
-        return render(request,'profile.html',{'detail':faculty_details})
+        faculty_id=request.session.get('faculty_college_id')
+        details=Faculty.objects.get(college_id=faculty_id)
+        return render(request,'profile.html',{'faculty':details})
     elif role == 'student':
-        student_id=request.session.get('student_rollno')
-        student_details=Student.objects.get(roll_no=student_id)
-        return render(request,'profile.html',{'detail':student_details})
+        student_id=request.session.get('student_college_id')
+        details=Student.objects.get(college_id=student_id)
+        return render(request,'profile.html',{'student':details})
 
 # for uploading picture 
-def profile_details(request):
+def profile_upload(request):
     role = request.session.get('role')
     if role == 'student':
-       try:
-        student = Student.objects.get(roll_no=request.session.get('student_rollno'))
-       except Student.DoesNotExist:
-        return redirect('dashboard2')
+        try:
+            student = Student.objects.get(college_id=request.session.get('student_college_id'))
+        except Student.DoesNotExist:
+            return redirect('dashboard2')
+        
+        if request.method == 'POST' and 'profile_picture' in request.FILES:
+            student.profile_picture = request.FILES['profile_picture']
+            student.save()
+            messages.success(request, 'Profile picture updated successfully!')
+            return redirect('profile_details')
+        
+    elif role == 'faculty':
+        try:
+            faculty = Faculty.objects.get(college_id=request.session.get('faculty_college_id'))
+        except Faculty.DoesNotExist:
+            return redirect('dashboard1')
+        
+        if request.method == 'POST' and 'profile_picture' in request.FILES:
+            faculty.profile_picture = request.FILES['profile_picture']
+            faculty.save()
+            messages.success(request, 'Profile picture updated successfully!')
+            return redirect('profile_details')
     
-       if request.method == 'POST' and 'profile_picture' in request.FILES:
-         student.profile_picture = request.FILES['profile_picture']
-         student.save()
-         messages.success(request, 'Profile picture updated successfully!')
-         return redirect('profile_details')
-    
-    context = {
-        'detail': student,
-    }
-    return render(request, 'profile.html', context)
+    # If none of the above conditions are met, redirect to appropriate dashboard
+    return redirect('dashboard1' if role == 'faculty' else 'dashboard2')
 
 # for id card
 def id_card(request):
@@ -224,15 +234,15 @@ def id_card(request):
     try:
         # Check user type and add appropriate details to context
         if role == 'student':
-            student = Student.objects.get(roll_no=request.session.get('student_rollno'))
+            student = Student.objects.get(college_id=request.session.get('student_college_id'))
             context['detail'] = student
-            context['user_type'] = 'student'
+            context['user_type'] = 'Student'
         elif role == 'faculty':
-            faculty = Faculty_Add.objects.get(employee_id=request.session.get('faculty_id'))
-            context['faculty_detail'] = faculty
-            context['user_type'] = 'faculty'
+            faculty = Faculty.objects.get(college_id=request.session.get('faculty_college_id'))
+            context['detail'] = faculty
+            context['user_type'] = 'Faculty'
             
-    except (Student.DoesNotExist, Faculty_Add.DoesNotExist):
+    except (Student.DoesNotExist, Faculty.DoesNotExist):
         return redirect('logoutdoor')
     
     return render(request, 'id_card.html', context)
@@ -284,22 +294,21 @@ def student_functions(request):
         # Add student
         if action == "add":
             try:
-                # Auto-generate employee ID
-                max_id = Student.objects.aggregate(max_id=models.Max('roll_no'))['max_id']
+                max_id = Student.objects.aggregate(max_id=models.Max('college_id'))['max_id']
                 
                 if max_id is None:
-                    roll_no = 'ST20250'  # Initial ID
+                    college_id = 'ST20250'  # Initial ID
                 else:
                     try:
                         # Extract numeric part and increment
                         numeric_part = int(max_id[2:])  # Remove 'GK' prefix
-                        roll_no = f'ST{numeric_part + 1}'
+                        college_id = f'ST{numeric_part + 1}'
                     except (ValueError, IndexError):
-                        roll_no = 'ST20250'  # Fallback if format is wrong
+                        college_id = 'ST20250'  # Fallback if format is wrong
                 email=request.POST.get("email")
                 phone=request.POST.get("phone")
                 Student.objects.create(
-                    roll_no=roll_no,
+                    college_id = college_id,
                     name=request.POST.get("name"),
                     father_name=request.POST.get("father_name"),
                     mother_name=request.POST.get('mother_name'),
@@ -307,7 +316,7 @@ def student_functions(request):
                     income=request.POST.get('income'),
                     email=email,
                     phone=phone,
-                    parent_phone=request.POST.get("parent_phone"),
+                    other_phone_no=request.POST.get("other_phone_no"),
                     gender=request.POST.get("gender"),
                     course=request.POST.get("course"),
                     birthday=request.POST.get("birthday"),
@@ -326,8 +335,8 @@ def student_functions(request):
                     category=request.POST.get("category"),
                     nationality=request.POST.get("nationality"),
                     religion=request.POST.get("religion"),
-                    status=request.POST.get("status"),
-                    user_id=roll_no, 
+                    martial_status=request.POST.get("martial_status"),
+                    user_id=college_id, 
                     username=email,
                     password=phone,
                 )
@@ -337,18 +346,18 @@ def student_functions(request):
 
         # View student
         elif action == "view":
-            roll = request.POST.get("roll_no")
+            college_id = request.POST.get("college_id")
             try:
-                student = Student.objects.get(roll_no=roll)
+                student = Student.objects.get(college_id=college_id)
                 context["student"] = student
             except Student.DoesNotExist:
                 messages.error(request, "No student found with this roll number.")
 
         # Delete student
         elif action == "delete":
-            roll = request.POST.get("roll_no")
+            college_id = request.POST.get("college_id")
             try:
-                student = Student.objects.get(roll_no=roll)
+                student = Student.objects.get(college_id=college_id)
                 student.delete()
                 messages.success(request, "Student deleted successfully.")
             except Student.DoesNotExist:
@@ -357,7 +366,7 @@ def student_functions(request):
         # Alter student
         elif action == "alter":
             try:
-                student = Student.objects.get(roll_no=request.POST.get("roll_no"))
+                student = Student.objects.get(college_id=request.POST.get("college_id"))
                 student.name = request.POST.get("name")
                 student.father_name = request.POST.get("father_name")
                 student.mother_name = request.POST.get("mother_name")
@@ -365,7 +374,7 @@ def student_functions(request):
                 student.income = request.POST.get("income")
                 student.email = request.POST.get("email")
                 student.phone = request.POST.get("phone")
-                student.parent_phone = request.POST.get("parent_phone")
+                student.other_phone_no = request.POST.get("other_phone_no")
                 student.gender = request.POST.get("gender")
                 student.course = request.POST.get("course")
                 student.birthday = request.POST.get("birthday")
@@ -376,17 +385,6 @@ def student_functions(request):
                 student.state = request.POST.get("state")
                 student.country = request.POST.get("country",'India')
                 student.state_code = request.POST.get("state_code")
-                student.date_of_joining = request.POST.get("date_of_joining")
-                student.tenth_percent = request.POST.get("tenth_percent")
-                student.twelfth_percent = request.POST.get("twelfth_percent")
-                student.adhar_no = request.POST.get("adhar_no")
-                student.pan_no = request.POST.get("pan_no")
-                student.family_id = request.POST.get("family_id")
-                student.family_id_phone_no = request.POST.get("family_id_phone_no)")
-                student.category = request.POST.get("category")
-                student.nationality = request.POST.get("nationality")
-                student.religion = request.POST.get("religion")
-                student.status = request.POST.get("status")
                 student.save()
                 messages.success(request, "Student details updated.")
             except Student.DoesNotExist:
@@ -444,7 +442,7 @@ def filter_students(request):
     if filters['semester'] != 'all':
         students = students.filter(semester=filters['semester'])
     if filters['roll_no']:
-        students = students.filter(roll_no__icontains=filters['roll_no'])
+        students = students.filter(college_id__icontains=filters['college_id'])
 
     html = render_to_string('student_result_partial.html', {'students': students})
     return JsonResponse({'html': html})
@@ -497,7 +495,7 @@ def delete_students(request):
 from django.db import models
 from django.contrib import messages
 from django.shortcuts import render
-from .models import Faculty_Add  # Make sure you have this model defined
+from .models import Faculty 
 
 def faculty_functions(request):
     context = {}
@@ -509,25 +507,28 @@ def faculty_functions(request):
         if action == "add":
             try:
                 # Auto-generate employee ID
-                max_id = Faculty_Add.objects.aggregate(max_id=models.Max('employee_id'))['max_id']
+                max_id = Faculty.objects.aggregate(max_id=models.Max('college_id'))['max_id']
                 
                 if max_id is None:
-                    employee_id = 'GK20250'  # Initial ID
+                    college_id = 'GK20250'  # Initial ID
                 else:
                     try:
                         # Extract numeric part and increment
                         numeric_part = int(max_id[2:])  # Remove 'GK' prefix
-                        employee_id = f'GK{numeric_part + 1}'
+                        college_id = f'GK{numeric_part + 1}'
                     except (ValueError, IndexError):
-                        employee_id = 'GK20250'  # Fallback if format is wrong
-
+                        college_id = 'GK20250'  # Fallback if format is wrong
+                email = request.POST.get("email")
+                phone =  request.POST.get("phone")        
                 # Create faculty with all required fields
-                Faculty_Add.objects.create(
-                    employee_id=employee_id,
+                Faculty.objects.create(
+                    college_id=college_id,
                     name=request.POST.get("name"),
                     father_name=request.POST.get("father_name"),
-                    email=request.POST.get("email"),
-                    phone=request.POST.get("phone"),
+                    mother_name=request.POST.get("mother_name"),
+                    email=email,
+                    phone=phone,
+                    other_phone_no=request.POST.get("other_phone_no"),
                     position=request.POST.get("position"),
                     gender=request.POST.get("gender"),
                     department=request.POST.get("department"),
@@ -535,17 +536,20 @@ def faculty_functions(request):
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
                     state=request.POST.get("state"),
-                    pin_code=request.POST.get("pin_code"),
+                    state_code=request.POST.get("state_code"),
                     country=request.POST.get("country", "India"),
                     date_of_joining=request.POST.get("date_of_joining"),
                     experience=request.POST.get("experience"),
-                    dob=request.POST.get("dob"),
+                    birthday=request.POST.get("birthday"),
                     category=request.POST.get("category"),
                     nationality=request.POST.get("nationality", "Indian"),
                     religion=request.POST.get("religion"),
                     adhar_no=request.POST.get("adhar_no"),
                     pan_no=request.POST.get("pan_no"),
-                    status=request.POST.get("status", "Active")
+                    martial_status=request.POST.get("martial_status"),
+                    user_id=college_id, 
+                    username=email,
+                    password=phone,
                 )
                 messages.success(request, "Faculty added successfully!")
             except Exception as e:
@@ -553,38 +557,40 @@ def faculty_functions(request):
 
         # View faculty
         elif action == "view":
-            emp_id = request.POST.get("employee_id")
+            college_id = request.POST.get("college_id")
             try:
-                faculty = Faculty_Add.objects.get(employee_id=emp_id)
+                faculty = Faculty.objects.get(college_id=college_id)
                 context["faculty"] = faculty
-            except Faculty_Add.DoesNotExist:
+            except Faculty.DoesNotExist:
                 messages.error(request, "No faculty found with this ID.")
             except Exception as e:
                 messages.error(request, f"Error viewing faculty: {str(e)}")
 
         # Delete faculty
         elif action == "delete":
-            emp_id = request.POST.get("employee_id")
+            college_id = request.POST.get("college_id")
             try:
-                faculty = Faculty_Add.objects.get(employee_id=emp_id)
+                faculty = Faculty.objects.get(college_id=college_id)
                 faculty.delete()
                 messages.success(request, "Faculty deleted successfully.")
-            except Faculty_Add.DoesNotExist:
+            except Faculty.DoesNotExist:
                 messages.error(request, "Faculty not found.")
             except Exception as e:
                 messages.error(request, f"Error deleting faculty: {str(e)}")
 
         # Alter faculty
         elif action == "alter":
-            emp_id = request.POST.get("employee_id")
+            college_id = request.POST.get("college_id")
             try:
-                faculty = Faculty_Add.objects.get(employee_id=emp_id)
+                faculty = Faculty.objects.get(college_id=college_id)
                 
                 # Update all fields
                 faculty.name = request.POST.get("name")
                 faculty.father_name = request.POST.get("father_name")
+                faculty.mother_name = request.POST.get("mother_name")
                 faculty.email = request.POST.get("email")
                 faculty.phone = request.POST.get("phone")
+                faculty.other_phone_no = request.POST.get("other_phone_no")
                 faculty.position = request.POST.get("position")
                 faculty.gender = request.POST.get("gender")
                 faculty.department = request.POST.get("department")
@@ -592,26 +598,20 @@ def faculty_functions(request):
                 faculty.address = request.POST.get("address")
                 faculty.city = request.POST.get("city")
                 faculty.state = request.POST.get("state")
-                faculty.pin_code = request.POST.get("pin_code")
+                faculty.state_code = request.POST.get("state_code")
                 faculty.country = request.POST.get("country", "India")
                 faculty.date_of_joining = request.POST.get("date_of_joining")
                 faculty.experience = request.POST.get("experience")
-                faculty.dob = request.POST.get("dob")
-                faculty.category = request.POST.get("category")
-                faculty.nationality = request.POST.get("nationality", "Indian")
-                faculty.religion = request.POST.get("religion")
+                faculty.birthday = request.POST.get("birthday")
                 faculty.adhar_no = request.POST.get("adhar_no")
                 faculty.pan_no = request.POST.get("pan_no")
-                faculty.status = request.POST.get("status", "Active")
+                faculty.martial_status = request.POST.get("martial_status")
                 
                 faculty.save()
                 messages.success(request, "Faculty details updated successfully.")
-            except Faculty_Add.DoesNotExist:
+            except Faculty.DoesNotExist:
                 messages.error(request, "Faculty not found.")
             except Exception as e:
                 messages.error(request, f"Error updating faculty: {str(e)}")
 
     return render(request, "faculty_page.html", context)
-
-
-

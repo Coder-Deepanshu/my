@@ -51,6 +51,104 @@
             --box-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
         }
 
+        /* Dark Theme Variables */
+        .dark-theme {
+            --primary: #5c7cff;
+            --primary-dark: #4a6bff;
+            --primary-light: #1a202c;
+            --primary-extra-light: #2d3748;
+            
+            --dark: #f8fafc;
+            --darker: #ffffff;
+            --light: #1a202c;
+            --lighter: #2d3748;
+            --gray: #a0aec0;
+            --light-gray: #4a5568;
+            --dark-gray: #e2e8f0;
+            
+            --sidebar-bg: #1a202c;
+            --sidebar-text: #cbd5e0;
+            --sidebar-hover: #2d3748;
+            
+            background-color: #1a202c;
+            color: #f8fafc;
+        }
+
+        .dark-theme .card,
+        .dark-theme .section-card,
+        .dark-theme .modal-content {
+            background-color: #2d3748;
+            color: #f8fafc;
+            border-color: #4a5568;
+        }
+
+        .dark-theme .card-header,
+        .dark-theme .section-header {
+            border-color: #4a5568;
+            background-color: #2d3748;
+        }
+
+        .dark-theme .form-control,
+        .dark-theme .btn-outline {
+            background-color: #2d3748;
+            border-color: #4a5568;
+            color: #f8fafc;
+        }
+
+        .dark-theme .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(92, 124, 255, 0.3);
+        }
+
+        .dark-theme .detail-label {
+            color: #a0aec0;
+        }
+
+        .dark-theme .detail-value {
+            color: #f8fafc;
+        }
+
+        .dark-theme .header {
+            background-color: #2d3748;
+            border-color: #4a5568;
+        }
+
+        .dark-theme .page-title {
+            color: #f8fafc;
+        }
+
+        .dark-theme .toggle-sidebar,
+        .dark-theme .notification-btn {
+            color: #a0aec0;
+        }
+
+        .dark-theme .toggle-sidebar:hover,
+        .dark-theme .notification-btn:hover {
+            background-color: #4a5568;
+            color: #f8fafc;
+        }
+
+        .dark-theme .user-dropdown:hover {
+            background-color: #4a5568;
+        }
+
+        .dark-theme .user-dropdown-name {
+            color: #f8fafc;
+        }
+
+        .dark-theme .dropdown-item {
+            color: #f8fafc;
+        }
+
+        .dark-theme .dropdown-item:hover {
+            background-color: #4a5568;
+            color: var(--primary);
+        }
+
+        .dark-theme .dropdown-divider {
+            background-color: #4a5568;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -553,6 +651,7 @@
             margin-bottom: 2rem;
             border: 1px solid rgba(0, 0, 0, 0.03);
             transition: var(--transition);
+            height: auto;
         }
 
         .card:hover {
@@ -909,6 +1008,90 @@
             border-left: 4px solid var(--danger);
         }
 
+        /* Checkbox Styles */
+        .checkbox-container {
+            display: block;
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #eee;
+            border-radius: 4px;
+        }
+
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: var(--primary);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-container .checkmark:after {
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Help Section Styles */
+        .help-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .help-section:last-child {
+            border-bottom: none;
+        }
+
+        .help-section h4 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .help-section ol, .help-section ul {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .help-section li {
+            margin-bottom: 0.5rem;
+        }
+
         /* Responsive Styles */
         @media (max-width: 1200px) {
             .sidebar {
@@ -993,31 +1176,31 @@
         <div class="sidebar-menu">
             <ul class="menu-list">
                 <li class="menu-item">
-                <a class="menu-link active" href="{% url 'dashboard' %}">
-                <i class="fas fa-arrow-left menu-icon"></i>
-                <span class="menu-text">Back</span>
-                 </a>
-                 </li>
+                    <a class="menu-link active" href="{% url 'dashboard' %}">
+                        <i class="fas fa-arrow-left menu-icon"></i>
+                        <span class="menu-text">Back</span>
+                    </a>
+                </li>
                 <li class="menu-item">
                     <a href="{% url 'dashboard' %}" class="menu-link">
-                        <i class="fas fa-book menu-icon"></i>
+                        <i class="fas fa-home menu-icon"></i>
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="{% url 'logoutdoor' %}" class="menu-link">
-                        <i class="fas fa-chart-bar menu-icon"></i>
-                        <span class="menu-text">Logour</span>
+                        <i class="fas fa-sign-out-alt menu-icon"></i>
+                        <span class="menu-text">Logout</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="#" class="menu-link" id="settingsBtn">
                         <i class="fas fa-cog menu-icon"></i>
                         <span class="menu-text">Settings</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="#" class="menu-link" id="helpBtn">
                         <i class="fas fa-question-circle menu-icon"></i>
                         <span class="menu-text">Help</span>
                     </a>
@@ -1030,9 +1213,11 @@
                 <div class="user-name">Admin User</div>
                 <div class="user-role">Administrator</div>
             </div>
+            <a href="{% url 'logoutdoor' %}">
             <button class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
             </button>
+            </a>
         </div>
     </div>
 
@@ -1075,7 +1260,6 @@
                 </div>
             </div>
         </header>
-
         <!-- Content -->
         <div class="content">
             <div class="header-1">
@@ -1108,6 +1292,13 @@
                 {% endfor %}
             </div>
             {% endif %}
+            <!-- Add this right after your existing alert container -->
+            <div id="settingsAlertContainer" style="display: none;">
+                 <div class="alert alert-success">
+                 <i class="fas fa-check-circle"></i>
+                 <span id="settingsAlertMessage"></span>
+                 </div>
+            </div>
 
             <!-- Add Student Form (Multi-step) -->
             <div class="card" id="addStudentForm" style="display: none;">
@@ -1224,9 +1415,9 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="parent_phone" class="form-label">Parent Phone No.</label>
-                                    <input type="tel" id="parent_phone" name="parent_phone" class="form-control" required>
-                                    <div class="error-message" id="parent_phone-error">Please enter a valid phone number</div>
+                                    <label for="other_phone_no" class="form-label">Parent Phone No.</label>
+                                    <input type="tel" id="other_phone_no" name="other_phone_no" class="form-control" required>
+                                    <div class="error-message" id="other_phone_no-error">Please enter a valid phone number</div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -1403,13 +1594,13 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="status" class="form-label">Martial Status</label>
-                                    <select id="status" name="status" class="form-control" required>
+                                    <label for="martial_status" class="form-label">Martial Status</label>
+                                    <select id="martial_status" name="martial_status" class="form-control" required>
                                         <option value="">-- Martial Status --</option>
                                         <option value="Married">Married</option>
                                         <option value="Unmarried">Unmarried</option>
                                     </select>
-                                    <div class="error-message" id="status-error">Please select martial staus</div>
+                                    <div class="error-message" id="martial_status-error">Please select martial staus</div>
                                 </div>
                             </div>
                             
@@ -1455,7 +1646,7 @@
                                         </div>
                                         <div class="detail-row">
                                             <span class="detail-label">Date of Birth:</span>
-                                            <span class="detail-value" id="review-dob"></span>
+                                            <span class="detail-value" id="review-birthday"></span>
                                         </div>
                                         <div class="detail-row">
                                             <span class="detail-label">Gender:</span>
@@ -1476,8 +1667,8 @@
                                             <span class="detail-value" id="review-phone"></span>
                                         </div>
                                         <div class="detail-row">
-                                            <span class="detail-label">Parent Phone:</span>
-                                            <span class="detail-value" id="review-parent_phone"></span>
+                                            <span class="detail-label"> Parent Phone:</span>
+                                            <span class="detail-value" id="review-other_phone_no"></span>
                                         </div>
                                         <div class="detail-row">
                                             <span class="detail-label">Email:</span>
@@ -1562,7 +1753,7 @@
                                         </div>
                                         <div class="detail-row">
                                             <span class="detail-label">Martial Status:</span>
-                                            <span class="detail-value" id="review-status"></span>
+                                            <span class="detail-value" id="review-martial_status"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1600,7 +1791,7 @@
                         <input type="hidden" name="action" value="view">
                         <div class="form-group">
                             <label for="searchRollNumber" class="form-label">Enter Roll Number</label>
-                            <input type="text" id="searchRollNumber" name="roll_no" class="form-control" placeholder="e.g. STU2023001" required>
+                            <input type="text" id="searchRollNumber" name="college_id" class="form-control" placeholder="e.g. STU2023001" required>
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn btn-outline" onclick="hideForm('viewStudentForm')">
@@ -1693,7 +1884,7 @@
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label"> Parent Phone No.:</span>
-                                    <span class="detail-value">{{ student.parent_phone }}</span>
+                                    <span class="detail-value">{{ student.other_phone_no }}</span>
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">Email:</span>
@@ -1795,7 +1986,7 @@
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">Martial Status:</span>
-                                    <span class="detail-value">{{ student.status }}</span>
+                                    <span class="detail-value">{{ student.martial_status }}</span>
                                 </div>
                             </div>
                         </div>
@@ -1826,10 +2017,10 @@
                         <button class="btn btn-outline" onclick="hideStudentDetails()">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ student.roll_no }}')">
+                        <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ student.college_id }}')">
                             <i class="fas fa-edit"></i> Edit Details
                         </button>
-                        <button class="btn btn-danger" onclick="showDeleteModal('{{ student.roll_no }}', '{{ student.name }}', '{{ student.course }}')">
+                        <button class="btn btn-danger" onclick="showDeleteModal('{{ student.college_id }}', '{{ student.name }}', '{{ student.course }}')">
                             <i class="fas fa-trash"></i> Delete Record
                         </button>
                     </div>
@@ -1853,7 +2044,7 @@
                     <form method="POST" action="{% url 'student' %}">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="alter">
-                        <input type="hidden" name="roll_no" value="{{ student.roll_no }}">
+                        <input type="hidden" name="college_id" value="{{ student.college_id }}">
                         
                         <div class="review-container">
                             <!-- Personal Information Section -->
@@ -1865,7 +2056,7 @@
                                 <div class="section-body">
                                     <div class="form-group">
                                         <label for="editRollNumber" class="form-label">Roll Number</label>
-                                        <input type="text" id="editRollNumber" class="form-control" value="{{ student.roll_no }}" readonly>
+                                        <input type="text" id="editRollNumber" class="form-control" value="{{ student.college_id }}" readonly>
                                     </div>
                                     <div class="form-group">
                                         <label for="editName" class="form-label">Full Name</label>
@@ -1874,6 +2065,10 @@
                                     <div class="form-group">
                                         <label for="editFatherName" class="form-label">Father's Name</label>
                                         <input type="text" id="editFatherName" name="father_name" class="form-control" value="{{ student.father_name }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editMotherName" class="form-label">Mother's Name</label>
+                                        <input type="text" id="editMotherName" name="mother_name" class="form-control" value="{{ student.mother_name }}" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="editBirthday" class="form-label">Date of Birth</label>
@@ -1900,6 +2095,10 @@
                                     <div class="form-group">
                                         <label for="editPhone" class="form-label">Phone Number</label>
                                         <input type="tel" id="editPhone" name="phone" class="form-control" value="{{ student.phone }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editPhone" class="form-label">Parent Number</label>
+                                        <input type="tel" id="editPhone" name="other_phone_no" class="form-control" value="{{ student.other_phone_no }}" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="editEmail" class="form-label">Email Address</label>
@@ -1953,22 +2152,9 @@
                                         <label for="editYear" class="form-label">Year</label>
                                         <input type="text" id="editYear" name="year" class="form-control" value="{{ student.year }}" required>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="editDateOfJoining" class="form-label">Date of Joining</label>
-                                        <input type="date" id="editDateOfJoining" name="date_of_joining" class="form-control" value="{{ student.date_of_joining|date:'Y-m-d' }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editTenthPercent" class="form-label">10th Percentage</label>
-                                        <input type="number" id="editTenthPercent" name="tenth_percent" min="0" max="100" step="0.01" class="form-control" value="{{ student.tenth_percent }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editTwelfthPercent" class="form-label">12th Percentage</label>
-                                        <input type="number" id="editTwelfthPercent" name="twelfth_percent" min="0" max="100" step="0.01" class="form-control" value="{{ student.twelfth_percent }}" required>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="form-actions">
                             <button type="button" class="btn btn-outline" onclick="hideForm('editStudentForm')">
                                 <i class="fas fa-times"></i> Cancel
@@ -1982,7 +2168,141 @@
             </div>
             {% endif %}
         </div>
+        <!-- Help Modal -->
+        <div class="modal" id="helpModal">
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="modal-header" style="background-color: var(--primary);">
+                    <h3 class="modal-title">
+                        <i class="fas fa-question-circle"></i>
+                        Student Management Help Guide
+                    </h3>
+                    <button class="btn btn-icon" onclick="hideHelpModal()" style="color: white;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-section">
+                        <h4><i class="fas fa-user-plus"></i> Adding a New Student</h4>
+                        <p>To add a new student to the system:</p>
+                        <ol>
+                            <li>Click on the "Add Student" button</li>
+                            <li>Fill in all required personal information (name, date of birth, gender)</li>
+                            <li>Provide contact details (phone, email, address)</li>
+                            <li>Enter academic information (course, admission date)</li>
+                            <li>Fill government IDs carefully:
+                                <ul>
+                                    <li><strong>Aadhar Card:</strong> 12-digit number (required)</li>
+                                    <li><strong>PAN Card:</strong> If not available, enter "NA"</li>
+                                    <li><strong>Family ID:</strong> If not applicable, enter "NA"</li>
+                                </ul>
+                            </li>
+                            <li>Review all information before submitting</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4><i class="fas fa-search"></i> Viewing Student Records</h4>
+                        <p>To view a student's details:</p>
+                        <ol>
+                            <li>Click on "View Student" button</li>
+                            <li>Enter the student's roll number</li>
+                            <li>Click "Search" to view complete details</li>
+                            <li>From the student details page, you can:
+                                <ul>
+                                    <li>Edit student information</li>
+                                    <li>Delete student record (admin only)</li>
+                                    <li>View academic history</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4><i class="fas fa-id-card"></i> Government ID Guidelines</h4>
+                        <p>Please follow these guidelines when entering government IDs:</p>
+                        <ul>
+                            <li><strong>Aadhar Card:</strong> Mandatory for all students (12 digits)</li>
+                            <li><strong>PAN Card:</strong> Optional - enter "NA" if not available</li>
+                            <li><strong>Family ID:</strong> Only required for government scholarship students</li>
+                            <li>All IDs must be verified with original documents</li>
+                            <li>Double-check all numbers before submission</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Important Notes</h4>
+                        <ul>
+                            <li>All fields marked with * are mandatory</li>
+                            <li>Student records cannot be edited after 24 hours of creation</li>
+                            <li>Contact admin for any data correction requests</li>
+                            <li>Keep student information confidential and secure</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="hideHelpModal()">
+                        <i class="fas fa-check"></i> Understood
+                    </button>
+                </div>
+            </div>
+        </div>
 
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header" style="background-color: var(--dark-gray);">
+                    <h3 class="modal-title">
+                        <i class="fas fa-cog"></i>
+                        System Settings
+                    </h3>
+                    <button class="btn btn-icon" onclick="hideSettingsModal()" style="color: white;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Theme Preference</label>
+                        <select id="themePreference" class="form-control">
+                            <option value="Light Theme">Light Theme</option>
+                            <option value="Dark Theme">Dark Theme</option>
+                            <option value="System Default">System Default</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notifications</label>
+                        <div>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="emailNotifications" checked> Email Notifications
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="systemNotifications" checked> System Notifications
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Records Per Page</label>
+                        <select id="recordsPerPage" class="form-control">
+                            <option>10</option>
+                            <option selected>25</option>
+                            <option>50</option>
+                            <option>100</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" onclick="hideSettingsModal()">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
         <!-- Delete Confirmation Modal -->
         <div class="modal" id="deleteModal">
             <div class="modal-content">
@@ -1999,7 +2319,7 @@
                     <div class="detail-grid">
                         <div class="form-group">
                             <label class="form-label">Roll Number</label>
-                            <div class="form-control" id="modal-rollno"></div>
+                            <div class="form-control" id="modal-collegeId"></div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Student Name</label>
@@ -2015,7 +2335,7 @@
                     <form method="POST" action="{% url 'student' %}" id="deleteForm">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="roll_no" id="modal-rollno-input">
+                        <input type="hidden" name="collegeId" id="modal-collegeId-input">
                         <button type="button" class="btn btn-outline" onclick="hideDeleteModal()">
                             Cancel
                         </button>
@@ -2029,14 +2349,16 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+    <script>
     // Toggle sidebar
     const toggleSidebar = document.querySelector('.toggle-sidebar');
     const sidebar = document.querySelector('.sidebar');
-    
-    toggleSidebar.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-    });
+
+    if (toggleSidebar && sidebar) {
+        toggleSidebar.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+    }
 
     // DOM Elements
     const addStudentBtn = document.getElementById('addStudentBtn');
@@ -2047,10 +2369,37 @@
     const editStudentForm = document.getElementById('editStudentForm');
     const alertContainer = document.getElementById('alertContainer');
     const deleteModal = document.getElementById('deleteModal');
+    const helpModal = document.getElementById('helpModal');
+    const settingsModal = document.getElementById('settingsModal');
+    const helpBtn = document.getElementById('helpBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
 
     // Event Listeners
-    addStudentBtn.addEventListener('click', () => showForm('addStudentForm'));
-    viewStudentBtn.addEventListener('click', () => showForm('viewStudentForm'));
+    if (addStudentBtn) addStudentBtn.addEventListener('click', () => showForm('addStudentForm'));
+    if (viewStudentBtn) viewStudentBtn.addEventListener('click', () => showForm('viewStudentForm'));
+
+    // Help Button Functionality
+    if (helpBtn) {
+        helpBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showHelpModal();
+        });
+    }
+
+    // Settings Button Functionality
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showSettingsModal();
+        });
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target.className === 'modal') {
+            event.target.style.display = 'none';
+        }
+    });
 
     // Show form function
     function showForm(formId) {
@@ -2101,20 +2450,110 @@
     }
 
     // Show delete confirmation modal
-    function showDeleteModal(rollNo, name, course) {
-        document.getElementById('modal-rollno').textContent = rollNo;
-        document.getElementById('modal-name').textContent = name;
-        document.getElementById('modal-course').textContent = course;
-        document.getElementById('modal-rollno-input').value = rollNo;
-        
-        // Show modal
-        if (deleteModal) deleteModal.style.display = 'flex';
+    function showDeleteModal(collegeId, name, course) {
+        if (deleteModal) {
+            document.getElementById('modal-collegeId').textContent = collegeId;
+            document.getElementById('modal-name').textContent = name;
+            document.getElementById('modal-course').textContent = course;
+            document.getElementById('modal-collegeId-input').value = collegeId;
+            deleteModal.style.display = 'flex';
+        }
     }
 
     // Hide delete confirmation modal
     function hideDeleteModal() {
-        // Hide modal
         if (deleteModal) deleteModal.style.display = 'none';
+    }
+
+    // Show help modal with scroll fix
+    function showHelpModal() {
+        if (helpModal) {
+            helpModal.style.display = 'flex';
+            
+            // Fix for scrolling issue
+            const modalContent = helpModal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.maxHeight = '80vh';
+                modalContent.style.overflowY = 'auto';
+            }
+        }
+    }
+
+    // Hide help modal
+    function hideHelpModal() {
+        if (helpModal) helpModal.style.display = 'none';
+    }
+
+    // Show settings modal
+    function showSettingsModal() {
+        if (settingsModal) {
+            settingsModal.style.display = 'flex';
+            
+            // Initialize settings with current values
+            const themeSelect = settingsModal.querySelector('#themePreference');
+            const emailNotif = settingsModal.querySelector('#emailNotifications');
+            const systemNotif = settingsModal.querySelector('#systemNotifications');
+            const recordsPerPage = settingsModal.querySelector('#recordsPerPage');
+            
+            // Get current settings from localStorage or use defaults
+            const currentTheme = localStorage.getItem('themePreference') || 'Light Theme';
+            const currentEmailNotif = localStorage.getItem('emailNotifications') !== 'false';
+            const currentSystemNotif = localStorage.getItem('systemNotifications') !== 'false';
+            const currentRecordsPerPage = localStorage.getItem('recordsPerPage') || '25';
+            
+            // Set the values in the form
+            if (themeSelect) themeSelect.value = currentTheme;
+            if (emailNotif) emailNotif.checked = currentEmailNotif;
+            if (systemNotif) systemNotif.checked = currentSystemNotif;
+            if (recordsPerPage) recordsPerPage.value = currentRecordsPerPage;
+        }
+    }
+
+    // Hide settings modal
+    function hideSettingsModal() {
+        if (settingsModal) settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+    const themeSelect = document.getElementById('themePreference');
+    const emailNotif = document.getElementById('emailNotifications');
+    const systemNotif = document.getElementById('systemNotifications');
+    const recordsPerPage = document.getElementById('recordsPerPage');
+    
+    if (themeSelect && emailNotif && systemNotif && recordsPerPage) {
+        localStorage.setItem('themePreference', themeSelect.value);
+        localStorage.setItem('emailNotifications', emailNotif.checked);
+        localStorage.setItem('systemNotifications', systemNotif.checked);
+        localStorage.setItem('recordsPerPage', recordsPerPage.value);
+        
+        // Apply theme immediately
+        applyTheme(themeSelect.value);
+        
+        // Show success message in the same style as other messages
+        const alertContainer = document.getElementById('settingsAlertContainer');
+        const alertMessage = document.getElementById('settingsAlertMessage');
+        
+        if (alertContainer && alertMessage) {
+            alertMessage.textContent = 'Settings saved successfully!';
+            alertContainer.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                alertContainer.style.display = 'none';
+            }, 5000);
+        }
+        
+        hideSettingsModal();
+    }
+}
+
+    // Apply theme function
+    function applyTheme(theme) {
+        if (theme === 'Dark Theme') {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
     }
 
     // Auto-hide alerts after 5 seconds
@@ -2212,7 +2651,7 @@
                 isValid = false;
             }
             
-            if ((input.id === 'phone' || input.id === 'parent_phone') && input.value.trim() && !/^[0-9]{10,15}$/.test(input.value)) {
+            if ((input.id === 'phone' || input.id === 'other_phone_no') && input.value.trim() && !/^[0-9]{10,15}$/.test(input.value)) {
                 input.classList.add('error');
                 const errorElement = document.getElementById(`${input.id}-error`);
                 if (errorElement) {
@@ -2248,7 +2687,7 @@
                 input.classList.add('error');
                 const errorElement = document.getElementById('pan_no-error');
                 if (errorElement) {
-                    errorElement.textContent = 'Please enter a valid PAN number';
+                    errorElement.textContent = 'Please enter a valid PAN number (format: ABCDE1234F)';
                     errorElement.style.display = 'block';
                 }
                 isValid = false;
@@ -2291,12 +2730,12 @@
         document.getElementById('review-mother').textContent = getValue('mother_name');
         document.getElementById('review-occupation').textContent = getValue('occupation');
         document.getElementById('review-income').textContent = getValue('income');
-        document.getElementById('review-dob').textContent = formatDate(getValue('birthday'));
+        document.getElementById('review-birthday').textContent = formatDate(getValue('birthday'));
         document.getElementById('review-gender').textContent = getValue('gender');
         
         // Contact Details
         document.getElementById('review-phone').textContent = getValue('phone');
-        document.getElementById('review-parent_phone').textContent = getValue('parent_phone');
+        document.getElementById('review-other_phone_no').textContent = getValue('other_phone_no');
         document.getElementById('review-email').textContent = getValue('email');
         document.getElementById('review-address').textContent = 
             `${getValue('address')}, ${getValue('city')}, ${getValue('state')} - ${getValue('state_code')}, ${getValue('country')}`;
@@ -2309,15 +2748,15 @@
         
         // Government IDs
         document.getElementById('review-adhar_no').textContent = getValue('adhar_no');
-        document.getElementById('review-pan_no').textContent = getValue('pan_no');
-        document.getElementById('review-family_id').textContent = getValue('family_id');
-        document.getElementById('review-family_id_phone_no').textContent = getValue('family_id_phone_no');
+        document.getElementById('review-pan_no').textContent = getValue('pan_no') || 'Not Provided';
+        document.getElementById('review-family_id').textContent = getValue('family_id') || 'Not Provided';
+        document.getElementById('review-family_id_phone_no').textContent = getValue('family_id_phone_no') || 'Not Provided';
         
         // Caste & National Identity
         document.getElementById('review-category').textContent = getValue('category');
         document.getElementById('review-nationality').textContent = getValue('nationality');
         document.getElementById('review-religion').textContent = getValue('religion');
-        document.getElementById('review-status').textContent = getValue('status');
+        document.getElementById('review-martial_status').textContent = getValue('martial_status');
     }
 
     function formatDate(dateString) {
@@ -2359,7 +2798,40 @@
         document.querySelectorAll('.form-control.error').forEach(el => {
             el.classList.remove('error');
         });
-    }
-</script>
+    }    
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Apply saved theme
+        const savedTheme = localStorage.getItem('themePreference') || 'Light Theme';
+        applyTheme(savedTheme);
+        
+        // Set up settings form submit handler
+        const settingsForm = document.getElementById('settingsForm');
+        if (settingsForm) {
+            settingsForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveSettings();
+            });
+        }
+        
+        // Set default country to India
+        const countryField = document.getElementById('country');
+        if (countryField) countryField.value = 'India';
+        
+        // Set current date as default for date_of_joining
+        const today = new Date().toISOString().split('T')[0];
+        const joiningDateField = document.getElementById('date_of_joining');
+        if (joiningDateField) joiningDateField.value = today;
+        
+        // Set minimum date for birthday (at least 15 years ago)
+        const minBirthDate = new Date();
+        minBirthDate.setFullYear(minBirthDate.getFullYear() - 15);
+        const birthdayField = document.getElementById('birthday');
+        if (birthdayField) {
+            birthdayField.max = minBirthDate.toISOString().split('T')[0];
+        }
+    });
+    </script>
 </body>
 </html>
