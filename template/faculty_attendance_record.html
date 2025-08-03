@@ -1,0 +1,471 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6>Attendance Records</h6>
+                        <div>
+                            <a href="{% url 'filter_students' %}" class="btn btn-sm btn-primary">
+                                Mark New Attendance
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <form method="get" class="p-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="course">Course</label>
+                                    <select name="course" id="course" class="form-control">
+                                        <option value="">All Courses</option>
+                                        {% for course in courses %}
+                                        <option value="{{ course.id }}" {% if selected_course == course.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ course.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="lecture">Lecture</label>
+                                    <input type="number" name="lecture" id="lecture" class="form-control" 
+                                           value="{{ selected_lecture }}" placeholder="Lecture number">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="date">Date</label>
+                                    <input type="date" name="date" id="date" class="form-control" 
+                                           value="{{ selected_date }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="">All</option>
+                                        <option value="Present" {% if selected_status == "Present" %}selected{% endif %}>Present</option>
+                                        <option value="Absent" {% if selected_status == "Absent" %}selected{% endif %}>Absent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="year">Year</label>
+                                    <select name="year" id="year" class="form-control">
+                                        <option value="">All Years</option>
+                                        {% for year in years %}
+                                        <option value="{{ year.year }}" {% if selected_year == year.year|stringformat:"s" %}selected{% endif %}>
+                                            {{ year.year }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">Filter</button>
+                                <a href="{% url 'faculty_attendance_record' %}" class="btn btn-secondary">Reset</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Student</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">College ID</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Course</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lecture</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in attendances %}
+                                <tr>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ attendance.date|date:"d M Y" }}</p>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div>
+                                                <img src="{% if attendance.student.profile_picture %}{{ attendance.student.profile_picture.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" 
+                                                     class="avatar avatar-sm me-3" alt="user1">
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ attendance.student.name }}</h6>
+                                                <p class="text-xs text-secondary mb-0">{{ attendance.student.email }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ attendance.student.college_id }}</p>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <p class="text-xs font-weight-bold mb-0">{{ attendance.course.name }}</p>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="badge badge-sm bg-gradient-info">{{ attendance.lecture_number }}</span>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="badge badge-sm {% if attendance.status == 'Present' %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">
+                                            {{ attendance.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center p-4">
+                                        <p class="text-muted">No attendance records found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Filter Students for Attendance</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <form method="get" class="p-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="course">Course</label>
+                                    <select name="course" id="course" class="form-control">
+                                        <option value="">All Courses</option>
+                                        {% for course in courses %}
+                                        <option value="{{ course }}" {% if selected_course == course.id %}selected{% endif %}>
+                                            {{ course.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="semester">Semester</label>
+                                    <select name="semester" id="semester" class="form-control">
+                                        <option value="all">All Semesters</option>
+                                        {% for sem in semesters %}
+                                        <option value="{{ sem }}" {% if selected_semester == sem|stringformat:"s" %}selected{% endif %}>
+                                            Semester {{ sem }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="year">Year</label>
+                                    <select name="year" id="year" class="form-control">
+                                        <option value="all">All Years</option>
+                                        {% for yr in years %}
+                                        <option value="{{ yr }}" {% if selected_year == yr|stringformat:"s" %}selected{% endif %}>
+                                            Year {{ yr }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="college_id">College ID</label>
+                                    <input type="text" name="college_id" id="college_id" class="form-control" 
+                                           value="{{ college_id }}" placeholder="Enter college ID">
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary">Filter</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if students %}
+                    <form method="post" action="{% url 'mark_attendance' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="course_id" value="{{ selected_course }}">
+                        
+                        <div class="row px-4 mb-3">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="lecture_number">Lecture Number</label>
+                                    <select name="lecture_number" id="lecture_number" class="form-control" required>
+                                        {% if lecture_range %}
+                                            {% for i in lecture_range %}
+                                            <option value="{{ i }}">Lecture {{ i }}</option>
+                                            {% endfor %}
+                                        {% else %}
+                                            <option value="">Select Course First</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive p-0">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Student</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">College ID</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Course</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Semester</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Year</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in students %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex px-2 py-1">
+                                                <div>
+                                                    <img src="{% if student.profile_picture %}{{ student.profile_picture.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" 
+                                                         class="avatar avatar-sm me-3" alt="user1">
+                                                </div>
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">{{ student.name }}</h6>
+                                                    <p class="text-xs text-secondary mb-0">{{ student.email }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="text-xs font-weight-bold mb-0">{{ student.college_id }}</p>
+                                        </td>
+                                        <td class="align-middle text-center text-sm">
+                                            <p class="text-xs font-weight-bold mb-0">{{ student.course }}</p>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge badge-sm bg-gradient-success">{{ student.semester }}</span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge badge-sm bg-gradient-info">{{ student.year }}</span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <input type="hidden" name="students" value="{{ student.id }}">
+                                            <div class="form-check form-switch d-flex justify-content-center">
+                                                <input class="form-check-input" type="checkbox" id="status_{{ student.id }}" 
+                                                       name="status_{{ student.id }}" checked>
+                                                <label class="form-check-label ms-2" for="status_{{ student.id }}">Present</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end p-4">
+                            <button type="submit" class="btn btn-success">Mark Attendance</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <p class="text-muted">No students found matching your criteria</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Update semester and year dropdowns when course changes
+    $('#course').change(function() {
+        var courseId = $(this).val();
+        if (courseId) {
+            $.ajax({
+                url: '{% url "get_course_detail" %}',
+                data: {
+                    'course_id': courseId
+                },
+                dataType: 'json',
+                success: function(data) {
+                    // Update semester dropdown
+                    var semesterSelect = $('#semester');
+                    semesterSelect.empty();
+                    semesterSelect.append('<option value="all">All Semesters</option>');
+                    for (var i = 1; i <= data.no_of_semesters; i++) {
+                        semesterSelect.append('<option value="' + i + '">Semester ' + i + '</option>');
+                    }
+                    
+                    // Update year dropdown
+                    var yearSelect = $('#year');
+                    yearSelect.empty();
+                    yearSelect.append('<option value="all">All Years</option>');
+                    for (var i = 1; i <= data.no_of_years; i++) {
+                        yearSelect.append('<option value="' + i + '">Year ' + i + '</option>');
+                    }
+                    
+                    // Update lecture number dropdown
+                    var lectureSelect = $('#lecture_number');
+                    lectureSelect.empty();
+                    for (var i = 1; i <= data.lecture; i++) {
+                        lectureSelect.append('<option value="' + i + '">Lecture ' + i + '</option>');
+                    }
+                }
+            });
+        } else {
+            // Reset dropdowns if no course selected
+            $('#semester').empty().append('<option value="all">All Semesters</option>');
+            $('#year').empty().append('<option value="all">All Years</option>');
+            $('#lecture_number').empty().append('<option value="">Select Course First</option>');
+        }
+    });
+});
+</script>
+{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>My Attendance Records</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <form method="get" class="p-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="course">Course</label>
+                                    <select name="course" id="course" class="form-control">
+                                        <option value="">All Courses</option>
+                                        {% for course in courses %}
+                                        <option value="{{ course.id }}" {% if selected_course == course.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ course.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="lecture">Lecture</label>
+                                    <input type="number" name="lecture" id="lecture" class="form-control" 
+                                           value="{{ selected_lecture }}" placeholder="Lecture number">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="date">Date</label>
+                                    <input type="date" name="date" id="date" class="form-control" 
+                                           value="{{ selected_date }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="">All</option>
+                                        <option value="Present" {% if selected_status == "Present" %}selected{% endif %}>Present</option>
+                                        <option value="Absent" {% if selected_status == "Absent" %}selected{% endif %}>Absent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="year">Year</label>
+                                    <select name="year" id="year" class="form-control">
+                                        <option value="">All Years</option>
+                                        {% for year in years %}
+                                        <option value="{{ year.year }}" {% if selected_year == year.year|stringformat:"s" %}selected{% endif %}>
+                                            {{ year.year }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">Filter</button>
+                                <a href="{% url 'view_attendance' %}" class="btn btn-secondary">Reset</a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Course</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lecture</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Faculty</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in attendances %}
+                                <tr>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ attendance.date|date:"d M Y" }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ attendance.course.name }}</p>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="badge badge-sm bg-gradient-info">{{ attendance.lecture_number }}</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <div class="d-flex px-2 py-1 justify-content-center">
+                                            <div>
+                                                <img src="{% if attendance.faculty.profile_picture %}{{ attendance.faculty.profile_picture.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" 
+                                                     class="avatar avatar-sm me-3" alt="user1">
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ attendance.faculty.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="badge badge-sm {% if attendance.status == 'Present' %}bg-gradient-success{% else %}bg-gradient-danger{% endif %}">
+                                            {{ attendance.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center p-4">
+                                        <p class="text-muted">No attendance records found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

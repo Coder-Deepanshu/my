@@ -1,15 +1,17 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
-
-from django.db import models
+from django.utils import timezone # Import timezone for default date
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
     department=models.CharField(max_length=50)
     no_of_years = models.IntegerField()
     no_of_semesters = models.IntegerField()
+    lecture = models.IntegerField()
+    time_per_lecture = models.IntegerField()
+    unit_lecture =  models.CharField(max_length=50,choices=[('Hour','hour'),('Min','min')])
+    fees = models.IntegerField()
+    fees_period = models.CharField(max_length=50)
+    unit_fees = models.CharField(max_length=50,choices=[('Semester','semester'),('Year','year')])
 
     def __str__(self):
         return self.name
@@ -162,10 +164,24 @@ class Faculty(models.Model):
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
 
-
-
     def _str_(self):
         return self.name
+    
+class Attendance(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    department = models.CharField(max_length=50,null=True)
+    lecture_number = models.IntegerField()  # e.g., 1, 2, 3 for the day
+    date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=[('Present', 'Present'), ('Absent', 'Absent')])
+    timing = models.TimeField(auto_now_add=True,null=True)
+
+    class Meta:
+        unique_together = ('student', 'course', 'lecture_number', 'date')
+
+    def _str_(self):
+        return f"{self.student.name} - Lecture {self.lecture_number} - {self.date}"
 
 class result(models.Model):
     Student_rollno = models.CharField(max_length=20,unique=True,null=False,default=1)

@@ -1,6 +1,13 @@
 # import csv
 # from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.db.models import Q, Sum, Case, When, Value, F, IntegerField
+from django.db.models.functions import Cast
+from datetime import date
+from .models import Student, Faculty, Course, Attendance # Import the new Attendance model
+from django.http import JsonResponse
+import json # For handling JSON data from AJAX requests
 # from reportlab.pdfgen import canvas
 # from .form import LoginForm
 # from newapp.models import result
@@ -390,7 +397,7 @@ def student_functions(request):
             except Student.DoesNotExist:
                 messages.error(request, "Student not found.")
 
-    return render(request, "student_page.html", context)
+    return render(request, "student/student_page.html", context)
 
 #  for multiple student filtering
 from django.shortcuts import render, get_object_or_404
@@ -404,10 +411,10 @@ def student_filter_page(request):
     try:
         # Get all courses from Course model (not from Student records)
         courses = Course.objects.all().values_list('name', flat=True)
-        return render(request, 'student_filter.html', {'courses': courses})
+        return render(request, 'student/student_filter.html', {'courses': courses})
     except Exception as e:
         messages.error(request, f"Error loading courses: {str(e)}")
-        return render(request, 'student_filter.html', {'courses': []})
+        return render(request, 'student/student_filter.html', {'courses': []})
 
 def get_course_details(request):
     try:
@@ -444,7 +451,7 @@ def filter_students(request):
     if filters['roll_no']:
         students = students.filter(college_id__icontains=filters['college_id'])
 
-    html = render_to_string('student_result_partial.html', {'students': students})
+    html = render_to_string('student/student_result_partial.html', {'students': students})
     return JsonResponse({'html': html})
 
 @csrf_exempt
@@ -614,4 +621,275 @@ def faculty_functions(request):
             except Exception as e:
                 messages.error(request, f"Error updating faculty: {str(e)}")
 
-    return render(request, "faculty_page.html", context)
+    return render(request, "faculty/faculty_page.html", context)
+
+# for attendance management student-faculty
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.contrib import messages
+from .models import Course, Student
+
+def student_filtering_page(request):
+    try:
+        courses = Course.objects.all().values_list('name', flat=True)
+        return render(request, 'faculty_filtering.html', {'courses': courses})
+    except Exception as e:
+        messages.error(request, f"Error loading courses: {str(e)}")
+        return render(request, 'faculty_filtering.html', {'courses': []})
+
+def get_details(request):
+    try:
+        course_name = request.GET.get('course_name')
+        if not course_name:
+            return JsonResponse({'error': 'Course name is required'}, status=400)
+            
+        course = Course.objects.get(name=course_name)
+        return JsonResponse({
+            'years': list(range(1, course.no_of_years + 1)),
+            'semesters': list(range(1, course.no_of_semesters + 1)),
+            'lectures': list(range(1, course.lecture + 1))
+        })
+    except Course.DoesNotExist:
+        return JsonResponse({'error': 'Course not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+def filtering_students(request):
+    if not request.session.get('faculty_college_id'):
+        messages.error(request, "Please login as faculty first")
+        return redirect('login')
+        
+    filters = {
+        'course': request.GET.get('course', 'all'),
+        'year': request.GET.get('year', 'all'),
+        'semester': request.GET.get('semester', 'all'),
+        'college_id': request.GET.get('college_id', '')
+    }
+
+    students = Student.objects.all()
+    
+    if filters['course'] != 'all':
+        students = students.filter(course=filters['course'])
+    if filters['year'] != 'all':
+        students = students.filter(year=filters['year'])
+    if filters['semester'] != 'all':
+        students = students.filter(semester=filters['semester'])
+    if filters['college_id']:
+        students = students.filter(college_id__icontains=filters['college_id'])
+
+    html = render_to_string('student_table.html', {'students': students})
+    return JsonResponse({'html': html})
+
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def save_attendance(request):
+    if request.method == 'POST':
+        try:
+            lecture = request.POST.get('lecture')
+            date = request.POST.get('date')
+            attendance_data = json.loads(request.POST.get('attendance'))
+            
+            # Process and save attendance data to your database
+            # You'll need to implement your actual saving logic here
+            
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+    
+
+@login_required
+def mark_attendance(request):
+    if request.method == 'POST':
+        # Get form data
+        student_ids = request.POST.getlist('students')
+        lecture_number = request.POST.get('lecture_number')
+        course_id = request.POST.get('course_id')
+        faculty_college_id = request.session.get('faculty_college_id')
+        
+        # Validate required fields
+        if not student_ids or not lecture_number or not course_id:
+            messages.error(request, "Missing required fields")
+            return redirect('filter_students')
+        
+        try:
+            faculty = Faculty.objects.get(college_id=faculty_college_id)
+            course = Course.objects.get(id=course_id)
+            date_today = timezone.now().date()
+            
+            # Check if attendance already marked for this lecture today
+            existing_attendance = Attendance.objects.filter(
+                faculty=faculty,
+                course=course,
+                lecture_number=lecture_number,
+                date=date_today
+            ).exists()
+            
+            if existing_attendance:
+                messages.error(request, f"Attendance already marked for Lecture {lecture_number} today")
+                return redirect('filter_students')
+            
+            # Process each student's attendance
+            for sid in student_ids:
+                status = request.POST.get(f"status_{sid}", "Absent")  # Default to Absent if not specified
+                student = Student.objects.get(id=sid)
+                
+                Attendance.objects.create(
+                    student=student,
+                    faculty=faculty,
+                    course=course,
+                    lecture_number=lecture_number,
+                    date=date_today,
+                    status=status
+                )
+            
+            messages.success(request, f"Attendance marked successfully for Lecture {lecture_number}")
+            return redirect('faculty_attendance_record')
+            
+        except Exception as e:
+            messages.error(request, f"Error marking attendance: {str(e)}")
+            return redirect('filter_students')
+    
+    return redirect('filter_students')
+
+@login_required
+def view_attendance(request):
+    # Check if student is logged in
+    student_college_id = request.session.get('student_college_id')
+    if not student_college_id:
+        messages.error(request, "Please login as student first")
+        return redirect('login')
+    
+    try:
+        student = Student.objects.get(college_id=student_college_id)
+    except Student.DoesNotExist:
+        messages.error(request, "Student not found")
+        return redirect('login')
+
+    # Get filter parameters
+    course_id = request.GET.get('course')
+    lecture_number = request.GET.get('lecture')
+    date_filter = request.GET.get('date')
+    month_filter = request.GET.get('month')
+    year_filter = request.GET.get('year')
+    status_filter = request.GET.get('status')
+
+    # Initialize queryset
+    attendances = Attendance.objects.filter(student=student).order_by('-date', 'lecture_number')
+    
+    # Apply filters
+    if course_id:
+        attendances = attendances.filter(course__id=course_id)
+    if lecture_number:
+        attendances = attendances.filter(lecture_number=lecture_number)
+    if date_filter:
+        attendances = attendances.filter(date=date_filter)
+    if month_filter:
+        attendances = attendances.filter(date__month=month_filter)
+    if year_filter:
+        attendances = attendances.filter(date__year=year_filter)
+    if status_filter:
+        attendances = attendances.filter(status=status_filter)
+
+    # Get courses for dropdown
+    courses = Course.objects.filter(name__in=attendances.values_list('course__name', flat=True).distinct())
+    
+    # Get unique years for dropdown
+    years = attendances.dates('date', 'year')
+    
+    context = {
+        'attendances': attendances,
+        'courses': courses,
+        'student': student,
+        'selected_course': course_id,
+        'selected_lecture': lecture_number,
+        'selected_date': date_filter,
+        'selected_month': month_filter,
+        'selected_year': year_filter,
+        'selected_status': status_filter,
+        'years': years,
+    }
+    
+    return render(request, 'student_attendance.html', context)
+
+@login_required
+def faculty_attendance_record(request):
+    # Check if faculty is logged in
+    faculty_college_id = request.session.get('faculty_college_id')
+    if not faculty_college_id:
+        messages.error(request, "Please login as faculty first")
+        return redirect('login')
+    
+    try:
+        faculty = Faculty.objects.get(college_id=faculty_college_id)
+    except Faculty.DoesNotExist:
+        messages.error(request, "Faculty not found")
+        return redirect('login')
+
+    # Get filter parameters
+    course_id = request.GET.get('course')
+    date_filter = request.GET.get('date')
+    lecture_number = request.GET.get('lecture')
+    month_filter = request.GET.get('month')
+    year_filter = request.GET.get('year')
+    status_filter = request.GET.get('status')
+
+    # Initialize queryset
+    attendances = Attendance.objects.filter(faculty=faculty).order_by('-date', 'lecture_number')
+    
+    # Apply filters
+    if course_id:
+        attendances = attendances.filter(course__id=course_id)
+    if date_filter:
+        attendances = attendances.filter(date=date_filter)
+    if lecture_number:
+        attendances = attendances.filter(lecture_number=lecture_number)
+    if month_filter:
+        attendances = attendances.filter(date__month=month_filter)
+    if year_filter:
+        attendances = attendances.filter(date__year=year_filter)
+    if status_filter:
+        attendances = attendances.filter(status=status_filter)
+
+    # Get courses for dropdown
+    courses = Course.objects.filter(id__in=attendances.values_list('course__id', flat=True).distinct())
+    
+    # Get unique years for dropdown
+    years = attendances.dates('date', 'year')
+    
+    context = {
+        'attendances': attendances,
+        'courses': courses,
+        'faculty': faculty,
+        'selected_course': course_id,
+        'selected_date': date_filter,
+        'selected_lecture': lecture_number,
+        'selected_month': month_filter,
+        'selected_year': year_filter,
+        'selected_status': status_filter,
+        'years': years,
+    }
+    
+    return render(request, 'faculty_attendance_record.html', context)
+
+from django.http import JsonResponse
+
+def get_course_detail(request):
+    if request.method == 'GET' and request.is_ajax():
+        course_id = request.GET.get('course_id')
+        try:
+            course = Course.objects.get(id=course_id)
+            data = {
+                'no_of_semesters': course.no_of_semesters,
+                'no_of_years': course.no_of_years,
+                'lecture': course.lecture,
+            }
+            return JsonResponse(data)
+        except Course.DoesNotExist:
+            return JsonResponse({'error': 'Course not found'}, status=404)
+    return JsonResponse({'error': 'Invalid request'}, status=400)

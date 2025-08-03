@@ -30,6 +30,12 @@ urlpatterns = [
     path('admin-signup/', views.admin_signup, name='admin_signup'),
     path('add-new-admin/', views.add_new_admin, name='add_new_admin'),
     path('profile_upload/', views.profile_upload, name='profile_upload'),
+    # for attendance management student-faculty
+    path('student_filtering_page/', views.student_filtering_page, name='student_filtering_page'),
+    path('get_details/', views.get_details, name='get_details'),
+    path('filtering_students/', views.filtering_students, name='filtering_students'),
+    path('save_attendance/', views.save_attendance, name='save_attendance'),
+
 ]
 
 if settings.DEBUG:

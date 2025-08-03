@@ -151,3 +151,12 @@ DATE_INPUT_FORMATS = [
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+# settings.py
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'  # Will be overridden by the view based on user type
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# For media files (profile pictures)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
