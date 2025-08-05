@@ -1009,9 +1009,9 @@
         </div>
         
         <div class="sidebar-footer">
-            <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=4361ee&color=fff" alt="User" class="user-avatar">
+            <img src="https://ui-avatars.com/api/?name={{ student.name }}&background=4361ee&color=fff" alt="User" class="user-avatar">
             <div class="user-info">
-                <div class="user-name">{{ detail.name }}</div>
+                <div class="user-name">{{ student.name }}</div>
                 <div class="user-role">Student</div>
             </div>
             <a href="{% url 'logoutdoor' %}">
@@ -1044,7 +1044,7 @@
                 </button>
                 
                 <div class="user-dropdown">
-                    <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
+                    <img src="https://ui-avatars.com/api/?name={{ student.name }}&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
                     <span class="user-dropdown-name">{{ student.name }}</span>
                     <div class="user-dropdown-menu">
                         <a href="#" class="dropdown-item">
@@ -1078,7 +1078,7 @@
                 {% if student.profile_picture %}
                 <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="profile-picture">
                 {% else %}
-                <img src="https://via.placeholder.com/150" alt="Student Photo" class="profile-picture">
+                <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="profile-picture">
                 {% endif %}
     
                 <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
@@ -1377,7 +1377,7 @@
         </div>
         
         <div class="sidebar-footer">
-            <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=4361ee&color=fff" alt="User" class="user-avatar">
+            <img src="https://ui-avatars.com/api/?name={{ faculty.name }}&background=4361ee&color=fff" alt="User" class="user-avatar">
             <div class="user-info">
                 <div class="user-name">{{ faculty.name }}</div>
                 <div class="user-role">Faculty</div>
@@ -1412,7 +1412,7 @@
                 </button>
                 
                 <div class="user-dropdown">
-                    <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
+                    <img src="https://ui-avatars.com/api/?name={{ faculty.name }}&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
                     <span class="user-dropdown-name">{{ faculty.name }}</span>
                     <div class="user-dropdown-menu">
                         <a href="#" class="dropdown-item">
@@ -1446,7 +1446,7 @@
                 {% if faculty.profile_picture %}
                 <img src="{{ faculty.profile_picture.url }}" alt="Faculty Photo" class="profile-picture">
                 {% else %}
-                <img src="https://via.placeholder.com/150" alt="Faculty Photo" class="profile-picture">
+                <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Faculty Photo" class="profile-picture">
                 {% endif %}
     
                 <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">

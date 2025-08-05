@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Filtering System</title>
+    <title>Faculty Attendance System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -15,6 +15,11 @@
             --dark: #212529;
             --gray: #6c757d;
             --light-gray: #e9ecef;
+            --present: #4caf50;
+            --absent: #f44336;
+            --half-day: #ff9800;
+            --leave: #2196f3;
+            --holiday: #9c27b0;
         }
 
         body {
@@ -43,6 +48,12 @@
         .header h1 {
             font-size: 24px;
             margin: 0;
+        }
+
+        .alert {
+            margin: 0;
+            border-radius: 0;
+            text-align: center;
         }
 
         .filter-section {
@@ -95,6 +106,7 @@
         .student-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
         .student-table th, 
@@ -129,6 +141,19 @@
             color: var(--gray);
         }
 
+        .attendance-controls {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: 5px;
+        }
+
+        .status-present { color: var(--present); }
+        .status-absent { color: var(--absent); }
+        .status-half-day { color: var(--half-day); }
+        .status-leave { color: var(--leave); }
+        .status-holiday { color: var(--holiday); }
+
         @media (max-width: 768px) {
             .filter-section {
                 flex-direction: column;
@@ -142,10 +167,19 @@
 </head>
 <body>
     <div class="container">
-        <!-- Change only the header part (keep rest of the code same) -->
-         <div class="header">
-         <h1><i class="fas fa-calendar-check"></i> Attendance Management System</h1>
-         </div>
+        <div class="header">
+            <h1><i class="fas fa-calendar-check"></i> Faculty Attendance System</h1>
+        </div>
+
+        <!-- Messages will appear here -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
 
         <div class="filter-section">
             <div class="filter-group">
@@ -191,6 +225,31 @@
                 </div>
                 <p>Loading student data...</p>
             </div>
+            
+            <!-- Attendance controls (only one set) -->
+            <div class="attendance-controls" id="attendanceControls" style="display: none;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Lecture:</label>
+                        <select id="lecture" class="form-select">
+                            <option value="">Select Lecture</option>
+                            {% for i in "123456789"|make_list %}
+                                <option value="{{ i }}">Lecture {{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Date:</label>
+                        <input type="date" id="attendance-date" class="form-control" value="{{ current_date }}">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button id="save-attendance" class="btn btn-primary w-100">
+                            <i class="fas fa-save"></i> Save Attendance
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <div id="results">
                 <!-- Results will be loaded here -->
             </div>
@@ -198,85 +257,39 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
-        // Course change handler
-        $('#course').change(function() {
-            const course = $(this).val();
-            if (course !== 'all') {
-                $.get('/get_details/', {course_name: course}, function(data) {
-                    // Update year and semester dropdowns
-                    $('#year').empty().append('<option value="all">All Years</option>');
-                    $('#semester').empty().append('<option value="all">All Semesters</option>');
-                    $('#lecture').empty().append('<option value="">Select Lecture</option>');
-                    
-                    data.years.forEach(year => {
-                        $('#year').append(`<option value="${year}">Year ${year}</option>`);
-                    });
-                    
-                    data.semesters.forEach(sem => {
-                        $('#semester').append(`<option value="${sem}">Semester ${sem}</option>`);
-                    });
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
 
-                    data.lectures.forEach(lec => {
-                        $('#lecture').append(`<option value="${lec}">Lecture ${lec}</option>`);
+            // Course change handler
+            $('#course').change(function() {
+                const course = $(this).val();
+                if (course !== 'all') {
+                    $.get('/get_details/', {course_name: course}, function(data) {
+                        // Update year and semester dropdowns
+                        $('#year').empty().append('<option value="all">All Years</option>');
+                        $('#semester').empty().append('<option value="all">All Semesters</option>');
+                        
+                        data.years.forEach(year => {
+                            $('#year').append(`<option value="${year}">Year ${year}</option>`);
+                        });
+                        
+                        data.semesters.forEach(sem => {
+                            $('#semester').append(`<option value="${sem}">Semester ${sem}</option>`);
+                        });
+                        
+                        $('#year, #semester').prop('disabled', false);
+                    }).fail(function() {
+                        showMessage('Failed to load course details', 'danger');
                     });
-                    
-                    $('#year, #semester').prop('disabled', false);
-                    $('#lecture').prop('disabled', false);
-                }).fail(function() {
-                    alert('Failed to load course details');
-                });
-            } else {
-                $('#year, #semester, #lecture').prop('disabled', true);
-            }
-        });
-
-        // Save attendance function
-        $('#save-attendance').click(function() {
-            const lecture = $('#lecture').val();
-            const date = $('#attendance-date').val();
-            
-            if (!lecture || !date) {
-                alert('Please select lecture and date');
-                return;
-            }
-            
-            const attendanceData = [];
-            $('.attendance-status').each(function() {
-                const studentId = $(this).data('student-id');
-                const status = $(this).val();
-                
-                if (status) {
-                    attendanceData.push({
-                        student_id: studentId,
-                        status: status
-                    });
+                } else {
+                    $('#year, #semester').prop('disabled', true);
                 }
             });
-            
-            if (attendanceData.length === 0) {
-                alert('No attendance data to save');
-                return;
-            }
-            
-            $.ajax({
-                url: '/save_attendance/',
-                method: 'POST',
-                data: {
-                    lecture: lecture,
-                    date: date,
-                    attendance: JSON.stringify(attendanceData),
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function(response) {
-                    alert('Attendance saved successfully!');
-                },
-                error: function() {
-                    alert('Failed to save attendance');
-                }
-            });
-        });
 
             // Filter students function
             function filterStudents() {
@@ -289,22 +302,114 @@
 
                 $('#loading').show();
                 $('#results').html('');
+                $('#attendanceControls').hide();
                 
                 $.get('/filtering_students/', filters, function(data) {
                     $('#results').html(data.html);
+                    $('#attendanceControls').show();
                 }).fail(function() {
-                    $('#results').html(`
-                        <div class="alert alert-danger">
-                            Failed to load student data. Please try again.
-                        </div>
-                    `);
+                    showMessage('Failed to load student data. Please try again.', 'danger');
                 }).always(function() {
                     $('#loading').hide();
                 });
             }
 
+            // Save attendance function
+            $('#save-attendance').click(function() {
+                const lecture = $('#lecture').val();
+                const date = $('#attendance-date').val();
+                const course = $('#course').val();
+                
+                if (!lecture) {
+                    showMessage('Please select a lecture number', 'danger');
+                    return;
+                }
+                
+                if (!date) {
+                    showMessage('Please select a date', 'danger');
+                    return;
+                }
+                
+                if (!course || course === 'all') {
+                    showMessage('Please select a specific course', 'danger');
+                    return;
+                }
+                
+                const attendanceData = [];
+                $('.attendance-status').each(function() {
+                    const studentId = $(this).data('student-id');
+                    const status = $(this).val();
+                    
+                    if (status) {
+                        attendanceData.push({
+                            student_id: studentId,
+                            status: status
+                        });
+                    }
+                });
+                
+                if (attendanceData.length === 0) {
+                    showMessage('No attendance data to save', 'danger');
+                    return;
+                }
+                
+                $('#save-attendance').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+                
+                $.ajax({
+                    url: '/save_attendance/',
+                    method: 'POST',
+                    data: {
+                        lecture: lecture,
+                        date: date,
+                        course: course,
+                        attendance: JSON.stringify(attendanceData),
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showMessage('Attendance saved successfully!', 'success');
+                        } else {
+                            showMessage(response.error || 'Failed to save attendance', 'danger');
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = 'Failed to save attendance';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMsg = response.error || errorMsg;
+                        } catch (e) {}
+                        showMessage(errorMsg, 'danger');
+                    },
+                    complete: function() {
+                        $('#save-attendance').prop('disabled', false).html('<i class="fas fa-save"></i> Save Attendance');
+                    }
+                });
+            });
+
+            // Show message function
+            function showMessage(message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+                const alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                // Remove existing alerts
+                $('.alert-dismissible').remove();
+                
+                // Add new alert
+                $('.header').after(alertHtml);
+                
+                // Auto dismiss after 5 seconds
+                setTimeout(() => {
+                    $('.alert').alert('close');
+                }, 5000);
+            }
+
             // Initial load
-            filterStudents();
+            // filterStudents(); // Uncomment if you want to load students automatically
             
             // Filter button click
             $('#filterBtn').click(filterStudents);

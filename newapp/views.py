@@ -683,213 +683,156 @@ def filtering_students(request):
     html = render_to_string('student_table.html', {'students': students})
     return JsonResponse({'html': html})
 
+from django.http import JsonResponse
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.template.loader import render_to_string
+from .models import Attendance, Student, Faculty, Course
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.utils import timezone
+
+# ... (your existing views)
 
 @csrf_exempt
 def save_attendance(request):
+    if not request.session.get('faculty_college_id'):
+        return JsonResponse({'error': 'Please login as faculty first'}, status=403)
+        
     if request.method == 'POST':
         try:
             lecture = request.POST.get('lecture')
             date = request.POST.get('date')
             attendance_data = json.loads(request.POST.get('attendance'))
             
-            # Process and save attendance data to your database
-            # You'll need to implement your actual saving logic here
-            
-            return JsonResponse({'success': True})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=500)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-    
-
-@login_required
-def mark_attendance(request):
-    if request.method == 'POST':
-        # Get form data
-        student_ids = request.POST.getlist('students')
-        lecture_number = request.POST.get('lecture_number')
-        course_id = request.POST.get('course_id')
-        faculty_college_id = request.session.get('faculty_college_id')
-        
-        # Validate required fields
-        if not student_ids or not lecture_number or not course_id:
-            messages.error(request, "Missing required fields")
-            return redirect('filter_students')
-        
-        try:
-            faculty = Faculty.objects.get(college_id=faculty_college_id)
-            course = Course.objects.get(id=course_id)
-            date_today = timezone.now().date()
-            
-            # Check if attendance already marked for this lecture today
-            existing_attendance = Attendance.objects.filter(
-                faculty=faculty,
-                course=course,
-                lecture_number=lecture_number,
-                date=date_today
-            ).exists()
-            
-            if existing_attendance:
-                messages.error(request, f"Attendance already marked for Lecture {lecture_number} today")
-                return redirect('filter_students')
-            
-            # Process each student's attendance
-            for sid in student_ids:
-                status = request.POST.get(f"status_{sid}", "Absent")  # Default to Absent if not specified
-                student = Student.objects.get(id=sid)
+            if not lecture or not date or not attendance_data:
+                return JsonResponse({'error': 'Missing required data'}, status=400)
                 
-                Attendance.objects.create(
-                    student=student,
-                    faculty=faculty,
-                    course=course,
-                    lecture_number=lecture_number,
-                    date=date_today,
-                    status=status
-                )
+            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
+            course_name = request.POST.get('course')
+            course = Course.objects.get(name=course_name)
             
-            messages.success(request, f"Attendance marked successfully for Lecture {lecture_number}")
-            return redirect('faculty_attendance_record')
+            saved_count = 0
+            for record in attendance_data:
+                student = Student.objects.get(id=record['student_id'])
+                # Check if attendance already exists for this student, lecture and date
+                attendance, created = Attendance.objects.get_or_create(
+                    student=student,
+                    course=course,
+                    lecture_number=lecture,
+                    date=date,
+                    defaults={
+                        'faculty': faculty,
+                        'department': student.course.department if hasattr(student.course, 'department') else '',
+                        'status': record['status'].capitalize(),
+                        'timing': timezone.now()
+                    }
+                )
+                
+                if not created:
+                    attendance.status = record['status'].capitalize()
+                    attendance.timing = timezone.now()
+                    attendance.save()
+                    
+                saved_count += 1
+                
+            return JsonResponse({
+                'success': True,
+                'message': f'Attendance saved successfully for {saved_count} students'
+            })
             
         except Exception as e:
-            messages.error(request, f"Error marking attendance: {str(e)}")
-            return redirect('filter_students')
-    
-    return redirect('filter_students')
+            return JsonResponse({
+                'error': str(e)
+            }, status=500)
+            
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-@login_required
-def view_attendance(request):
-    # Check if student is logged in
-    student_college_id = request.session.get('student_college_id')
-    if not student_college_id:
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.contrib import messages
+from .models import Student, Attendance
+from django.db.models import Count, Q
+from datetime import datetime
+
+def student_attendance_view(request):
+    if not request.session.get('student_college_id'):
         messages.error(request, "Please login as student first")
         return redirect('login')
-    
+        
     try:
-        student = Student.objects.get(college_id=student_college_id)
+        student = Student.objects.get(college_id=request.session['student_college_id'])
+        
+        # Get distinct years from attendance records
+        years = Attendance.objects.filter(student=student).dates('date', 'year').distinct()
+        years = [year.year for year in years]
+        
+        current_year = datetime.now().year
+        
+        return render(request, 'student/student_attendance_view.html', {
+            'student': student,
+            'years': years,
+            'current_year': current_year
+        })
+        
     except Student.DoesNotExist:
         messages.error(request, "Student not found")
-        return redirect('login')
+        return redirect('dashboard2')
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('dashboard2')
 
-    # Get filter parameters
-    course_id = request.GET.get('course')
-    lecture_number = request.GET.get('lecture')
-    date_filter = request.GET.get('date')
-    month_filter = request.GET.get('month')
-    year_filter = request.GET.get('year')
-    status_filter = request.GET.get('status')
-
-    # Initialize queryset
-    attendances = Attendance.objects.filter(student=student).order_by('-date', 'lecture_number')
-    
-    # Apply filters
-    if course_id:
-        attendances = attendances.filter(course__id=course_id)
-    if lecture_number:
-        attendances = attendances.filter(lecture_number=lecture_number)
-    if date_filter:
-        attendances = attendances.filter(date=date_filter)
-    if month_filter:
-        attendances = attendances.filter(date__month=month_filter)
-    if year_filter:
-        attendances = attendances.filter(date__year=year_filter)
-    if status_filter:
-        attendances = attendances.filter(status=status_filter)
-
-    # Get courses for dropdown
-    courses = Course.objects.filter(name__in=attendances.values_list('course__name', flat=True).distinct())
-    
-    # Get unique years for dropdown
-    years = attendances.dates('date', 'year')
-    
-    context = {
-        'attendances': attendances,
-        'courses': courses,
-        'student': student,
-        'selected_course': course_id,
-        'selected_lecture': lecture_number,
-        'selected_date': date_filter,
-        'selected_month': month_filter,
-        'selected_year': year_filter,
-        'selected_status': status_filter,
-        'years': years,
-    }
-    
-    return render(request, 'student_attendance.html', context)
-
-@login_required
-def faculty_attendance_record(request):
-    # Check if faculty is logged in
-    faculty_college_id = request.session.get('faculty_college_id')
-    if not faculty_college_id:
-        messages.error(request, "Please login as faculty first")
-        return redirect('login')
-    
+def get_student_attendance(request):
     try:
-        faculty = Faculty.objects.get(college_id=faculty_college_id)
-    except Faculty.DoesNotExist:
-        messages.error(request, "Faculty not found")
-        return redirect('login')
-
-    # Get filter parameters
-    course_id = request.GET.get('course')
-    date_filter = request.GET.get('date')
-    lecture_number = request.GET.get('lecture')
-    month_filter = request.GET.get('month')
-    year_filter = request.GET.get('year')
-    status_filter = request.GET.get('status')
-
-    # Initialize queryset
-    attendances = Attendance.objects.filter(faculty=faculty).order_by('-date', 'lecture_number')
-    
-    # Apply filters
-    if course_id:
-        attendances = attendances.filter(course__id=course_id)
-    if date_filter:
-        attendances = attendances.filter(date=date_filter)
-    if lecture_number:
-        attendances = attendances.filter(lecture_number=lecture_number)
-    if month_filter:
-        attendances = attendances.filter(date__month=month_filter)
-    if year_filter:
-        attendances = attendances.filter(date__year=year_filter)
-    if status_filter:
-        attendances = attendances.filter(status=status_filter)
-
-    # Get courses for dropdown
-    courses = Course.objects.filter(id__in=attendances.values_list('course__id', flat=True).distinct())
-    
-    # Get unique years for dropdown
-    years = attendances.dates('date', 'year')
-    
-    context = {
-        'attendances': attendances,
-        'courses': courses,
-        'faculty': faculty,
-        'selected_course': course_id,
-        'selected_date': date_filter,
-        'selected_lecture': lecture_number,
-        'selected_month': month_filter,
-        'selected_year': year_filter,
-        'selected_status': status_filter,
-        'years': years,
-    }
-    
-    return render(request, 'faculty_attendance_record.html', context)
-
-from django.http import JsonResponse
-
-def get_course_detail(request):
-    if request.method == 'GET' and request.is_ajax():
-        course_id = request.GET.get('course_id')
-        try:
-            course = Course.objects.get(id=course_id)
-            data = {
-                'no_of_semesters': course.no_of_semesters,
-                'no_of_years': course.no_of_years,
-                'lecture': course.lecture,
+        student_id = request.GET.get('student_id')
+        month = request.GET.get('month', 'all')
+        year = request.GET.get('year', 'all')
+        status = request.GET.get('status', 'all')
+        course = request.GET.get('course', 'all')
+        
+        student = Student.objects.get(id=student_id)
+        attendance = Attendance.objects.filter(student=student)
+        
+        if course != 'all':
+            attendance = attendance.filter(course__name=course)
+        if month != 'all':
+            attendance = attendance.filter(date__month=month)
+        if year != 'all':
+            attendance = attendance.filter(date__year=year)
+        if status != 'all':
+            attendance = attendance.filter(status=status)
+            
+        attendance = attendance.order_by('-date', 'lecture_number')
+        
+        # Calculate summary
+        total_lectures = attendance.count()
+        present = attendance.filter(status='Present').count()
+        absent = attendance.filter(status='Absent').count()
+        
+        attendance_percentage = 0
+        if total_lectures > 0:
+            attendance_percentage = round((present / total_lectures) * 100, 2)
+            
+        attendance_list = []
+        for record in attendance:
+            attendance_list.append({
+                'date': record.date,
+                'lecture_number': record.lecture_number,
+                'course_name': record.course.name if record.course else 'N/A',
+                'status': record.status,
+                'faculty_name': record.faculty.name if record.faculty else 'N/A',
+                'time': record.timing.strftime('%H:%M:%S') if record.timing else 'N/A'
+            })
+            
+        return JsonResponse({
+            'attendance': attendance_list,
+            'summary': {
+                'total_lectures': total_lectures,
+                'present': present,
+                'absent': absent,
+                'attendance_percentage': attendance_percentage
             }
-            return JsonResponse(data)
-        except Course.DoesNotExist:
-            return JsonResponse({'error': 'Course not found'}, status=404)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

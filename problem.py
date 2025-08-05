@@ -119,26 +119,26 @@ import seaborn as sb
 
 # fifth question
 
-# hours = np.array([12,15,14,13,100,16,15,14,13,14])
+hours = np.array([12,15,14,13,100,16,15,14,13,14])
 
-# mean =np.mean(hours)
-# print(mean)
+mean =np.mean(hours)
+print(mean)
 
-# std =np.std(hours)
-# print(std)
+std =np.std(hours)
+print(std)
 
-# z_scores = (hours-mean)/std
+z_scores = (hours-mean)/std
 
-# print(z_scores)
+print(z_scores)
 
-# outlier = np.where(np.abs(z_scores) > 2)
+outlier = np.where(np.abs(z_scores) > 2)
 
-# print(outlier)
-# print(hours[outlier])
+print(outlier)
+print(hours[outlier])
 
-# print(np.abs(z_scores) <= 2)
-# cleaned_data = hours[np.abs(z_scores) <=2]
-# print(cleaned_data)
+print(np.abs(z_scores) <= 2)
+cleaned_data = hours[np.abs(z_scores) <=2]
+print(cleaned_data)
 
 # sixth question
 # data = np.array([
@@ -230,7 +230,7 @@ import seaborn as sb
 # print(np.stack((norm_10th,norm_12th),axis=1))
 import pandas as pd
 
-data =  pd.read_csv('newpro/tesla.csv')
+# data =  pd.read_csv('newpro/tesla.csv')
 
 # print(data.info())
 
@@ -253,11 +253,11 @@ data =  pd.read_csv('newpro/tesla.csv')
 # # data['Close'].fillna(data['Close'].mean(),inplace=True)
 
 # print(data)
-data.fillna(method='bfill',inplace=True)
+# data.fillna(method='bfill',inplace=True)
 
-print(data)
+# print(data)
 
-data.to_csv('newpro/tesla.csv',index=False)
+# data.to_csv('newpro/tesla.csv',index=False)
 
 # import pandas as pd
 # import matplotlib.pyplot as plt
@@ -319,6 +319,165 @@ data.to_csv('newpro/tesla.csv',index=False)
 # df_clean_last = df.drop_duplicates(keep='last')
 # print("\nKeeping last occurrence:")
 # print(df_clean_last)
+
+
+import numpy as np
+
+
+# students = np.array([
+#         [80,85],
+#         [78,82],
+#         [65,60],
+#         [90,88]
+#     ])
+
+# n = students.shape[0]
+# print(n)
+
+# dist_matrix = np.zeros((n,n))
+
+# print(dist_matrix)
+
+# for i in range(n):
+#     for j in range(n):
+#         dist = np.linalg.norm(students[i]-students[j])
+#         print(i,j)
+#         print(dist)
+#         dist_matrix[i,j] = round(dist,2)
+
+
+# print(dist_matrix)
+
+# scores = np.array([45,23,67,89,38,40,75,19])
+
+# fail =  np.where(scores < 40)
+
+# scores[fail] = 0
+
+# passed = np.where(scores >= 40)
+
+# scores[passed] = 1
+
+# print(scores)
+# passes=sum(scores)
+# fail = len(scores)-passes
+
+# print(passes)
+# print(fail)
+# print(passes/len(scores)*100)
+
+# data =  np.array([
+#     [80,7.5],
+#     [60,8.0],
+#     [90,9.2],
+#     [45,6.5],
+#     [75,7.8]
+# ])
+
+# max_value =  np.max(data,axis=0)
+# print(max_value)
+
+# min_value =  np.min(data,axis=0)
+# print(min_value)
+
+# normalised = (data-min_value)/(max_value-min_value)
+
+# print(np.round(normalised,3))
+
+
+# departments =  np.array(['CS','IT','CS','ECE','ME','IT','ME'])
+
+# x = np.unique(departments)
+# value = 0
+# for i in x:
+#     new = np.where( departments == i )
+#     departments[new] = int(value)
+#     value+=1
+
+# print(np.array(departments,dtype='int'))
+
+# data = np.array(
+#     [
+#         [160,58],[170,67],[180,80],[155,50],[165,60]
+#     ]
+# )
+
+# length =  data.shape[0]
+
+# query =  np.array([168,65])
+
+# dis_matrix =  np.zeros((length))
+
+# print(dis_matrix)
+
+# for i in range (length) :
+#     dis = np.linalg.norm(data[i]-query)
+
+#     dis_matrix[i] = round(dis,2)
+
+# print(dis_matrix)
+
+# min_value =  np.min(dis_matrix)
+
+# index = np.where( dis_matrix==min_value)
+
+# print(min_value)
+# print(index)
+# print(data[index])
+
+# max_value =  np.max(data,axis=0)
+# min_value = np.min(data,axis=0)
+
+# print(max_value)
+# print(min_value)
+
+# normalized =  (data-min_value)/(max_value-min_value)
+
+# print(normalized)
+
+# student = (np.where(normalized[:,0] > 0.5)) and (np.where(normalized[:,1] > 0.5))
+
+# print(normalized[student])
+
+
+# data =np.array([
+#     [160,58,0],[170,67,1],[180,80,1],[165,60,0]
+# ])
+
+# query = np.array([168,65])
+
+# x =  data[:,0:2]
+
+# y =  data[:,2]
+
+# print(x)
+# print(y)
+
+# dis = np.linalg.norm(x-query,axis=1)
+# print(dis)
+
+# min_values =  np.argsort(dis)[:3]
+
+# print(y[min_values])
+
+# prediction = np.round(np.mean(y[min_values]).astype(int))
+
+# print(prediction)
+# print(np.mean(y[min_values]))
+
+data = np.array([
+    ['male','BCA'],['female','BSC'],['male','BSC'],['female','BCA'],['male','BCA']
+])
+
+x = (np.where( data[:,0] == 'male',0,1 ))
+y = (np.where(data[:,1] == 'BCA',1,0))
+
+print(np.stack((x,y),axis=1))
+
+
+
+
+
 
 
 
