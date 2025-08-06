@@ -266,3 +266,41 @@ class subject(models.Model):
     VII = models.CharField(max_length=200)
     VIII = models.CharField(max_length=200)
 
+
+# Add to your models.py
+
+class FeeStructure(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    semester = models.IntegerField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    due_date = models.DateField()
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.course.name} - Year {self.year} Sem {self.semester}"
+
+class FeePayment(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    fee_structure = models.ForeignKey(FeeStructure, on_delete=models.CASCADE)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateField(auto_now_add=True)
+    payment_method = models.CharField(max_length=50, choices=[
+        ('Cash', 'Cash'),
+        ('Cheque', 'Cheque'),
+        ('Online', 'Online Transfer'),
+        ('Card', 'Credit/Debit Card')
+    ])
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    receipt_number = models.CharField(max_length=50, unique=True)
+    status = models.CharField(max_length=20, default='Paid', choices=[
+        ('Paid', 'Paid'),
+        ('Pending', 'Pending'),
+        ('Overdue', 'Overdue'),
+        ('Partial', 'Partial Payment')
+    ])
+    remarks = models.TextField(blank=True, null=True)
+    verified_by = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.student.name} - {self.fee_structure} - {self.amount_paid}"

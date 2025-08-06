@@ -37,7 +37,12 @@ urlpatterns = [
     path('save_attendance/', views.save_attendance, name='save_attendance'),
     path('student_attendance_view', views.student_attendance_view, name='student_attendance_view'),
     path('get_student_attendance/', views.get_student_attendance, name='get_student_attendance'),
-
+    path('admin_student_fees_view', views.admin_student_fees_view, name='admin_student_fees_view'),
+    path('admin/students/fees/<str:student_id>/', views.admin_update_fees, name='admin_update_fees'),
+    path('fee_structures_view/', views.fee_structures_view, name='fee_structures_view'),
+    path('admin/fee-structures/add/', views.add_fee_structure, name='add_fee_structure'),
+    path('student_fees_view/', views.student_fees_view, name='student_fees_view'),
+    
 ]
 
 if settings.DEBUG:

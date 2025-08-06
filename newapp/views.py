@@ -643,19 +643,21 @@ def student_filtering_page(request):
 def get_details(request):
     try:
         course_name = request.GET.get('course_name')
-        if not course_name:
-            return JsonResponse({'error': 'Course name is required'}, status=400)
+        if not course_name or course_name == 'all':
+            return JsonResponse({'error': 'Please select a valid course'}, status=400)
             
-        course = Course.objects.get(name=course_name)
+        # Get the course - make sure name matching is case-insensitive
+        course = Course.objects.filter(name__iexact=course_name).first()
+        if not course:
+            return JsonResponse({'error': f'Course "{course_name}" not found'}, status=404)
+            
         return JsonResponse({
             'years': list(range(1, course.no_of_years + 1)),
             'semesters': list(range(1, course.no_of_semesters + 1)),
             'lectures': list(range(1, course.lecture + 1))
         })
-    except Course.DoesNotExist:
-        return JsonResponse({'error': 'Course not found'}, status=404)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
     
 def filtering_students(request):
     if not request.session.get('faculty_college_id'):
@@ -692,8 +694,6 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils import timezone
 
-# ... (your existing views)
-
 @csrf_exempt
 def save_attendance(request):
     if not request.session.get('faculty_college_id'):
@@ -704,49 +704,82 @@ def save_attendance(request):
             lecture = request.POST.get('lecture')
             date = request.POST.get('date')
             attendance_data = json.loads(request.POST.get('attendance'))
+            course_name = request.POST.get('course')
             
-            if not lecture or not date or not attendance_data:
+            if not lecture or not date or not attendance_data or not course_name:
                 return JsonResponse({'error': 'Missing required data'}, status=400)
                 
             faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-            course_name = request.POST.get('course')
             course = Course.objects.get(name=course_name)
             
             saved_count = 0
+            duplicate_entries = []
+            new_entries = []
+            
             for record in attendance_data:
                 student = Student.objects.get(id=record['student_id'])
-                # Check if attendance already exists for this student, lecture and date
-                attendance, created = Attendance.objects.get_or_create(
+                
+                # Check if attendance already exists
+                existing_attendance = Attendance.objects.filter(
+                    student=student,
+                    course=course,
+                    lecture_number=lecture,
+                    date=date
+                ).first()
+                
+                if existing_attendance:
+                    # Record duplicate entry
+                    duplicate_entries.append({
+                        'student_id': student.id,
+                        'student_name': student.name,
+                        'existing_status': existing_attendance.status,
+                        'new_status': record['status'].capitalize()
+                    })
+                    continue
+                
+                # Create new attendance record
+                Attendance.objects.create(
                     student=student,
                     course=course,
                     lecture_number=lecture,
                     date=date,
-                    defaults={
-                        'faculty': faculty,
-                        'department': student.course.department if hasattr(student.course, 'department') else '',
-                        'status': record['status'].capitalize(),
-                        'timing': timezone.now()
-                    }
+                    faculty=faculty,
+                    department=student.course.department if hasattr(student.course, 'department') else '',
+                    status=record['status'].capitalize(),
+                    timing=timezone.now()
                 )
                 
-                if not created:
-                    attendance.status = record['status'].capitalize()
-                    attendance.timing = timezone.now()
-                    attendance.save()
-                    
+                new_entries.append({
+                    'student_id': student.id,
+                    'student_name': student.name,
+                    'status': record['status'].capitalize()
+                })
                 saved_count += 1
                 
-            return JsonResponse({
+            response_data = {
                 'success': True,
-                'message': f'Attendance saved successfully for {saved_count} students'
-            })
+                'message': f'Attendance saved successfully for {saved_count} students',
+                'saved_count': saved_count,
+                'new_entries': new_entries,
+                'duplicate_entries': duplicate_entries
+            }
             
+            if duplicate_entries:
+                response_data['warning'] = f'Found {len(duplicate_entries)} duplicate attendance records that were not saved'
+                
+            return JsonResponse(response_data)
+            
+        except Student.DoesNotExist:
+            return JsonResponse({'error': 'One or more students not found'}, status=404)
+        except Course.DoesNotExist:
+            return JsonResponse({'error': 'Course not found'}, status=404)
+        except Faculty.DoesNotExist:
+            return JsonResponse({'error': 'Faculty not found'}, status=404)
         except Exception as e:
-            return JsonResponse({
-                'error': str(e)
-            }, status=500)
+            return JsonResponse({'error': str(e)}, status=500)
             
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -836,3 +869,230 @@ def get_student_attendance(request):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Student, FeeStructure, FeePayment
+from django.db.models import Sum
+
+def student_fees_view(request):
+    if 'username3' not in request.session:
+        return redirect('login')
+    
+    try:
+        student = Student.objects.get(college_id=request.session['student_college_id'])
+        
+        # Get the Course object based on the student's course name
+        try:
+            course = Course.objects.get(name=student.course)
+            no_of_years = course.no_of_years
+        except Course.DoesNotExist:
+            messages.error(request, "Course information not found")
+            return redirect('dashboard2')
+        
+        # Get fee structures for this course
+        course_fee_structures = FeeStructure.objects.filter(course__name=student.course)
+        
+        # Calculate fee summary
+        total_course_fee = course_fee_structures.aggregate(total=Sum('amount'))['total'] or 0
+        payments = FeePayment.objects.filter(student=student)
+        total_paid = payments.aggregate(total=Sum('amount_paid'))['total'] or 0
+        total_due = total_course_fee - total_paid
+        
+        # Get year-wise fee status
+        year_wise_data = []
+        for year in range(1, no_of_years + 1):
+            year_fee = course_fee_structures.filter(year=year).aggregate(total=Sum('amount'))['total'] or 0
+            year_paid = payments.filter(fee_structure__year=year).aggregate(total=Sum('amount_paid'))['total'] or 0
+            year_due = year_fee - year_paid
+            
+            status = "Paid" if year_due == 0 else "Pending"
+            if year_due > 0 and payments.filter(fee_structure__year=year, status='Overdue').exists():
+                status = "Overdue"
+                
+            year_wise_data.append({
+                'year': year,
+                'amount': year_fee,
+                'paid': year_paid,
+                'due': year_due,
+                'status': status,
+                'payments': payments.filter(fee_structure__year=year)
+            })
+        
+        context = {
+            'student': student,
+            'course': course,  # Pass the Course object to template
+            'total_course_fee': total_course_fee,
+            'total_paid': total_paid,
+            'total_due': total_due,
+            'payment_percentage': (total_paid / total_course_fee * 100) if total_course_fee > 0 else 0,
+            'year_wise_data': year_wise_data,
+            'all_payments': payments.order_by('-payment_date')
+        }
+        
+        return render(request, 'student_fees_view.html', context)
+        
+    except Student.DoesNotExist:
+        messages.error(request, "Student not found")
+        return redirect('login')
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('login')
+# Add to views.py
+from django.db.models import Q
+
+def admin_student_fees_view(request):
+    if 'username1' not in request.session:
+        return redirect('login')
+    
+    students = Student.objects.all()
+    courses = Course.objects.all()
+    
+    # Handle search/filter
+    search_query = request.GET.get('search', '')
+    course_filter = request.GET.get('course', '')
+    year_filter = request.GET.get('year', '')
+    
+    if search_query:
+        students = students.filter(
+            Q(name__icontains=search_query) |
+            Q(college_id__icontains=search_query) |
+            Q(email__icontains=search_query))
+    
+    if course_filter:
+        students = students.filter(course=course_filter)
+    
+    if year_filter:
+        students = students.filter(year=year_filter)
+    
+    # Get fee status for each student
+    student_data = []
+    for student in students:
+        fee_structures = FeeStructure.objects.filter(course__name=student.course)
+        total_fee = fee_structures.aggregate(total=Sum('amount'))['total'] or 0
+        payments = FeePayment.objects.filter(student=student)
+        total_paid = payments.aggregate(total=Sum('amount_paid'))['total'] or 0
+        total_due = total_fee - total_paid
+        
+        student_data.append({
+            'student': student,
+            'total_fee': total_fee,
+            'total_paid': total_paid,
+            'total_due': total_due,
+            'status': 'Paid' if total_due == 0 else 'Overdue' if payments.filter(status='Overdue').exists() else 'Pending'
+        })
+    
+    context = {
+        'students': student_data,
+        'courses': courses,
+        'search_query': search_query,
+        'course_filter': course_filter,
+        'year_filter': year_filter
+    }
+    
+    return render(request, 'admin_student_fees_view.html', context)
+
+def admin_update_fees(request, student_id):
+    if 'username1' not in request.session:
+        return redirect('login')
+    
+    if request.method == 'POST':
+        try:
+            student = Student.objects.get(college_id=student_id)
+            fee_structure_id = request.POST.get('fee_structure')
+            amount = request.POST.get('amount')
+            payment_method = request.POST.get('payment_method')
+            transaction_id = request.POST.get('transaction_id')
+            remarks = request.POST.get('remarks')
+            
+            fee_structure = FeeStructure.objects.get(id=fee_structure_id)
+            
+            # Create payment record
+            payment = FeePayment(
+                student=student,
+                fee_structure=fee_structure,
+                amount_paid=amount,
+                payment_method=payment_method,
+                transaction_id=transaction_id,
+                remarks=remarks,
+                receipt_number=f"REC{student.college_id}{int(timezone.time())}",
+                verified_by=request.session['username1']
+            )
+            payment.save()
+            
+            messages.success(request, "Fee payment recorded successfully")
+            return redirect('admin_student_fees_view')
+            
+        except Exception as e:
+            messages.error(request, f"Error recording payment: {str(e)}")
+            return redirect('admin_student_fees_view')
+    
+    try:
+        student = Student.objects.get(college_id=student_id)
+        fee_structures = FeeStructure.objects.filter(course__name=student.course)
+        payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
+        
+        context = {
+            'student': student,
+            'fee_structures': fee_structures,
+            'payments': payments
+        }
+        return render(request, 'admin_update_fees.html', context)
+        
+    except Student.DoesNotExist:
+        messages.error(request, "Student not found")
+        return redirect('admin_student_fees_view')
+    
+# Add these to views.py
+
+def fee_structures_view(request):
+    if 'username1' not in request.session:
+        return redirect('login')
+    
+    fee_structures = FeeStructure.objects.select_related('course').all()
+    courses = Course.objects.all()
+    
+    context = {
+        'fee_structures': fee_structures,
+        'courses': courses
+    }
+    return render(request, 'fee_structures.html', context)
+
+def add_fee_structure(request):
+    if 'username1' not in request.session:
+        return redirect('login')
+    
+    if request.method == 'POST':
+        try:
+            course_id = request.POST.get('course')
+            year = request.POST.get('year')
+            semester = request.POST.get('semester')
+            amount = request.POST.get('amount')
+            due_date = request.POST.get('due_date')
+            is_active = request.POST.get('is_active') == 'on'
+            
+            course = Course.objects.get(id=course_id)
+            
+            fee_structure = FeeStructure(
+                course=course,
+                year=year,
+                semester=semester,
+                amount=amount,
+                due_date=due_date,
+                is_active=is_active
+            )
+            fee_structure.save()
+            
+            messages.success(request, "Fee structure added successfully")
+            return redirect('fee_structures')
+            
+        except Exception as e:
+            messages.error(request, f"Error adding fee structure: {str(e)}")
+            return redirect('add_fee_structure')
+    
+    courses = Course.objects.all()
+    context = {
+        'courses': courses
+    }
+    return render(request, 'add_fee_structure.html', context)
+    
