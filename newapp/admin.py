@@ -24,7 +24,7 @@ class StudentAddAdmin(admin.ModelAdmin):
 
 @admin.register(FeePayment)
 class StudentAddAdmin(admin.ModelAdmin):
-    list_display = ('student', 'fee_structure')
+    list_display = ('student', )
     search_fields = ('student', )
 
 # Register the Student_percent model

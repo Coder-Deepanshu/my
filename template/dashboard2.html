@@ -1006,7 +1006,21 @@
                 font-size: 1.3rem;
             }
         }
-        
+        .error-message {
+            color: var(--danger);
+            background: #ffebee;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-align: center;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-left: 4px solid var(--danger);
+        }
     </style>
 </head>
 <body>
@@ -1180,6 +1194,14 @@
                     <input type="text" placeholder="Search...">
                 </div>
             </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
             
             <!-- Stats Cards -->
             <div class="stats-container">

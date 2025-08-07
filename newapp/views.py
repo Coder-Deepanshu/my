@@ -814,7 +814,8 @@ def student_attendance_view(request):
     except Exception as e:
         messages.error(request, f"An error occurred: {str(e)}")
         return redirect('dashboard2')
-
+    
+# for student attendance (for student viewing attendance)
 def get_student_attendance(request):
     try:
         student_id = request.GET.get('student_id')
@@ -870,10 +871,13 @@ def get_student_attendance(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
+from django.db.models import Sum, Q
+from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Student, FeeStructure, FeePayment
-from django.db.models import Sum
+from django.db.models import DecimalField
+from decimal import Decimal
+from .models import Student, Course, FeeStructure, FeePayment
 
 def student_fees_view(request):
     if 'username3' not in request.session:
@@ -890,122 +894,340 @@ def student_fees_view(request):
             messages.error(request, "Course information not found")
             return redirect('dashboard2')
         
-        # Get fee structures for this course
-        course_fee_structures = FeeStructure.objects.filter(course__name=student.course)
+        # Get all fee structures for this course
+        course_fee_structures = FeeStructure.objects.filter(course=course)
         
-        # Calculate fee summary
-        total_course_fee = course_fee_structures.aggregate(total=Sum('amount'))['total'] or 0
-        payments = FeePayment.objects.filter(student=student)
-        total_paid = payments.aggregate(total=Sum('amount_paid'))['total'] or 0
-        total_due = total_course_fee - total_paid
+        # Calculate total course fee with proper type handling
+        total_course_fee = course_fee_structures.aggregate(
+            total=Coalesce(
+                Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2)),
+                Decimal('0.00'),
+                output_field=DecimalField(max_digits=10, decimal_places=2)
+            )
+        )['total'] or Decimal('0.00')
         
-        # Get year-wise fee status
+        # Get all payments for this student
+        all_payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
+        
+        # Calculate total payment with proper type handling
+        total_payment = all_payments.aggregate(
+            total=Coalesce(
+                Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2)),
+                Decimal('0.00'),
+                output_field=DecimalField(max_digits=10, decimal_places=2)
+            )
+        )['total'] or Decimal('0.00')
+        
+        # Calculate total due amount
+        total_due_amount = total_course_fee - total_payment
+        
+        # Prepare year-wise data with proper decimal handling
         year_wise_data = []
         for year in range(1, no_of_years + 1):
-            year_fee = course_fee_structures.filter(year=year).aggregate(total=Sum('amount'))['total'] or 0
-            year_paid = payments.filter(fee_structure__year=year).aggregate(total=Sum('amount_paid'))['total'] or 0
-            year_due = year_fee - year_paid
+            # Get fee structures for this year
+            year_fees = course_fee_structures.filter(year=year)
+            year_total = year_fees.aggregate(
+                total=Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2))
+            )['total'] or Decimal('0.00')
             
-            status = "Paid" if year_due == 0 else "Pending"
-            if year_due > 0 and payments.filter(fee_structure__year=year, status='Overdue').exists():
-                status = "Overdue"
-                
+            # Get payments for this year
+            year_payments = all_payments.filter(fee_structure__year=year)
+            year_paid = year_payments.aggregate(
+                total=Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2))
+            )['total'] or Decimal('0.00')
+            
+            # Determine status
+            if year_total == Decimal('0.00'):
+                status = "No Fee"
+            elif year_paid >= year_total:
+                status = "Paid"
+            elif year_paid > Decimal('0.00'):
+                status = "Partial"
+            else:
+                status = "Pending"
+            
             year_wise_data.append({
                 'year': year,
-                'amount': year_fee,
+                'amount': year_total,
                 'paid': year_paid,
-                'due': year_due,
+                'due': year_total - year_paid,
                 'status': status,
-                'payments': payments.filter(fee_structure__year=year)
+                'payments': year_payments
             })
         
         context = {
             'student': student,
-            'course': course,  # Pass the Course object to template
+            'course': course,
             'total_course_fee': total_course_fee,
-            'total_paid': total_paid,
-            'total_due': total_due,
-            'payment_percentage': (total_paid / total_course_fee * 100) if total_course_fee > 0 else 0,
+            'total_paid': total_payment,
+            'total_due': total_due_amount,
+            'payment_percentage': float((total_payment / total_course_fee * 100)) if total_course_fee > Decimal('0.00') else 0,
             'year_wise_data': year_wise_data,
-            'all_payments': payments.order_by('-payment_date')
+            'all_payments': all_payments,
         }
         
         return render(request, 'student_fees_view.html', context)
         
     except Student.DoesNotExist:
         messages.error(request, "Student not found")
-        return redirect('login')
+        return redirect('dashboard2')
     except Exception as e:
         messages.error(request, f"An error occurred: {str(e)}")
-        return redirect('login')
-# Add to views.py
-from django.db.models import Q
+        return redirect('dashboard2')
+    
+from django.db.models import Sum, Q
+from django.db.models.functions import Coalesce
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db.models import DecimalField
+from decimal import Decimal
+from .models import Student, Course, FeeStructure, FeePayment
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from datetime import date
 
-def admin_student_fees_view(request):
+def admin_fee_management(request):
     if 'username1' not in request.session:
         return redirect('login')
     
-    students = Student.objects.all()
+    # Get all courses for filter dropdown
     courses = Course.objects.all()
     
-    # Handle search/filter
-    search_query = request.GET.get('search', '')
-    course_filter = request.GET.get('course', '')
-    year_filter = request.GET.get('year', '')
+    # Default filter values
+    course_filter = None
+    year_filter = None
+    semester_filter = None
+    college_id_filter = None
     
-    if search_query:
-        students = students.filter(
-            Q(name__icontains=search_query) |
-            Q(college_id__icontains=search_query) |
-            Q(email__icontains=search_query))
+    # Check if filters are applied
+    if request.method == 'GET':
+        course_filter = request.GET.get('course', '')
+        year_filter = request.GET.get('year', '')
+        semester_filter = request.GET.get('semester', '')
+        college_id_filter = request.GET.get('college_id', '')
     
+    # Build the filter query
+    filters = Q()
     if course_filter:
-        students = students.filter(course=course_filter)
-    
+        filters &= Q(course=course_filter)
     if year_filter:
-        students = students.filter(year=year_filter)
+        filters &= Q(year=year_filter)
+    if semester_filter:
+        filters &= Q(semester=semester_filter)
+    if college_id_filter:
+        filters &= Q(college_id__icontains=college_id_filter)
     
-    # Get fee status for each student
+    # Get filtered students
+    students = Student.objects.filter(filters).order_by('college_id')
+    
+    # Prepare student data with fee summaries
     student_data = []
     for student in students:
-        fee_structures = FeeStructure.objects.filter(course__name=student.course)
-        total_fee = fee_structures.aggregate(total=Sum('amount'))['total'] or 0
-        payments = FeePayment.objects.filter(student=student)
-        total_paid = payments.aggregate(total=Sum('amount_paid'))['total'] or 0
-        total_due = total_fee - total_paid
-        
-        student_data.append({
-            'student': student,
-            'total_fee': total_fee,
-            'total_paid': total_paid,
-            'total_due': total_due,
-            'status': 'Paid' if total_due == 0 else 'Overdue' if payments.filter(status='Overdue').exists() else 'Pending'
-        })
+        try:
+            course = Course.objects.get(name=student.course)
+            fee_structures = FeeStructure.objects.filter(course=course)
+            
+            # Calculate total course fee
+            total_course_fee = fee_structures.aggregate(
+                total=Coalesce(
+                    Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2)),
+                    Decimal('0.00'),
+                    output_field=DecimalField(max_digits=10, decimal_places=2)
+                )
+            )['total'] or Decimal('0.00')
+            
+            # Get all payments for this student
+            all_payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
+            
+            # Calculate total payment
+            total_payment = all_payments.aggregate(
+                total=Coalesce(
+                    Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2)),
+                    Decimal('0.00'),
+                    output_field=DecimalField(max_digits=10, decimal_places=2)
+                )
+            )['total'] or Decimal('0.00')
+            
+            # Calculate total due amount
+            total_due_amount = total_course_fee - total_payment
+            
+            student_data.append({
+                'student': student,
+                'total_course_fee': total_course_fee,
+                'total_paid': total_payment,
+                'total_due': total_due_amount,
+                'payment_percentage': float((total_payment / total_course_fee * 100)) if total_course_fee > Decimal('0.00') else 0,
+            })
+        except Exception as e:
+            messages.error(request, f"Error processing student {student.college_id}: {str(e)}")
+            continue
     
     context = {
-        'students': student_data,
         'courses': courses,
-        'search_query': search_query,
-        'course_filter': course_filter,
-        'year_filter': year_filter
+        'student_data': student_data,
+        'selected_course': course_filter,
+        'selected_year': year_filter,
+        'selected_semester': semester_filter,
+        'selected_college_id': college_id_filter,
     }
     
-    return render(request, 'admin_student_fees_view.html', context)
+    return render(request, 'admin_fee_management.html', context)
 
-def admin_update_fees(request, student_id):
+def get_course_details(request):
+    if request.method == 'GET' and 'course_name' in request.GET:
+        course_name = request.GET.get('course_name')
+        try:
+            course = Course.objects.get(name=course_name)
+            
+            # Get unique years and semesters from fee structures for this course
+            years = FeeStructure.objects.filter(course=course).values_list('year', flat=True).distinct().order_by('year')
+            semesters = FeeStructure.objects.filter(course=course).values_list('semester', flat=True).distinct().order_by('semester')
+            
+            return JsonResponse({
+                'success': True,
+                'years': list(years),
+                'semesters': list(semesters),
+            })
+        except Course.DoesNotExist:
+            return JsonResponse({'error': 'Course not found'}, status=404)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+
+from django.db.models import Sum, Q
+from django.db.models.functions import Coalesce
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db.models import DecimalField
+from decimal import Decimal
+from .models import Student, Course, FeeStructure, FeePayment
+
+def student_fee_details(request, student_id):
     if 'username1' not in request.session:
         return redirect('login')
+    
+    try:
+        student = Student.objects.get(college_id=student_id)
+        
+        # Get the Course object
+        try:
+            course = Course.objects.get(name=student.course)
+            no_of_years = course.no_of_years
+        except Course.DoesNotExist:
+            messages.error(request, "Course information not found")
+            return redirect('admin_fee_management')
+        
+        # Get all fee structures for this course
+        course_fee_structures = FeeStructure.objects.filter(course=course)
+        
+        # Calculate total course fee
+        total_course_fee = course_fee_structures.aggregate(
+            total=Coalesce(
+                Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2)),
+                Decimal('0.00'),
+                output_field=DecimalField(max_digits=10, decimal_places=2)
+            )
+        )['total'] or Decimal('0.00')
+        
+        # Get all payments for this student
+        all_payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
+        
+        # Calculate total payment
+        total_payment = all_payments.aggregate(
+            total=Coalesce(
+                Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2)),
+                Decimal('0.00'),
+                output_field=DecimalField(max_digits=10, decimal_places=2)
+            )
+        )['total'] or Decimal('0.00')
+        
+        # Calculate total due amount
+        total_due_amount = total_course_fee - total_payment
+        
+        # Prepare year-wise data
+        year_wise_data = []
+        for year in range(1, no_of_years + 1):
+            year_fees = course_fee_structures.filter(year=year)
+            year_total = year_fees.aggregate(
+                total=Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2))
+            )['total'] or Decimal('0.00')
+            
+            year_payments = all_payments.filter(fee_structure__year=year)
+            year_paid = year_payments.aggregate(
+                total=Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2))
+            )['total'] or Decimal('0.00')
+            
+            # Create list of fee structures with payment info
+            fee_details = []
+            for fee in year_fees:
+                payment = year_payments.filter(fee_structure=fee).first()
+                fee_details.append({
+                    'fee': fee,
+                    'payment': payment,
+                    'is_paid': payment is not None
+                })
+            
+            status = "No Fee" if year_total == Decimal('0.00') else \
+                     "Paid" if year_paid >= year_total else \
+                     "Partial" if year_paid > Decimal('0.00') else \
+                     "Pending"
+            
+            year_wise_data.append({
+                'year': year,
+                'amount': year_total,
+                'paid': year_paid,
+                'due': year_total - year_paid,
+                'status': status,
+                'payments': year_payments,
+                'fee_details': fee_details  # This contains all fee-payment pairs
+            })
+        
+        context = {
+            'student': student,
+            'course': course,
+            'total_course_fee': total_course_fee,
+            'total_paid': total_payment,
+            'total_due': total_due_amount,
+            'payment_percentage': float((total_payment / total_course_fee * 100)) if total_course_fee > Decimal('0.00') else 0,
+            'year_wise_data': year_wise_data,
+            'all_payments': all_payments,
+        }
+        
+        return render(request, 'student_fee_detail.html', context)
+        
+    except Student.DoesNotExist:
+        messages.error(request, "Student not found")
+        return redirect('admin_fee_management')
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('admin_fee_management')
+
+import time
+@csrf_exempt
+def process_fee_payment(request):
+    if 'username1' not in request.session:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
     
     if request.method == 'POST':
         try:
-            student = Student.objects.get(college_id=student_id)
-            fee_structure_id = request.POST.get('fee_structure')
-            amount = request.POST.get('amount')
-            payment_method = request.POST.get('payment_method')
-            transaction_id = request.POST.get('transaction_id')
-            remarks = request.POST.get('remarks')
+            data = json.loads(request.body)
+            student_id = data.get('student_id')
+            fee_structure_id = data.get('fee_structure_id')
+            amount = Decimal(data.get('amount'))
+            payment_method = data.get('payment_method')
+            transaction_id = data.get('transaction_id')
+            remarks = data.get('remarks', '')
             
-            fee_structure = FeeStructure.objects.get(id=fee_structure_id)
+            # Validate required fields
+            if not all([student_id, fee_structure_id, amount, payment_method]):
+                return JsonResponse({'error': 'Missing required fields'}, status=400)
+            
+            try:
+                student = Student.objects.get(college_id=student_id)
+                fee_structure = FeeStructure.objects.get(id=fee_structure_id)
+            except (Student.DoesNotExist, FeeStructure.DoesNotExist) as e:
+                return JsonResponse({'error': str(e)}, status=404)
             
             # Create payment record
             payment = FeePayment(
@@ -1014,85 +1236,21 @@ def admin_update_fees(request, student_id):
                 amount_paid=amount,
                 payment_method=payment_method,
                 transaction_id=transaction_id,
+                receipt_number=f"RCPT-{student.college_id}-{int(time.time())}",
                 remarks=remarks,
-                receipt_number=f"REC{student.college_id}{int(timezone.time())}",
-                verified_by=request.session['username1']
+                verified_by=request.session['username1'],
+                status='Paid'
             )
             payment.save()
             
-            messages.success(request, "Fee payment recorded successfully")
-            return redirect('admin_student_fees_view')
+            return JsonResponse({
+                'success': True,
+                'message': 'Payment processed successfully',
+                'receipt_number': payment.receipt_number,
+                'payment_date': payment.payment_date.strftime('%Y-%m-%d %H:%M:%S')
+            })
             
         except Exception as e:
-            messages.error(request, f"Error recording payment: {str(e)}")
-            return redirect('admin_student_fees_view')
+            return JsonResponse({'error': str(e)}, status=500)
     
-    try:
-        student = Student.objects.get(college_id=student_id)
-        fee_structures = FeeStructure.objects.filter(course__name=student.course)
-        payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
-        
-        context = {
-            'student': student,
-            'fee_structures': fee_structures,
-            'payments': payments
-        }
-        return render(request, 'admin_update_fees.html', context)
-        
-    except Student.DoesNotExist:
-        messages.error(request, "Student not found")
-        return redirect('admin_student_fees_view')
-    
-# Add these to views.py
-
-def fee_structures_view(request):
-    if 'username1' not in request.session:
-        return redirect('login')
-    
-    fee_structures = FeeStructure.objects.select_related('course').all()
-    courses = Course.objects.all()
-    
-    context = {
-        'fee_structures': fee_structures,
-        'courses': courses
-    }
-    return render(request, 'fee_structures.html', context)
-
-def add_fee_structure(request):
-    if 'username1' not in request.session:
-        return redirect('login')
-    
-    if request.method == 'POST':
-        try:
-            course_id = request.POST.get('course')
-            year = request.POST.get('year')
-            semester = request.POST.get('semester')
-            amount = request.POST.get('amount')
-            due_date = request.POST.get('due_date')
-            is_active = request.POST.get('is_active') == 'on'
-            
-            course = Course.objects.get(id=course_id)
-            
-            fee_structure = FeeStructure(
-                course=course,
-                year=year,
-                semester=semester,
-                amount=amount,
-                due_date=due_date,
-                is_active=is_active
-            )
-            fee_structure.save()
-            
-            messages.success(request, "Fee structure added successfully")
-            return redirect('fee_structures')
-            
-        except Exception as e:
-            messages.error(request, f"Error adding fee structure: {str(e)}")
-            return redirect('add_fee_structure')
-    
-    courses = Course.objects.all()
-    context = {
-        'courses': courses
-    }
-    return render(request, 'add_fee_structure.html', context)
-    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

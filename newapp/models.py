@@ -9,9 +9,7 @@ class Course(models.Model):
     lecture = models.IntegerField()
     time_per_lecture = models.IntegerField()
     unit_lecture =  models.CharField(max_length=50,choices=[('Hour','hour'),('Min','min')])
-    fees = models.IntegerField()
-    fees_period = models.CharField(max_length=50)
-    unit_fees = models.CharField(max_length=50,choices=[('Semester','semester'),('Year','year')])
+    fees_per_year = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -275,14 +273,13 @@ class FeeStructure(models.Model):
     semester = models.IntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     due_date = models.DateField()
-    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.course.name} - Year {self.year} Sem {self.semester}"
 
 class FeePayment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    fee_structure = models.ForeignKey(FeeStructure, on_delete=models.CASCADE)
+    fee_structure = models.ForeignKey(FeeStructure, on_delete=models.SET_NULL, null=True, blank=True)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateField(auto_now_add=True)
     payment_method = models.CharField(max_length=50, choices=[
@@ -303,4 +300,4 @@ class FeePayment(models.Model):
     verified_by = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.student.name} - {self.fee_structure} - {self.amount_paid}"
+        return f"{self.student.name} - {self.amount_paid}"
