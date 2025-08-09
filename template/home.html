@@ -916,7 +916,7 @@ document.getElementById('adminSignupForm').addEventListener('submit', function(e
     .then(data => {
         if (data.success) {
             // Redirect to add new admin page if credentials are correct
-            window.location.href = "{% url 'add_new_admin' %}";
+            window.location.href = "{% url 'admin_functions' %}";
         } else {
             alert(data.error || 'Admin registration failed. Please try again.');
         }

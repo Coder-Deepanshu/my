@@ -1,59 +1,10 @@
-# import csv
-# from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.db.models import Q, Sum, Case, When, Value, F, IntegerField
-from django.db.models.functions import Cast
-from datetime import date
+from django.db.models import Q, Sum
 from .models import Student, Faculty, Course, Attendance # Import the new Attendance model
 from django.http import JsonResponse
 import json # For handling JSON data from AJAX requests
-# from reportlab.pdfgen import canvas
-# from .form import LoginForm
-# from newapp.models import result
-
-# def generate_csv(request):
-#     # Create the HttpResponse object with the appropriate CSV header.
-#     response = HttpResponse(content_type='text/csv')
-#     response['Content-Disposition'] = 'attachment; filename="data.csv"'
-
-#     # Create a CSV writer object.
-#     writer = csv.writer(response)
-
-#     # Write the header row.
-#     writer.writerow(['Column 1', 'Column 2', 'Column 3'])
-
-#     # Write some example data rows.
-#     writer.writerow(['Row 1 Col 1', 'Row 1 Col 2', 'Row 1 Col 3'])
-#     writer.writerow(['Row 2 Col 1', 'Row 2 Col 2', 'Row 2 Col 3'])
-
-#     return response
-
-# def generate_pdf(request):
-#     # Create the HttpResponse object with the appropriate PDF headers.
-#     response = HttpResponse(content_type='application/pdf')
-#     response['Content-Disposition'] = 'attachment; filename="students.pdf"'
-
-#     # Create a PDF object using ReportLab.
-#     p = canvas.Canvas(response)
-
-#     # Write content to the PDF.
-#     students = Student_add.objects.all()
-#     y = 800  # Start position for writing
-#     p.drawString(100, y, "Student List")
-#     y -= 20
-#     for student in students:
-#         p.drawString(100, y, f"Roll No: {student.Student_rollno}, Name: {student.Student_name}, Class: {student.course}")
-#         y -= 20
-
-#     # Finalize the PDF.
-#     p.showPage()
-#     p.save()
-#     return response
-
 from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Student,Faculty  # assuming Student model is imported
 
 def login_view(request):
     if request.method == 'POST':
@@ -128,8 +79,6 @@ def login_view(request):
     
     return render(request, 'home.html')
 
-# for forget password:
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt  # Still needed for other potential AJAX requests
@@ -161,12 +110,7 @@ def forget_password(request):
             }, status=404)
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
-
 # for admin signup
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
-
 def admin_signup(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -181,15 +125,18 @@ def admin_signup(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
-
 # for admin add page
-def add_new_admin(request):
+def admin_functions(request):
     # Check if admin is authenticated
     if not request.session.get('admin_authenticated'):
         return redirect('login')  # Or your login page
     
     # Render the add new admin page
-    return render(request, 'admin_page.html')  # Create this template
+    return render(request, 'admin_function_page.html')  # Create this template
+
+def add_new_admin(request):
+
+    return render(request,'admin_page.html')
 
 # profile details
 def profile_details(request):
@@ -682,7 +629,7 @@ def filtering_students(request):
     if filters['college_id']:
         students = students.filter(college_id__icontains=filters['college_id'])
 
-    html = render_to_string('student_table.html', {'students': students})
+    html = render_to_string('student/student_table.html', {'students': students})
     return JsonResponse({'html': html})
 
 from django.http import JsonResponse
@@ -955,6 +902,15 @@ def student_fees_view(request):
                 'payments': year_payments
             })
         
+        # College information (you can move these to settings or database)
+        college_info = {
+            'name': "Your College Name",
+            'address': "College Address, City, State - PIN",
+            'phone': "+91 XXXXX XXXXX",
+            'email': "accounts@college.edu",
+            'logo': "/static/images/college_logo.png"  # Path to your logo
+        }
+        
         context = {
             'student': student,
             'course': course,
@@ -964,9 +920,14 @@ def student_fees_view(request):
             'payment_percentage': float((total_payment / total_course_fee * 100)) if total_course_fee > Decimal('0.00') else 0,
             'year_wise_data': year_wise_data,
             'all_payments': all_payments,
+            'college_name': college_info['name'],
+            'college_address': college_info['address'],
+            'college_phone': college_info['phone'],
+            'college_email': college_info['email'],
+            'college_logo': college_info['logo'],
         }
         
-        return render(request, 'student_fees_view.html', context)
+        return render(request, 'student/student_fees_view.html', context)
         
     except Student.DoesNotExist:
         messages.error(request, "Student not found")
@@ -975,6 +936,7 @@ def student_fees_view(request):
         messages.error(request, f"An error occurred: {str(e)}")
         return redirect('dashboard2')
     
+
 from django.db.models import Sum, Q
 from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect
@@ -1194,7 +1156,7 @@ def student_fee_details(request, student_id):
             'all_payments': all_payments,
         }
         
-        return render(request, 'student_fee_detail.html', context)
+        return render(request, 'student/student_fee_detail.html', context)
         
     except Student.DoesNotExist:
         messages.error(request, "Student not found")
@@ -1254,3 +1216,32 @@ def process_fee_payment(request):
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt  # Temporary for testing, remove in production
+def get_receipt_data(request, receipt_number):
+    try:
+        payment = FeePayment.objects.get(
+            receipt_number=receipt_number,
+            student__college_id=request.session.get('student_college_id')
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'receipt_number': payment.receipt_number,
+            'student_name': payment.student.name,
+            'amount_paid': str(payment.amount_paid),
+            'payment_date': payment.payment_date.strftime("%d/%m/%Y"),
+            'status': payment.status,
+            'payment_method': payment.payment_method,
+            'transaction_id': payment.transaction_id or "N/A",
+            'verified_by': payment.verified_by or "Not specified",
+            'remarks': payment.remarks or "None"
+        })
+        
+    except FeePayment.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Receipt not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

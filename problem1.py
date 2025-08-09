@@ -132,53 +132,124 @@
 
 # print(outlier)
 
-import numpy as np
+# import numpy as np
+# import pandas as pd
+
+# np.random.seed(42)
+# salaries = np.random.normal(loc=50000,scale=8000,size=10000)
+
+# salaries[100] = np.nan
+# salaries[500] = np.nan
+
+# salaries = np.append(salaries,[45000,55000,45000])
+
+# salaries[9000] = 999999
+# salaries[9500] = 888888
+
+# df = pd.DataFrame({'Salary':salaries})
+
+# # print(df.head())
+
+# # print(df.info())
+
+# # print(df.isnull().sum())
+
+# df.dropna(inplace=True)
+
+# # print(df.isnull().sum())
+
+# # print(df.duplicated().sum())
+
+# df.drop_duplicates(inplace=True)
+
+# # print(df.duplicated().sum())
+# df['Salary'] =np.unique(df['Salary'])
+# q1 = np.percentile(df['Salary'],25)
+# q3 = np.percentile(df['Salary'],75)
+
+# iqr = q3-q1
+
+# lower_bound = q1 - 1.5*iqr
+# upper_bound = q3 + 1.5*iqr
+
+# print(lower_bound)
+# print(upper_bound)
+# outlier = df[(df['Salary']<lower_bound) | (df['Salary']>upper_bound)]
+
+# print(outlier.head(20))
+
 import pandas as pd
+import numpy as np
 
-np.random.seed(42)
-salaries = np.random.normal(loc=50000,scale=8000,size=10000)
+data = pd.read_csv('newpro/titanic.csv')
+# print(data)
+# print(data.head(11))
 
-salaries[100] = np.nan
-salaries[500] = np.nan
+# print(data.isnull().sum())
 
-salaries = np.append(salaries,[45000,55000,45000])
+# print(data['Age'])
 
-salaries[9000] = 999999
-salaries[9500] = 888888
+data.fillna(np.round(data['Pclass'].mean(),2),inplace=True)
 
-df = pd.DataFrame({'Salary':salaries})
-
-# print(df.head())
-
-# print(df.info())
-
-# print(df.isnull().sum())
-
-df.dropna(inplace=True)
-
-# print(df.isnull().sum())
-
-# print(df.duplicated().sum())
-
-df.drop_duplicates(inplace=True)
-
-# print(df.duplicated().sum())
-df['Salary'] =np.unique(df['Salary'])
-q1 = np.percentile(df['Salary'],25)
-q3 = np.percentile(df['Salary'],75)
-
-iqr = q3-q1
-
-lower_bound = q1 - 1.5*iqr
-upper_bound = q3 + 1.5*iqr
-
-print(lower_bound)
-print(upper_bound)
-outlier = df[(df['Salary']<lower_bound) | (df['Salary']>upper_bound)]
-
-print(outlier.head(20))
+# print(data.isnull().sum())
 
 
+data['Income'] = (data['Age'])*10000
+
+# print(data.iloc[0:11,:])
+# print(data.isnull().sum())
+
+data['Income_Age'] = data['Age']*data['Income']
+
+# print(data['Income_Age'])
+
+
+# print(data['Parch'])
+# third question interaction feature
+
+
+from sklearn.preprocessing import PolynomialFeatures
+import numpy as np
+
+# Example: one feature X
+X = np.array([[2], [3], [4]])
+# Add X^2
+poly = PolynomialFeatures(degree=2)
+X_poly = poly.fit_transform(X)
+# print(X_poly)
+
+
+
+# Bin ages into groups
+data['AgeGroup'] = pd.cut(
+data['Age'],
+bins=[0, 12, 18, 35, 60, 100],
+labels=['Child', 'Teen', 'Young Adult',
+'Adult', 'Senior']
+)
+# print(data['AgeGroup'].head(30))
+
+
+# title_mapping = {
+# 'Mr': 'Mr',
+# 'Miss': 'Miss',
+# 'Mrs': 'Mrs',
+# 'Master': 'Master',
+# 'Dr': 'Rare',
+# 'Rev': 'Rare',
+# }
+# data['Name'] = data['Name'].map(title_mapping)
+
+# print(data['Name'])
+
+# Bin fares into categories
+data['FareBin'] = pd.qcut(
+data['Fare'],
+q=4,
+labels=['Low', 'Mid-Low', 'Mid-High', 'High']
+)
+
+print(data['FareBin'])
 
 
 

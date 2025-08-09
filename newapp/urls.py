@@ -28,8 +28,9 @@ urlpatterns = [
     path("id_card/", views.id_card, name="id_card"),
     path('forget_password/', views.forget_password, name='forget_password'),
     path('admin-signup/', views.admin_signup, name='admin_signup'),
-    path('add-new-admin/', views.add_new_admin, name='add_new_admin'),
+    path('admin_functions/', views.admin_functions, name='admin_functions'),
     path('profile_upload/', views.profile_upload, name='profile_upload'),
+    path('add_new_admin/', views.add_new_admin, name='add_new_admin'),
     # for attendance management student-faculty
     path('student_filtering_page/', views.student_filtering_page, name='student_filtering_page'),
     path('get_details/', views.get_details, name='get_details'),
@@ -44,6 +45,7 @@ urlpatterns = [
     path('student-fees/<str:student_id>/', views.student_fee_details, name='student_fee_details'),
     path('get-course-details/', views.get_course_details, name='get_course_details'),
     path('process-fee-payment/', views.process_fee_payment, name='process_fee_payment'),
+    path('get_receipt_data/<str:receipt_number>/', views.get_receipt_data, name='get_receipt_data')
 
 
     

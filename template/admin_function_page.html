@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --header-height: 70px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            transition: var(--transition);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        /* Admin Cards Container */
+        .admin-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        /* Admin Card Styles */
+        .admin-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-card-body {
+            padding: 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .admin-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .admin-card-text {
+            color: var(--gray);
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+
+        .admin-card-btn {
+            align-self: flex-start;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .admin-card-btn:hover {
+            background-color: var(--primary-dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            body {
+                padding-left: 0;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-container {
+                margin: 20px;
+            }
+
+            .admin-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title"><i class="fas fa-user-shield"></i> Admin Management</h1>
+        </div>
+
+        <div class="admin-cards">
+            <!-- View All Admins Card -->
+            <div class="admin-card" onclick="window.location.href='view_admins.html';">
+                <div class="admin-card-body">
+                    <div class="admin-card-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h3 class="admin-card-title">View All Admins</h3>
+                    <p class="admin-card-text">
+                        View and manage all administrator accounts with different access levels and permissions.
+                    </p>
+                    <a href="#" class="admin-card-btn">
+                        <i class="fas fa-arrow-right"></i> View Admins
+                    </a>
+                </div>
+            </div>
+
+            <!-- Add New Admin Card -->
+            <div class="admin-card" onclick="window.location.href='add_admin.html';">
+                <div class="admin-card-body">
+                    <div class="admin-card-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3 class="admin-card-title">Add New Admin</h3>
+                    <p class="admin-card-text">
+                        Create new administrator accounts with specific roles and access permissions for college management.
+                    </p>
+                    <a href="{% url 'add_new_admin' %}" class="admin-card-btn">
+                        <i class="fas fa-plus"></i> Add Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Toggle sidebar (same as your existing)
+            $('#sidebarToggle').click(function() {
+                $('.sidebar').toggleClass('active');
+            });
+
+            // Card click effect
+            $('.admin-card').hover(function() {
+                $(this).find('.admin-card-btn').css('transform', 'translateY(-2px)');
+            }, function() {
+                $(this).find('.admin-card-btn').css('transform', 'translateY(0)');
+            });
+        });
+    </script>
+</body>
+</html>
