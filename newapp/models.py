@@ -165,6 +165,91 @@ class Faculty(models.Model):
     def _str_(self):
         return self.name
     
+
+class Admin(models.Model):
+    # Basic Info
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    college_id=models.CharField(max_length=15,unique=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    father_name = models.CharField(max_length=100)
+    mother_name = models.CharField(max_length=100)
+    department = models.CharField(max_length=50)
+    position = models.CharField(max_length=100)
+    qualification=models.CharField(max_length=50)
+
+    # Experience & Joining
+    experience = models.DecimalField(max_digits=4, decimal_places=1)  # e.g., 5.5 years
+    date_of_joining = models.DateField()
+
+    # Contact Info
+    phone = models.CharField(max_length=15)
+    other_phone_no = models.CharField(max_length=15,null=True)
+    gender = models.CharField(max_length=10, choices=[
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other')
+    ])
+    birthday = models.DateField()
+    address = models.TextField()
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    state_code = models.CharField(max_length=10,null=True)
+    country = models.CharField(max_length=30, choices=[
+    ('India', 'India'),
+    ('USA', 'USA'),
+    ('UK', 'UK'),
+    ('Canada', 'Canada'),
+    ('Australia', 'Australia'),
+    ('Germany', 'Germany'),
+    ('France', 'France'),
+    ('Japan', 'Japan'),
+    ('China', 'China'),
+    ('Other', 'Other')
+])
+
+    # Category
+    category = models.CharField(max_length=10, choices=[
+        ('Genral', 'General'),
+        ('BC(A)', 'BC(A)'),
+        ('BC(B)', 'BC(B)'),
+        ('SC', 'SC'),
+        ('ST', 'ST'),
+        ('Others', 'Others')
+    ])
+
+    # Nationality & Religion
+    nationality = models.CharField(max_length=20, choices=[
+        ('Indian', 'Indian'),
+        ('NRI', 'NRI'),
+        ('Other', 'Other')
+    ])
+    religion = models.CharField(max_length=20, choices=[
+        ('Hindu', 'Hindu'),
+        ('Muslim', 'Muslim'),
+        ('Sikh', 'Sikh'),
+        ('Christian', 'Christian'),
+        ('Jain', 'Jain'),
+        ('Buddhist', 'Buddhist'),
+        ('Other', 'Other')
+    ])
+
+    # Identity Info
+    adhar_no = models.BigIntegerField()
+    pan_no = models.CharField(max_length=20)
+
+    # Marital Status
+    martial_status = models.CharField(max_length=15, choices=[
+        ('married', 'Married'),
+        ('unmarried', 'Unmarried')
+    ], default='unmarried')
+    user_id=models.CharField(max_length=50,null=True,)
+    username=models.EmailField()
+    password=models.CharField(max_length=15,null=True)
+
+    def _str_(self):
+        return self.name
+    
 class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
@@ -272,12 +357,22 @@ class FeeStructure(models.Model):
     year = models.IntegerField()
     semester = models.IntegerField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    for_year =  models.IntegerField()
     due_date = models.DateField()
 
     def __str__(self):
         return f"{self.course.name} - Year {self.year} Sem {self.semester}"
 
 class FeePayment(models.Model):
+    PAYMENT_STATUS = [
+        ('Paid', 'Paid'),
+        ('Pending', 'Pending'),
+        ('Overdue', 'Overdue'),
+        ('Partial', 'Partial Payment'),
+        ('Advance', 'Advance Payment'),
+        ('Adjusted', 'Advance Adjusted'),
+    ]
+    
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     fee_structure = models.ForeignKey(FeeStructure, on_delete=models.SET_NULL, null=True, blank=True)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
@@ -286,18 +381,16 @@ class FeePayment(models.Model):
         ('Cash', 'Cash'),
         ('Cheque', 'Cheque'),
         ('Online', 'Online Transfer'),
-        ('Card', 'Credit/Debit Card')
+        ('Card', 'Credit/Debit Card'),
+        ('Advance', 'Advance Payment'),
     ])
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     receipt_number = models.CharField(max_length=50, unique=True)
-    status = models.CharField(max_length=20, default='Paid', choices=[
-        ('Paid', 'Paid'),
-        ('Pending', 'Pending'),
-        ('Overdue', 'Overdue'),
-        ('Partial', 'Partial Payment')
-    ])
+    status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='Paid')
     remarks = models.TextField(blank=True, null=True)
     verified_by = models.CharField(max_length=100, blank=True, null=True)
+    is_advance_adjusted = models.BooleanField(default=False)
+    adjusted_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.student.name} - {self.amount_paid}"

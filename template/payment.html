@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Payment Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --info: #2196f3;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .payment-method-card {
+            border-left: 4px solid;
+        }
+
+        .cash { border-left-color: var(--success); }
+        .card-payment { border-left-color: var(--primary); }
+        .cheque { border-left-color: var(--warning); }
+        .online { border-left-color: var(--info); }
+
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .table-responsive {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .badge-pill {
+            padding: 5px 10px;
+            font-weight: 500;
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        .payment-stats {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2><i class="fas fa-tachometer-alt"></i> Payment Dashboard</h2>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-calendar-alt"></i> Today: <span id="currentDate"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Payment Summary Row -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card payment-method-card cash">
+                    <div class="card-body text-center">
+                        <div class="card-icon text-success">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h5>Cash Payments</h5>
+                        <h3 class="payment-stats">₹24,500</h3>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-success" style="width: 35%"></div>
+                        </div>
+                        <p class="text-muted mt-2">35% of total payments</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card payment-method-card card-payment">
+                    <div class="card-body text-center">
+                        <div class="card-icon text-primary">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h5>Card Payments</h5>
+                        <h3 class="payment-stats">₹18,200</h3>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-primary" style="width: 26%"></div>
+                        </div>
+                        <p class="text-muted mt-2">26% of total payments</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card payment-method-card cheque">
+                    <div class="card-body text-center">
+                        <div class="card-icon text-warning">
+                            <i class="fas fa-money-check"></i>
+                        </div>
+                        <h5>Cheque Payments</h5>
+                        <h3 class="payment-stats">₹12,750</h3>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-warning" style="width: 18%"></div>
+                        </div>
+                        <p class="text-muted mt-2">18% of total payments</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card payment-method-card online">
+                    <div class="card-body text-center">
+                        <div class="card-icon text-info">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <h5>Online Transfers</h5>
+                        <h3 class="payment-stats">₹15,300</h3>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-info" style="width: 21%"></div>
+                        </div>
+                        <p class="text-muted mt-2">21% of total payments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Overview Row -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="summary-card">
+                    <h4><i class="fas fa-wallet text-primary"></i> Payment Overview</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <h6>Total Received</h6>
+                                <h3 class="text-success">₹70,750</h3>
+                            </div>
+                            <div class="mb-3">
+                                <h6>Pending Payments</h6>
+                                <h3 class="text-warning">₹42,500</h3>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <h6>Total Expected</h6>
+                                <h3>₹1,13,250</h3>
+                            </div>
+                            <div class="mb-3">
+                                <h6>Completion Rate</h6>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" style="width: 62%">62%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="summary-card">
+                    <h4><i class="fas fa-exchange-alt text-info"></i> Payment Distribution</h4>
+                    <hr>
+                    <canvas id="paymentMethodChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Student</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#TXN2023001</td>
+                                <td>Rahul Sharma</td>
+                                <td>₹12,500</td>
+                                <td><span class="badge bg-primary">Card</span></td>
+                                <td>15 May 2023</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>#TXN2023002</td>
+                                <td>Priya Patel</td>
+                                <td>₹8,000</td>
+                                <td><span class="badge bg-success">Cash</span></td>
+                                <td>14 May 2023</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>#TXN2023003</td>
+                                <td>Amit Singh</td>
+                                <td>₹15,000</td>
+                                <td><span class="badge bg-info">Online</span></td>
+                                <td>14 May 2023</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>#TXN2023004</td>
+                                <td>Neha Gupta</td>
+                                <td>₹10,000</td>
+                                <td><span class="badge bg-warning">Cheque</span></td>
+                                <td>13 May 2023</td>
+                                <td><span class="badge bg-danger">Rejected</span></td>
+                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>#TXN2023005</td>
+                                <td>Vikram Joshi</td>
+                                <td>₹7,500</td>
+                                <td><span class="badge bg-success">Cash</span></td>
+                                <td>12 May 2023</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td><button class="btn btn-sm btn-outline-primary">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Payments -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="summary-card">
+                    <h4><i class="fas fa-clock text-warning"></i> Pending Payments</h4>
+                    <hr>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Amit Singh - Year 2</h6>
+                                <small class="text-warning">3 days ago</small>
+                            </div>
+                            <p class="mb-1">₹15,000 - Online Transfer</p>
+                            <small>Transaction ID: #TXN2023003</small>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Sanjay Verma - Year 1</h6>
+                                <small class="text-warning">5 days ago</small>
+                            </div>
+                            <p class="mb-1">₹12,000 - Cheque</p>
+                            <small>Cheque No: 654321</small>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Pooja Mehta - Year 3</h6>
+                                <small class="text-warning">1 week ago</small>
+                            </div>
+                            <p class="mb-1">₹10,500 - Card Payment</p>
+                            <small>Transaction ID: #TXN2023006</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="summary-card">
+                    <h4><i class="fas fa-calendar-check text-primary"></i> Upcoming Due Dates</h4>
+                    <hr>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Year 1 Semester 1</h6>
+                                <small class="text-danger">Due in 5 days</small>
+                            </div>
+                            <p class="mb-1">25 Students - ₹3,75,000</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Year 2 Semester 3</h6>
+                                <small class="text-warning">Due in 12 days</small>
+                            </div>
+                            <p class="mb-1">18 Students - ₹2,70,000</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Year 4 Semester 7</h6>
+                                <small>Due in 3 weeks</small>
+                            </div>
+                            <p class="mb-1">22 Students - ₹3,30,000</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Set current date
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            $('#currentDate').text(today.toLocaleDateString('en-IN', options));
+
+            // Payment Method Chart
+            const ctx = document.getElementById('paymentMethodChart').getContext('2d');
+            const paymentMethodChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Cash', 'Card', 'Cheque', 'Online'],
+                    datasets: [{
+                        data: [24500, 18200, 12750, 15300],
+                        backgroundColor: [
+                            '#4caf50',
+                            '#4361ee',
+                            '#ff9800',
+                            '#2196f3'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

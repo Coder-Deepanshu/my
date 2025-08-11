@@ -45,10 +45,7 @@ urlpatterns = [
     path('student-fees/<str:student_id>/', views.student_fee_details, name='student_fee_details'),
     path('get-course-details/', views.get_course_details, name='get_course_details'),
     path('process-fee-payment/', views.process_fee_payment, name='process_fee_payment'),
-    path('get_receipt_data/<str:receipt_number>/', views.get_receipt_data, name='get_receipt_data')
-
-
-    
+    path('get_receipt_data/<str:receipt_number>/', views.get_receipt_data, name='get_receipt_data'),
     
 ]
 

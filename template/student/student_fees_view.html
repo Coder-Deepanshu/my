@@ -445,6 +445,57 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Year Card Status Colors */
+.year-card.paid {
+    border-top: 4px solid var(--paid);
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
+.year-card.pending {
+    border-top: 4px solid var(--pending);
+    background-color: rgba(255, 152, 0, 0.05);
+}
+
+.year-card.overdue {
+    border-top: 4px solid var(--overdue);
+    background-color: rgba(244, 67, 54, 0.05);
+}
+
+.year-card.no-fee {
+    border-top: 4px solid #9e9e9e;
+    background-color: rgba(158, 158, 158, 0.05);
+}
+
+/* Status Badge Colors */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.status-badge.paid {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: var(--paid);
+}
+
+.status-badge.pending {
+    background-color: rgba(255, 152, 0, 0.2);
+    color: var(--pending);
+}
+
+.status-badge.overdue {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: var(--overdue);
+}
+
+.status-badge.no-fee {
+    background-color: rgba(158, 158, 158, 0.2);
+    color: #9e9e9e;
+}
     </style>
 </head>
 <body>
@@ -491,7 +542,7 @@
         <div class="sidebar-footer">
             <img src="https://via.placeholder.com/150" alt="User" class="user-avatar">
             <div class="user-info">
-                <div class="user-name">John Doe</div>
+                <div class="user-name">{{ student.name }}</div>
                 <div class="user-role">Student</div>
             </div>
             <button class="logout-btn">
@@ -549,13 +600,26 @@
                 <h3>Current Year/Semester</h3>
                 <p>Year {{ student.year }} / Sem {{ student.semester }}</p>
             </div>
+            <div class="info-card">
+                <h3>Course Full Fees</h3>
+                <p>₹{{ total_course_fees|floatformat:2|cut:"-" }}</p>
+            </div>
         </div>
+
+        <!-- Add this fee note section -->
+<div class="fee-note" style="padding: 10px 20px; background-color: #fff8e1; border-left: 4px solid #ffc107; margin: 0 20px; border-radius: 4px;margin-top: 10px;">
+    {% if total_due < 0 %}
+    <i class="fas fa-info-circle" style="color: #4caf50;"></i> Your account has an advance of ₹{{ total_due|floatformat:2|cut:"-" }}
+    {% else %}
+    <i class="fas fa-info-circle" style="color: #f44336;"></i> Your due amount is ₹{{ total_due|floatformat:2 }}
+    {% endif %}
+</div>
 
         <!-- Fee Summary Cards -->
         <div class="summary-cards">
             <div class="summary-card">
                 <h3>Total Course Fee</h3>
-                <p>₹{{ total_course_fee|floatformat:2 }}</p>
+                <p>₹{{ total_semester_fees|floatformat:2 }}</p>
             </div>
             <div class="summary-card">
                 <h3>Total Paid</h3>
@@ -571,36 +635,52 @@
             </div>
         </div>
 
-        <!-- Year-wise Fee Cards -->
-        <h2 style="padding: 0 20px;">Year-wise Fee Status</h2>
-        <div class="fee-years">
-            {% for year_data in year_wise_data %}
-            <div class="year-card {{ year_data.status|lower }}">
-                <h3>Year {{ year_data.year }}</h3>
-                <div class="amount">₹{{ year_data.amount|floatformat:2 }}</div>
-                <div class="status {{ year_data.status|lower }}">{{ year_data.status }}</div>
-                <div class="due-date">
-                    {% if year_data.status == 'Paid' %}
-                        Last payment: {{ year_data.payments.0.payment_date|date:"d/m/Y" }}
-                    {% else %}
-                        Due: Contact Administration
-                    {% endif %}
-                </div>
-                
-                {% if year_data.payments %}
-                <button class="btn btn-primary view-payments" data-year="{{ year_data.year }}">
-                    <i class="fas fa-receipt"></i> View Payments
-                </button>
-                {% endif %}
-                
-                {% if year_data.status != 'Paid' %}
-                <button class="btn btn-outline-primary mt-2 pay-now" data-year="{{ year_data.year }}">
-                    <i class="fas fa-credit-card"></i> Pay Now
-                </button>
-                {% endif %}
-            </div>
-            {% endfor %}
+        <!-- Year-wise Fee Cards Section -->
+<h2 style="padding: 0 20px;">Year-wise Fee Status</h2>
+<div class="fee-years">
+    {% for year_data in year_wise_data %}
+    <div class="year-card 
+        {% if year_data.status == 'Paid' %}paid{% endif %}
+        {% if year_data.status == 'Pending' %}pending{% endif %}
+        {% if year_data.status == 'Overdue' %}overdue{% endif %}
+        {% if year_data.status == 'No Fee' %}no-fee{% endif %}">
+        
+        <h3>Year {{ year_data.year }}</h3>
+        <div class="amount">₹{{ year_data.amount|floatformat:2 }}</div>
+        
+        <!-- Status Badge with Dynamic Colors -->
+        <div class="status-badge 
+            {% if year_data.status == 'Paid' %}paid{% endif %}
+            {% if year_data.status == 'Pending' %}pending{% endif %}
+            {% if year_data.status == 'Overdue' %}overdue{% endif %}
+            {% if year_data.status == 'No Fee' %}no-fee{% endif %}">
+            {{ year_data.status }}
         </div>
+        
+        <div class="due-date">
+            {% if year_data.status == 'Paid' %}
+                Last payment: {{ year_data.payments.0.payment_date|date:"d/m/Y" }}
+            {% elif year_data.status == 'No Fee' %}
+                No Fee Call by College
+            {% else %}
+                Due Date: {{ year_data.due_date|date:"d/m/Y" }}
+            {% endif %}
+        </div>
+        
+        {% if year_data.payments %}
+        <button class="btn btn-primary view-payments" data-year="{{ year_data.year }}">
+            <i class="fas fa-receipt"></i> View Payments
+        </button>
+        {% endif %}
+        
+        {% if year_data.status != 'Paid' and year_data.status != 'No Fee' %}
+        <button class="btn btn-outline-primary mt-2 pay-now" data-year="{{ year_data.year }}">
+            <i class="fas fa-credit-card"></i> Pay Now
+        </button>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
 
         <!-- Payment History Section - Updated with View/Print buttons -->
     <div class="payment-history">
@@ -796,6 +876,8 @@
                         <h3 style="text-align:center; margin-bottom:20px;">Payment Receipt</h3>
                         <hr>
                         <p style='text-align:center;'>GURU KIRPA UNIVERSITY</p>
+                        <p style='text-align:center;'>College Address, City, State - PIN</p>
+                        <p style='text-align:center;'>accounts@college.edu</p>
                         <p><strong>Receipt No:</strong> ${data.receiptNo}</p>
                         <p><strong>Student Name:</strong> ${data.studentName}</p>
                         <p><strong>Amount Paid:</strong> ₹${data.amountPaid}</p>
