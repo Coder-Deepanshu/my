@@ -15,6 +15,7 @@ urlpatterns = [
     path('dashboard2/', views.dashboard2, name='dashboard2'), 
     # urls for student functions
     path("student/", views.student_functions, name="student"),
+    path("admin_functions/", views.admin_functions, name="admin_functions"),
     path('students/', views.student_filter_page,name='students'),
     path('get_course_details/', views.get_course_details),
     path('filter_students/', views.filter_students),
@@ -43,9 +44,18 @@ urlpatterns = [
         # Fee Management URLs
     path('fee-management/', views.admin_fee_management, name='admin_fee_management'),
     path('student-fees/<str:student_id>/', views.student_fee_details, name='student_fee_details'),
-    path('get-course-details/', views.get_course_details, name='get_course_details'),
+    path('student-fee-details/<str:student_id>/', views.student_fee_details, name='student_fee_details'),
     path('process-fee-payment/', views.process_fee_payment, name='process_fee_payment'),
+    path('adjust_extra_payments/', views.adjust_extra_payments, name='adjust_extra_payments'),
     path('get_receipt_data/<str:receipt_number>/', views.get_receipt_data, name='get_receipt_data'),
+
+    path('chat_home/', views.chat_home, name='chat_home'),
+    path('create_chat_room/', views.create_chat_room, name='create_chat_room'),
+    path('send_message/', views.send_message, name='send_message'),
+    path('get_messages/<int:room_id>/', views.get_messages, name='get_messages'),
+    path('get_chat_rooms/', views.get_chat_rooms, name='get_chat_rooms'),
+    path('get_faculty_details/', views.get_faculty_details, name='get_faculty_details'),
+    path('get_student_details/', views.get_student_details, name='get_student_details'),
     
 ]
 

@@ -178,92 +178,149 @@
 
 # print(outlier.head(20))
 
+# import pandas as pd
+# import numpy as np
+
+# data = pd.read_csv('newpro/titanic.csv')
+# # print(data)
+# # print(data.head(11))
+
+# # print(data.isnull().sum())
+
+# # print(data['Age'])
+
+# data.fillna(np.round(data['Pclass'].mean(),2),inplace=True)
+
+# # print(data.isnull().sum())
+
+
+# data['Income'] = (data['Age'])*10000
+
+# # print(data.iloc[0:11,:])
+# # print(data.isnull().sum())
+
+# data['Income_Age'] = data['Age']*data['Income']
+
+# # print(data['Income_Age'])
+
+
+# # print(data['Parch'])
+# # third question interaction feature
+
+
+# from sklearn.preprocessing import PolynomialFeatures
+# import numpy as np
+
+# # Example: one feature X
+# X = np.array([[2], [3], [4]])
+# # Add X^2
+# poly = PolynomialFeatures(degree=2)
+# X_poly = poly.fit_transform(X)
+# # print(X_poly)
+
+
+
+# # Bin ages into groups
+# data['AgeGroup'] = pd.cut(
+# data['Age'],
+# bins=[0, 12, 18, 35, 60, 100],
+# labels=['Child', 'Teen', 'Young Adult',
+# 'Adult', 'Senior']
+# )
+# # print(data['AgeGroup'].head(30))
+
+
+# # title_mapping = {
+# # 'Mr': 'Mr',
+# # 'Miss': 'Miss',
+# # 'Mrs': 'Mrs',
+# # 'Master': 'Master',
+# # 'Dr': 'Rare',
+# # 'Rev': 'Rare',
+# # }
+# # data['Name'] = data['Name'].map(title_mapping)
+
+# # print(data['Name'])
+
+# # Bin fares into categories
+# data['FareBin'] = pd.qcut(
+# data['Fare'],
+# q=4,
+# labels=['Low', 'Mid-Low', 'Mid-High', 'High']
+# )
+
+# print(data['FareBin'])
+
+# import numpy as np
+# import matplotlib.pyplot as plt
+# from sklearn.linear_model import LinearRegression
+
+
+# x= np.array([1000,1500,2000,2500,3000]).reshape(-1,1)
+
+# y=np.array([50,65,80,95,110])
+
+# model = LinearRegression()
+# model.fit(x,y)
+
+# pred = model.predict([[1800]])
+
+# print(pred[0])
+# plt.scatter(x,y,color='red',label='Actual Data')
+# plt.plot(x,model.predict(x),color='blue',label='Best Fit Line')
+# plt.xlabel('Size (sq.ft)')
+# plt.ylabel('Price (lakh)')
+# plt.legend()
+# plt.show()
+
+# import pandas as pd 
+# df =  pd.read_csv('newpro/tesla.csv')
+
+# print(df.head())
+
+# print(df.shape)
+
+# print(df.columns)
+
+# print(df.info())
+
+# print(df.describe())
+
+# # boolean filtering
+
+# open = df[df['Open']>20]
+
+# print(open)
+
+# # open between 20 and 30
+
+# open = df[(df['Open']>=20) & (df['Open']<=30)]
+
+# # print(open)
+
+# print(df.query("Open>20 and Open<25"))
+
+# # aggregation and grouping 
+# print('second question')
+# data =  pd.read_csv('newpro/titanic.csv')
+
+# print(data.head())
+import numpy as np 
 import pandas as pd
-import numpy as np
+from sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score
 
-data = pd.read_csv('newpro/titanic.csv')
-# print(data)
-# print(data.head(11))
+# Actual and predicted prices (in
+# thousands)
+y_actual = [2800, 1100, 2700]
+y_predicted = [2500, 1200, 3000]
 
-# print(data.isnull().sum())
+mse = mean_squared_error(y_actual,y_predicted)
 
-# print(data['Age'])
+print(np.round(mse,2))
 
-data.fillna(np.round(data['Pclass'].mean(),2),inplace=True)
+mae = mean_absolute_error(y_actual,y_predicted)
 
-# print(data.isnull().sum())
+print(np.round(mae,2))
 
-
-data['Income'] = (data['Age'])*10000
-
-# print(data.iloc[0:11,:])
-# print(data.isnull().sum())
-
-data['Income_Age'] = data['Age']*data['Income']
-
-# print(data['Income_Age'])
-
-
-# print(data['Parch'])
-# third question interaction feature
-
-
-from sklearn.preprocessing import PolynomialFeatures
-import numpy as np
-
-# Example: one feature X
-X = np.array([[2], [3], [4]])
-# Add X^2
-poly = PolynomialFeatures(degree=2)
-X_poly = poly.fit_transform(X)
-# print(X_poly)
-
-
-
-# Bin ages into groups
-data['AgeGroup'] = pd.cut(
-data['Age'],
-bins=[0, 12, 18, 35, 60, 100],
-labels=['Child', 'Teen', 'Young Adult',
-'Adult', 'Senior']
-)
-# print(data['AgeGroup'].head(30))
-
-
-# title_mapping = {
-# 'Mr': 'Mr',
-# 'Miss': 'Miss',
-# 'Mrs': 'Mrs',
-# 'Master': 'Master',
-# 'Dr': 'Rare',
-# 'Rev': 'Rare',
-# }
-# data['Name'] = data['Name'].map(title_mapping)
-
-# print(data['Name'])
-
-# Bin fares into categories
-data['FareBin'] = pd.qcut(
-data['Fare'],
-q=4,
-labels=['Low', 'Mid-Low', 'Mid-High', 'High']
-)
-
-print(data['FareBin'])
-
-
-
-
-
-
-
-
-
-
-            
-
-
-
-
-
-
+r2 = r2_score(y_actual, y_predicted)
+print(f"R² Score: {r2:.2f}")

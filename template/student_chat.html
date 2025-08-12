@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <div class="chat-header">
+            <h3><i class="fas fa-chalkboard-teacher mr-2"></i>Faculty Members</h3>
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search faculty..." id="facultySearch">
+            </div>
+        </div>
+        <div class="faculty-list" id="facultyList">
+            {% for faculty in faculties %}
+            <div class="faculty-item" data-faculty-id="{{ faculty.college_id }}" onclick="startChat('{{ faculty.college_id }}')">
+                <div class="faculty-avatar">
+                    {% if faculty.profile_picture %}
+                    <img src="{{ faculty.profile_picture.url }}" alt="{{ faculty.name }}">
+                    {% else %}
+                    {{ faculty.name|slice:":2"|upper }}
+                    {% endif %}
+                </div>
+                <div class="faculty-info">
+                    <h4>{{ faculty.name }}</h4>
+                    <p>{{ faculty.department }} • {{ faculty.position }}</p>
+                </div>
+                <div class="faculty-status online"></div>
+            </div>
+            {% empty %}
+            <div class="no-results">
+                <i class="fas fa-user-slash"></i>
+                <p>No faculty members available</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="chat-main">
+        <div class="chat-header">
+            <div class="chat-partner-info" id="chatPartnerInfo">
+                <div class="partner-avatar">
+                    <i class="fas fa-user-circle default-avatar"></i>
+                    <img src="" alt="Faculty" id="partnerAvatar" class="hidden">
+                </div>
+                <div class="partner-details">
+                    <h3 id="partnerName">Select a faculty member</h3>
+                    <p id="partnerDepartment">Choose from the list to start chatting</p>
+                </div>
+                <div class="partner-status offline" id="partnerStatus"></div>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="no-chat-selected">
+                <div class="empty-state">
+                    <i class="fas fa-comments"></i>
+                    <h4>No conversation selected</h4>
+                    <p>Select a faculty member from the sidebar to begin messaging</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input" id="chatInput" style="display: none;">
+            <textarea id="messageInput" placeholder="Type your message here..." rows="1"></textarea>
+            <button id="sendButton" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Additional Chat Specific Styles */
+    .search-box {
+        position: relative;
+        margin-bottom: 15px;
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--dark-gray);
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 10px 15px 10px 35px;
+        border: 1px solid var(--medium-gray);
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+    }
+    
+    .no-results {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 20px;
+        color: var(--dark-gray);
+        text-align: center;
+    }
+    
+    .no-results i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: var(--medium-gray);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--medium-gray);
+        margin-bottom: 15px;
+    }
+    
+    .empty-state h4 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: var(--text-color);
+    }
+    
+    .empty-state p {
+        color: var(--dark-gray);
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .default-avatar {
+        font-size: 2.5rem;
+        color: var(--medium-gray);
+    }
+    
+    .mr-2 {
+        margin-right: 8px;
+    }
+</style>
+
+<script>
+    // JavaScript remains the same as your original code
+    let currentRoomId = null;
+    let currentFacultyId = null;
+    let currentUserId = "{{ student.college_id }}";
+    
+    function startChat(facultyId) {
+        currentFacultyId = facultyId;
+        
+        // Fetch faculty details
+        fetch(`/get_faculty_details/?faculty_id=${facultyId}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    // Update UI with faculty info
+                    document.getElementById('partnerName').textContent = data.faculty.name;
+                    document.getElementById('partnerDepartment').textContent = 
+                        `${data.faculty.department} • ${data.faculty.position}`;
+                    
+                    const partnerAvatar = document.getElementById('partnerAvatar');
+                    const defaultAvatar = document.querySelector('.default-avatar');
+                    
+                    if(data.faculty.profile_picture) {
+                        partnerAvatar.src = data.faculty.profile_picture;
+                        partnerAvatar.classList.remove('hidden');
+                        defaultAvatar.classList.add('hidden');
+                    } else {
+                        partnerAvatar.classList.add('hidden');
+                        defaultAvatar.classList.remove('hidden');
+                    }
+                    
+                    // Show chat input
+                    document.getElementById('chatInput').style.display = 'flex';
+                    document.getElementById('partnerStatus').classList.remove('offline');
+                    document.getElementById('partnerStatus').classList.add('online');
+                    
+                    // Create or get chat room
+                    fetch('/create_chat_room/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({
+                            participant1: currentUserId,
+                            participant2: facultyId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.status === 'success') {
+                            currentRoomId = data.room_id;
+                            loadMessages(data.room_id);
+                            
+                            // Start polling for new messages
+                            setInterval(() => {
+                                loadMessages(currentRoomId);
+                            }, 3000);
+                        }
+                    });
+                }
+            });
+    }
+    
+    function loadMessages(roomId) {
+        fetch(`/get_messages/${roomId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    const messagesContainer = document.getElementById('chatMessages');
+                    messagesContainer.innerHTML = '';
+                    
+                    if(data.messages.length === 0) {
+                        messagesContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-comment-alt"></i>
+                                <h4>No messages yet</h4>
+                                <p>Send your first message to start the conversation</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    data.messages.forEach(message => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message ${message.sender === currentUserId ? 'sent' : 'received'}`;
+                        
+                        messageDiv.innerHTML = `
+                            <div class="message-content">
+                                <p>${message.content}</p>
+                                <span class="message-time">${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            </div>
+                        `;
+                        
+                        messagesContainer.appendChild(messageDiv);
+                    });
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            });
+    }
+    
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        
+        if(message && currentRoomId) {
+            fetch('/send_message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    room_id: currentRoomId,
+                    sender_id: currentUserId,
+                    content: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    messageInput.value = '';
+                    loadMessages(currentRoomId);
+                }
+            });
+        }
+    }
+    
+    // Search functionality
+    document.getElementById('facultySearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const facultyItems = document.querySelectorAll('.faculty-item');
+        let hasResults = false;
+        
+        facultyItems.forEach(item => {
+            const facultyName = item.querySelector('h4').textContent.toLowerCase();
+            if(facultyName.includes(searchTerm)) {
+                item.style.display = 'flex';
+                hasResults = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        const noResultsDiv = document.querySelector('.no-results');
+        if(!hasResults && facultyItems.length > 0) {
+            if(!noResultsDiv) {
+                const facultyList = document.getElementById('facultyList');
+                facultyList.innerHTML += `
+                    <div class="no-results">
+                        <i class="fas fa-user-slash"></i>
+                        <p>No matching faculty found</p>
+                    </div>
+                `;
+            }
+        } else if(noResultsDiv && hasResults) {
+            noResultsDiv.remove();
+        }
+    });
+    
+    // Allow pressing Enter to send message
+    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+        if(e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    // Auto-resize textarea
+    document.getElementById('messageInput').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+</script>
+{% endblock %}

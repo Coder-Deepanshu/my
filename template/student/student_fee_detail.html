@@ -560,7 +560,7 @@
                     <p>{{ payment_percentage|floatformat:2 }}%</p>
                 </div>
             </div>
-        
+            
             <!-- Year-wise Fee Breakdown -->
             <div class="results-section">
                 {% for year_data in year_wise_data %}
@@ -889,5 +889,44 @@
             });
         });
     </script>
+    <script>
+    function showExtraPayments() {
+        const modal = new bootstrap.Modal(document.getElementById('extraPaymentsModal'));
+        modal.show();
+    }
+    
+    function showAdvancePayments() {
+        const modal = new bootstrap.Modal(document.getElementById('advancePaymentsModal'));
+        modal.show();
+    }
+    
+    function adjustExtraPayment(studentId, paymentId) {
+        if (!confirm('Are you sure you want to adjust this extra payment?')) {
+            return;
+        }
+        
+        $.ajax({
+            url: '{% url "adjust_extra_payments" %}',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                student_id: studentId,
+                payment_id: paymentId,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            }),
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    location.reload();
+                } else {
+                    alert(response.error || 'Adjustment failed');
+                }
+            },
+            error: function(xhr) {
+                alert('Error adjusting payment');
+            }
+        });
+    }
+</script>
 </body>
 </html>

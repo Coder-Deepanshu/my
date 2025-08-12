@@ -1,7 +1,11 @@
 from django.contrib import admin
-from .models import Student,result,subject,Faculty,Course,Attendance,FeePayment,FeeStructure
+from .models import Student,result,subject,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin,StudentBalance
 
-# Register the Student_add model
+@admin.register(StudentBalance)
+class StudentAddAdmin(admin.ModelAdmin):
+    list_display = ('student', 'extra_amount')
+    search_fields = ('student',)
+
 @admin.register(Student)
 class StudentAddAdmin(admin.ModelAdmin):
     list_display = ('name', 'college_id', 'course')
@@ -18,17 +22,23 @@ class coursesAdmin(admin.ModelAdmin):
     search_fields=('name',)
 
 @admin.register(FeeStructure)
-class StudentAddAdmin(admin.ModelAdmin):
+class FeeStructureAdmin(admin.ModelAdmin):
     list_display = ('course', 'semester', 'year')
     search_fields = ('course', 'semester', 'year')
 
 @admin.register(FeePayment)
-class StudentAddAdmin(admin.ModelAdmin):
+class FeePaymentAdmin(admin.ModelAdmin):
     list_display = ('student', )
     search_fields = ('student', )
 
-# Register the Student_percent model
+@admin.register(Admin)
+class AddAdmin(admin.ModelAdmin):
+    list_display = ('name', )
+    search_fields = ('name', )
 
+
+
+# Register the Student_percent model
 @admin.register(result)
 class resultAdmin(admin.ModelAdmin):
     list_display = (
@@ -56,6 +66,24 @@ class subjectadmin(admin.ModelAdmin):
 class facultyadmin(admin.ModelAdmin):
     list_display=('name','college_id','department','qualification','experience','date_of_joining','phone','gender','birthday','address','city','state','state_code')
     search_fields=('employee_id',)
+
+
+from .models import ChatRoom,Message
+
+@admin.register(ChatRoom)
+class ChatRoomAdmin(admin.ModelAdmin):
+    list_display = ['name', 'display_participants']
+    
+    def display_participants(self, obj):
+        return ", ".join([user.username for user in obj.participants.all()])
+    display_participants.short_description = 'Participants'
+
+    
+@admin.register(Message)
+class Message_Student_faculty(admin.ModelAdmin):
+    list_display=('chat_room','sender','content')
+    search_fields=('chat_room','sender',)
+
 
 
 

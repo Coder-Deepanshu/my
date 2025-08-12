@@ -350,47 +350,86 @@ class subject(models.Model):
     VIII = models.CharField(max_length=200)
 
 
-# Add to your models.py
+from django.db import models
+from django.core.validators import MinValueValidator
 
 class FeeStructure(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     year = models.IntegerField()
     semester = models.IntegerField()
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    for_year =  models.IntegerField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    for_year = models.IntegerField()
     due_date = models.DateField()
 
     def __str__(self):
         return f"{self.course.name} - Year {self.year} Sem {self.semester}"
 
 class FeePayment(models.Model):
-    PAYMENT_STATUS = [
-        ('Paid', 'Paid'),
-        ('Pending', 'Pending'),
-        ('Overdue', 'Overdue'),
-        ('Partial', 'Partial Payment'),
-        ('Advance', 'Advance Payment'),
-        ('Adjusted', 'Advance Adjusted'),
+    PAYMENT_TYPES = [
+        ('REGULAR', 'Regular Payment'),
+        ('EXTRA', 'Extra Payment'),
+        ('ADVANCE', 'Advance Payment'),
+        ('ADJUSTMENT', 'Adjustment Payment'),
     ]
     
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     fee_structure = models.ForeignKey(FeeStructure, on_delete=models.SET_NULL, null=True, blank=True)
-    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     payment_date = models.DateField(auto_now_add=True)
     payment_method = models.CharField(max_length=50, choices=[
         ('Cash', 'Cash'),
         ('Cheque', 'Cheque'),
         ('Online', 'Online Transfer'),
-        ('Card', 'Credit/Debit Card'),
-        ('Advance', 'Advance Payment'),
+        ('Card', 'Credit/Debit Card')
     ])
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     receipt_number = models.CharField(max_length=50, unique=True)
-    status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='Paid')
+    payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPES, default='REGULAR')
+    status = models.CharField(max_length=20, default='Paid', choices=[
+        ('Paid', 'Paid'),
+        ('Pending', 'Pending'),
+        ('Overdue', 'Overdue'),
+        ('Partial', 'Partial Payment')
+    ])
     remarks = models.TextField(blank=True, null=True)
     verified_by = models.CharField(max_length=100, blank=True, null=True)
-    is_advance_adjusted = models.BooleanField(default=False)
-    adjusted_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    adjusted_in = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.student.name} - {self.amount_paid}"
+        return f"{self.student.name} - {self.amount_paid} ({self.payment_type})"
+
+class StudentBalance(models.Model):
+    student = models.OneToOneField(Student, on_delete=models.CASCADE)
+    extra_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    advance_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student.name} - Extra: {self.extra_amount}, Advance: {self.advance_amount}"
+    
+# for chat management student- faculty:
+
+from django.db import models
+from django.utils import timezone
+
+class ChatRoom(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    participants = models.ManyToManyField('auth.User', related_name='chat_rooms')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+class Message(models.Model):
+    chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"Message from {self.sender.username} in {self.chat_room.name}"

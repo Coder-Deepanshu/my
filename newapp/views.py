@@ -132,11 +132,11 @@ def admin_functions(request):
         return redirect('login')  # Or your login page
     
     # Render the add new admin page
-    return render(request, 'admin_function_page.html')  # Create this template
+    return render(request, 'admin/admin_function_page.html')  # Create this template
 
 def add_new_admin(request):
 
-    return render(request,'admin_page.html')
+    return render(request,'admin/admin_page.html')
 
 # profile details
 def profile_details(request):
@@ -449,7 +449,7 @@ def delete_students(request):
 from django.db import models
 from django.contrib import messages
 from django.shortcuts import render
-from .models import Faculty 
+from .models import Faculty,Admin
 
 def faculty_functions(request):
     context = {}
@@ -569,6 +569,126 @@ def faculty_functions(request):
                 messages.error(request, f"Error updating faculty: {str(e)}")
 
     return render(request, "faculty/faculty_page.html", context)
+
+# for functions related to admin
+def admin_functions(request):
+    context = {}
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        # Add faculty
+        if action == "add":
+            try:
+                # Auto-generate employee ID
+                max_id = Admin.objects.aggregate(max_id=models.Max('college_id'))['max_id']
+                
+                if max_id is None:
+                    college_id = 'AD20251'  # Initial ID
+                else:
+                    try:
+                        # Extract numeric part and increment
+                        numeric_part = int(max_id[2:])  # Remove 'GK' prefix
+                        college_id = f'AD{numeric_part + 1}'
+                    except (ValueError, IndexError):
+                        college_id = 'AD20251'  # Fallback if format is wrong
+                email = request.POST.get("email")
+                phone =  request.POST.get("phone")        
+                # Create admin with all required fields
+                Admin.objects.create(
+                    college_id=college_id,
+                    name=request.POST.get("name"),
+                    father_name=request.POST.get("father_name"),
+                    mother_name=request.POST.get("mother_name"),
+                    email=email,
+                    phone=phone,
+                    other_phone_no=request.POST.get("other_phone_no"),
+                    position=request.POST.get("position"),
+                    gender=request.POST.get("gender"),
+                    department=request.POST.get("department"),
+                    qualification=request.POST.get("qualification"),
+                    address=request.POST.get("address"),
+                    city=request.POST.get("city"),
+                    state=request.POST.get("state"),
+                    state_code=request.POST.get("state_code"),
+                    country=request.POST.get("country", "India"),
+                    date_of_joining=request.POST.get("date_of_joining"),
+                    experience=request.POST.get("experience"),
+                    birthday=request.POST.get("birthday"),
+                    category=request.POST.get("category"),
+                    nationality=request.POST.get("nationality", "Indian"),
+                    religion=request.POST.get("religion"),
+                    adhar_no=request.POST.get("adhar_no"),
+                    pan_no=request.POST.get("pan_no"),
+                    martial_status=request.POST.get("martial_status"),
+                    user_id=college_id, 
+                    username=email,
+                    password=phone,
+                )
+                messages.success(request, "Admin added successfully!")
+            except Exception as e:
+                messages.error(request, f"Error adding admin: {str(e)}")
+
+        # View faculty
+        elif action == "view":
+            college_id = request.POST.get("college_id")
+            try:
+                admin = Admin.objects.get(college_id=college_id)
+                context["admin"] = admin
+            except Admin.DoesNotExist:
+                messages.error(request, "No admin found with this ID.")
+            except Exception as e:
+                messages.error(request, f"Error viewing admin: {str(e)}")
+
+        # Delete faculty
+        elif action == "delete":
+            college_id = request.POST.get("college_id")
+            try:
+                faculty = Faculty.objects.get(college_id=college_id)
+                faculty.delete()
+                messages.success(request, "Admin deleted successfully.")
+            except Admin.DoesNotExist:
+                messages.error(request, "Admin not found.")
+            except Exception as e:
+                messages.error(request, f"Error deleting admin: {str(e)}")
+
+        # Alter faculty
+        elif action == "alter":
+            college_id = request.POST.get("college_id")
+            try:
+                admin = Admin.objects.get(college_id=college_id)
+                
+                # Update all fields
+                admin.name = request.POST.get("name")
+                admin.father_name = request.POST.get("father_name")
+                admin.mother_name = request.POST.get("mother_name")
+                admin.email = request.POST.get("email")
+                admin.phone = request.POST.get("phone")
+                admin.other_phone_no = request.POST.get("other_phone_no")
+                admin.position = request.POST.get("position")
+                admin.gender = request.POST.get("gender")
+                admin.department = request.POST.get("department")
+                admin.qualification = request.POST.get("qualification")
+                admin.address = request.POST.get("address")
+                admin.city = request.POST.get("city")
+                admin.state = request.POST.get("state")
+                admin.state_code = request.POST.get("state_code")
+                admin.country = request.POST.get("country", "India")
+                admin.date_of_joining = request.POST.get("date_of_joining")
+                admin.experience = request.POST.get("experience")
+                admin.birthday = request.POST.get("birthday")
+                admin.adhar_no = request.POST.get("adhar_no")
+                admin.pan_no = request.POST.get("pan_no")
+                admin.martial_status = request.POST.get("martial_status")
+                
+                admin.save()
+                messages.success(request, "Admin details updated successfully.")
+            except Admin.DoesNotExist:
+                messages.error(request, "Admin not found.")
+            except Exception as e:
+                messages.error(request, f"Error updating admin: {str(e)}")
+
+    return render(request, "admin/admin_page.html", context)
 
 # for attendance management student-faculty
 from django.utils import timezone
@@ -826,7 +946,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import DecimalField
 from decimal import Decimal
-from .models import Student, Course, FeeStructure, FeePayment
+from .models import Student, Course, FeeStructure, FeePayment,StudentBalance
 
 
 #  for student, for viewing fees
@@ -1037,7 +1157,7 @@ def admin_fee_management(request):
         'selected_college_id': college_id_filter,
     }
     
-    return render(request, 'admin_fee_management.html', context)
+    return render(request, 'admin/admin_fee_management.html', context)
 
 # for sending courses available to the admin dashboard
 def get_course_details(request):
@@ -1060,12 +1180,18 @@ def get_course_details(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 # for sending fees details to the student detail template
+from django.db.models import Sum, Q, F, DecimalField
+from django.db.models.functions import Coalesce
+from decimal import Decimal
+import time
+
 def student_fee_details(request, student_id):
     if 'username1' not in request.session:
         return redirect('login')
     
     try:
         student = Student.objects.get(college_id=student_id)
+        balance, _ = StudentBalance.objects.get_or_create(student=student)
         
         # Get the Course object
         try:
@@ -1077,7 +1203,7 @@ def student_fee_details(request, student_id):
             return redirect('admin_fee_management')
         
         # Get all fee structures for this course
-        course_fee_structures = FeeStructure.objects.filter(course=course).filter(for_year=batch_year)
+        course_fee_structures = FeeStructure.objects.filter(course=course, for_year=batch_year)
         
         # Calculate total course fee
         total_course_fee = course_fee_structures.aggregate(
@@ -1087,8 +1213,6 @@ def student_fee_details(request, student_id):
                 output_field=DecimalField(max_digits=10, decimal_places=2)
             )
         )['total'] or Decimal('0.00')
-
-        
         
         # Get all payments for this student
         all_payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
@@ -1102,8 +1226,8 @@ def student_fee_details(request, student_id):
             )
         )['total'] or Decimal('0.00')
         
-        # Calculate total due amount
-        total_due_amount = total_course_fee - total_payment
+        # Calculate total due amount (considering extra and advance payments)
+        total_due_amount = max(total_course_fee - total_payment, Decimal('0.00'))
         
         # Prepare year-wise data
         year_wise_data = []
@@ -1113,7 +1237,12 @@ def student_fee_details(request, student_id):
                 total=Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2))
             )['total'] or Decimal('0.00')
             
-            year_payments = all_payments.filter(fee_structure__year=year)
+            year_payments = all_payments.filter(
+                Q(fee_structure__year=year) | 
+                Q(payment_type='ADVANCE') |
+                Q(payment_type='ADJUSTMENT')
+            )
+            
             year_paid = year_payments.aggregate(
                 total=Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2))
             )['total'] or Decimal('0.00')
@@ -1121,14 +1250,18 @@ def student_fee_details(request, student_id):
             # Create list of fee structures with payment info
             fee_details = []
             for fee in year_fees:
-
-                payment = year_payments.filter(fee_structure=fee).first()
+                payments = year_payments.filter(fee_structure=fee)
+                paid_amount = payments.aggregate(
+                    total=Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2))
+                )['total'] or Decimal('0.00')
                 
                 fee_details.append({
                     'fee': fee,
-                    'payment': payment,
-                    'is_paid': payment is not None
+                    'payments': payments,
+                    'paid_amount': paid_amount,
+                    'is_paid': paid_amount >= fee.amount
                 })
+
             status = "No Fee" if year_total == Decimal('0.00') else \
                      "Paid" if year_paid >= year_total else \
                      "Partial" if year_paid > Decimal('0.00') else \
@@ -1138,12 +1271,15 @@ def student_fee_details(request, student_id):
                 'year': year,
                 'amount': year_total,
                 'paid': year_paid,
-                'due': year_total - year_paid,
+                'due': max(year_total - year_paid, Decimal('0.00')),
                 'status': status,
                 'payments': year_payments,
-                'fee_details': fee_details  # This contains all fee-payment pairs
+                'fee_details': fee_details,
+                'extra_payments': all_payments.filter(payment_type='EXTRA', fee_structure__year=year),
+                'advance_payments': all_payments.filter(payment_type='ADVANCE', fee_structure__year=year)
             })
-        
+        extra_payments = [p for p in all_payments if p.payment_type == "EXTRA"]
+        advance_payments = [p for p in all_payments if p.payment_type == "ADVANCE"]
         context = {
             'student': student,
             'course': course,
@@ -1153,6 +1289,8 @@ def student_fee_details(request, student_id):
             'payment_percentage': float((total_payment / total_course_fee * 100)) if total_course_fee > Decimal('0.00') else 0,
             'year_wise_data': year_wise_data,
             'all_payments': all_payments,
+            'extra_payments': extra_payments,
+            'advance_payments': advance_payments,
         }
         
         return render(request, 'student/student_fee_detail.html', context)
@@ -1164,8 +1302,6 @@ def student_fee_details(request, student_id):
         messages.error(request, f"An error occurred: {str(e)}")
         return redirect('admin_fee_management')
 
-# for saving payment made by admin in database
-import time
 @csrf_exempt
 def process_fee_payment(request):
     if 'username1' not in request.session:
@@ -1188,35 +1324,193 @@ def process_fee_payment(request):
             try:
                 student = Student.objects.get(college_id=student_id)
                 fee_structure = FeeStructure.objects.get(id=fee_structure_id)
-            except (Student.DoesNotExist, FeeStructure.DoesNotExist) as e:
+                balance = StudentBalance.objects.get(student=student)
+            except (Student.DoesNotExist, FeeStructure.DoesNotExist, StudentBalance.DoesNotExist) as e:
                 return JsonResponse({'error': str(e)}, status=404)
             
             # Check if this is an advance payment (for a future semester)
             current_semester = student.semester
             is_advance = fee_structure.semester > current_semester
             
-            # Create payment record
-            payment = FeePayment(
+            # Calculate how much is remaining for this fee structure
+            paid_for_structure = FeePayment.objects.filter(
                 student=student,
-                fee_structure=fee_structure,
-                amount_paid=amount,
-                payment_method=payment_method,
-                transaction_id=transaction_id,
-                receipt_number=f"RCPT-{student.college_id}-{int(time.time())}",
-                remarks=remarks,
+                fee_structure=fee_structure
+            ).aggregate(
+                total=Coalesce(
+                    Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2)),
+                    Decimal('0.00'),
+                    output_field=DecimalField(max_digits=10, decimal_places=2)
+                )
+            )['total'] or Decimal('0.00')
+            
+            remaining_amount = fee_structure.amount - paid_for_structure
+            
+            payment_type = 'REGULAR'
+            adjusted_in = None
+            
+            if amount > remaining_amount:
+                # This is an extra payment
+                extra_amount = amount - remaining_amount
+                balance.extra_amount += extra_amount
+                balance.save()
+                
+                # Create two payment records - one for regular, one for extra
+                if remaining_amount > 0:
+                    regular_payment = FeePayment(
+                        student=student,
+                        fee_structure=fee_structure,
+                        amount_paid=remaining_amount,
+                        payment_method=payment_method,
+                        transaction_id=transaction_id,
+                        receipt_number=f"RCPT-{student.college_id}-{int(time.time())}-1",
+                        remarks=remarks,
+                        verified_by=request.session['username1'],
+                        status='Paid',
+                        payment_type='REGULAR'
+                    )
+                    regular_payment.save()
+                
+                extra_payment = FeePayment(
+                    student=student,
+                    fee_structure=fee_structure,
+                    amount_paid=extra_amount,
+                    payment_method=payment_method,
+                    transaction_id=transaction_id,
+                    receipt_number=f"RCPT-{student.college_id}-{int(time.time())}-2",
+                    remarks=f"Extra payment - {remarks}",
+                    verified_by=request.session['username1'],
+                    status='Paid',
+                    payment_type='EXTRA'
+                )
+                extra_payment.save()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Payment processed with extra amount',
+                    'receipt_numbers': [regular_payment.receipt_number, extra_payment.receipt_number],
+                    'payment_date': regular_payment.payment_date.strftime('%Y-%m-%d %H:%M:%S'),
+                    'is_extra': True
+                })
+            elif is_advance:
+                # This is an advance payment for future semester
+                balance.advance_amount += amount
+                balance.save()
+                
+                advance_payment = FeePayment(
+                    student=student,
+                    fee_structure=fee_structure,
+                    amount_paid=amount,
+                    payment_method=payment_method,
+                    transaction_id=transaction_id,
+                    receipt_number=f"RCPT-{student.college_id}-{int(time.time())}",
+                    remarks=f"Advance payment - {remarks}",
+                    verified_by=request.session['username1'],
+                    status='Paid',
+                    payment_type='ADVANCE'
+                )
+                advance_payment.save()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Advance payment processed successfully',
+                    'receipt_number': advance_payment.receipt_number,
+                    'payment_date': advance_payment.payment_date.strftime('%Y-%m-%d %H:%M:%S'),
+                    'is_advance': True
+                })
+            else:
+                # Regular payment
+                payment = FeePayment(
+                    student=student,
+                    fee_structure=fee_structure,
+                    amount_paid=amount,
+                    payment_method=payment_method,
+                    transaction_id=transaction_id,
+                    receipt_number=f"RCPT-{student.college_id}-{int(time.time())}",
+                    remarks=remarks,
+                    verified_by=request.session['username1'],
+                    status='Paid',
+                    payment_type='REGULAR'
+                )
+                payment.save()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Payment processed successfully',
+                    'receipt_number': payment.receipt_number,
+                    'payment_date': payment.payment_date.strftime('%Y-%m-%d %H:%M:%S'),
+                    'is_regular': True
+                })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@csrf_exempt
+def adjust_extra_payments(request):
+    if 'username1' not in request.session:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            student_id = data.get('student_id')
+            payment_id = data.get('payment_id')
+            
+            if not student_id or not payment_id:
+                return JsonResponse({'error': 'Missing required parameters'}, status=400)
+            
+            # Get the payment to adjust
+            extra_payment = FeePayment.objects.get(
+                id=payment_id,
+                student__college_id=student_id,
+                payment_type='EXTRA'
+            )
+            
+            # Find the next due payment to apply this to
+            next_due_payment = FeePayment.objects.filter(
+                student__college_id=student_id,
+                status='Pending'
+            ).order_by('fee_structure__year', 'fee_structure__semester').first()
+            
+            if not next_due_payment:
+                return JsonResponse({'error': 'No pending payments to adjust against'}, status=400)
+            
+            # Create adjustment record
+            adjustment = FeePayment(
+                student=extra_payment.student,
+                fee_structure=next_due_payment.fee_structure,
+                amount_paid=extra_payment.amount_paid,
+                payment_method='Adjustment',
+                receipt_number=f"ADJ-{extra_payment.receipt_number}",
+                remarks=f"Adjustment from extra payment {extra_payment.receipt_number}",
                 verified_by=request.session['username1'],
                 status='Paid',
+                payment_type='ADJUSTMENT',
+                adjusted_in=extra_payment
             )
-            payment.save()
+            adjustment.save()
+            
+            # Update the extra payment to mark it as adjusted
+            extra_payment.adjusted_in = adjustment
+            extra_payment.save()
+            
+            # Update the student balance
+            balance = StudentBalance.objects.get(student=extra_payment.student)
+            balance.extra_amount -= extra_payment.amount_paid
+            balance.save()
             
             return JsonResponse({
                 'success': True,
-                'message': 'Payment processed successfully',
-                'receipt_number': payment.receipt_number,
-                'payment_date': payment.payment_date.strftime('%Y-%m-%d %H:%M:%S'),
-                'is_advance': is_advance
+                'message': f'Successfully adjusted ₹{extra_payment.amount_paid}',
+                'receipt_number': adjustment.receipt_number
             })
             
+        except FeePayment.DoesNotExist:
+            return JsonResponse({'error': 'Payment not found'}, status=404)
+        except StudentBalance.DoesNotExist:
+            return JsonResponse({'error': 'Student balance not found'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     
@@ -1248,3 +1542,229 @@ def get_receipt_data(request, receipt_number):
         return JsonResponse({'success': False, 'error': 'Receipt not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
+
+
+# chatting management :
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import Student, Faculty, ChatRoom, Message
+from django.contrib.auth.models import User
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from datetime import timedelta
+
+
+def chat_home(request):
+    role = request.session.get('role')
+    user_id = None
+    
+    if role == 'student':
+        user_id = request.session.get('student_college_id')
+        student = Student.objects.get(college_id=user_id)
+        faculties = Faculty.objects.all()
+        return render(request, 'student_chat.html', {
+            'student': student,
+            'faculties': faculties,
+            'role': role
+        })
+    elif role == 'faculty':
+        user_id = request.session.get('faculty_college_id')
+        faculty = Faculty.objects.get(college_id=user_id)
+        students = Student.objects.all()
+        return render(request, 'faculty_chat.html', {
+            'faculty': faculty,
+            'students': students,
+            'role': role
+        })
+    elif role == 'admin':
+        students = Student.objects.all()
+        faculties = Faculty.objects.all()
+        return render(request, 'admin_chat.html', {
+            'students': students,
+            'faculties': faculties,
+            'role': role
+        })
+    else:
+        return redirect('login')
+
+@csrf_exempt
+
+def create_chat_room(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            participant1_id = data.get('participant1')
+            participant2_id = data.get('participant2')
+            
+            # Get user objects
+            participant1 = User.objects.get(username=participant1_id)
+            participant2 = User.objects.get(username=participant2_id)
+            
+            # Create a unique room name
+            room_name = f"chat_{min(participant1_id, participant2_id)}_{max(participant1_id, participant2_id)}"
+            
+            # Check if room already exists
+            chat_room, created = ChatRoom.objects.get_or_create(
+                name=room_name,
+                defaults={'name': room_name}
+            )
+            
+            if created:
+                chat_room.participants.add(participant1, participant2)
+                
+            return JsonResponse({
+                'status': 'success',
+                'room_id': chat_room.id,
+                'room_name': room_name
+            })
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+@csrf_exempt
+
+def send_message(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            room_id = data.get('room_id')
+            sender_id = data.get('sender_id')
+            content = data.get('content')
+            
+            chat_room = ChatRoom.objects.get(id=room_id)
+            sender = User.objects.get(username=sender_id)
+            
+            message = Message.objects.create(
+                chat_room=chat_room,
+                sender=sender,
+                content=content
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'message_id': message.id,
+                'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            })
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+
+def get_messages(request, room_id):
+    try:
+        chat_room = ChatRoom.objects.get(id=room_id)
+        messages = Message.objects.filter(chat_room=chat_room).order_by('timestamp')
+        
+        messages_data = []
+        for message in messages:
+            messages_data.append({
+                'id': message.id,
+                'sender': message.sender.username,
+                'content': message.content,
+                'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                'is_read': message.is_read
+            })
+            
+            # Mark as read if recipient is current user
+            if request.user != message.sender and not message.is_read:
+                message.is_read = True
+                message.save()
+                
+        return JsonResponse({
+            'status': 'success',
+            'messages': messages_data
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+def get_chat_rooms(request):
+    try:
+        user = request.user
+        chat_rooms = user.chat_rooms.all().order_by('-created_at')
+        
+        rooms_data = []
+        for room in chat_rooms:
+            # Get other participant
+            other_participant = room.participants.exclude(id=user.id).first()
+            
+            # Get last message
+            last_message = room.messages.last()
+            
+            # Get unread count
+            unread_count = room.messages.filter(is_read=False).exclude(sender=user).count()
+            
+            rooms_data.append({
+                'id': room.id,
+                'name': room.name,
+                'other_participant': other_participant.username if other_participant else '',
+                'last_message': last_message.content if last_message else '',
+                'last_message_time': last_message.timestamp.strftime("%Y-%m-%d %H:%M:%S") if last_message else '',
+                'unread_count': unread_count
+            })
+            
+        return JsonResponse({
+            'status': 'success',
+            'chat_rooms': rooms_data
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def get_faculty_details(request):
+    if request.method == 'GET':
+        faculty_id = request.GET.get('faculty_id')
+        try:
+            faculty = Faculty.objects.get(college_id=faculty_id)
+            data = {
+                'status': 'success',
+                'faculty': {
+                    'name': faculty.name,
+                    'college_id': faculty.college_id,
+                    'email': faculty.email,
+                    'department': faculty.department,
+                    'position': faculty.position,
+                    'profile_picture': faculty.profile_picture.url if faculty.profile_picture else None,
+                    'phone': faculty.phone,
+                    'qualification': faculty.qualification,
+                    'experience': str(faculty.experience)
+                }
+            }
+            return JsonResponse(data)
+        except Faculty.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Faculty not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+@csrf_exempt
+def get_student_details(request):
+    if request.method == 'GET':
+        student_id = request.GET.get('student_id')
+        try:
+            student = Student.objects.get(college_id=student_id)
+            data = {
+                'status': 'success',
+                'student': {
+                    'name': student.name,
+                    'college_id': student.college_id,
+                    'email': student.email,
+                    'course': student.course,
+                    'semester': student.semester,
+                    'year': student.year,
+                    'profile_picture': student.profile_picture.url if student.profile_picture else None,
+                    'phone': student.phone,
+                    'address': student.address,
+                    'city': student.city,
+                    'state': student.state
+                }
+            }
+            return JsonResponse(data)
+        except Student.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Student not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})

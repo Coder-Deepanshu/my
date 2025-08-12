@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <div class="chat-header">
+            <h3><i class="fas fa-user-graduate mr-2"></i>Students</h3>
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search students..." id="studentSearch">
+            </div>
+            <div class="filter-options">
+                <select id="courseFilter">
+                    <option value="">All Courses</option>
+                    <option value="B.Tech">B.Tech</option>
+                    <option value="MBA">MBA</option>
+                    <option value="BBA">BBA</option>
+                </select>
+                <select id="semesterFilter">
+                    <option value="">All Semesters</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <!-- Add more as needed -->
+                </select>
+            </div>
+        </div>
+        <div class="student-list" id="studentList">
+            {% for student in students %}
+            <div class="student-item" 
+                 data-student-id="{{ student.college_id }}"
+                 data-course="{{ student.course }}"
+                 data-semester="{{ student.semester }}"
+                 onclick="startChat('{{ student.college_id }}')">
+                <div class="student-avatar">
+                    {% if student.profile_picture %}
+                    <img src="{{ student.profile_picture.url }}" alt="{{ student.name }}">
+                    {% else %}
+                    {{ student.name|slice:":2"|upper }}
+                    {% endif %}
+                </div>
+                <div class="student-info">
+                    <h4>{{ student.name }}</h4>
+                    <p>{{ student.course }} • Sem {{ student.semester }}</p>
+                </div>
+                <div class="student-status online"></div>
+            </div>
+            {% empty %}
+            <div class="no-results">
+                <i class="fas fa-user-slash"></i>
+                <p>No students available</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="chat-main">
+        <div class="chat-header">
+            <div class="chat-partner-info" id="chatPartnerInfo">
+                <div class="partner-avatar">
+                    <i class="fas fa-user-circle default-avatar"></i>
+                    <img src="" alt="Student" id="partnerAvatar" class="hidden">
+                </div>
+                <div class="partner-details">
+                    <h3 id="partnerName">Select a student</h3>
+                    <p id="partnerDetails">Choose from the list to start chatting</p>
+                </div>
+                <div class="partner-status offline" id="partnerStatus"></div>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="no-chat-selected">
+                <div class="empty-state">
+                    <i class="fas fa-comments"></i>
+                    <h4>No conversation selected</h4>
+                    <p>Select a student from the sidebar to begin messaging</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input" id="chatInput" style="display: none;">
+            <textarea id="messageInput" placeholder="Type your message here..." rows="1"></textarea>
+            <button id="sendButton" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript remains the same as your original code with minor UI enhancements
+    let currentRoomId = null;
+    let currentStudentId = null;
+    let currentUserId = "{{ faculty.college_id }}";
+    
+    function startChat(studentId) {
+        currentStudentId = studentId;
+        
+        // Fetch student details
+        fetch(`/get_student_details/?student_id=${studentId}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    // Update UI with student info
+                    document.getElementById('partnerName').textContent = data.student.name;
+                    document.getElementById('partnerDetails').textContent = 
+                        `${data.student.course} • Sem ${data.student.semester}`;
+                    
+                    const partnerAvatar = document.getElementById('partnerAvatar');
+                    const defaultAvatar = document.querySelector('.default-avatar');
+                    
+                    if(data.student.profile_picture) {
+                        partnerAvatar.src = data.student.profile_picture;
+                        partnerAvatar.classList.remove('hidden');
+                        defaultAvatar.classList.add('hidden');
+                    } else {
+                        partnerAvatar.classList.add('hidden');
+                        defaultAvatar.classList.remove('hidden');
+                    }
+                    
+                    // Show chat input
+                    document.getElementById('chatInput').style.display = 'flex';
+                    document.getElementById('partnerStatus').classList.remove('offline');
+                    document.getElementById('partnerStatus').classList.add('online');
+                    
+                    // Create or get chat room
+                    fetch('/create_chat_room/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({
+                            participant1: currentUserId,
+                            participant2: studentId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.status === 'success') {
+                            currentRoomId = data.room_id;
+                            loadMessages(data.room_id);
+                            
+                            // Start polling for new messages
+                            setInterval(() => {
+                                loadMessages(currentRoomId);
+                            }, 3000);
+                        }
+                    });
+                }
+            });
+    }
+    
+    function loadMessages(roomId) {
+        fetch(`/get_messages/${roomId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    const messagesContainer = document.getElementById('chatMessages');
+                    messagesContainer.innerHTML = '';
+                    
+                    if(data.messages.length === 0) {
+                        messagesContainer.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-comment-alt"></i>
+                                <h4>No messages yet</h4>
+                                <p>Send your first message to start the conversation</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    data.messages.forEach(message => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message ${message.sender === currentUserId ? 'sent' : 'received'}`;
+                        
+                        messageDiv.innerHTML = `
+                            <div class="message-content">
+                                <p>${message.content}</p>
+                                <span class="message-time">${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            </div>
+                        `;
+                        
+                        messagesContainer.appendChild(messageDiv);
+                    });
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            });
+    }
+    
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        
+        if(message && currentRoomId) {
+            fetch('/send_message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    room_id: currentRoomId,
+                    sender_id: currentUserId,
+                    content: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    messageInput.value = '';
+                    loadMessages(currentRoomId);
+                }
+            });
+        }
+    }
+    
+    // Search and filter functionality
+    function filterStudents() {
+        const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
+        const courseFilter = document.getElementById('courseFilter').value;
+        const semesterFilter = document.getElementById('semesterFilter').value;
+        
+        const studentItems = document.querySelectorAll('.student-item');
+        let hasResults = false;
+        
+        studentItems.forEach(item => {
+            const studentName = item.querySelector('h4').textContent.toLowerCase();
+            const studentCourse = item.getAttribute('data-course');
+            const studentSemester = item.getAttribute('data-semester');
+            
+            const nameMatch = studentName.includes(searchTerm);
+            const courseMatch = courseFilter === '' || studentCourse === courseFilter;
+            const semesterMatch = semesterFilter === '' || studentSemester === semesterFilter;
+            
+            if(nameMatch && courseMatch && semesterMatch) {
+                item.style.display = 'flex';
+                hasResults = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        const noResultsDiv = document.querySelector('.no-results');
+        if(!hasResults && studentItems.length > 0) {
+            if(!noResultsDiv) {
+                const studentList = document.getElementById('studentList');
+                studentList.innerHTML += `
+                    <div class="no-results">
+                        <i class="fas fa-user-slash"></i>
+                        <p>No matching students found</p>
+                    </div>
+                `;
+            }
+        } else if(noResultsDiv && hasResults) {
+            noResultsDiv.remove();
+        }
+    }
+    
+    document.getElementById('studentSearch').addEventListener('input', filterStudents);
+    document.getElementById('courseFilter').addEventListener('change', filterStudents);
+    document.getElementById('semesterFilter').addEventListener('change', filterStudents);
+    
+    // Allow pressing Enter to send message
+    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+        if(e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    // Auto-resize textarea
+    document.getElementById('messageInput').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+</script>
+{% endblock %}
