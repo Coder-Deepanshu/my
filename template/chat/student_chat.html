@@ -1,0 +1,574 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-sidebar">
+        <div class="chat-header">
+            <h3><i class="fas fa-chalkboard-teacher mr-2"></i>Faculty Members</h3>
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search faculty..." id="facultySearch">
+            </div>
+        </div>
+        <div class="faculty-list" id="facultyList">
+            {% for faculty in faculties %}
+            <div class="faculty-item" 
+                 data-faculty-id="{{ faculty.college_id }}"
+                 onclick="startChat('{{ faculty.college_id }}')">
+                <div class="faculty-avatar">
+                    {% if faculty.profile_picture %}
+                    <img src="{{ faculty.profile_picture.url }}" alt="{{ faculty.name }}">
+                    {% else %}
+                    {{ faculty.name|slice:":2"|upper }}
+                    {% endif %}
+                </div>
+                <div class="faculty-info">
+                    <h4>{{ faculty.name }}</h4>
+                    <p>{{ faculty.department }} • {{ faculty.position }}</p>
+                </div>
+                <div class="faculty-status {% if faculty.online_status %}online{% else %}offline{% endif %}"></div>
+                <span class="unread-badge" id="unread-{{ faculty.college_id }}" style="display: none;"></span>
+            </div>
+            {% empty %}
+            <div class="no-results">
+                <i class="fas fa-user-slash"></i>
+                <p>No faculty members available</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="chat-main">
+        <div class="chat-header">
+            <div class="chat-partner-info" id="chatPartnerInfo">
+                <div class="partner-avatar">
+                    <i class="fas fa-user-circle default-avatar"></i>
+                    <img src="" alt="Faculty" id="partnerAvatar" class="hidden">
+                </div>
+                <div class="partner-details">
+                    <h3 id="partnerName">Select a faculty member</h3>
+                    <p id="partnerDepartment">Choose from the list to start chatting</p>
+                </div>
+                <div class="partner-status offline" id="partnerStatus"></div>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="no-chat-selected">
+                <div class="empty-state">
+                    <i class="fas fa-comments"></i>
+                    <h4>No conversation selected</h4>
+                    <p>Select a faculty member from the sidebar to begin messaging</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input" id="chatInput" style="display: none;">
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    placeholder="Type your message here..." 
+                    rows="1"
+                    aria-label="Message input"
+                    inputmode="text"
+                ></textarea>
+                <button id="sendButton" onclick="sendMessage()" aria-label="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Chat Input Styles */
+    .chat-input {
+        padding: 10px;
+        background: #f5f5f5;
+        border-top: 1px solid #ddd;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .input-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #messageInput {
+        flex: 1;
+        min-height: 40px;
+        max-height: 120px;
+        padding: 10px 15px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        resize: none;
+        font-size: 16px;
+        line-height: 1.4;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    #messageInput:focus {
+        outline: none;
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+    }
+
+    #sendButton {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #4a90e2;
+        color: white;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    #sendButton:active {
+        background-color: #3a7bc8;
+    }
+
+    .message-status {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-top: 5px;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: #777;
+        margin-right: 5px;
+    }
+
+    .read-receipt {
+        font-size: 0.7rem;
+        margin-left: 5px;
+    }
+
+    .read-receipt.sent {
+        color: #999;
+    }
+
+    .read-receipt.delivered {
+        color: #666;
+    }
+
+    .read-receipt.read {
+        color: #4CAF50;
+    }
+
+    .unread-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #f44336;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+    }
+
+    .faculty-item {
+        position: relative;
+    }
+
+    .has-unread {
+        background-color: rgba(244, 67, 54, 0.1);
+    }
+
+    /* Mobile-specific fixes */
+    @media (max-width: 768px) {
+        .chat-input {
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+        
+        #messageInput {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<script>
+    let currentRoomId = null;
+    let currentFacultyId = null;
+    let currentUserId = "student_{{ student.college_id }}";
+    let messagePollingInterval;
+    let chatRoomPollingInterval;
+    let lastUpdateTimestamp = null;
+
+    // Initialize chat when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update user status to online
+        updateUserStatus(true);
+        
+        // Start polling for chat rooms
+        loadChatRooms();
+        chatRoomPollingInterval = setInterval(loadChatRooms, 5000);
+        
+        // Handle window close or tab switch
+        window.addEventListener('beforeunload', function() {
+            updateUserStatus(false);
+            clearIntervals();
+        });
+        
+        // Handle visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                updateUserStatus(true);
+                loadMessages(); // Immediate refresh when coming back
+            } else {
+                updateUserStatus(false);
+            }
+        });
+
+        // Focus input when chat container is clicked
+        document.getElementById('chatInput').addEventListener('click', function(e) {
+            if (e.target === this) {
+                focusMessageInput();
+            }
+        });
+    });
+
+    function clearIntervals() {
+        clearInterval(messagePollingInterval);
+        clearInterval(chatRoomPollingInterval);
+    }
+
+    function updateUserStatus(isOnline) {
+        fetch('/update_user_status/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                user_type: 'student',
+                college_id: '{{ student.college_id }}',
+                is_online: isOnline
+            })
+        });
+    }
+
+    function focusMessageInput() {
+        const messageInput = document.getElementById('messageInput');
+        messageInput.focus();
+        
+        // Scroll to bottom when input is focused
+        setTimeout(() => {
+            window.scrollTo(0, document.body.scrollHeight);
+        }, 100);
+    }
+
+    function startChat(facultyId) {
+        currentFacultyId = facultyId;
+        const facultyIdentifier = `faculty_${facultyId}`;
+        
+        // Clear any existing polling
+        clearInterval(messagePollingInterval);
+        
+        // Fetch faculty details
+        fetch(`/get_faculty_details/?faculty_id=${facultyId}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    // Update UI with faculty info
+                    document.getElementById('partnerName').textContent = data.faculty.name;
+                    document.getElementById('partnerDepartment').textContent = 
+                        `${data.faculty.department} • ${data.faculty.position}`;
+                    
+                    // Update online status
+                    const statusElement = document.getElementById('partnerStatus');
+                    statusElement.classList.remove('online', 'offline');
+                    statusElement.classList.add(data.faculty.online_status ? 'online' : 'offline');
+                    
+                    // Show chat input
+                    const chatInput = document.getElementById('chatInput');
+                    chatInput.style.display = 'flex';
+                    setTimeout(focusMessageInput, 100);
+                    
+                    // Create or get chat room
+                    fetch('/create_chat_room/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken()
+                        },
+                        body: JSON.stringify({
+                            participant1: currentUserId,
+                            participant2: facultyIdentifier
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.status === 'success') {
+                            currentRoomId = data.room_id;
+                            lastUpdateTimestamp = null;
+                            loadMessages();
+                            
+                            // Start polling for new messages
+                            messagePollingInterval = setInterval(loadMessages, 2000);
+                            
+                            // Mark messages as read
+                            markMessagesAsRead();
+                            
+                            // Clear unread badge
+                            const unreadBadge = document.getElementById(`unread-${facultyId}`);
+                            if (unreadBadge) {
+                                unreadBadge.style.display = 'none';
+                            }
+                        }
+                    });
+                }
+            });
+    }
+
+    function loadMessages() {
+        if (!currentRoomId) return;
+        
+        let url = `/get_messages/${currentRoomId}/?current_user=${currentUserId}`;
+        if (lastUpdateTimestamp) {
+            url += `&since=${lastUpdateTimestamp}`;
+        }
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    lastUpdateTimestamp = data.last_update;
+                    
+                    const messagesContainer = document.getElementById('chatMessages');
+                    const wasAtBottom = isScrolledToBottom(messagesContainer);
+                    
+                    // Process new messages only
+                    const newMessages = data.messages.filter(msg => 
+                        !document.querySelector(`.message[data-message-id="${msg.id}"]`)
+                    );
+                    
+                    if (newMessages.length > 0) {
+                        newMessages.forEach(message => {
+                            const messageDiv = createMessageElement(message);
+                            messagesContainer.appendChild(messageDiv);
+                        });
+                        
+                        if (wasAtBottom) {
+                            scrollToBottom(messagesContainer);
+                        }
+                        
+                        // Play notification sound for new received messages
+                        if (newMessages.some(msg => msg.sender !== currentUserId)) {
+                            playNotificationSound();
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading messages:', error);
+                // Retry after delay if error occurs
+                setTimeout(loadMessages, 2000);
+            });
+    }
+
+    function isScrolledToBottom(element) {
+        return element.scrollHeight - element.scrollTop <= element.clientHeight + 50;
+    }
+
+    function scrollToBottom(element) {
+        element.scrollTop = element.scrollHeight;
+    }
+
+    function createMessageElement(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${message.sender === currentUserId ? 'sent' : 'received'}`;
+        messageDiv.setAttribute('data-message-id', message.id);
+        
+        // Add read receipt if sent by current user
+        let readReceipt = '';
+        if (message.sender === currentUserId) {
+            if (message.is_read) {
+                readReceipt = '<span class="read-receipt read"><i class="fas fa-check-double"></i></span>';
+            } else if (message.is_delivered) {
+                readReceipt = '<span class="read-receipt delivered"><i class="fas fa-check-double"></i></span>';
+            } else {
+                readReceipt = '<span class="read-receipt sent"><i class="fas fa-check"></i></span>';
+            }
+        }
+        
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <p>${message.content}</p>
+                <div class="message-status">
+                    <span class="message-time">${new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    ${readReceipt}
+                </div>
+            </div>
+        `;
+        
+        return messageDiv;
+    }
+
+    function playNotificationSound() {
+        // Only play if window is not focused
+        if (!document.hasFocus()) {
+            const audio = new Audio('{% static "notification.mp3" %}');
+            audio.play().catch(e => console.log('Audio play failed:', e));
+        }
+    }
+
+    function markMessagesAsRead() {
+        if (!currentRoomId) return;
+        
+        fetch('/mark_messages_as_read/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({
+                room_id: currentRoomId,
+                reader_id: currentUserId
+            })
+        });
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        
+        if(message && currentRoomId) {
+            fetch('/send_message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    room_id: currentRoomId,
+                    sender_id: currentUserId,
+                    content: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+                    loadMessages();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }
+
+    function loadChatRooms() {
+        fetch(`/get_chat_rooms/${currentUserId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    const facultyList = document.getElementById('facultyList');
+                    facultyList.innerHTML = '';
+                    
+                    if(data.chat_rooms.length === 0) {
+                        facultyList.innerHTML = `
+                            <div class="no-results">
+                                <i class="fas fa-user-slash"></i>
+                                <p>No conversations yet</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    data.chat_rooms.forEach(room => {
+                        const facultyId = room.other_participant.replace('faculty_', '');
+                        const facultyItem = document.createElement('div');
+                        facultyItem.className = `faculty-item ${room.unread_count > 0 ? 'has-unread' : ''}`;
+                        facultyItem.setAttribute('data-faculty-id', facultyId);
+                        facultyItem.onclick = () => startChat(facultyId);
+                        
+                        facultyItem.innerHTML = `
+                            <div class="faculty-avatar">
+                                ${room.participant_name.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div class="faculty-info">
+                                <h4>${room.participant_name}</h4>
+                                <p>${room.last_message || 'No messages yet'}</p>
+                            </div>
+                            <div class="faculty-status ${room.is_online ? 'online' : 'offline'}"></div>
+                            ${room.unread_count > 0 ? `<span class="unread-badge" id="unread-${facultyId}">${room.unread_count}</span>` : ''}
+                        `;
+                        
+                        facultyList.appendChild(facultyItem);
+                    });
+                }
+            });
+    }
+
+    // Helper function to get CSRF token
+    function getCSRFToken() {
+        const cookieValue = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+        return cookieValue ? cookieValue.pop() : '';
+    }
+
+    // Search functionality
+    document.getElementById('facultySearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const facultyItems = document.querySelectorAll('.faculty-item');
+        let hasResults = false;
+        
+        facultyItems.forEach(item => {
+            const facultyName = item.querySelector('h4').textContent.toLowerCase();
+            if(facultyName.includes(searchTerm)) {
+                item.style.display = 'flex';
+                hasResults = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        const noResultsDiv = document.querySelector('.no-results');
+        if(!hasResults && facultyItems.length > 0) {
+            if(!noResultsDiv) {
+                const facultyList = document.getElementById('facultyList');
+                facultyList.innerHTML += `
+                    <div class="no-results">
+                        <i class="fas fa-user-slash"></i>
+                        <p>No matching faculty found</p>
+                    </div>
+                `;
+            }
+        } else if(noResultsDiv && hasResults) {
+            noResultsDiv.remove();
+        }
+    });
+
+    // Allow pressing Enter to send message
+    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+        if(e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Auto-resize textarea
+    document.getElementById('messageInput').addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+</script>
+{% endblock %}

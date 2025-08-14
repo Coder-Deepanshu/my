@@ -463,6 +463,181 @@
                 padding: 12px 15px;
             }
         }
+        /* Chat message styling */
+.message {
+    margin: 10px 0;
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 18px;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.message.sent {
+    background-color: var(--primary-color);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 2px;
+}
+
+.message.received {
+    background-color: #f1f1f1;
+    color: #333;
+    margin-right: auto;
+    border-bottom-left-radius: 2px;
+}
+
+.message-time {
+    display: block;
+    font-size: 0.7rem;
+    opacity: 0.8;
+    margin-top: 5px;
+    text-align: right;
+}
+
+.message.sent .message-time {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Chat container layout */
+.chat-container {
+    display: flex;
+    height: calc(100vh - 60px); /* Adjust based on your header height */
+}
+
+.chat-sidebar {
+    width: 300px;
+    border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
+}
+
+.chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+}
+
+.chat-input {
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+    background-color: white;
+}
+
+.chat-input textarea {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    padding: 10px 15px;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+}
+
+/* User list items */
+.user-item, .student-item, .faculty-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.user-item:hover, .student-item:hover, .faculty-item:hover {
+    background-color: #f5f5f5;
+}
+
+.user-avatar, .student-avatar, .faculty-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    overflow: hidden;
+}
+
+.user-avatar img, .student-avatar img, .faculty-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-status, .student-status, .faculty-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: auto;
+}
+
+.online {
+    background-color: #4CAF50;
+}
+
+.offline {
+    background-color: #9E9E9E;
+}
+/* Add to your CSS file */
+.message-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: #777;
+    margin-right: 5px;
+}
+
+.read-receipt {
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+.read-receipt.sent {
+    color: #999;
+}
+
+.read-receipt.delivered {
+    color: #666;
+}
+
+.read-receipt.read {
+    color: #4CAF50;
+}
+
+.unread-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #f44336;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+
+.faculty-item {
+    position: relative;
+}
+
+.has-unread {
+    background-color: rgba(244, 67, 54, 0.1);
+}
     </style>
     <!-- Font Awesome for icons (using CDN) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

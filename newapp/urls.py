@@ -50,10 +50,10 @@ urlpatterns = [
     path('get_receipt_data/<str:receipt_number>/', views.get_receipt_data, name='get_receipt_data'),
 
     path('chat_home/', views.chat_home, name='chat_home'),
-    path('create_chat_room/', views.create_chat_room, name='create_chat_room'),
+     path('create_chat_room/', views.create_chat_room, name='create_chat_room'),
     path('send_message/', views.send_message, name='send_message'),
     path('get_messages/<int:room_id>/', views.get_messages, name='get_messages'),
-    path('get_chat_rooms/', views.get_chat_rooms, name='get_chat_rooms'),
+    path('get_chat_rooms/<str:participant_id>/', views.get_chat_rooms, name='get_chat_rooms'),
     path('get_faculty_details/', views.get_faculty_details, name='get_faculty_details'),
     path('get_student_details/', views.get_student_details, name='get_student_details'),
     

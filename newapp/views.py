@@ -1565,7 +1565,7 @@ def chat_home(request):
         user_id = request.session.get('student_college_id')
         student = Student.objects.get(college_id=user_id)
         faculties = Faculty.objects.all()
-        return render(request, 'student_chat.html', {
+        return render(request, 'chat/student_chat.html', {
             'student': student,
             'faculties': faculties,
             'role': role
@@ -1574,7 +1574,7 @@ def chat_home(request):
         user_id = request.session.get('faculty_college_id')
         faculty = Faculty.objects.get(college_id=user_id)
         students = Student.objects.all()
-        return render(request, 'faculty_chat.html', {
+        return render(request, 'chat/faculty_chat.html', {
             'faculty': faculty,
             'students': students,
             'role': role
@@ -1582,7 +1582,7 @@ def chat_home(request):
     elif role == 'admin':
         students = Student.objects.all()
         faculties = Faculty.objects.all()
-        return render(request, 'admin_chat.html', {
+        return render(request, 'chat/admin_chat.html', {
             'students': students,
             'faculties': faculties,
             'role': role
@@ -1590,30 +1590,33 @@ def chat_home(request):
     else:
         return redirect('login')
 
-@csrf_exempt
 
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import ChatRoom, Message, Student, Faculty
+
+@csrf_exempt
 def create_chat_room(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            participant1_id = data.get('participant1')
-            participant2_id = data.get('participant2')
-            
-            # Get user objects
-            participant1 = User.objects.get(username=participant1_id)
-            participant2 = User.objects.get(username=participant2_id)
+            participant1 = data.get('participant1')
+            participant2 = data.get('participant2')
             
             # Create a unique room name
-            room_name = f"chat_{min(participant1_id, participant2_id)}_{max(participant1_id, participant2_id)}"
+            room_name = f"chat_{min(participant1, participant2)}_{max(participant1, participant2)}"
             
             # Check if room already exists
             chat_room, created = ChatRoom.objects.get_or_create(
                 name=room_name,
-                defaults={'name': room_name}
+                defaults={
+                    'name': room_name,
+                    'participant1': participant1,
+                    'participant2': participant2
+                }
             )
-            
-            if created:
-                chat_room.participants.add(participant1, participant2)
                 
             return JsonResponse({
                 'status': 'success',
@@ -1623,100 +1626,7 @@ def create_chat_room(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
-
-@csrf_exempt
-
-def send_message(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            room_id = data.get('room_id')
-            sender_id = data.get('sender_id')
-            content = data.get('content')
-            
-            chat_room = ChatRoom.objects.get(id=room_id)
-            sender = User.objects.get(username=sender_id)
-            
-            message = Message.objects.create(
-                chat_room=chat_room,
-                sender=sender,
-                content=content
-            )
-            
-            return JsonResponse({
-                'status': 'success',
-                'message_id': message.id,
-                'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-            })
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
-
-
-def get_messages(request, room_id):
-    try:
-        chat_room = ChatRoom.objects.get(id=room_id)
-        messages = Message.objects.filter(chat_room=chat_room).order_by('timestamp')
-        
-        messages_data = []
-        for message in messages:
-            messages_data.append({
-                'id': message.id,
-                'sender': message.sender.username,
-                'content': message.content,
-                'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                'is_read': message.is_read
-            })
-            
-            # Mark as read if recipient is current user
-            if request.user != message.sender and not message.is_read:
-                message.is_read = True
-                message.save()
-                
-        return JsonResponse({
-            'status': 'success',
-            'messages': messages_data
-        })
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
-
-
-def get_chat_rooms(request):
-    try:
-        user = request.user
-        chat_rooms = user.chat_rooms.all().order_by('-created_at')
-        
-        rooms_data = []
-        for room in chat_rooms:
-            # Get other participant
-            other_participant = room.participants.exclude(id=user.id).first()
-            
-            # Get last message
-            last_message = room.messages.last()
-            
-            # Get unread count
-            unread_count = room.messages.filter(is_read=False).exclude(sender=user).count()
-            
-            rooms_data.append({
-                'id': room.id,
-                'name': room.name,
-                'other_participant': other_participant.username if other_participant else '',
-                'last_message': last_message.content if last_message else '',
-                'last_message_time': last_message.timestamp.strftime("%Y-%m-%d %H:%M:%S") if last_message else '',
-                'unread_count': unread_count
-            })
-            
-        return JsonResponse({
-            'status': 'success',
-            'chat_rooms': rooms_data
-        })
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-
+    
 @csrf_exempt
 def get_faculty_details(request):
     if request.method == 'GET':
@@ -1768,3 +1678,187 @@ def get_student_details(request):
         except Student.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Student not found'})
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.db.models import Q
+from .models import ChatRoom, Message, Student, Faculty
+from django.utils import timezone
+
+@csrf_exempt
+def update_user_status(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            user_type = data.get('user_type')
+            college_id = data.get('college_id')
+            is_online = data.get('is_online', True)
+            
+            if user_type == 'student':
+                student = Student.objects.get(college_id=college_id)
+                student.online_status = is_online
+                student.last_seen = timezone.now()
+                student.save()
+            elif user_type == 'faculty':
+                faculty = Faculty.objects.get(college_id=college_id)
+                faculty.online_status = is_online
+                faculty.last_seen = timezone.now()
+                faculty.save()
+            
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+@csrf_exempt
+def send_message(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            room_id = data.get('room_id')
+            sender_id = data.get('sender_id')
+            content = data.get('content').strip()
+            
+            if not content:
+                return JsonResponse({'status': 'error', 'message': 'Message cannot be empty'})
+            
+            try:
+                chat_room = ChatRoom.objects.get(id=room_id)
+                
+                # Verify sender is a participant
+                if sender_id not in [chat_room.participant1, chat_room.participant2]:
+                    return JsonResponse({'status': 'error', 'message': 'Not a room participant'})
+                
+                message = Message.objects.create(
+                    chat_room=chat_room,
+                    sender_id=sender_id,
+                    content=content
+                )
+                
+                # Update room last activity
+                chat_room.last_activity = timezone.now()
+                chat_room.save()
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'message_id': message.id,
+                    'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+                })
+                
+            except ChatRoom.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Chat room does not exist'})
+                
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+def get_messages(request, room_id):
+    try:
+        chat_room = ChatRoom.objects.get(id=room_id)
+        current_user = request.GET.get('current_user')
+        
+        # Mark undelivered messages as delivered
+        undelivered_messages = Message.objects.filter(
+            chat_room=chat_room,
+            is_delivered=False
+        ).exclude(sender_id=current_user)
+        
+        # Update delivery status and timestamps
+        undelivered_messages.update(
+            is_delivered=True,
+            timestamp=timezone.now()  # Refresh timestamp on delivery
+        )
+        
+        messages = Message.objects.filter(chat_room=chat_room).order_by('timestamp')
+        
+        messages_data = []
+        for message in messages:
+            messages_data.append({
+                'id': message.id,
+                'sender': message.sender_id,
+                'content': message.content,
+                'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                'is_delivered': message.is_delivered,
+                'is_read': message.is_read
+            })
+            
+        return JsonResponse({
+            'status': 'success',
+            'messages': messages_data,
+            'last_update': timezone.now().strftime("%Y-%m-%d %H:%M:%S")
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+@csrf_exempt
+def mark_messages_as_read(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            room_id = data.get('room_id')
+            reader_id = data.get('reader_id')
+            
+            # Mark messages as read where reader is not the sender
+            Message.objects.filter(
+                chat_room_id=room_id,
+                is_read=False
+            ).exclude(sender_id=reader_id).update(is_read=True)
+            
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+def get_chat_rooms(request, participant_id):
+    try:
+        chat_rooms = ChatRoom.objects.filter(
+            Q(participant1=participant_id) | 
+            Q(participant2=participant_id)
+        ).order_by('-last_activity')
+        
+        rooms_data = []
+        for room in chat_rooms:
+            other_participant = room.get_other_participant(participant_id)
+            
+            # Get participant details
+            if other_participant.startswith('student_'):
+                college_id = other_participant.replace('student_', '')
+                participant = Student.objects.get(college_id=college_id)
+                name = participant.name
+                status = participant.online_status
+                last_seen = participant.last_seen
+            else:
+                college_id = other_participant.replace('faculty_', '')
+                participant = Faculty.objects.get(college_id=college_id)
+                name = participant.name
+                status = participant.online_status
+                last_seen = participant.last_seen
+            
+            # Get last message
+            last_message = room.messages.last()
+            
+            # Get unread count
+            unread_count = room.messages.filter(
+                is_read=False,
+                is_delivered=True
+            ).exclude(sender_id=participant_id).count()
+            
+            rooms_data.append({
+                'id': room.id,
+                'name': room.name,
+                'other_participant': other_participant,
+                'participant_name': name,
+                'is_online': status,
+                'last_seen': last_seen.strftime("%Y-%m-%d %H:%M:%S") if last_seen else None,
+                'last_message': last_message.content if last_message else '',
+                'last_message_time': last_message.timestamp.strftime("%Y-%m-%d %H:%M:%S") if last_message else '',
+                'unread_count': unread_count
+            })
+            
+        return JsonResponse({
+            'status': 'success',
+            'chat_rooms': rooms_data
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})

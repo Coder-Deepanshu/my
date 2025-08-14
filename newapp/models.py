@@ -77,6 +77,14 @@ class Student(models.Model):
     user_id=models.CharField(max_length=10)
     username=models.EmailField()
     password=models.CharField(max_length=15)
+    chat_identifier = models.CharField(max_length=100, unique=True)
+    online_status = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if not self.chat_identifier:
+            self.chat_identifier = f"student_{self.college_id}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.college_id})"
@@ -161,6 +169,15 @@ class Faculty(models.Model):
     user_id=models.CharField(max_length=50,null=True,)
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
+    chat_identifier = models.CharField(max_length=100, unique=True)
+    online_status = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if not self.chat_identifier:
+            self.chat_identifier = f"faculty_{self.college_id}"
+        super().save(*args, **kwargs)
+
 
     def _str_(self):
         return self.name
@@ -407,29 +424,33 @@ class StudentBalance(models.Model):
     def __str__(self):
         return f"{self.student.name} - Extra: {self.extra_amount}, Advance: {self.advance_amount}"
     
-# for chat management student- faculty:
-
-from django.db import models
-from django.utils import timezone
-
 class ChatRoom(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    participants = models.ManyToManyField('auth.User', related_name='chat_rooms')
+    participant1 = models.CharField(max_length=100)
+    participant2 = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
+    last_activity = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
+    def get_other_participant(self, current_participant):
+        return self.participant2 if self.participant1 == current_participant else self.participant1
+
 class Message(models.Model):
     chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
-    sender = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    sender_id = models.CharField(max_length=100)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    is_delivered = models.BooleanField(default=False)
     is_read = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['timestamp']
+        indexes = [
+            models.Index(fields=['chat_room', 'is_delivered']),
+            models.Index(fields=['chat_room', 'is_read']),
+            models.Index(fields=['timestamp']),
+        ]
 
     def __str__(self):
-        return f"Message from {self.sender.username} in {self.chat_room.name}"
+        return f"Message from {self.sender_id} in {self.chat_room.name}"

@@ -81,8 +81,8 @@ class ChatRoomAdmin(admin.ModelAdmin):
     
 @admin.register(Message)
 class Message_Student_faculty(admin.ModelAdmin):
-    list_display=('chat_room','sender','content')
-    search_fields=('chat_room','sender',)
+    list_display=('chat_room','sender_id','content')
+    search_fields=('chat_room','sender_id',)
 
 
 
