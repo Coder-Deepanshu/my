@@ -1,0 +1,55 @@
+{% for student in students %}
+<div class="admin-card">
+    <div class="card-header">
+        <div class="header-text">
+            <h3>{{ student.name }}</h3>
+            <p>{{ student.course }} - Semester {{ student.semester }}</p>
+        </div>
+        {% if student.profile_picture %}
+        <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="admin-image">
+        {% else %}
+        <img src="https://via.placeholder.com/80" alt="Student Photo" class="admin-image">
+        {% endif %}
+        <div class="online-status {% if student.online_status %}online{% else %}offline{% endif %}"></div>
+    </div>
+    <div class="card-body">
+        <div class="admin-detail">
+            <i class="fas fa-envelope"></i>
+            <span class="detail-label">Email:</span>
+            <span class="detail-value">{{ student.email }}</span>
+        </div>
+        <div class="admin-detail">
+            <i class="fas fa-phone"></i>
+            <span class="detail-label">Phone:</span>
+            <span class="detail-value">+91 {{ student.phone }}</span>
+        </div>
+        <div class="admin-detail">
+            <i class="fas fa-id-badge"></i>
+            <span class="detail-label">Student ID:</span>
+            <span class="detail-value">{{ student.college_id }}</span>
+        </div>
+        <div class="admin-detail">
+            <i class="fas fa-graduation-cap"></i>
+            <span class="detail-label">Course:</span>
+            <span class="detail-value">{{ student.course }}</span>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="admin-status {% if student.online_status %}active{% else %}inactive{% endif %}">
+            <span class="status-indicator"></span>
+            <span class="status-value">
+                {% if student.online_status %}Online{% else %}Offline{% endif %}
+            </span>
+        </div>
+        <div class="admin-actions">
+            <a href="{% url 'chat_home' %}?student_id={{ student.college_id }}" class="action-btn" title="Message">
+                <i class="fas fa-comment-alt"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="no-students">
+    <p>No students found matching your filters</p>
+</div>
+{% endfor %}

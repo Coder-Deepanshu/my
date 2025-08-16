@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q, Sum
 from .models import Student, Faculty, Course, Attendance # Import the new Attendance model
@@ -847,14 +847,7 @@ def save_attendance(request):
             
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.contrib import messages
-from .models import Student, Attendance
-from django.db.models import Count, Q
 from datetime import datetime
-
 def student_attendance_view(request):
     if not request.session.get('student_college_id'):
         messages.error(request, "Please login as student first")
@@ -942,7 +935,6 @@ def get_student_attendance(request):
 # FOR FEES MANAGEMENT OF STUDENT
 from django.db.models import Sum, Q
 from django.db.models.functions import Coalesce
-from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import DecimalField
 from decimal import Decimal
@@ -1178,6 +1170,7 @@ def get_course_details(request):
         except Course.DoesNotExist:
             return JsonResponse({'error': 'Course not found'}, status=404)
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 # for sending fees details to the student detail template
 from django.db.models import Sum, Q, F, DecimalField
@@ -1542,21 +1535,10 @@ def get_receipt_data(request, receipt_number):
         return JsonResponse({'success': False, 'error': 'Receipt not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
-    
-
 
 # chatting management :
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from .models import Student, Faculty, ChatRoom, Message
-from django.contrib.auth.models import User
-import json
-from django.views.decorators.csrf import csrf_exempt
-from django.utils import timezone
-from datetime import timedelta
-
-
+# Update your chat_home view in views.py
 def chat_home(request):
     role = request.session.get('role')
     user_id = None
@@ -1564,38 +1546,251 @@ def chat_home(request):
     if role == 'student':
         user_id = request.session.get('student_college_id')
         student = Student.objects.get(college_id=user_id)
-        faculties = Faculty.objects.all()
-        return render(request, 'chat/student_chat.html', {
-            'student': student,
-            'faculties': faculties,
-            'role': role
-        })
+        faculty_id = request.GET.get('faculty_id')
+        
+        if not faculty_id:
+            return redirect('faculty_filtering')  # Redirect if no faculty selected
+            
+        try:
+            faculty = Faculty.objects.get(college_id=faculty_id)
+            # Check if student follows this faculty
+            if faculty not in student.followed_faculty.all():
+                messages.error(request, "You must follow this faculty first")
+                return redirect('faculty_filtering')
+                
+            return render(request, 'chat/chat1.html', {
+                'current_user': student,
+                'other_user': faculty,
+                'role': role
+            })
+        except Faculty.DoesNotExist:
+            messages.error(request, "Faculty not found")
+            return redirect('faculty_filtering')
+            
     elif role == 'faculty':
         user_id = request.session.get('faculty_college_id')
         faculty = Faculty.objects.get(college_id=user_id)
-        students = Student.objects.all()
-        return render(request, 'chat/faculty_chat.html', {
-            'faculty': faculty,
-            'students': students,
-            'role': role
-        })
+        student_id = request.GET.get('student_id')
+        
+        if not student_id:
+            # Show faculty's student list for selection
+            students = Student.objects.filter(followed_faculty=faculty)
+            return render(request, 'chat/page2.html', {
+                'faculty': faculty,
+                'students': students,
+                'role': role
+            })
+            
+        try:
+            student = Student.objects.get(college_id=student_id)
+            # Check if student follows this faculty
+            if faculty not in student.followed_faculty.all():
+                messages.error(request, "This student doesn't follow you")
+                return redirect('faculty_student_list')
+                
+            return render(request, 'chat/chat2.html', {
+                'current_user': faculty,
+                'other_user': student,
+                'role': role
+            })
+        except Student.DoesNotExist:
+            messages.error(request, "Student not found")
+            return redirect('faculty_student_list')
+            
     elif role == 'admin':
-        students = Student.objects.all()
-        faculties = Faculty.objects.all()
-        return render(request, 'chat/admin_chat.html', {
-            'students': students,
-            'faculties': faculties,
-            'role': role
-        })
+        # Admin chat logic remains same
+        pass
     else:
         return redirect('login')
 
+ # for get all faculty details 
+@csrf_exempt
+def get_faculty_details(request):
+    role = request.session.get('role')
 
+    if role == 'student':
+        try:
+            department = Course.objects.all()
+            all_faculty = Faculty.objects.all()
+            
+            # Check which faculty are followed by the student
+            student_id = request.session.get('student_college_id')
+            followed_faculty = []
+            if student_id:
+                student = Student.objects.get(college_id=student_id)
+                followed_faculty = student.followed_faculty.all().values_list('college_id', flat=True)
+            
+            return render(request, ['chat/page.html','faculty/faculty_page.html'], {
+                'faculty': all_faculty,
+                'department': department,
+                'followed_faculty': followed_faculty
+            })
+        except Faculty.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Faculty not found'})
+
+# for faculty filtering
+def faculty_filtering(request):
+    if not request.session.get('student_college_id'):
+        messages.error(request, "Please login as student first")
+        return redirect('login')
+        
+    filters = {
+        'department': request.GET.get('department', 'all'),
+        'name': request.GET.get('name', '')
+    }
+
+    faculty = Faculty.objects.all()
+    
+    if filters['department'] != 'all':
+        faculty = faculty.filter(department=filters['department'])
+    if filters['name']:
+        faculty = faculty.filter(name__icontains=filters['name'])
+
+    # Check which faculty are followed by the student
+    student_id = request.session.get('student_college_id')
+    followed_faculty = []
+    if student_id:
+        student = Student.objects.get(college_id=student_id)
+        followed_faculty = student.followed_faculty.all().values_list('college_id', flat=True)
+
+    html = render_to_string('chat/faculty_list_partial.html', {
+        'faculty_detail': faculty,
+        'followed_faculty': followed_faculty
+    })
+    return JsonResponse({'html': html})
+
+from django.urls import reverse  # Add this import
+@csrf_exempt
+def toggle_follow(request):
+    if request.method == 'POST':
+        try:
+            faculty_id = request.POST.get('faculty_id')
+            student_id = request.session.get('student_college_id')
+            
+            if not student_id:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Student not logged in',
+                    'redirect': reverse('login')
+                })
+            
+            faculty = Faculty.objects.get(college_id=faculty_id)
+            student = Student.objects.get(college_id=student_id)
+            
+            if faculty in student.followed_faculty.all():
+                student.followed_faculty.remove(faculty)
+                is_following = False
+                message = 'Successfully unfollowed faculty'
+            else:
+                student.followed_faculty.add(faculty)
+                is_following = True
+                message = 'Successfully followed faculty'
+                
+            return JsonResponse({
+                'status': 'success',
+                'is_following': is_following,
+                'faculty_id': faculty_id,
+                'message': message
+            })
+            
+        except Faculty.DoesNotExist:
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'Faculty not found'
+            }, status=404)
+        except Student.DoesNotExist:
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'Student not found',
+                'redirect': reverse('login')
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error', 
+                'message': str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        'status': 'error', 
+        'message': 'Invalid request method'
+    }, status=400)
+
+# for sending all info about al students for faculty portal
+def faculty_student_list(request):
+    if not request.session.get('faculty_college_id'):
+        messages.error(request, "Please login as faculty first")
+        return redirect('login')
+    
+    try:
+        name = Course.objects.all()
+        faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
+        students = Student.objects.filter(followed_faculty=faculty)
+     
+        
+        return render(request, 'chat/page2.html', {
+            'faculty': faculty,
+            'students': students,
+            'name': name,
+            'role': 'faculty'
+        })
+    except Faculty.DoesNotExist:
+        messages.error(request, "Faculty not found")
+        return redirect('login')
+
+def send_course_details(request):
+    course_name = request.GET.get('course')
+    try:
+        course = Course.objects.get(name=course_name)
+        return JsonResponse({
+            'no_of_years': course.no_of_years,
+            'no_of_semesters': course.no_of_semesters
+        })
+    except Course.DoesNotExist:
+        return JsonResponse({'error': 'Course not found'}, status=404)
+
+def student_filter_details(request):
+    if not request.session.get('faculty_college_id'):
+        return JsonResponse({'status': 'error', 'message': 'Please login as faculty first'})
+        
+    try:
+        faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
+        students = Student.objects.filter(followed_faculty=faculty)
+        
+        filters = {
+            'course': request.GET.get('course', 'all'),
+            'year': request.GET.get('year', 'all'),
+            'semester': request.GET.get('semester', 'all'),
+            'college_id': request.GET.get('college_id', '')
+        }
+
+        if filters['course'] != 'all':
+            students = students.filter(course=filters['course'])
+        if filters['year'] != 'all':
+            students = students.filter(year=filters['year'])
+        if filters['semester'] != 'all':
+            students = students.filter(semester=filters['semester'])
+        if filters['college_id']:
+            students = students.filter(college_id__icontains=filters['college_id'])
+
+        html = render_to_string('chat/student_list_partial.html', {
+            'students': students
+        })
+        return JsonResponse({'html': html})
+        
+    except Faculty.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Faculty not found'})
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
+from django.utils import timezone
 from .models import ChatRoom, Message, Student, Faculty
+import json
+from django.db.models import Q
+import logging
+from django.core.cache import cache
+from django.shortcuts import get_object_or_404
+
+logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def create_chat_room(request):
@@ -1605,111 +1800,109 @@ def create_chat_room(request):
             participant1 = data.get('participant1')
             participant2 = data.get('participant2')
             
-            # Create a unique room name
-            room_name = f"chat_{min(participant1, participant2)}_{max(participant1, participant2)}"
-            
             # Check if room already exists
-            chat_room, created = ChatRoom.objects.get_or_create(
-                name=room_name,
-                defaults={
-                    'name': room_name,
-                    'participant1': participant1,
-                    'participant2': participant2
-                }
-            )
-                
+            room = ChatRoom.objects.filter(
+                Q(participant1=participant1, participant2=participant2) |
+                Q(participant1=participant2, participant2=participant1)
+            ).first()
+
+            if not room:
+                room = ChatRoom.objects.create(
+                    name=f"Chat between {participant1} and {participant2}",
+                    participant1=participant1,
+                    participant2=participant2
+                )
+
             return JsonResponse({
                 'status': 'success',
-                'room_id': chat_room.id,
-                'room_name': room_name
+                'room_id': str(room.id),
+                'message': 'Chat room ready'
             })
+
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
-    
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
 @csrf_exempt
-def get_faculty_details(request):
-    if request.method == 'GET':
-        faculty_id = request.GET.get('faculty_id')
+def get_messages(request, room_id):
+    try:
+        current_user = request.GET.get('current_user')
+        if not current_user:
+            return JsonResponse({'status': 'error', 'message': 'current_user parameter missing'}, status=400)
+
         try:
+            chat_room = ChatRoom.objects.get(id=room_id)
+        except ChatRoom.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Chat room not found'}, status=404)
+
+        # Verify user is participant
+        if current_user not in [chat_room.participant1, chat_room.participant2]:
+            return JsonResponse({'status': 'error', 'message': 'Not a participant'}, status=403)
+
+        # Get last message ID if provided
+        last_message_id = request.GET.get('last_message_id')
+        
+        # Get messages after last_message_id if provided, otherwise get all
+        if last_message_id:
+            messages = Message.objects.filter(
+                chat_room=chat_room,
+                id__gt=last_message_id
+            ).order_by('timestamp')
+        else:
+            messages = Message.objects.filter(chat_room=chat_room).order_by('timestamp')
+
+        # Mark messages as delivered
+        Message.objects.filter(
+            chat_room=chat_room,
+            is_delivered=False,
+        ).exclude(sender_id=current_user).update(is_delivered=True)
+
+        # Get typing status from cache
+        other_user = chat_room.participant2 if chat_room.participant1 == current_user else chat_room.participant1
+        is_typing = cache.get(f'typing_{room_id}_{other_user}', False)
+
+        # Get other user's online status
+        other_user_status = get_user_status(other_user)
+
+        messages_data = []
+        for msg in messages:
+            messages_data.append({
+                'id': msg.id,
+                'sender': msg.sender_id,
+                'content': msg.content,
+                'timestamp': msg.timestamp.isoformat(),
+                'is_delivered': msg.is_delivered,
+                'is_read': msg.is_read
+            })
+
+        return JsonResponse({
+            'status': 'success',
+            'messages': messages_data,
+            'is_typing': is_typing,
+            'other_user_status': other_user_status
+        })
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+def get_user_status(user_identifier):
+    try:
+        if user_identifier.startswith('faculty_'):
+            faculty_id = user_identifier.replace('faculty_', '')
             faculty = Faculty.objects.get(college_id=faculty_id)
-            data = {
-                'status': 'success',
-                'faculty': {
-                    'name': faculty.name,
-                    'college_id': faculty.college_id,
-                    'email': faculty.email,
-                    'department': faculty.department,
-                    'position': faculty.position,
-                    'profile_picture': faculty.profile_picture.url if faculty.profile_picture else None,
-                    'phone': faculty.phone,
-                    'qualification': faculty.qualification,
-                    'experience': str(faculty.experience)
-                }
+            return {
+                'online': faculty.online_status,
+                'last_seen': faculty.last_seen.strftime('%Y-%m-%d %H:%M') if faculty.last_seen else None
             }
-            return JsonResponse(data)
-        except Faculty.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Faculty not found'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
-
-@csrf_exempt
-def get_student_details(request):
-    if request.method == 'GET':
-        student_id = request.GET.get('student_id')
-        try:
+        elif user_identifier.startswith('student_'):
+            student_id = user_identifier.replace('student_', '')
             student = Student.objects.get(college_id=student_id)
-            data = {
-                'status': 'success',
-                'student': {
-                    'name': student.name,
-                    'college_id': student.college_id,
-                    'email': student.email,
-                    'course': student.course,
-                    'semester': student.semester,
-                    'year': student.year,
-                    'profile_picture': student.profile_picture.url if student.profile_picture else None,
-                    'phone': student.phone,
-                    'address': student.address,
-                    'city': student.city,
-                    'state': student.state
-                }
+            return {
+                'online': student.online_status,
+                'last_seen': student.last_seen.strftime('%Y-%m-%d %H:%M') if student.last_seen else None
             }
-            return JsonResponse(data)
-        except Student.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Student not found'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from django.db.models import Q
-from .models import ChatRoom, Message, Student, Faculty
-from django.utils import timezone
-
-@csrf_exempt
-def update_user_status(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            user_type = data.get('user_type')
-            college_id = data.get('college_id')
-            is_online = data.get('is_online', True)
-            
-            if user_type == 'student':
-                student = Student.objects.get(college_id=college_id)
-                student.online_status = is_online
-                student.last_seen = timezone.now()
-                student.save()
-            elif user_type == 'faculty':
-                faculty = Faculty.objects.get(college_id=college_id)
-                faculty.online_status = is_online
-                faculty.last_seen = timezone.now()
-                faculty.save()
-            
-            return JsonResponse({'status': 'success'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+    except Exception as e:
+        logger.error(f"Error getting user status for {user_identifier}: {str(e)}")
+        return None
 
 @csrf_exempt
 def send_message(request):
@@ -1718,78 +1911,57 @@ def send_message(request):
             data = json.loads(request.body)
             room_id = data.get('room_id')
             sender_id = data.get('sender_id')
-            content = data.get('content').strip()
+            content = data.get('content', '').strip()
             
-            if not content:
-                return JsonResponse({'status': 'error', 'message': 'Message cannot be empty'})
-            
+            if not all([room_id, sender_id, content]):
+                return JsonResponse({'status': 'error', 'message': 'Missing fields'}, status=400)
+
             try:
                 chat_room = ChatRoom.objects.get(id=room_id)
-                
-                # Verify sender is a participant
-                if sender_id not in [chat_room.participant1, chat_room.participant2]:
-                    return JsonResponse({'status': 'error', 'message': 'Not a room participant'})
-                
-                message = Message.objects.create(
-                    chat_room=chat_room,
-                    sender_id=sender_id,
-                    content=content
-                )
-                
-                # Update room last activity
-                chat_room.last_activity = timezone.now()
-                chat_room.save()
-                
-                return JsonResponse({
-                    'status': 'success',
-                    'message_id': message.id,
-                    'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-                })
-                
             except ChatRoom.DoesNotExist:
-                return JsonResponse({'status': 'error', 'message': 'Chat room does not exist'})
-                
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+                return JsonResponse({'status': 'error', 'message': 'Room not found'}, status=404)
 
-def get_messages(request, room_id):
-    try:
-        chat_room = ChatRoom.objects.get(id=room_id)
-        current_user = request.GET.get('current_user')
-        
-        # Mark undelivered messages as delivered
-        undelivered_messages = Message.objects.filter(
-            chat_room=chat_room,
-            is_delivered=False
-        ).exclude(sender_id=current_user)
-        
-        # Update delivery status and timestamps
-        undelivered_messages.update(
-            is_delivered=True,
-            timestamp=timezone.now()  # Refresh timestamp on delivery
-        )
-        
-        messages = Message.objects.filter(chat_room=chat_room).order_by('timestamp')
-        
-        messages_data = []
-        for message in messages:
-            messages_data.append({
-                'id': message.id,
-                'sender': message.sender_id,
-                'content': message.content,
-                'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-                'is_delivered': message.is_delivered,
-                'is_read': message.is_read
+            if sender_id not in [chat_room.participant1, chat_room.participant2]:
+                return JsonResponse({'status': 'error', 'message': 'Not a participant'}, status=403)
+
+            message = Message.objects.create(
+                chat_room=chat_room,
+                sender_id=sender_id,
+                content=content,
+                is_delivered=True
+            )
+
+            # Update last activity for the chat room
+            chat_room.last_activity = timezone.now()
+            chat_room.save()
+
+            return JsonResponse({
+                'status': 'success',
+                'message_id': str(message.id),
+                'timestamp': message.timestamp.isoformat()
             })
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+
+@csrf_exempt
+def update_typing_status(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            room_id = data.get('room_id')
+            user_id = data.get('user_id')
+            is_typing = data.get('is_typing', False)
             
-        return JsonResponse({
-            'status': 'success',
-            'messages': messages_data,
-            'last_update': timezone.now().strftime("%Y-%m-%d %H:%M:%S")
-        })
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+            # Store typing status in cache (expires after 5 seconds)
+            cache.set(f'typing_{room_id}_{user_id}', is_typing, timeout=5)
+            
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
 
 @csrf_exempt
 def mark_messages_as_read(request):
@@ -1799,66 +1971,59 @@ def mark_messages_as_read(request):
             room_id = data.get('room_id')
             reader_id = data.get('reader_id')
             
+            if not all([room_id, reader_id]):
+                return JsonResponse(
+                    {'status': 'error', 'message': 'Missing required fields'},
+                    status=400
+                )
+
             # Mark messages as read where reader is not the sender
-            Message.objects.filter(
+            updated_count = Message.objects.filter(
                 chat_room_id=room_id,
                 is_read=False
-            ).exclude(sender_id=reader_id).update(is_read=True)
+            ).exclude(sender_id=reader_id).update(
+                is_read=True,
+                read_at=timezone.now()
+            )
             
-            return JsonResponse({'status': 'success'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
-
-def get_chat_rooms(request, participant_id):
-    try:
-        chat_rooms = ChatRoom.objects.filter(
-            Q(participant1=participant_id) | 
-            Q(participant2=participant_id)
-        ).order_by('-last_activity')
-        
-        rooms_data = []
-        for room in chat_rooms:
-            other_participant = room.get_other_participant(participant_id)
-            
-            # Get participant details
-            if other_participant.startswith('student_'):
-                college_id = other_participant.replace('student_', '')
-                participant = Student.objects.get(college_id=college_id)
-                name = participant.name
-                status = participant.online_status
-                last_seen = participant.last_seen
-            else:
-                college_id = other_participant.replace('faculty_', '')
-                participant = Faculty.objects.get(college_id=college_id)
-                name = participant.name
-                status = participant.online_status
-                last_seen = participant.last_seen
-            
-            # Get last message
-            last_message = room.messages.last()
-            
-            # Get unread count
-            unread_count = room.messages.filter(
-                is_read=False,
-                is_delivered=True
-            ).exclude(sender_id=participant_id).count()
-            
-            rooms_data.append({
-                'id': room.id,
-                'name': room.name,
-                'other_participant': other_participant,
-                'participant_name': name,
-                'is_online': status,
-                'last_seen': last_seen.strftime("%Y-%m-%d %H:%M:%S") if last_seen else None,
-                'last_message': last_message.content if last_message else '',
-                'last_message_time': last_message.timestamp.strftime("%Y-%m-%d %H:%M:%S") if last_message else '',
-                'unread_count': unread_count
+            return JsonResponse({
+                'status': 'success',
+                'updated_count': updated_count
             })
+        except Exception as e:
+            logger.exception("Error marking messages as read")
+            return JsonResponse(
+                {'status': 'error', 'message': str(e)}, 
+                status=400
+            )
+    return JsonResponse(
+        {'status': 'error', 'message': 'Invalid request'}, 
+        status=400
+    )
+
+@csrf_exempt
+def delete_chat(request, room_id):
+    if request.method == 'DELETE':
+        try:
+            chat_room = get_object_or_404(ChatRoom, id=room_id)
             
-        return JsonResponse({
-            'status': 'success',
-            'chat_rooms': rooms_data
-        })
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+            # Delete all messages in the chat room
+            Message.objects.filter(chat_room=chat_room).delete()
+            
+            # Delete the chat room itself
+            chat_room.delete()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Chat deleted successfully'
+            })
+        except Exception as e:
+            logger.exception("Error deleting chat")
+            return JsonResponse(
+                {'status': 'error', 'message': str(e)},
+                status=500
+            )
+    return JsonResponse(
+        {'status': 'error', 'message': 'Invalid method'},
+        status=405
+    )

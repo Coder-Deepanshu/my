@@ -13,82 +13,7 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
-
-class Student(models.Model):
-    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
-    college_id = models.CharField(max_length=20, unique=True)
-    name = models.CharField(max_length=100)
-    father_name = models.CharField(max_length=100)
-    mother_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone = models.CharField(max_length=15)
-    other_phone_no=models.CharField(max_length=15,null=True)
-    occupation=models.CharField(max_length=50,null=True)
-    income=models.CharField(max_length=20,null=True)
-    gender = models.CharField(max_length=10)
-    course = models.CharField(max_length=100)  # Changed to ForeignKey
-    birthday = models.DateField()
-    address = models.TextField()
-    semester = models.IntegerField(default=1)
-    year = models.IntegerField(default=1)
-    city = models.CharField(max_length=50)
-    state = models.CharField(max_length=50)
-    state_code = models.CharField(max_length=10)
-    country = models.CharField(max_length=100, blank=True, null=True,default='India')
-    date_of_joining = models.DateField()
-    tenth_percent = models.DecimalField(max_digits=5, decimal_places=2)
-    twelfth_percent = models.DecimalField(max_digits=5, decimal_places=2)
-    category = models.CharField(max_length=10, choices=[
-        ('General', 'General'),
-        ('BC(A)', 'BC(A)'),
-        ('BC(B)', 'BC(B)'),
-        ('SC', 'SC'),
-        ('ST', 'ST'),
-        ('Others', 'Others')
-    ])
-
-    # Nationality & Religion
-    nationality = models.CharField(max_length=20, choices=[
-        ('Indian', 'Indian'),
-        ('NRI', 'NRI'),
-        ('Other', 'Other')
-    ])
-    religion = models.CharField(max_length=20, choices=[
-        ('Hindu', 'Hindu'),
-        ('Muslim', 'Muslim'),
-        ('Sikh', 'Sikh'),
-        ('Christian', 'Christian'),
-        ('Jain', 'Jain'),
-        ('Buddhist', 'Buddhist'),
-        ('Other', 'Other')
-    ])
-
-    # Identity Info
-    adhar_no = models.BigIntegerField()
-    pan_no = models.CharField(max_length=20,null=True)
-    family_id=models.CharField(max_length=20,null=True)
-    family_id_phone_no=models.CharField(max_length=15,null=True)
-
-    # Marital Status
-    martial_status = models.CharField(max_length=15, choices=[
-        ('Married', 'Married'),
-        ('Unmarried', 'Unmarried')
-    ], default='Unmarried')
-    user_id=models.CharField(max_length=10)
-    username=models.EmailField()
-    password=models.CharField(max_length=15)
-    chat_identifier = models.CharField(max_length=100, unique=True)
-    online_status = models.BooleanField(default=False)
-    last_seen = models.DateTimeField(default=timezone.now)
-
-    def save(self, *args, **kwargs):
-        if not self.chat_identifier:
-            self.chat_identifier = f"student_{self.college_id}"
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.name} ({self.college_id})"
-
+    
 class Faculty(models.Model):
     # Basic Info
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
@@ -182,6 +107,81 @@ class Faculty(models.Model):
     def _str_(self):
         return self.name
     
+class Student(models.Model):
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    college_id = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=100)
+    father_name = models.CharField(max_length=100)
+    mother_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=15)
+    other_phone_no=models.CharField(max_length=15,null=True)
+    occupation=models.CharField(max_length=50,null=True)
+    income=models.CharField(max_length=20,null=True)
+    gender = models.CharField(max_length=10)
+    course = models.CharField(max_length=100)  # Changed to ForeignKey
+    birthday = models.DateField()
+    address = models.TextField()
+    semester = models.IntegerField(default=1)
+    year = models.IntegerField(default=1)
+    city = models.CharField(max_length=50)
+    state = models.CharField(max_length=50)
+    state_code = models.CharField(max_length=10)
+    country = models.CharField(max_length=100, blank=True, null=True,default='India')
+    date_of_joining = models.DateField()
+    tenth_percent = models.DecimalField(max_digits=5, decimal_places=2)
+    twelfth_percent = models.DecimalField(max_digits=5, decimal_places=2)
+    category = models.CharField(max_length=10, choices=[
+        ('General', 'General'),
+        ('BC(A)', 'BC(A)'),
+        ('BC(B)', 'BC(B)'),
+        ('SC', 'SC'),
+        ('ST', 'ST'),
+        ('Others', 'Others')
+    ])
+
+    # Nationality & Religion
+    nationality = models.CharField(max_length=20, choices=[
+        ('Indian', 'Indian'),
+        ('NRI', 'NRI'),
+        ('Other', 'Other')
+    ])
+    religion = models.CharField(max_length=20, choices=[
+        ('Hindu', 'Hindu'),
+        ('Muslim', 'Muslim'),
+        ('Sikh', 'Sikh'),
+        ('Christian', 'Christian'),
+        ('Jain', 'Jain'),
+        ('Buddhist', 'Buddhist'),
+        ('Other', 'Other')
+    ])
+
+    # Identity Info
+    adhar_no = models.BigIntegerField()
+    pan_no = models.CharField(max_length=20,null=True)
+    family_id=models.CharField(max_length=20,null=True)
+    family_id_phone_no=models.CharField(max_length=15,null=True)
+
+    # Marital Status
+    martial_status = models.CharField(max_length=15, choices=[
+        ('Married', 'Married'),
+        ('Unmarried', 'Unmarried')
+    ], default='Unmarried')
+    user_id=models.CharField(max_length=10)
+    username=models.EmailField()
+    password=models.CharField(max_length=15)
+    chat_identifier = models.CharField(max_length=100, unique=True)
+    online_status = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(default=timezone.now)
+    followed_faculty = models.ManyToManyField(Faculty, related_name='followers', blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.chat_identifier:
+            self.chat_identifier = f"student_{self.college_id}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} ({self.college_id})"    
 
 class Admin(models.Model):
     # Basic Info
@@ -444,13 +444,11 @@ class Message(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_delivered = models.BooleanField(default=False)
     is_read = models.BooleanField(default=False)
+    delivered_at = models.DateTimeField(null=True, blank=True)  # Add this field
+    read_at = models.DateTimeField(null=True, blank=True)      # Add this field
 
     class Meta:
-        indexes = [
-            models.Index(fields=['chat_room', 'is_delivered']),
-            models.Index(fields=['chat_room', 'is_read']),
-            models.Index(fields=['timestamp']),
-        ]
+        ordering = ['timestamp']
 
     def __str__(self):
         return f"Message from {self.sender_id} in {self.chat_room.name}"

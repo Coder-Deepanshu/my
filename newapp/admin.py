@@ -72,24 +72,17 @@ from .models import ChatRoom,Message
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):
-    list_display = ['name', 'display_participants']
+    list_display = ['name', 'participant1','participant2']
     
-    def display_participants(self, obj):
-        return ", ".join([user.username for user in obj.participants.all()])
-    display_participants.short_description = 'Participants'
+    # def display_participants(self, obj):
+    #     return ", ".join([user.username for user in obj.participants.all()])
+    # display_participants.short_description = 'Participants'
 
     
 @admin.register(Message)
 class Message_Student_faculty(admin.ModelAdmin):
     list_display=('chat_room','sender_id','content')
     search_fields=('chat_room','sender_id',)
-
-
-
-
-
-
-
 
 
 

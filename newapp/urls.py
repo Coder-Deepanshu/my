@@ -32,6 +32,7 @@ urlpatterns = [
     path('admin_functions/', views.admin_functions, name='admin_functions'),
     path('profile_upload/', views.profile_upload, name='profile_upload'),
     path('add_new_admin/', views.add_new_admin, name='add_new_admin'),
+    
     # for attendance management student-faculty
     path('student_filtering_page/', views.student_filtering_page, name='student_filtering_page'),
     path('get_details/', views.get_details, name='get_details'),
@@ -39,9 +40,9 @@ urlpatterns = [
     path('save_attendance/', views.save_attendance, name='save_attendance'),
     path('student_attendance_view', views.student_attendance_view, name='student_attendance_view'),
     path('get_student_attendance/', views.get_student_attendance, name='get_student_attendance'),
-    path('student_fees_view/', views.student_fees_view, name='student_fees_view'),\
+    path('student_fees_view/', views.student_fees_view, name='student_fees_view'),
     
-        # Fee Management URLs
+    # Fee Management URLs
     path('fee-management/', views.admin_fee_management, name='admin_fee_management'),
     path('student-fees/<str:student_id>/', views.student_fee_details, name='student_fee_details'),
     path('student-fee-details/<str:student_id>/', views.student_fee_details, name='student_fee_details'),
@@ -49,13 +50,21 @@ urlpatterns = [
     path('adjust_extra_payments/', views.adjust_extra_payments, name='adjust_extra_payments'),
     path('get_receipt_data/<str:receipt_number>/', views.get_receipt_data, name='get_receipt_data'),
 
+# for chatting management between faculty and student
     path('chat_home/', views.chat_home, name='chat_home'),
-     path('create_chat_room/', views.create_chat_room, name='create_chat_room'),
+    path('create_chat_room/', views.create_chat_room, name='create_chat_room'),
+
+    # for send message and gwt messages
     path('send_message/', views.send_message, name='send_message'),
     path('get_messages/<int:room_id>/', views.get_messages, name='get_messages'),
-    path('get_chat_rooms/<str:participant_id>/', views.get_chat_rooms, name='get_chat_rooms'),
+    # for sending info about faculty
     path('get_faculty_details/', views.get_faculty_details, name='get_faculty_details'),
-    path('get_student_details/', views.get_student_details, name='get_student_details'),
+    path('faculty_filtering/', views.faculty_filtering, name='faculty_filtering'),
+    path('toggle_follow/', views.toggle_follow, name='toggle_follow'),
+    # for sending info about student
+    path('faculty/students/', views.faculty_student_list, name='faculty_student_list'),
+    path('send_course_details/', views.send_course_details, name='send_course_details'),
+    path('faculty/students/', views.student_filter_details, name='student_list_partial'),
     
 ]
 
