@@ -94,7 +94,7 @@ class Faculty(models.Model):
     user_id=models.CharField(max_length=50,null=True,)
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
-    chat_identifier = models.CharField(max_length=100, unique=True)
+    chat_identifier = models.CharField(max_length=100, unique=False,null=True,blank=True)
     online_status = models.BooleanField(default=False)
     last_seen = models.DateTimeField(default=timezone.now)
 
