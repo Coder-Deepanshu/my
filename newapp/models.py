@@ -170,7 +170,7 @@ class Student(models.Model):
     user_id=models.CharField(max_length=10)
     username=models.EmailField()
     password=models.CharField(max_length=15)
-    chat_identifier = models.CharField(max_length=255, unique=True)
+    chat_identifier = models.CharField(max_length=255, unique=False,blank=True,null=True)
     online_status = models.BooleanField(default=False)
     last_seen = models.DateTimeField(default=timezone.now)
     followed_faculty = models.ManyToManyField(Faculty, related_name='followers', blank=True)
