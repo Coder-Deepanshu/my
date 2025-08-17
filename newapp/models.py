@@ -94,7 +94,7 @@ class Faculty(models.Model):
     user_id=models.CharField(max_length=50,null=True,)
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
-    chat_identifier = models.CharField(max_length=100, unique=False,null=True,blank=True)
+    chat_identifier = models.CharField(max_length=100,null=True,blank=True)
     online_status = models.BooleanField(default=False)
     last_seen = models.DateTimeField(default=timezone.now)
 
@@ -170,7 +170,7 @@ class Student(models.Model):
     user_id=models.CharField(max_length=10)
     username=models.EmailField()
     password=models.CharField(max_length=15)
-    chat_identifier = models.CharField(max_length=255, unique=False,blank=True,null=True)
+    chat_identifier = models.CharField(max_length=255,blank=True,null=True)
     online_status = models.BooleanField(default=False)
     last_seen = models.DateTimeField(default=timezone.now)
     followed_faculty = models.ManyToManyField(Faculty, related_name='followers', blank=True)
