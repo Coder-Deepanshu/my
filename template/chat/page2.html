@@ -683,7 +683,7 @@
                 <label for="course">Course:</label>
                 <select id="course" class="form-select">
                     <option value="all">All Courses</option>
-                    {% for course in name %}
+                    {% for course in courses %}
                         <option value="{{ course.name }}">{{ course.name }}</option>
                     {% endfor %}
                 </select>

@@ -775,9 +775,9 @@
                 <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Faculty Photo" class="admin-image">
                 {% endif %}
                     <button class="follow-btn {% if faculties.college_id in followed_faculty %}following{% endif %}" data-faculty-id="{{ faculties.college_id }}">
-    <i class="fas {% if faculties.college_id in followed_faculty %}fa-user-check{% else %}fa-user-plus{% endif %}"></i> 
-    {% if faculties.college_id in followed_faculty %}Following{% else %}Follow{% endif %}
-</button>
+                    <i class="fas {% if faculties.college_id in followed_faculty %}fa-user-check{% else %}fa-user-plus{% endif %}"></i> 
+                    {% if faculties.college_id in followed_faculty %}Following{% else %}Follow{% endif %}
+                    </button>
                     <div class="online-status"></div>
                 </div>
                 <div class="card-body">
@@ -1036,6 +1036,7 @@
             });
         }
     });
+    
 </script>
 </body>
 </html>

@@ -1722,7 +1722,7 @@ def faculty_student_list(request):
         return redirect('login')
     
     try:
-        name = Course.objects.all()
+        course = Course.objects.all()
         faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
         students = Student.objects.filter(followed_faculty=faculty)
      
@@ -1730,7 +1730,7 @@ def faculty_student_list(request):
         return render(request, 'chat/page2.html', {
             'faculty': faculty,
             'students': students,
-            'name': name,
+            'courses': course,
             'role': 'faculty'
         })
     except Faculty.DoesNotExist:
@@ -1791,7 +1791,6 @@ from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 
 logger = logging.getLogger(__name__)
-
 @csrf_exempt
 def create_chat_room(request):
     if request.method == 'POST':
@@ -2001,29 +2000,46 @@ def mark_messages_as_read(request):
         status=400
     )
 
+from django.views.decorators.csrf import csrf_exempt
+
 @csrf_exempt
 def delete_chat(request, room_id):
     if request.method == 'DELETE':
         try:
+            # Get current user identifier based on role
+            if request.user.role == 'student':
+                current_user_identifier = f"student_{request.user.college_id}"
+            else:
+                current_user_identifier = f"faculty_{request.user.college_id}"
+
             chat_room = get_object_or_404(ChatRoom, id=room_id)
             
-            # Delete all messages in the chat room
+            # Verify user is a participant in this chat
+            if current_user_identifier not in [chat_room.participant1, chat_room.participant2]:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'You are not authorized to delete this chat'
+                }, status=403)
+            
+            # Delete all messages first
             Message.objects.filter(chat_room=chat_room).delete()
             
-            # Delete the chat room itself
+            # Then delete the chat room
             chat_room.delete()
             
             return JsonResponse({
                 'status': 'success',
                 'message': 'Chat deleted successfully'
             })
+            
         except Exception as e:
-            logger.exception("Error deleting chat")
-            return JsonResponse(
-                {'status': 'error', 'message': str(e)},
-                status=500
-            )
-    return JsonResponse(
-        {'status': 'error', 'message': 'Invalid method'},
-        status=405
-    )
+            logger.error(f"Error deleting chat: {str(e)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Failed to delete chat. Please try again.'
+            }, status=500)
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method'
+    }, status=405)

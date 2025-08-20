@@ -39,6 +39,13 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
+        body {
+            background-color: #f5f7fb;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         /* Header Styles */
         .header {
             height: 70px;
@@ -230,14 +237,7 @@
             margin: 0.5rem 0;
         }
 
-        /* ID Card Styles */
-        body {
-            background-color: #f5f7fb;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
+        /* Content Styles */
         .content {
             flex: 1;
             display: flex;
@@ -255,39 +255,40 @@
             margin: 0 auto;
         }
 
-        /* Common ID Card Styles */
+        /* ID Card Styles - Redesigned */
         .id-card {
-            width: 400px;
-            height: 320px;
-            border-radius: 15px;
+            width: 380px;
+            min-height: 220px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             position: relative;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .id-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
 
         .id-card-left {
-            width: 40%;
-            height: 100%;
+            width: 35%;
+            padding: 1.5rem 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 1rem;
+            justify-content: space-between;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             position: relative;
             z-index: 2;
         }
 
         .id-card-right {
-            width: 60%;
-            height: 100%;
-            padding: 1.2rem;
+            width: 65%;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -295,61 +296,39 @@
             z-index: 1;
         }
 
-        .id-card-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            opacity: 0.9;
-            z-index: 0;
-        }
-
-        .id-card-bg-pattern {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            z-index: 0;
-        }
-
         .id-card-logo {
-            margin-left: -10px;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: white;
-            border-radius: 50%;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .id-card-logo i {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             color: var(--primary);
         }
 
         .id-card-photo {
-            width: 120px;
-            height: 120px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            border: 4px solid white;
+            border: 3px solid white;
             object-fit: cover;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             margin-bottom: 1rem;
         }
 
         .id-card-qr {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             background: white;
-            padding: 5px;
-            border-radius: 8px;
+            padding: 4px;
+            border-radius: 6px;
         }
 
         .id-card-qr img {
@@ -359,41 +338,58 @@
         }
 
         .id-card-title {
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             color: white;
             font-weight: 700;
             margin-bottom: 0.5rem;
             text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .id-card-name {
-            font-size: 1.4rem;
-            color: white;
+            font-size: 1.3rem;
+            color: var(--dark);
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-align: left;
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .id-card-name::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
         }
 
         .id-card-details {
-            margin-top: 1rem;
+            margin-top: 0.5rem;
         }
 
         .id-card-detail-row {
             display: flex;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
+            align-items: center;
         }
 
         .id-card-detail-label {
             width: 100px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.75rem;
+            color: var(--gray);
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .id-card-detail-value {
             flex: 1;
-            font-size: 0.9rem;
-            color: white;
+            font-size: 0.85rem;
+            color: var(--dark);
             font-weight: 600;
         }
 
@@ -403,173 +399,48 @@
             align-items: center;
             margin-top: 0.5rem;
             padding-top: 0.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-top: 1px solid var(--light-gray);
         }
 
         .id-card-validity {
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.6rem;
+            color: var(--gray);
+            font-weight: 500;
         }
 
         .id-card-signature {
-            font-size: 0.7rem;
-            color: white;
+            font-size: 0.65rem;
+            color: var(--gray);
             text-align: right;
+            font-weight: 600;
         }
 
-        /* Student ID Card Specific */
-        .id-card.student {
-            border-left: 8px solid var(--accent);
-        }
-
-        .id-card.student .id-card-bg {
+        /* Card Type Specific Styles */
+        .id-card.student .id-card-left {
             background: linear-gradient(135deg, #4361ee, #4895ef);
         }
 
-        .id-card.student .id-card-logo {
-            background: white;
-        }
-
-        .id-card.student .id-card-logo i {
-            color: var(--accent);
-        }
-
-        /* Faculty ID Card Specific */
-        .id-card.faculty {
-            border-left: 8px solid var(--warning);
-        }
-
-        .id-card.faculty .id-card-bg {
+        .id-card.faculty .id-card-left {
             background: linear-gradient(135deg, #f8961e, #f9c74f);
         }
 
-        .id-card.faculty .id-card-logo {
-            background: white;
-        }
-
-        .id-card.faculty .id-card-logo i {
-            color: var(--warning);
-        }
-
-        /* Admin ID Card Specific */
-        .id-card.admin {
-            border-left: 8px solid var(--danger);
-        }
-
-        .id-card.admin .id-card-bg {
+        .id-card.admin .id-card-left {
             background: linear-gradient(135deg, #f72585, #b5179e);
         }
 
-        .id-card.admin .id-card-logo {
-            background: white;
+        .id-card.student .id-card-name::after {
+            background: linear-gradient(90deg, #4361ee, #4895ef);
         }
 
-        .id-card.admin .id-card-logo i {
-            color: var(--danger);
+        .id-card.faculty .id-card-name::after {
+            background: linear-gradient(90deg, #f8961e, #f9c74f);
         }
 
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .id-card {
-                width: 100%;
-                max-width: 350px;
-            }
-        }
-        .id-card-title {
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 
-                1px 1px 0 rgba(0,0,0,0.2),
-                -1px -1px 0 rgba(255,255,255,0.1);
-            font-weight: 800;
-            color: rgba(255,255,255,0.9);
-            
+        .id-card.admin .id-card-name::after {
+            background: linear-gradient(90deg, #f72585, #b5179e);
         }
 
-        .id-card-name {
-            text-shadow: 
-                2px 2px 0 rgba(0,0,0,0.1),
-                0 0 10px rgba(255,255,255,0.3);
-            position: relative;
-            display: inline-block;
-        }
-
-        .id-card-name::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
-        }
-        .id-card {
-            transform-style: preserve-3d;
-            transform: perspective(1000px);
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .id-card:hover {
-            transform: perspective(1000px) rotateY(10deg) translateY(-10px);
-            box-shadow: 
-                0 20px 40px rgba(0,0,0,0.2),
-                0 0 0 1px rgba(255,255,255,0.1);
-        }
-        .id-card {
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0.5px, transparent 0.5px),
-                radial-gradient(circle at 90% 80%, rgba(255,255,255,0.05) 0.5px, transparent 0.5px);
-            background-size: 20px 20px;
-        }
-        .id-card::before {
-            content: 'OFFICIAL';
-            position: absolute;
-            top: 10px;
-            right: -25px;
-            background: var(--ribbon-color);
-            color: white;
-            padding: 3px 30px;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transform: rotate(45deg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 10;
-        }
-
-        .id-card.student { --ribbon-color: #4361ee; }
-        .id-card.faculty { --ribbon-color: #f8961e; }
-        .id-card.admin { --ribbon-color: #f72585; }
-        .id-card {
-            background-image: 
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="50" font-family="Arial" font-size="10" fill="rgba(255,255,255,0.05)" transform="rotate(-45)">UNIVERSITY OF TECHNOLOGY</text></svg>'),
-                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="2"/></svg>');
-            background-repeat: repeat;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .id-card {
-            backdrop-filter: blur(5px);
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 
-                0 4px 30px rgba(0, 0, 0, 0.1),
-                inset 0 0 20px rgba(255, 255, 255, 0.1);
-        }
-        .id-card {
-            background: linear-gradient(
-                135deg,
-                rgba(255,255,255,0.2) 0%,
-                rgba(255,255,255,0) 50%,
-                rgba(0,0,0,0.1) 51%,
-                rgba(0,0,0,0) 100%
-            );
-            box-shadow: 
-                0 4px 20px rgba(0,0,0,0.2),
-                0 0 0 1px rgba(255,255,255,0.1) inset,
-                0 0 20px rgba(255,255,255,0.1) inset;
-        }
-         /* Sidebar Styles */
+        /* Sidebar Styles */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--sidebar-bg);
@@ -788,12 +659,6 @@
             transform: rotate(180deg);
         }
 
-        /* Main Content Styles */
-        .main-content {
-            flex: 1;
-            transition: var(--transition);
-        }
-
         /* Overlay for sidebar on mobile */
         .sidebar-overlay {
             position: fixed;
@@ -850,8 +715,8 @@
             
             .id-card {
                 flex-direction: column;
-                height: auto;
                 width: 90%;
+                height: auto;
             }
             
             .id-card-left, .id-card-right {
@@ -859,16 +724,34 @@
             }
             
             .id-card-left {
-                padding: 1.5rem;
+                padding: 1rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-around;
             }
             
             .id-card-right {
                 padding: 1.5rem;
             }
             
+            .id-card-logo {
+                margin-bottom: 0;
+                order: 1;
+            }
+            
             .id-card-photo {
-                width: 100px;
-                height: 100px;
+                width: 80px;
+                height: 80px;
+                margin-bottom: 0;
+                order: 2;
+            }
+            
+            .id-card-qr {
+                order: 3;
+            }
+            
+            .id-card-title {
+                display: none;
             }
         }
     </style>
@@ -924,7 +807,7 @@
             <div class="logo-container">
                 <div class="logo">
                     <i class="fas fa-user-graduate logo-icon"></i>
-                    <span>{{ user_type }}<span>Portal</span></span>
+                    <span>Edu<span>Track</span></span>
                 </div>
             </div>
         </div>
@@ -991,175 +874,169 @@
         </div>
     </aside>
 
-    <div class="id-card-container">
-        <!-- Student ID Card -->
-         {% if user_type == 'Student' %}
-        <div class="id-card student" style="margin-top: 140px;margin-right: -120px;">
-            <div class="id-card-bg"></div>
-            <div class="id-card-bg-pattern"></div>
-            
-            <div class="id-card-left">
-                <div class="id-card-logo">
-                    <i class="fas fa-user-graduate"></i>
-                </div>
-                
-                {% if detail.profile_picture %}
-                    <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="id-card-photo">
-                {% else %}
-                    <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=4361ee&color=fff" alt="Student Photo" class="id-card-photo">
-                {% endif %}
-                
-                <div class="id-card-qr">
-                    <!-- QR Code for Student ID -->
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STUDENT-{{ detail.college_id }}" alt="QR Code">
-                </div>
-            </div>
-            
-            <div class="id-card-right">
-                <div>
+    <div class="content">
+        <div class="id-card-container">
+            <!-- Student ID Card -->
+            {% if user_type == 'Student' %}
+            <div class="id-card student">
+                <div class="id-card-left">
+                    <div class="id-card-logo">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    
+                    {% if detail.profile_picture %}
+                        <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="id-card-photo">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=4361ee&color=fff" alt="Student Photo" class="id-card-photo">
+                    {% endif %}
+                    
+                    <div class="id-card-qr">
+                        <!-- QR Code for Student ID -->
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STUDENT-{{ detail.college_id }}" alt="QR Code">
+                    </div>
                     <div class="id-card-title">STUDENT ID CARD</div>
-                    <div class="id-card-name">{{ detail.name }}</div>
-                    
-                    <div class="id-card-details">
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">ID Number:</div>
-                            <div class="id-card-detail-value">{{ detail.college_id }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Course:</div>
-                            <div class="id-card-detail-value">{{ detail.course }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Semester:</div>
-                            <div class="id-card-detail-value">{{ detail.semester }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Valid Until:</div>
-                            <div class="id-card-detail-value">{{ detail.year|add:"4" }}-12-31</div>
+                </div>
+                
+                <div class="id-card-right">
+                    <div>
+                        <div class="id-card-name">{{ detail.name }}</div>
+                        
+                        <div class="id-card-details">
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">ID Number:</div>
+                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Course:</div>
+                                <div class="id-card-detail-value">{{ detail.course }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Semester:</div>
+                                <div class="id-card-detail-value">{{ detail.semester }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Valid Until:</div>
+                                <div class="id-card-detail-value">{{ detail.year|add:"4" }}-12-31</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="id-card-footer">
-                    <div class="id-card-validity">This card is property of University</div>
-                    <div class="id-card-signature">Registrar</div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        
-        <!-- Faculty ID Card (Conditional) -->
-        {% if user_type == 'Faculty' %}
-        <div class="id-card faculty" style="margin-top: 140px;margin-right: -120px;">
-            <div class="id-card-bg"></div>
-            <div class="id-card-bg-pattern"></div>
-            
-            <div class="id-card-left">
-                <div class="id-card-logo">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                </div>
-                
-                {% if detail.profile_picture %}
-                    <img src="{{ detail.profile_picture.url }}" alt="Faculty Photo" class="id-card-photo">
-                {% else %}
-                    <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=f8961e&color=fff" alt="Faculty Photo" class="id-card-photo">
-                {% endif %}
-                
-                <div class="id-card-qr">
-                    <!-- QR Code for Faculty ID -->
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FACULTY-{{ detail.college_id }}" alt="QR Code">
+                    
+                    <div class="id-card-footer">
+                        <div class="id-card-validity">This card is property of University</div>
+                        <div class="id-card-signature">Registrar</div>
+                    </div>
                 </div>
             </div>
+            {% endif %}
             
-            <div class="id-card-right">
-                <div>
+            <!-- Faculty ID Card (Conditional) -->
+            {% if user_type == 'Faculty' %}
+            <div class="id-card faculty">
+                <div class="id-card-left">
+                    <div class="id-card-logo">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    
+                    {% if detail.profile_picture %}
+                        <img src="{{ detail.profile_picture.url }}" alt="Faculty Photo" class="id-card-photo">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=f8961e&color=fff" alt="Faculty Photo" class="id-card-photo">
+                    {% endif %}
+                    
+                    <div class="id-card-qr">
+                        <!-- QR Code for Faculty ID -->
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FACULTY-{{ detail.college_id }}" alt="QR Code">
+                    </div>
                     <div class="id-card-title">FACULTY ID CARD</div>
-                    <div class="id-card-name">{{ detail.name }}</div>
-                    
-                    <div class="id-card-details">
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Employee ID:</div>
-                            <div class="id-card-detail-value">{{ detail.college_id }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Department:</div>
-                            <div class="id-card-detail-value">{{ detail.department }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Designation:</div>
-                            <div class="id-card-detail-value">{{ detail.position }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Valid Until:</div>
-                            <div class="id-card-detail-value">Permanent</div>
+                </div>
+                
+                <div class="id-card-right">
+                    <div>
+                        <div class="id-card-name">{{ detail.name }}</div>
+                        
+                        <div class="id-card-details">
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Employee ID:</div>
+                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Department:</div>
+                                <div class="id-card-detail-value">{{ detail.department }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Designation:</div>
+                                <div class="id-card-detail-value">{{ detail.position }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Valid Until:</div>
+                                <div class="id-card-detail-value">Permanent</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="id-card-footer">
-                    <div class="id-card-validity">This card is property of University</div>
-                    <div class="id-card-signature">Vice Chancellor</div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        
-        <!-- Admin ID Card (Conditional) -->
-        {% if user_type == 'admin' %}
-        <div class="id-card admin" style="margin-top: 140px;margin-right: -120px;">
-            <div class="id-card-bg"></div>
-            <div class="id-card-bg-pattern"></div>
-            
-            <div class="id-card-left">
-                <div class="id-card-logo">
-                    <i class="fas fa-user-shield"></i>
-                </div>
-                
-                {% if admin_detail.profile_picture %}
-                    <img src="{{ admin_detail.profile_picture.url }}" alt="Admin Photo" class="id-card-photo">
-                {% else %}
-                    <img src="https://ui-avatars.com/api/?name={{ admin_detail.name }}&background=f72585&color=fff" alt="Admin Photo" class="id-card-photo">
-                {% endif %}
-                
-                <div class="id-card-qr">
-                    <!-- QR Code for Admin ID -->
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ADMIN-{{ admin_detail.employee_id }}" alt="QR Code">
+                    
+                    <div class="id-card-footer">
+                        <div class="id-card-validity">This card is property of University</div>
+                        <div class="id-card-signature">Vice Chancellor</div>
+                    </div>
                 </div>
             </div>
+            {% endif %}
             
-            <div class="id-card-right">
-                <div>
+            <!-- Admin ID Card (Conditional) -->
+            {% if user_type == 'admin' %}
+            <div class="id-card admin">
+                <div class="id-card-left">
+                    <div class="id-card-logo">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    
+                    {% if admin_detail.profile_picture %}
+                        <img src="{{ admin_detail.profile_picture.url }}" alt="Admin Photo" class="id-card-photo">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ admin_detail.name }}&background=f72585&color=fff" alt="Admin Photo" class="id-card-photo">
+                    {% endif %}
+                    
+                    <div class="id-card-qr">
+                        <!-- QR Code for Admin ID -->
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ADMIN-{{ admin_detail.employee_id }}" alt="QR Code">
+                    </div>
                     <div class="id-card-title">ADMINISTRATOR ID CARD</div>
-                    <div class="id-card-name">{{ admin_detail.name }}</div>
-                    
-                    <div class="id-card-details">
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Employee ID:</div>
-                            <div class="id-card-detail-value">{{ admin_detail.employee_id }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Department:</div>
-                            <div class="id-card-detail-value">{{ admin_detail.department }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Access Level:</div>
-                            <div class="id-card-detail-value">{{ admin_detail.access_level }}</div>
-                        </div>
-                        <div class="id-card-detail-row">
-                            <div class="id-card-detail-label">Valid Until:</div>
-                            <div class="id-card-detail-value">Permanent</div>
-                        </div>
-                    </div>
                 </div>
                 
-                <div class="id-card-footer">
-                    <div class="id-card-validity">This card is property of University</div>
-                    <div class="id-card-signature">Chancellor</div>
+                <div class="id-card-right">
+                    <div>
+                        <div class="id-card-name">{{ admin_detail.name }}</div>
+                        
+                        <div class="id-card-details">
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Employee ID:</div>
+                                <div class="id-card-detail-value">{{ admin_detail.employee_id }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Department:</div>
+                                <div class="id-card-detail-value">{{ admin_detail.department }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Access Level:</div>
+                                <div class="id-card-detail-value">{{ admin_detail.access_level }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Valid Until:</div>
+                                <div class="id-card-detail-value">Permanent</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="id-card-footer">
+                        <div class="id-card-validity">This card is property of University</div>
+                        <div class="id-card-signature">Chancellor</div>
+                    </div>
                 </div>
             </div>
+            {% endif %}
         </div>
-        {% endif %}
-        </div>
+    </div>
+
     <script>
         // Toggle sidebar functionality
         document.addEventListener('DOMContentLoaded', function() {

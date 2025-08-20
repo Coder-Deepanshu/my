@@ -74,9 +74,6 @@ from .models import ChatRoom,Message
 class ChatRoomAdmin(admin.ModelAdmin):
     list_display = ['name', 'participant1','participant2']
     
-    # def display_participants(self, obj):
-    #     return ", ".join([user.username for user in obj.participants.all()])
-    # display_participants.short_description = 'Participants'
 
     
 @admin.register(Message)

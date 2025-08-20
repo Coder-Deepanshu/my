@@ -65,7 +65,8 @@ urlpatterns = [
     path('faculty/students/', views.faculty_student_list, name='faculty_student_list'),
     path('send_course_details/', views.send_course_details, name='send_course_details'),
     path('faculty/students/', views.student_filter_details, name='student_list_partial'),
-    
+    # urls.py
+    path('delete_chat/<int:room_id>/', views.delete_chat, name='delete_chat'),
 ]
 
 if settings.DEBUG:
