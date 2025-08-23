@@ -3,37 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Management | Faculty Management System</title>
+    <title>Admin Management | Faculty Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             /* Primary Colors */
-            --primary: #3a56d4;
-            --primary-dark: #2f4ac0;
-            --primary-light: #f5f7ff;
-            --primary-extra-light: #eef1ff;
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #e6ebff;
+            --primary-extra-light: #f0f3ff;
             
             /* Secondary Colors */
-            --secondary: #4a6bff;
+            --secondary: #6c757d;
             --accent: #5c7cff;
-            --success: #4cc9f0;
+            --success: #4cc9a4;
             --warning: #ff9f1c;
             --danger: #ff477e;
+            --info: #4299e1;
             
             /* Neutral Colors */
-            --dark: #2d3748;
+            --dark: #212529;
             --darker: #1a202c;
-            --light: #f8fafc;
+            --light: #f8f9fa;
             --lighter: #ffffff;
-            --gray: #718096;
-            --light-gray: #e2e8f0;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
             --dark-gray: #4a5568;
-            
-            /* Status Colors */
-            --success: #48bb78;
-            --warning: #ed8936;
-            --danger: #f56565;
-            --info: #4299e1;
             
             /* Sidebar Colors */
             --sidebar-bg: #2d3748;
@@ -46,21 +42,16 @@
             --sidebar-width: 280px;
             --header-height: 70px;
             --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            --border-radius: 8px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --box-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --box-shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
@@ -119,7 +110,7 @@
 
         .menu-title {
             padding: 0.75rem 1.5rem 0.5rem;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: var(--sidebar-text);
@@ -146,9 +137,9 @@
             font-weight: 500;
             transition: var(--transition);
             border-left: 3px solid transparent;
-            font-size: 0.9rem;
+            font-size: 1rem;
             margin: 0 0.5rem;
-            border-radius: 6px;
+            border-radius: 8px;
         }
 
         .menu-link:hover {
@@ -165,7 +156,7 @@
         }
 
         .menu-icon {
-            font-size: 1rem;
+            font-size: 1.3rem;
             margin-right: 0.75rem;
             width: 20px;
             text-align: center;
@@ -217,7 +208,7 @@
         }
 
         .user-name {
-            font-size: 0.85rem;
+            font-size: 1rem;
             font-weight: 600;
             margin-bottom: 0.1rem;
             color: white;
@@ -227,7 +218,7 @@
         }
 
         .user-role {
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             color: var(--sidebar-text);
             white-space: nowrap;
             overflow: hidden;
@@ -335,7 +326,7 @@
         }
 
         .page-title {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--dark);
             display: flex;
@@ -512,22 +503,22 @@
             font-size: 0.95rem;
         }
 
-        /* Student Actions Container */
-        .student-actions-container {
+        /* Admin Actions Container */
+        .admin-actions-container {
             display: flex;
             gap: 1.5rem;
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
 
-        .student-action-btn {
+        .admin-action-btn {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0.8rem 1.5rem;
+            padding: 0.9rem 1.75rem;
             border-radius: var(--border-radius);
             font-weight: 500;
             cursor: pointer;
@@ -535,13 +526,13 @@
             box-shadow: var(--box-shadow);
         }
 
-        .student-action-btn:hover {
+        .admin-action-btn:hover {
             background: var(--primary-dark);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: var(--box-shadow-lg);
         }
 
-        .student-action-btn i {
+        .admin-action-btn i {
             font-size: 1.1rem;
         }
 
@@ -551,25 +542,27 @@
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             margin-bottom: 2rem;
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: none;
             transition: var(--transition);
+            overflow: hidden;
         }
 
         .card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
             box-shadow: var(--box-shadow-lg);
         }
 
         .card-header {
-            padding: 1.25rem 1.5rem;
+            padding: 1.5rem 1.75rem;
             border-bottom: 1px solid var(--light-gray);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: var(--primary-extra-light);
         }
 
         .card-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--dark);
             display: flex;
@@ -582,12 +575,12 @@
         }
 
         .card-body {
-            padding: 1.5rem;
+            padding: 1.75rem;
         }
 
         /* Form Styles */
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-label {
@@ -600,7 +593,7 @@
 
         .form-control {
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 0.85rem 1.25rem;
             border: 1px solid var(--light-gray);
             border-radius: var(--border-radius);
             font-size: 0.95rem;
@@ -629,7 +622,7 @@
         .form-steps {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             position: relative;
         }
 
@@ -653,8 +646,8 @@
         }
 
         .step-number {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background-color: var(--light-gray);
             color: var(--gray);
@@ -662,12 +655,14 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            transition: var(--transition);
         }
 
         .step.active .step-number {
             background-color: var(--primary);
             color: white;
+            transform: scale(1.1);
         }
 
         .step.completed .step-number {
@@ -676,7 +671,7 @@
         }
 
         .step-label {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--gray);
             font-weight: 500;
         }
@@ -698,9 +693,9 @@
         /* Detail Grid */
         .detail-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 1.75rem;
         }
 
         /* Form Actions */
@@ -708,22 +703,23 @@
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
-            padding-top: 1.5rem;
+            padding-top: 1.75rem;
             border-top: 1px solid var(--light-gray);
-            margin-top: 1.5rem;
+            margin-top: 1.75rem;
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.85rem 1.75rem;
             border-radius: var(--border-radius);
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             border: none;
+            box-shadow: var(--box-shadow);
         }
 
         .btn-primary {
@@ -734,6 +730,7 @@
         .btn-primary:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: var(--box-shadow-lg);
         }
 
         .btn-outline {
@@ -753,6 +750,7 @@
 
         .btn-success:hover {
             background-color: #3aa76d;
+            transform: translateY(-2px);
         }
 
         .btn-danger {
@@ -762,30 +760,32 @@
 
         .btn-danger:hover {
             background-color: #e53e3e;
+            transform: translateY(-2px);
         }
 
-        /* Student Details */
-        .student-details {
+        /* Admin Details */
+        .admin-details {
             display: none;
         }
 
-        .student-details.active {
+        .admin-details.active {
             display: block;
         }
 
         .photo-section {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            gap: 1.75rem;
+            margin-bottom: 1.75rem;
         }
 
-        .student-photo {
-            width: 150px;
-            height: 150px;
+        .admin-photo {
+            width: 160px;
+            height: 160px;
             border-radius: var(--border-radius);
             object-fit: cover;
             box-shadow: var(--box-shadow);
+            border: 4px solid white;
         }
 
         .photo-actions {
@@ -798,40 +798,54 @@
             background-color: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
             overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .section-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-lg);
         }
 
         .section-header {
-            background-color: var(--primary-extra-light);
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--light-gray);
-            font-weight: 600;
-            color: var(--primary);
+            background: linear-gradient(120deg, var(--primary), var(--primary-dark));
+            padding: 1.25rem 1.75rem;
+            color: white;
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            font-weight: 600;
         }
 
         .section-body {
-            padding: 1.5rem;
+            padding: 1.75rem;
         }
 
         .detail-row {
             display: flex;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
         .detail-label {
-            font-weight: 500;
-            min-width: 150px;
+            font-weight: 600;
+            min-width: 180px;
             color: var(--gray);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
         .detail-value {
             flex: 1;
             color: var(--dark);
+            font-weight: 500;
         }
 
         /* Modal Styles */
@@ -858,8 +872,8 @@
         }
 
         .modal-header {
-            padding: 1.25rem 1.5rem;
-            background-color: var(--danger);
+            padding: 1.5rem 1.75rem;
+            background: linear-gradient(120deg, var(--danger), #e53e3e);
             color: white;
             display: flex;
             align-items: center;
@@ -867,7 +881,7 @@
         }
 
         .modal-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -875,11 +889,11 @@
         }
 
         .modal-body {
-            padding: 1.5rem;
+            padding: 1.75rem;
         }
 
         .modal-footer {
-            padding: 1rem 1.5rem;
+            padding: 1.25rem 1.75rem;
             background-color: var(--light-gray);
             border-top: 1px solid var(--light-gray);
             display: flex;
@@ -889,13 +903,14 @@
 
         /* Alert Messages */
         .alert {
-            padding: 1rem 1.25rem;
+            padding: 1.25rem 1.5rem;
             border-radius: var(--border-radius);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.75rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            box-shadow: var(--box-shadow);
         }
 
         .alert-success {
@@ -936,7 +951,7 @@
                 align-items: flex-start;
             }
             
-            .student-actions-container {
+            .admin-actions-container {
                 flex-direction: column;
                 gap: 1rem;
             }
@@ -958,7 +973,7 @@
             
             .detail-row {
                 flex-direction: column;
-                gap: 0.25rem;
+                gap: 0.5rem;
             }
             
             .detail-label {
@@ -979,6 +994,20 @@
                 width: 100%;
                 justify-content: center;
             }
+            
+            .form-steps {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .form-steps::before {
+                display: none;
+            }
+            
+            .step {
+                flex: 1;
+                min-width: calc(50% - 1rem);
+            }
         }
     </style>
 </head>
@@ -988,7 +1017,7 @@
         <div class="sidebar-header">
             <div class="logo">
                 <i class="fas fa-chalkboard-teacher logo-icon"></i>
-                <span>Admin</span> Management
+                <span>Edu</span>Track
             </div>
         </div>
         <div class="sidebar-menu">
@@ -1034,7 +1063,7 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="page-title">
-                    <i class="fas fa-chalkboard-teacher"></i>
+                    <i class="fas fa-user-shield"></i>
                     <span>Admin Management</span>
                 </div>
             </div>
@@ -1070,13 +1099,13 @@
                 </div>
             </div>
 
-            <!-- Faculty Actions -->
-            <div class="student-actions-container">
-                <button class="student-action-btn" id="addStudentBtn">
+            <!-- Admin Actions -->
+            <div class="admin-actions-container">
+                <button class="admin-action-btn" id="addAdminBtn">
                     <i class="fas fa-user-plus"></i>
                     Add Admin
                 </button>
-                <button class="student-action-btn" id="viewStudentBtn" style="background: var(--success);">
+                <button class="admin-action-btn" id="viewAdminBtn" style="background: var(--success);">
                     <i class="fas fa-search"></i>
                     View Admin
                 </button>
@@ -1094,14 +1123,14 @@
             </div>
             {% endif %}
 
-            <!-- Add Faculty Form (Multi-step) -->
-            <div class="card" id="addStudentForm" style="display: none;">
+            <!-- Add Admin Form (Multi-step) -->
+            <div class="card" id="addAdminForm" style="display: none;">
                 <div class="card-header">
                     <h2 class="card-title">
                         <i class="fas fa-user-plus"></i>
                         Add New Admin
                     </h2>
-                    <button class="btn btn-icon btn-outline" onclick="hideForm('addStudentForm')">
+                    <button class="btn btn-outline" onclick="hideForm('addAdminForm')">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -1178,7 +1207,7 @@
                             </div>
                             
                             <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="hideForm('addStudentForm')">
+                                <button type="button" class="btn btn-outline" onclick="hideForm('addAdminForm')">
                                     <i class="fas fa-times"></i> Cancel
                                 </button>
                                 <button type="button" class="btn btn-primary" onclick="validateStep(1)">
@@ -1562,19 +1591,19 @@
                 </div>
             </div>
 
-            <!-- View Faculty Form -->
-            <div class="card" id="viewStudentForm" style="display: none;">
+            <!-- View Admin Form -->
+            <div class="card" id="viewAdminForm" style="display: none;">
                 <div class="card-header">
                     <h2 class="card-title">
                         <i class="fas fa-search"></i>
                         Find Admin
                     </h2>
-                    <button class="btn btn-icon btn-outline" onclick="hideForm('viewStudentForm')">
+                    <button class="btn btn-outline" onclick="hideForm('viewAdminForm')">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{% url 'faculty_functions' %}">
+                    <form method="POST" action="{% url 'admin_functions' %}">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="view">
                         <div class="form-group">
@@ -1582,7 +1611,7 @@
                             <input type="text" id="searchcollegeId" name="college_id" class="form-control" placeholder="e.g. AD20249" required>
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="hideForm('viewStudentForm')">
+                            <button type="button" class="btn btn-outline" onclick="hideForm('viewAdminForm')">
                                 <i class="fas fa-times"></i> Cancel
                             </button>
                             <button type="submit" class="btn btn-primary">
@@ -1593,29 +1622,29 @@
                 </div>
             </div>
 
-            <!-- Faculty Details -->
+            <!-- Admin Details -->
             {% if admin %}
-            <div class="card student-details active" id="studentDetails">
+            <div class="card admin-details active" id="adminDetails">
                 <div class="card-header">
                     <h2 class="card-title">
                         <i class="fas fa-user"></i>
                         Admin Details
                     </h2>
-                    <button class="btn btn-icon btn-outline" onclick="hideStudentDetails()">
+                    <button class="btn btn-outline" onclick="hideAdminDetails()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="card-body">
                     <div class="photo-section">
                         <div class="photo-container">
-                            <img src="https://ui-avatars.com/api/?name={{ faculty.name }}&background=4f46e5&color=fff&size=120" alt="Faculty Photo" class="student-photo">
+                            <img src="https://ui-avatars.com/api/?name={{ admin.name }}&background=4f46e5&color=fff&size=120" alt="Admin Photo" class="admin-photo">
                         </div>
                         <div class="photo-actions">
-                            <button class="btn btn-icon btn-primary">
-                                <i class="fas fa-camera"></i>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-camera"></i> Change Photo
                             </button>
-                            <button class="btn btn-icon btn-secondary">
-                                <i class="fas fa-upload"></i>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-upload"></i> Upload
                             </button>
                         </div>
                     </div>
@@ -1693,7 +1722,7 @@
                                 <div class="detail-row">
                                     <span class="detail-label">Status:</span>
                                     <span class="detail-value">
-                                        <span class="badge" style="background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: var(--border-radius);">
+                                        <span class="badge" style="background: var(--success); color: white; padding: 0.5rem 1rem; border-radius: var(--border-radius);">
                                             <i class="fas fa-check-circle"></i> Active
                                         </span>
                                     </span>
@@ -1733,17 +1762,18 @@
                                     <span class="detail-value">{{ admin.pan_no }}</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Caste & National Identity -->
+                        <!-- Caste & National Identity -->
                         <div class="section-card">
                             <div class="section-header">
                                 <i class="fas fa-address-card"></i>
                                 Caste & National Identity 
                             </div>
                             <div class="section-body">
-                            <div class="detail-row">
+                                <div class="detail-row">
                                     <span class="detail-label">Martial Status:</span>
-                                    <span class="detail-value">{{ Administratormartial_status }}</span>
+                                    <span class="detail-value">{{ admin.martial_status }}</span>
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">Category:</span>
@@ -1766,7 +1796,7 @@
                                 Login Information
                             </div>
                             <div class="section-body">
-                            <div class="detail-row">
+                                <div class="detail-row">
                                     <span class="detail-label">User Name:</span>
                                     <span class="detail-value">{{ admin.username }}</span>
                                 </div>
@@ -1776,17 +1806,17 @@
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">Password:</span>
-                                    <span class="detail-value">{{ admin.password }}</span>
+                                    <span class="detail-value">••••••••</span>
                                 </div>
                              </div>
                         </div>
                     </div>
                     
                     <div class="form-actions">
-                        <button class="btn btn-outline" onclick="hideStudentDetails()">
+                        <button class="btn btn-outline" onclick="hideAdminDetails()">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ admin.college_id }}')">
+                        <button class="btn btn-primary" id="editAdminBtn" onclick="showEditForm('{{ admin.college_id }}')">
                             <i class="fas fa-edit"></i> Edit Details
                         </button>
                         <button class="btn btn-danger" onclick="showDeleteModal('{{ admin.college_id }}', '{{ admin.name }}', '{{ admin.department }}')">
@@ -1797,15 +1827,15 @@
             </div>
             {% endif %}
 
-            <!-- Edit Faculty Form -->
-            {% if faculty %}
-            <div class="card" id="editStudentForm" style="display: none;">
+            <!-- Edit Admin Form -->
+            {% if admin %}
+            <div class="card" id="editAdminForm" style="display: none;">
                 <div class="card-header">
                     <h2 class="card-title">
                         <i class="fas fa-edit"></i>
                         Edit Admin Details
                     </h2>
-                    <button class="btn btn-icon btn-outline" onclick="hideForm('editStudentForm')">
+                    <button class="btn btn-outline" onclick="hideForm('editAdminForm')">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -1842,9 +1872,9 @@
                                     <div class="form-group">
                                         <label for="editGender" class="form-label">Gender</label>
                                         <select id="editGender" name="gender" class="form-control" required>
-                                            <option value="Male" {% if faculty.gender == 'Male' %}selected{% endif %}>Male</option>
-                                            <option value="Female" {% if faculty.gender == 'Female' %}selected{% endif %}>Female</option>
-                                            <option value="Other" {% if faculty.gender == 'Other' %}selected{% endif %}>Other</option>
+                                            <option value="Male" {% if admin.gender == 'Male' %}selected{% endif %}>Male</option>
+                                            <option value="Female" {% if admin.gender == 'Female' %}selected{% endif %}>Female</option>
+                                            <option value="Other" {% if admin.gender == 'Other' %}selected{% endif %}>Other</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1860,24 +1890,24 @@
                                     <div class="form-group">
                                         <label for="editPosition" class="form-label">Position</label>
                                         <select id="editPosition" name="position" class="form-control" required>
-                                            <option value="Professor" {% if faculty.position == 'Professor' %}selected{% endif %}>Professor</option>
-                                            <option value="Associate Professor" {% if faculty.position == 'Associate Professor' %}selected{% endif %}>Associate Professor</option>
-                                            <option value="Assistant Professor" {% if faculty.position == 'Assistant Professor' %}selected{% endif %}>Assistant Professor</option>
-                                            <option value="Lecturer" {% if faculty.position == 'Lecturer' %}selected{% endif %}>Lecturer</option>
-                                            <option value="Visiting Admin" {% if faculty.position == 'Visiting Admin' %}selected{% endif %}>Visiting Admin</option>
+                                            <option value="Professor" {% if admin.position == 'Professor' %}selected{% endif %}>Professor</option>
+                                            <option value="Associate Professor" {% if admin.position == 'Associate Professor' %}selected{% endif %}>Associate Professor</option>
+                                            <option value="Assistant Professor" {% if admin.position == 'Assistant Professor' %}selected{% endif %}>Assistant Professor</option>
+                                            <option value="Lecturer" {% if admin.position == 'Lecturer' %}selected{% endif %}>Lecturer</option>
+                                            <option value="Visiting Admin" {% if admin.position == 'Visiting Admin' %}selected{% endif %}>Visiting Admin</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="editDepartment" class="form-label">Department</label>
                                         <select id="editDepartment" name="department" class="form-control" required>
-                                            <option value="Computer Science" {% if faculty.department == 'Computer Science' %}selected{% endif %}>Computer Science</option>
-                                            <option value="Mathematics" {% if faculty.department == 'Mathematics' %}selected{% endif %}>Mathematics</option>
-                                            <option value="Physics" {% if faculty.department == 'Physics' %}selected{% endif %}>Physics</option>
-                                            <option value="Chemistry" {% if faculty.department == 'Chemistry' %}selected{% endif %}>Chemistry</option>
-                                            <option value="Biology" {% if faculty.department == 'Biology' %}selected{% endif %}>Biology</option>
-                                            <option value="English" {% if faculty.department == 'English' %}selected{% endif %}>English</option>
-                                            <option value="History" {% if faculty.department == 'History' %}selected{% endif %}>History</option>
-                                            <option value="Economics" {% if faculty.department == 'Economics' %}selected{% endif %}>Economics</option>
+                                            <option value="Computer Science" {% if admin.department == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                                            <option value="Mathematics" {% if admin.department == 'Mathematics' %}selected{% endif %}>Mathematics</option>
+                                            <option value="Physics" {% if admin.department == 'Physics' %}selected{% endif %}>Physics</option>
+                                            <option value="Chemistry" {% if admin.department == 'Chemistry' %}selected{% endif %}>Chemistry</option>
+                                            <option value="Biology" {% if admin.department == 'Biology' %}selected{% endif %}>Biology</option>
+                                            <option value="English" {% if admin.department == 'English' %}selected{% endif %}>English</option>
+                                            <option value="History" {% if admin.department == 'History' %}selected{% endif %}>History</option>
+                                            <option value="Economics" {% if admin.department == 'Economics' %}selected{% endif %}>Economics</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -1954,9 +1984,9 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="editstatus" class="form-label">Martial Status</label>
-                                        <select id="editstatus" name="status" class="form-control" required>
-                                            <option value="married" {% if faculty.position == 'married' %}selected{% endif %}>Married</option>
-                                            <option value="unmarried" {% if faculty.position == 'unmarried' %}selected{% endif %}>Unmarried</option>
+                                        <select id="editstatus" name="martial_status" class="form-control" required>
+                                            <option value="Married" {% if admin.martial_status == 'Married' %}selected{% endif %}>Married</option>
+                                            <option value="Unmarried" {% if admin.martial_status == 'Unmarried' %}selected{% endif %}>Unmarried</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1964,7 +1994,7 @@
                         </div>
                         
                         <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="hideForm('editStudentForm')">
+                            <button type="button" class="btn btn-outline" onclick="hideForm('editAdminForm')">
                                 <i class="fas fa-times"></i> Cancel
                             </button>
                             <button type="submit" class="btn btn-success">
@@ -2033,31 +2063,31 @@
         });
 
         // DOM Elements
-        const addStudentBtn = document.getElementById('addStudentBtn');
-        const viewStudentBtn = document.getElementById('viewStudentBtn');
-        const addStudentForm = document.getElementById('addStudentForm');
-        const viewStudentForm = document.getElementById('viewStudentForm');
-        const studentDetails = document.getElementById('studentDetails');
-        const editStudentForm = document.getElementById('editStudentForm');
+        const addAdminBtn = document.getElementById('addAdminBtn');
+        const viewAdminBtn = document.getElementById('viewAdminBtn');
+        const addAdminForm = document.getElementById('addAdminForm');
+        const viewAdminForm = document.getElementById('viewAdminForm');
+        const adminDetails = document.getElementById('adminDetails');
+        const editAdminForm = document.getElementById('editAdminForm');
         const alertContainer = document.getElementById('alertContainer');
         const deleteModal = document.getElementById('deleteModal');
 
         // Event Listeners
-        addStudentBtn.addEventListener('click', () => showForm('addStudentForm'));
-        viewStudentBtn.addEventListener('click', () => showForm('viewStudentForm'));
+        addAdminBtn.addEventListener('click', () => showForm('addAdminForm'));
+        viewAdminBtn.addEventListener('click', () => showForm('viewAdminForm'));
 
         // Show form function
         function showForm(formId) {
             // Hide all forms first
-            [addStudentForm, viewStudentForm, studentDetails, editStudentForm].forEach(form => {
+            [addAdminForm, viewAdminForm, adminDetails, editAdminForm].forEach(form => {
                 if (form) form.style.display = 'none';
             });
             
             // Show the requested form
             document.getElementById(formId).style.display = 'block';
             
-            // Reset multi-step form if showing add faculty form
-            if (formId === 'addStudentForm') {
+            // Reset multi-step form if showing add admin form
+            if (formId === 'addAdminForm') {
                 resetMultiStepForm();
             }
         }
@@ -2067,28 +2097,28 @@
             document.getElementById(formId).style.display = 'none';
         }
 
-        // Show faculty details
-        function showStudentDetails() {
-            hideForm('viewStudentForm');
-            if (studentDetails) {
-                studentDetails.style.display = 'block';
-                studentDetails.classList.add('active');
+        // Show admin details
+        function showAdminDetails() {
+            hideForm('viewAdminForm');
+            if (adminDetails) {
+                adminDetails.style.display = 'block';
+                adminDetails.classList.add('active');
             }
         }
 
-        // Hide faculty details
-        function hideStudentDetails() {
-            if (studentDetails) {
-                studentDetails.style.display = 'none';
-                studentDetails.classList.remove('active');
+        // Hide admin details
+        function hideAdminDetails() {
+            if (adminDetails) {
+                adminDetails.style.display = 'none';
+                adminDetails.classList.remove('active');
             }
         }
 
         // Show edit form
         function showEditForm(employeeId) {
-            hideForm('studentDetails');
-            if (editStudentForm) {
-                editStudentForm.style.display = 'block';
+            hideForm('adminDetails');
+            if (editAdminForm) {
+                editAdminForm.style.display = 'block';
             }
         }
 

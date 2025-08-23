@@ -983,42 +983,42 @@
             {% endif %}
             
             <!-- Admin ID Card (Conditional) -->
-            {% if user_type == 'admin' %}
+            {% if user_type == 'Admin' %}
             <div class="id-card admin">
                 <div class="id-card-left">
                     <div class="id-card-logo">
                         <i class="fas fa-user-shield"></i>
                     </div>
                     
-                    {% if admin_detail.profile_picture %}
-                        <img src="{{ admin_detail.profile_picture.url }}" alt="Admin Photo" class="id-card-photo">
+                    {% if detail.profile_picture %}
+                        <img src="{{ detail.profile_picture.url }}" alt="Admin Photo" class="id-card-photo">
                     {% else %}
-                        <img src="https://ui-avatars.com/api/?name={{ admin_detail.name }}&background=f72585&color=fff" alt="Admin Photo" class="id-card-photo">
+                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=f72585&color=fff" alt="Admin Photo" class="id-card-photo">
                     {% endif %}
                     
                     <div class="id-card-qr">
                         <!-- QR Code for Admin ID -->
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ADMIN-{{ admin_detail.employee_id }}" alt="QR Code">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ADMIN-{{ detail.college_id }}" alt="QR Code">
                     </div>
                     <div class="id-card-title">ADMINISTRATOR ID CARD</div>
                 </div>
                 
                 <div class="id-card-right">
                     <div>
-                        <div class="id-card-name">{{ admin_detail.name }}</div>
+                        <div class="id-card-name">{{ detail.name }}</div>
                         
                         <div class="id-card-details">
                             <div class="id-card-detail-row">
                                 <div class="id-card-detail-label">Employee ID:</div>
-                                <div class="id-card-detail-value">{{ admin_detail.employee_id }}</div>
+                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
                             </div>
                             <div class="id-card-detail-row">
                                 <div class="id-card-detail-label">Department:</div>
-                                <div class="id-card-detail-value">{{ admin_detail.department }}</div>
+                                <div class="id-card-detail-value">{{ detail.department }}</div>
                             </div>
                             <div class="id-card-detail-row">
                                 <div class="id-card-detail-label">Access Level:</div>
-                                <div class="id-card-detail-value">{{ admin_detail.access_level }}</div>
+                                <div class="id-card-detail-value">{{ detail.position }}</div>
                             </div>
                             <div class="id-card-detail-row">
                                 <div class="id-card-detail-label">Valid Until:</div>

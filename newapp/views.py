@@ -1,10 +1,22 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q, Sum
-from .models import Student, Faculty, Course, Attendance # Import the new Attendance model
+from .models import Student, Faculty, Course, Attendance,Admin # Import the new Attendance model
 from django.http import JsonResponse
 import json # For handling JSON data from AJAX requests
 from django.shortcuts import render, redirect
+
+def home(request):
+    return render(request,'Home/home.html')
+
+def feature(request):
+    return render(request,'Home/feature.html')
+
+def success_stories(request):
+    return render(request,'Home/success_stories.html')
+
+def contact(request):
+    return render(request,'Home/contact.html')
 
 def login_view(request):
     if request.method == 'POST':
@@ -18,9 +30,26 @@ def login_view(request):
             return redirect('login')
         
         if role == 'admin':
-            if username == "Deepanshu" and password == "12345" and user_id=='AD20250':
-                request.session['username1'] = username
-                return redirect('dashboard')
+            admin_email = Admin.objects.all().values_list('email',flat=True)
+            if username in admin_email :
+                admin_detail = Admin.objects.get(email=username)
+                user_id = admin_detail.college_id
+                admin_phone = admin_detail.phone
+                if (password==admin_phone and user_id == user_id):
+                    request.session['username1'] =  admin_detail.name
+                    request.session['admin_college_id']= user_id
+                    request.session['role'] = role
+                    return redirect('dashboard')
+                else:
+                    messages.error(request, "Invalid admin credentials")
+                    return redirect('login')
+                
+            elif username =='Deepanshu' and user_id =='AD20250' and password == '12345' :
+                    request.session['username1'] =  username
+                    request.session['admin_college_id']= user_id
+                    request.session['role'] = role
+                    return redirect('dashboard')
+
             else:
                 messages.error(request, "Invalid admin credentials")
                 return redirect('login')
@@ -77,7 +106,7 @@ def login_view(request):
                 messages.error(request, f"An error occurred: {str(e)}")
                 return redirect('login')
     
-    return render(request, 'home.html')
+    return render(request, 'Home/login.html')
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -103,42 +132,33 @@ def forget_password(request):
                 'user_id': faculty_detail.user_id,
                 'password': faculty_detail.password  # Make sure this field exists in your model
             })
+         elif ID_str[0:2] == 'AD':
+             admin_detail = Admin.objects.get(college_id=college_id)
+             return JsonResponse({
+                'success': True,
+                'username': admin_detail.username,
+                'user_id': admin_detail.user_id,
+                'password': admin_detail.password  # Make sure this field exists in your model
+            })
         except (Student.DoesNotExist,Faculty.DoesNotExist):
             return JsonResponse({
                 'success': False,
                 'error': 'User not found'
             }, status=404)
+        
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
-# for admin signup
-def admin_signup(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        user_id = request.POST.get('user_id')
-        password = request.POST.get('password')
-        if username == "Deepanshu" and password == "12345" and user_id =="AD20250":
-            # Store admin authentication in session
-            request.session['admin_authenticated'] = True
-            return JsonResponse({'success': True})
-        else:
-            return JsonResponse({'success': False, 'error': 'Invalid admin credentials'})
-    
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
 
-# for admin add page
-def admin_functions(request):
-    # Check if admin is authenticated
-    if not request.session.get('admin_authenticated'):
-        return redirect('login')  # Or your login page
-    
-    # Render the add new admin page
-    return render(request, 'admin/admin_function_page.html')  # Create this template
+def admin_adding_page(request):
+    username = request.session.get('User_name')
+    return render(request,'admin/admin_page.html',{'username':username})
 
-def add_new_admin(request):
+def admin_card(request):
+    username = request.session.get('User_name')
+    admin_details = Admin.objects.all()
+    return render(request,'admin/admin_card.html',{'username':username,'admin_details':admin_details})
 
-    return render(request,'admin/admin_page.html')
-
-# profile details
+# profile details   
 def profile_details(request):
     role = request.session.get('role')
     if role == 'faculty':
@@ -149,6 +169,10 @@ def profile_details(request):
         student_id=request.session.get('student_college_id')
         details=Student.objects.get(college_id=student_id)
         return render(request,'profile.html',{'student':details})
+    elif role == 'admin':
+        admin_id=request.session.get('admin_college_id')
+        details=Admin.objects.get(college_id=admin_id)
+        return render(request,'profile.html',{'admin':details})
 
 # for uploading picture 
 def profile_upload(request):
@@ -176,9 +200,19 @@ def profile_upload(request):
             faculty.save()
             messages.success(request, 'Profile picture updated successfully!')
             return redirect('profile_details')
+    elif role == 'admin':
+        try:
+            admin = Admin.objects.get(college_id=request.session.get('admin_college_id'))
+        except Admin.DoesNotExist:
+            return redirect('dashboard')
+        
+        if request.method == 'POST' and 'profile_picture' in request.FILES:
+            admin.profile_picture = request.FILES['profile_picture']
+            admin.save()
+            messages.success(request, 'Profile picture updated successfully!')
+            return redirect('profile_details')
     
-    # If none of the above conditions are met, redirect to appropriate dashboard
-    return redirect('dashboard1' if role == 'faculty' else 'dashboard2')
+
 
 # for id card
 def id_card(request):
@@ -195,8 +229,12 @@ def id_card(request):
             faculty = Faculty.objects.get(college_id=request.session.get('faculty_college_id'))
             context['detail'] = faculty
             context['user_type'] = 'Faculty'
+        elif role == 'admin':
+            admin = Admin.objects.get(college_id=request.session.get('admin_college_id'))
+            context['detail'] = admin
+            context['user_type'] = 'Admin'
             
-    except (Student.DoesNotExist, Faculty.DoesNotExist):
+    except (Student.DoesNotExist, Faculty.DoesNotExist,Admin.DoesNotExist):
         return redirect('logoutdoor')
     
     return render(request, 'id_card.html', context)
@@ -204,9 +242,10 @@ def id_card(request):
 # for admin dashboard
 def dashboard_view(request):
     # Check if the user is logged in
-    username = request.session.get('username1')  # Retrieve username from session
+    username = request.session.get('username1')
+    college_id = request.session.get('admin_college_id')
     if username:
-        return render(request, 'dashboard.html', {'username': username})
+        return render(request, 'dashboard.html', {'username': username,'college_id':college_id})
     else:
         return redirect('login') 
 
@@ -570,6 +609,7 @@ def faculty_functions(request):
 
     return render(request, "faculty/faculty_page.html", context)
 
+from django.contrib.auth.models import User
 # for functions related to admin
 def admin_functions(request):
     context = {}
@@ -577,7 +617,7 @@ def admin_functions(request):
     if request.method == "POST":
         action = request.POST.get("action")
 
-        # Add faculty
+        # Add admin
         if action == "add":
             try:
                 # Auto-generate employee ID
@@ -625,11 +665,12 @@ def admin_functions(request):
                     username=email,
                     password=phone,
                 )
+                User.objects.create_user(username=email,password=phone,is_staff=True,is_superuser=True)
                 messages.success(request, "Admin added successfully!")
             except Exception as e:
                 messages.error(request, f"Error adding admin: {str(e)}")
 
-        # View faculty
+        # View admin
         elif action == "view":
             college_id = request.POST.get("college_id")
             try:
@@ -640,19 +681,22 @@ def admin_functions(request):
             except Exception as e:
                 messages.error(request, f"Error viewing admin: {str(e)}")
 
-        # Delete faculty
+        # Delete admin
         elif action == "delete":
             college_id = request.POST.get("college_id")
             try:
-                faculty = Faculty.objects.get(college_id=college_id)
-                faculty.delete()
+                admin = Admin.objects.get(college_id=college_id)
+                admin_profile = get_object_or_404(User,username=college_id)
+
+                admin_profile.delete()
+                admin.delete()
                 messages.success(request, "Admin deleted successfully.")
             except Admin.DoesNotExist:
                 messages.error(request, "Admin not found.")
             except Exception as e:
                 messages.error(request, f"Error deleting admin: {str(e)}")
 
-        # Alter faculty
+        # Alter admin
         elif action == "alter":
             college_id = request.POST.get("college_id")
             try:
@@ -690,15 +734,17 @@ def admin_functions(request):
 
     return render(request, "admin/admin_page.html", context)
 
+# 
+# # 
+# 
+# # 
+#            Attendance System Code
+# # 
+# 
+# # 
+# 
 # for attendance management student-faculty
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.template.loader import render_to_string
-from django.contrib import messages
-from .models import Course, Student
-
 def student_filtering_page(request):
     try:
         courses = Course.objects.all().values_list('name', flat=True)
@@ -725,7 +771,7 @@ def get_details(request):
         })
     except Exception as e:
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
-    
+# for filtering student details at faculty portal 
 def filtering_students(request):
     if not request.session.get('faculty_college_id'):
         messages.error(request, "Please login as faculty first")
@@ -751,16 +797,7 @@ def filtering_students(request):
 
     html = render_to_string('student/student_table.html', {'students': students})
     return JsonResponse({'html': html})
-
-from django.http import JsonResponse
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.template.loader import render_to_string
-from .models import Attendance, Student, Faculty, Course
-from django.views.decorators.csrf import csrf_exempt
-import json
-from django.utils import timezone
-
+# for saving attendance details
 @csrf_exempt
 def save_attendance(request):
     if not request.session.get('faculty_college_id'):
@@ -1659,7 +1696,8 @@ def faculty_filtering(request):
     })
     return JsonResponse({'html': html})
 
-from django.urls import reverse  # Add this import
+# for handling following functions
+from django.urls import reverse 
 @csrf_exempt
 def toggle_follow(request):
     if request.method == 'POST':
@@ -1715,7 +1753,7 @@ def toggle_follow(request):
         'message': 'Invalid request method'
     }, status=400)
 
-# for sending all info about al students for faculty portal
+# for sending all info about all students for faculty portal ----not working filtering
 def faculty_student_list(request):
     if not request.session.get('faculty_college_id'):
         messages.error(request, "Please login as faculty first")
@@ -1736,7 +1774,7 @@ def faculty_student_list(request):
     except Faculty.DoesNotExist:
         messages.error(request, "Faculty not found")
         return redirect('login')
-
+# for sending courses details
 def send_course_details(request):
     course_name = request.GET.get('course')
     try:
@@ -1748,6 +1786,7 @@ def send_course_details(request):
     except Course.DoesNotExist:
         return JsonResponse({'error': 'Course not found'}, status=404)
 
+# for student filtering
 def student_filter_details(request):
     if not request.session.get('faculty_college_id'):
         return JsonResponse({'status': 'error', 'message': 'Please login as faculty first'})
@@ -1779,16 +1818,12 @@ def student_filter_details(request):
         
     except Faculty.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Faculty not found'})
+    
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils import timezone
+# for create chat room
 from .models import ChatRoom, Message, Student, Faculty
-import json
-from django.db.models import Q
 import logging
 from django.core.cache import cache
-from django.shortcuts import get_object_or_404
 
 logger = logging.getLogger(__name__)
 @csrf_exempt
@@ -1820,7 +1855,7 @@ def create_chat_room(request):
 
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
+# for gwt messages
 @csrf_exempt
 def get_messages(request, room_id):
     try:
@@ -1882,7 +1917,7 @@ def get_messages(request, room_id):
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
+# for get user status 
 def get_user_status(user_identifier):
     try:
         if user_identifier.startswith('faculty_'):
@@ -1902,7 +1937,7 @@ def get_user_status(user_identifier):
     except Exception as e:
         logger.error(f"Error getting user status for {user_identifier}: {str(e)}")
         return None
-
+# for sending message
 @csrf_exempt
 def send_message(request):
     if request.method == 'POST':
@@ -1945,6 +1980,7 @@ def send_message(request):
     
     return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
 
+# for updating typing status---------not working
 @csrf_exempt
 def update_typing_status(request):
     if request.method == 'POST':
@@ -1962,6 +1998,7 @@ def update_typing_status(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
 
+# for update the read remark-------not working
 @csrf_exempt
 def mark_messages_as_read(request):
     if request.method == 'POST':
@@ -2000,17 +2037,26 @@ def mark_messages_as_read(request):
         status=400
     )
 
+# for delete chat 
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+import json
+import logging
 
 @csrf_exempt
 def delete_chat(request, room_id):
     if request.method == 'DELETE':
         try:
-            # Get current user identifier based on role
-            if request.user.role == 'student':
-                current_user_identifier = f"student_{request.user.college_id}"
-            else:
-                current_user_identifier = f"faculty_{request.user.college_id}"
+            # Get user identifier from request body
+            data = json.loads(request.body)
+            current_user_identifier = data.get('user_identifier')
+            
+            if not current_user_identifier:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'User identifier not provided'
+                }, status=400)
 
             chat_room = get_object_or_404(ChatRoom, id=room_id)
             

@@ -183,6 +183,7 @@ class Student(models.Model):
     def __str__(self):
         return f"{self.name} ({self.college_id})"    
 
+# for admin 
 class Admin(models.Model):
     # Basic Info
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)

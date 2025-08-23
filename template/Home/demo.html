@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Demo - EduTrack | Student Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ai-pulse {
+            animation: aiPulse 2s infinite;
+        }
+        
+        @keyframes aiPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+        }
+        
+        .chat-bubble {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .typing-indicator {
+            animation: typing 1.5s infinite;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+        
+        .form-input {
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass-effect fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">E</span>
+                    </div>
+                    <span class="text-gray-800 font-bold text-2xl">EduTrack</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Features</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Pricing</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</a>
+                </div>
+                <button class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                    Sign In
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Side - Content -->
+                <div class="fade-in">
+                    <div class="mb-6">
+                        <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                            🎓 For New Students
+                        </span>
+                    </div>
+                    <h1 class="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                        Experience
+                        <span class="bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
+                            EduTrack
+                        </span>
+                        Live Demo
+                    </h1>
+                    <p class="text-xl text-blue-100 mb-8 leading-relaxed">
+                        Discover how EduTrack revolutionizes student management with AI-powered features, 
+                        real-time analytics, and seamless collaboration tools. Book your personalized demo today!
+                    </p>
+                    
+                    <!-- Features List -->
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-blue-100 text-lg">AI-Powered Course Recommendations</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-blue-100 text-lg">Real-time Progress Tracking</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-blue-100 text-lg">Interactive Learning Dashboard</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-blue-100 text-lg">24/7 Student Support</span>
+                        </div>
+                    </div>
+
+                    <!-- Trust Indicators -->
+                    <div class="flex items-center space-x-6">
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-white">10K+</p>
+                            <p class="text-blue-200 text-sm">Active Students</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-white">500+</p>
+                            <p class="text-blue-200 text-sm">Universities</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-3xl font-bold text-white">98%</p>
+                            <p class="text-blue-200 text-sm">Satisfaction</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Booking Form -->
+                <div class="fade-in">
+                    <div class="glass-effect rounded-3xl p-8 hover-lift">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-gray-800 mb-2">Book Your Free Demo</h2>
+                            <p class="text-gray-600">Get a personalized walkthrough of EduTrack's features</p>
+                        </div>
+
+                        <form id="demoForm" class="space-y-6">
+                            <!-- Personal Information -->
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                                    <input type="text" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="John">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                                    <input type="text" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Doe">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                                <input type="email" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="john.doe@university.edu">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                <input type="tel" class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="+1 (555) 123-4567">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">University/Institution *</label>
+                                <input type="text" required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Harvard University">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Study Level *</label>
+                                <select required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Select your level</option>
+                                    <option value="undergraduate">Undergraduate</option>
+                                    <option value="graduate">Graduate</option>
+                                    <option value="phd">PhD</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Demo Time *</label>
+                                <select required class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Choose a time slot</option>
+                                    <option value="morning">Morning (9:00 AM - 12:00 PM)</option>
+                                    <option value="afternoon">Afternoon (12:00 PM - 5:00 PM)</option>
+                                    <option value="evening">Evening (5:00 PM - 8:00 PM)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">What interests you most about EduTrack?</label>
+                                <textarea class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent h-24 resize-none" placeholder="Tell us about your specific needs and interests..."></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl">
+                                Book My Free Demo
+                            </button>
+
+                            <p class="text-center text-sm text-gray-500">
+                                By booking a demo, you agree to our 
+                                <a href="#" class="text-blue-600 hover:underline">Terms of Service</a> and 
+                                <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Button -->
+    <button id="aiChatButton" class="ai-pulse fixed bottom-6 right-6 w-16 h-16 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors z-50 flex items-center justify-center">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        </svg>
+    </button>
+
+    <!-- AI Chat Widget -->
+    <div id="aiChatWidget" class="fixed bottom-24 right-6 w-80 bg-white rounded-2xl shadow-2xl z-50 hidden">
+        <!-- Chat Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-t-2xl">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                        <span class="text-sm font-bold">AI</span>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">EduTrack Assistant</h3>
+                        <p class="text-xs opacity-90">Online • Ready to help</p>
+                    </div>
+                </div>
+                <button id="closeChatButton" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="chatMessages" class="h-80 overflow-y-auto p-4 space-y-4">
+            <div class="chat-bubble">
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                        <span class="text-blue-600 text-xs font-bold">AI</span>
+                    </div>
+                    <div class="bg-gray-100 rounded-2xl rounded-tl-sm p-3 max-w-xs">
+                        <p class="text-sm text-gray-800">Hi! I'm your EduTrack AI assistant. I can help you with questions about our platform, features, pricing, or anything else you'd like to know! 🎓</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex space-x-2">
+                <input id="chatInput" type="text" placeholder="Ask me anything about EduTrack..." class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                <button id="sendChatButton" class="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form submission
+        document.getElementById('demoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const firstName = formData.get('firstName') || document.querySelector('input[placeholder="John"]').value;
+            const email = formData.get('email') || document.querySelector('input[type="email"]').value;
+            
+            // Show success message
+            alert(`Thank you ${firstName}! Your demo has been scheduled. We'll send confirmation details to ${email} shortly. Our team will contact you within 24 hours to confirm your preferred time slot.`);
+            
+            // Reset form
+            this.reset();
+        });
+
+        // AI Chat functionality
+        const aiChatButton = document.getElementById('aiChatButton');
+        const aiChatWidget = document.getElementById('aiChatWidget');
+        const closeChatButton = document.getElementById('closeChatButton');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatButton = document.getElementById('sendChatButton');
+
+        // AI responses database
+        const aiResponses = {
+            'features': "EduTrack offers AI-powered course recommendations, real-time progress tracking, interactive dashboards, assignment management, grade analytics, and 24/7 student support. Would you like to know more about any specific feature?",
+            'pricing': "We offer flexible pricing plans starting from $9/month for individual students, $29/month for premium features, and custom enterprise solutions for institutions. All plans include a 14-day free trial!",
+            'demo': "Great! You can book a free personalized demo using the form on this page. Our demos typically last 30 minutes and cover all major features. When would you prefer to schedule yours?",
+            'support': "We provide 24/7 student support through live chat, email, and phone. Our average response time is under 2 hours, and we have a 98% customer satisfaction rate!",
+            'ai': "Our AI features include smart course recommendations based on your learning style, predictive analytics for academic performance, automated study scheduling, and intelligent tutoring assistance.",
+            'mobile': "Yes! EduTrack has native mobile apps for iOS and Android, plus a responsive web interface that works perfectly on all devices. You can access everything on the go!",
+            'integration': "EduTrack integrates with popular platforms like Canvas, Blackboard, Google Classroom, Zoom, Microsoft Teams, and many more. We also offer API access for custom integrations.",
+            'security': "We take security seriously with end-to-end encryption, SOC 2 compliance, GDPR compliance, regular security audits, and secure cloud infrastructure. Your data is always protected.",
+            'default': "That's a great question! I'd be happy to help you learn more about EduTrack. You can ask me about our features, pricing, mobile apps, integrations, security, or anything else. You can also book a free demo to see everything in action!"
+        };
+
+        // Toggle chat widget
+        aiChatButton.addEventListener('click', function() {
+            aiChatWidget.classList.toggle('hidden');
+            if (!aiChatWidget.classList.contains('hidden')) {
+                chatInput.focus();
+            }
+        });
+
+        closeChatButton.addEventListener('click', function() {
+            aiChatWidget.classList.add('hidden');
+        });
+
+        // Send message function
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Generate AI response
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = generateAIResponse(message);
+                addMessage(response, 'ai');
+            }, 1500);
+        }
+
+        // Add message to chat
+        function addMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-bubble';
+
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex items-start justify-end">
+                        <div class="bg-blue-600 text-white rounded-2xl rounded-tr-sm p-3 max-w-xs">
+                            <p class="text-sm">${message}</p>
+                        </div>
+                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
+                            <span class="text-white text-xs font-bold">You</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="text-blue-600 text-xs font-bold">AI</span>
+                        </div>
+                        <div class="bg-gray-100 rounded-2xl rounded-tl-sm p-3 max-w-xs">
+                            <p class="text-sm text-gray-800">${message}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Generate AI response
+        function generateAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            for (const [key, response] of Object.entries(aiResponses)) {
+                if (key !== 'default' && lowerMessage.includes(key)) {
+                    return response;
+                }
+            }
+            
+            // Check for common greetings
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+                return "Hello! Welcome to EduTrack! I'm here to help you learn about our student management platform. What would you like to know?";
+            }
+            
+            // Check for thanks
+            if (lowerMessage.includes('thank') || lowerMessage.includes('thanks')) {
+                return "You're welcome! Is there anything else you'd like to know about EduTrack? I'm here to help! 😊";
+            }
+            
+            return aiResponses.default;
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typingIndicator';
+            typingDiv.className = 'chat-bubble';
+            typingDiv.innerHTML = `
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                        <span class="text-blue-600 text-xs font-bold">AI</span>
+                    </div>
+                    <div class="bg-gray-100 rounded-2xl rounded-tl-sm p-3">
+                        <div class="flex space-x-1">
+                            <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator" style="animation-delay: 0.2s;"></div>
+                            <div class="w-2 h-2 bg-gray-400 rounded-full typing-indicator" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Event listeners for chat
+        sendChatButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Add smooth animations on scroll
+        window.addEventListener('scroll', function() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Form input animations
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('label').style.color = '#3B82F6';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.querySelector('label').style.color = '#374151';
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9738364871e10c2e',t:'MTc1NTkyNjk2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

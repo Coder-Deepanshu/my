@@ -7,15 +7,18 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     # urls for login
-    path('', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logoutdoor'),
+    path('', views.home, name='home'),
+    path('Feature', views.feature, name='feature'),
+    path('Success-Stories', views.success_stories, name='success_stories'),
+    path('Contact-Details', views.contact, name='contact'),
+    path('Login-In', views.login_view, name='login'),
+    path('Log-Out', views.logout_view, name='logoutdoor'),
     # urls for dashboards
-    path('dashboard/', views.dashboard_view, name='dashboard'),
-    path('dashboard1/', views.dashboard1, name='dashboard1'),
-    path('dashboard2/', views.dashboard2, name='dashboard2'), 
+    path('Admin/Dashboard/', views.dashboard_view, name='dashboard'),
+    path('Faculty/Dashboard/', views.dashboard1, name='dashboard1'),
+    path('Student/Dashboard/', views.dashboard2, name='dashboard2'), 
     # urls for student functions
     path("student/", views.student_functions, name="student"),
-    path("admin_functions/", views.admin_functions, name="admin_functions"),
     path('students/', views.student_filter_page,name='students'),
     path('get_course_details/', views.get_course_details),
     path('filter_students/', views.filter_students),
@@ -23,15 +26,16 @@ urlpatterns = [
     path('bulk_update_students/', views.bulk_update_students, name='bulk_update_students'),
     # urls for faculty functions 
     path("faculty_functions/", views.faculty_functions, name="faculty_functions"),
+    path("admin_functions/", views.admin_functions, name="admin_functions"),
     # urls for profile
     path("profile_details/", views.profile_details, name="profile_details"),
     # for id card
     path("id_card/", views.id_card, name="id_card"),
     path('forget_password/', views.forget_password, name='forget_password'),
-    path('admin-signup/', views.admin_signup, name='admin_signup'),
-    path('admin_functions/', views.admin_functions, name='admin_functions'),
+    path('admin-adding-page/', views.admin_adding_page, name='admin_adding_page'),
+    path('admin-card/', views.admin_card, name='admin_card'),
+    
     path('profile_upload/', views.profile_upload, name='profile_upload'),
-    path('add_new_admin/', views.add_new_admin, name='add_new_admin'),
     
     # for attendance management student-faculty
     path('student_filtering_page/', views.student_filtering_page, name='student_filtering_page'),
@@ -67,6 +71,7 @@ urlpatterns = [
     path('faculty/students/', views.student_filter_details, name='student_list_partial'),
     # urls.py
     path('delete_chat/<int:room_id>/', views.delete_chat, name='delete_chat'),
+    
 ]
 
 if settings.DEBUG:

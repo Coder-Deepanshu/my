@@ -1306,6 +1306,15 @@
                         <span class="menu-text">Faculty</span>
                     </a>
                 </li>
+
+                {% if college_id == 'AD20250' %}
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="admin-tab">
+                        <i class="fas fa-chalkboard-teacher menu-icon"></i>
+                        <span class="menu-text">Admin</span>
+                    </a>
+                </li>
+                {% endif %}
                 
                 <li class="menu-item">
                     <a href="#" class="menu-link" data-tab="result-tab">
@@ -1371,8 +1380,8 @@
         <div class="sidebar-footer">
             <img src="https://tse4.mm.bing.net/th/id/OIP.4-vvnJtnPtgaKBmpg8t13AHaHa?pid=0" alt="User" class="user-avatar">
             <div class="user-info">
-                <div class="user-name">Admin User</div>
-                <div class="user-role">{{ username }}</div>
+                <div class="user-name">{{ username }}</div>
+                <div class="user-role">Administrator</div>
             </div>
             <a href="{% url 'logoutdoor' %}">
             <button class="logout-btn">
@@ -1407,8 +1416,8 @@
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-user mr-2" style="color: var(--primary);"></i> Profile
                         </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog mr-2" style="color: var(--primary);"></i> Settings
+                        <a href="{% url 'id_card' %}" class="dropdown-item">
+                            <i class="fas fa-cog mr-2" style="color: var(--primary);"></i> ID Card
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="{% url 'logoutdoor' %}" class="dropdown-item">
@@ -1747,6 +1756,44 @@
                     
                 </div>
             </div>
+
+            <!-- admin -->
+             <div id="admin-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Admin Management</h1>
+                        <p>Manage all admin-related activities and information</p>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search admin...">
+                    </div>
+                </div>
+                
+                <!-- ADMIN Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="student-action-title">Add Admin</h3>
+                        <p class="student-action-desc">View and edit individual faculty records</p>
+                        <a href="{% url 'admin_functions' %}" class="student-action-btn">Open</a>
+                    </div>
+                    
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="student-action-title">View Admin</h3>
+                        <p class="student-action-desc">View all available admin list</p>
+                        <a href="{% url 'admin_card' %}" class="student-action-btn">Open</a>
+                    </div>
+                    
+                </div>
+            </div>
+
 
             <!-- for result -->
              
@@ -2316,6 +2363,9 @@
                     pageTitle.textContent = 'Grade';
                 }else if (tabId === 'notification-tab') {
                     pageTitle.textContent = 'Notifications';
+                }
+                else if (tabId === 'adminSignupModal') {
+                    pageTitle.textContent = 'Admin';
                 }
                 
                 // Close sidebar on mobile

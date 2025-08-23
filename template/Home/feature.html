@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Features & Benefits</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #2b2d42;
+            --darker: #1a1a2e;
+            --danger: #e63946;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --info: #38a3a5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .feature-card {
+            transition: all 0.3s ease;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .benefit-slider {
+            scroll-behavior: smooth;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .benefit-slider::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+
+        .slider-nav {
+            transition: all 0.3s ease;
+        }
+
+        .slider-nav:hover {
+            transform: scale(1.1);
+            background: var(--primary);
+            color: white;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .counter {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md fixed w-full top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mr-3">
+                        <span class="text-white font-bold text-lg">E</span>
+                    </div>
+                    <span class="text-gray-800 font-bold text-2xl">EduTrack</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Home</a>
+                    <a href="#" class="text-blue-600 font-medium">Features</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Pricing</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</a>
+                    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 md:pt-32 md:pb-24 hero-gradient text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight">
+                Discover <span class="text-yellow-300">EduTrack</span> Features
+            </h1>
+            <p class="text-xl text-blue-100 max-w-3xl mx-auto mb-10">
+                Explore how our AI-powered learning platform can transform education and unlock your potential
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="#features" class="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                    Explore Features
+                </a>
+                <a href="#benefits" class="bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-900 transition-colors">
+                    Admission Benefits
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-blue-600 counter">50</div>
+                    <div class="text-gray-600 mt-2">Universities</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-blue-600 counter">12000</div>
+                    <div class="text-gray-600 mt-2">Active Students</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-blue-600 counter">94</div>
+                    <div class="text-gray-600 mt-2">% Success Rate</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-blue-600 counter">24</div>
+                    <div class="text-gray-600 mt-2">/7 Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Powerful <span class="gradient-text">Features</span>
+                </h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    EduTrack combines cutting-edge technology with pedagogical expertise to deliver an unparalleled learning experience
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-brain text-3xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">AI-Powered Learning</h3>
+                    <p class="text-gray-600 mb-4">
+                        Our adaptive learning algorithm creates personalized educational paths based on your strengths and weaknesses.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Personalized curriculum</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Smart recommendations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Progress prediction</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-3xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Real-Time Analytics</h3>
+                    <p class="text-gray-600 mb-4">
+                        Track performance with detailed analytics and visualizations that highlight areas for improvement.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Performance dashboards</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Skill gap analysis</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Comparative analytics</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-3xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Collaborative Learning</h3>
+                    <p class="text-gray-600 mb-4">
+                        Connect with peers and educators through our integrated collaboration tools and discussion forums.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Group projects</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Peer feedback</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Virtual classrooms</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-mobile-alt text-3xl text-yellow-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Mobile Learning</h3>
+                    <p class="text-gray-600 mb-4">
+                        Access your courses and learning materials anytime, anywhere with our responsive mobile application.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Offline access</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Sync across devices</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Mobile assessments</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-certificate text-3xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Certification</h3>
+                    <p class="text-gray-600 mb-4">
+                        Earn recognized certificates and badges that validate your skills and knowledge to employers.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Industry-recognized</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Digital credentials</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Skill verification</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card bg-white p-8 rounded-xl shadow-md">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-hands-helping text-3xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">24/7 Support</h3>
+                    <p class="text-gray-600 mb-4">
+                        Get help whenever you need it with our round-the-clock support team and extensive knowledge base.
+                    </p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Live chat support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Video tutorials</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <span class="text-gray-600">Community forums</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Slider Section -->
+    <section id="benefits" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Admission <span class="gradient-text">Benefits</span>
+                </h2>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Discover the advantages of joining EduTrack and how it can accelerate your educational journey
+                </p>
+            </div>
+
+            <!-- Slider Navigation -->
+            <div class="flex justify-center mb-12">
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                    <button type="button" data-slide="0" class="slider-nav-btn py-2 px-4 text-sm font-medium rounded-l-lg border border-gray-200 bg-blue-600 text-white">
+                        Career Advancement
+                    </button>
+                    <button type="button" data-slide="1" class="slider-nav-btn py-2 px-4 text-sm font-medium border-t border-b border-gray-200 bg-white text-gray-900 hover:bg-gray-100">
+                        Learning Flexibility
+                    </button>
+                    <button type="button" data-slide="2" class="slider-nav-btn py-2 px-4 text-sm font-medium rounded-r-md border border-gray-200 bg-white text-gray-900 hover:bg-gray-100">
+                        Cost Effectiveness
+                    </button>
+                </div>
+            </div>
+
+            <!-- Slider Content -->
+            <div class="relative overflow-hidden">
+                <div class="benefit-slider flex transition-transform duration-500 ease-in-out">
+                    <!-- Slide 1 -->
+                    <div class="w-full flex-shrink-0">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Accelerate Your Career Path</h3>
+                                <p class="text-gray-600 mb-6">
+                                    EduTrack students experience 73% faster career progression compared to traditional education paths. Our industry-aligned curriculum ensures you gain the skills employers are looking for.
+                                </p>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-rocket text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">87% of graduates report salary increases within 6 months</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-briefcase text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">Direct connections to our hiring partners</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-network-wired text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">Exclusive networking events with industry leaders</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="md:w-1/2">
+                                <div class="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-white">
+                                    <div class="text-5xl font-bold mb-2">73%</div>
+                                    <div class="text-xl mb-6">Faster Career Progression</div>
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-full bg-blue-300 bg-opacity-50 rounded-full h-4">
+                                            <div class="bg-white h-4 rounded-full" style="width: 73%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm">EduTrack graduates vs traditional education</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2 -->
+                    <div class="w-full flex-shrink-0">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Learn On Your Schedule</h3>
+                                <p class="text-gray-600 mb-6">
+                                    With EduTrack, you can balance education with other commitments. Our flexible learning model adapts to your life, not the other way around.
+                                </p>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-clock text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">Access courses 24/7 from any device</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-calendar-alt text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">Self-paced learning with personalized deadlines</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-pause-circle text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">Option to pause and resume studies as needed</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="md:w-1/2">
+                                <div class="bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl p-8 text-white">
+                                    <div class="text-5xl font-bold mb-2">94%</div>
+                                    <div class="text-xl mb-6">Completion Rate</div>
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-full bg-green-300 bg-opacity-50 rounded-full h-4">
+                                            <div class="bg-white h-4 rounded-full" style="width: 94%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm">Higher completion rates than MOOCs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="w-full flex-shrink-0">
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Maximize Your Education Investment</h3>
+                                <p class="text-gray-600 mb-6">
+                                    EduTrack provides exceptional value with transparent pricing and outcomes-focused education. Get more return from your educational investment.
+                                </p>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-dollar-sign text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">60% lower cost than traditional degree programs</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-graduation-cap text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">Pay-as-you-learn options with no upfront fees</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-shield-alt text-blue-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-800">Money-back guarantee if you don't land a job within 6 months</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="md:w-1/2">
+                                <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-8 text-white">
+                                    <div class="text-5xl font-bold mb-2">60%</div>
+                                    <div class="text-xl mb-6">Cost Savings</div>
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-full bg-amber-300 bg-opacity-50 rounded-full h-4">
+                                            <div class="bg-white h-4 rounded-full" style="width: 60%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm">Compared to traditional education</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slider Controls -->
+            <div class="flex justify-center mt-12 space-x-4">
+                <button class="slider-nav w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-nav w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Education?</h2>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
+                Join thousands of students who have accelerated their learning with EduTrack
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <a href="#" class="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-lg">
+                    Apply Now
+                </a>
+                <a href="#" class="bg-gray-800 text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-700 transition-colors text-lg">
+                    Schedule a Demo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold">E</span>
+                        </div>
+                        <span class="text-xl font-bold">EduTrack</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">Transforming education through innovative technology.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">System Status</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Connect</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-lg"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin text-lg"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook text-lg"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
+                <p>&copy; 2023 EduTrack. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Slider functionality
+        const slider = document.querySelector('.benefit-slider');
+        const slides = document.querySelectorAll('.benefit-slider > div');
+        const navButtons = document.querySelectorAll('.slider-nav-btn');
+        const prevButton = document.querySelector('.slider-nav:first-child');
+        const nextButton = document.querySelector('.slider-nav:last-child');
+        
+        let currentSlide = 0;
+        
+        function goToSlide(index) {
+            if (index < 0) index = slides.length - 1;
+            if (index >= slides.length) index = 0;
+            
+            slider.style.transform = `translateX(-${index * 100}%)`;
+            currentSlide = index;
+            
+            // Update active navigation button
+            navButtons.forEach((btn, i) => {
+                if (i === index) {
+                    btn.classList.add('bg-blue-600', 'text-white');
+                    btn.classList.remove('bg-white', 'text-gray-900', 'hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-gray-900', 'hover:bg-gray-100');
+                }
+            });
+        }
+        
+        // Navigation buttons
+        navButtons.forEach((btn, index) => {
+            btn.addEventListener('click', () => goToSlide(index));
+        });
+        
+        // Previous and next buttons
+        prevButton.addEventListener('click', () => goToSlide(currentSlide - 1));
+        nextButton.addEventListener('click', () => goToSlide(currentSlide + 1));
+        
+        // Auto slide every 5 seconds
+        setInterval(() => {
+            goToSlide(currentSlide + 1);
+        }, 5000);
+        
+        // Counter animation
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200;
+        
+        counters.forEach(counter => {
+            const target = +counter.innerText;
+            let count = 0;
+            
+            const updateCount = () => {
+                const increment = target / speed;
+                
+                if (count < target) {
+                    count += increment;
+                    counter.innerText = Math.ceil(count);
+                    setTimeout(updateCount, 1);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            
+            // Start counting when element is in viewport
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    updateCount();
+                    observer.disconnect();
+                }
+            });
+            
+            observer.observe(counter);
+        });
+    </script>
+</body>
+</html>

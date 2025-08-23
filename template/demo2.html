@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success Stories - EduCard College Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #4a6cfa;
+            --secondary: #ff6b6b;
+            --accent: #45c7d5;
+            --dark: #2d3748;
+            --light: #f8f9fa;
+            --success: #3dd598;
+            --warning: #ffce73;
+            --gray: #718096;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(120deg, var(--primary), var(--accent));
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--warning);
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-outline {
+            border: 2px solid white;
+            color: white;
+            background: transparent;
+            margin-right: 15px;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid white;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: transparent;
+            color: var(--secondary);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+            border: 2px solid var(--accent);
+        }
+
+        .btn-accent:hover {
+            background: transparent;
+            color: var(--accent);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        /* Success Stories Section */
+        .success-stories {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 50px;
+        }
+
+        .filter-btn {
+            padding: 10px 25px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .story-img {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .story-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .story-card:hover .story-img img {
+            transform: scale(1.1);
+        }
+
+        .story-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .story-content {
+            padding: 30px;
+        }
+
+        .story-content h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+
+        .story-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .story-meta i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
+        .story-meta div {
+            margin-right: 20px;
+        }
+
+        .story-excerpt {
+            color: var(--gray);
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+
+        .story-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Video Stories */
+        .video-stories {
+            padding: 80px 0;
+            background: linear-gradient(to right, #f5f7fb, #e8ecf1);
+        }
+
+        .video-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .video-thumb {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .video-content {
+            padding: 20px;
+        }
+
+        .video-content h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .video-meta {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .video-meta i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
+        /* Impact Stats */
+        .impact-stats {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-text {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            text-align: center;
+            background: white;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .cta p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            font-size: 1.2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 15px;
+        }
+
+        .footer-column ul li a {
+            color: #c5c5c5;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column ul li a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #c5c5c5;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 900px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .modal-body {
+            padding: 40px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-story-header {
+            margin-bottom: 30px;
+        }
+
+        .modal-story-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .modal-story-meta {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .modal-story-meta div {
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-story-meta i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
+        .modal-story-content {
+            line-height: 1.8;
+            color: var(--gray);
+        }
+
+        .modal-story-content p {
+            margin-bottom: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin: 20px 0;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 10px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>EduCard</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#features">Features</a></li>
+                        <li><a href="success-stories.html" class="active">Success Stories</a></li>
+                        <li><a href="index.html#about">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn-outline">Login</a>
+                    <a href="signup.html" class="btn btn-primary">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Transforming Education Institutions</h1>
+            <p>Discover how EduCard has helped colleges and universities around the world streamline their operations and enhance the learning experience.</p>
+            <div class="cta-buttons">
+                <a href="#stories" class="btn btn-primary">Read Success Stories</a>
+                <a href="contact.html" class="btn btn-accent">Share Your Story</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories Section -->
+    <section class="success-stories" id="stories">
+        <div class="container">
+            <div class="section-title">
+                <h2>Institution Success Stories</h2>
+                <p>Real stories from educational institutions that have transformed their operations with EduCard</p>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Universities</button>
+                <button class="filter-btn">Colleges</button>
+                <button class="filter-btn">Schools</button>
+                <button class="filter-btn">International</button>
+            </div>
+
+            <div class="stories-grid">
+                <!-- Story 1 -->
+                <div class="story-card">
+                    <div class="story-img">
+                        <img src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Tech University">
+                        <div class="story-badge">University</div>
+                    </div>
+                    <div class="story-content">
+                        <h3>Tech University Increases Efficiency by 65%</h3>
+                        <div class="story-meta">
+                            <div><i class="fas fa-map-marker-alt"></i> New York, USA</div>
+                            <div><i class="fas fa-calendar-alt"></i> June 2023</div>
+                        </div>
+                        <p class="story-excerpt">Tech University implemented EduCard to streamline their student management system and saw dramatic improvements in operational efficiency...</p>
+                        <a href="#" class="btn btn-outline read-more" data-story="1">Read Full Story</a>
+                        <div class="story-stats">
+                            <div class="stat">
+                                <div class="stat-number">65%</div>
+                                <div class="stat-label">Efficiency Gain</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">42%</div>
+                                <div class="stat-label">Cost Reduction</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">89%</div>
+                                <div class="stat-label">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story 2 -->
+                <div class="story-card">
+                    <div class="story-img">
+                        <img src="https://images.unsplash.com/photo-1591123120675-6f7f1aae0e5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Global College">
+                        <div class="story-badge">College</div>
+                    </div>
+                    <div class="story-content">
+                        <h3>Global College Enhances Student Experience</h3>
+                        <div class="story-meta">
+                            <div><i class="fas fa-map-marker-alt"></i> London, UK</div>
+                            <div><i class="fas fa-calendar-alt"></i> April 2023</div>
+                        </div>
+                        <p class="story-excerpt">By implementing EduCard's comprehensive platform, Global College was able to significantly improve student engagement and satisfaction...</p>
+                        <a href="#" class="btn btn-outline read-more" data-story="2">Read Full Story</a>
+                        <div class="story-stats">
+                            <div class="stat">
+                                <div class="stat-number">78%</div>
+                                <div class="stat-label">Engagement Increase</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">54%</div>
+                                <div class="stat-label">Time Saved</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">92%</div>
+                                <div class="stat-label">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story 3 -->
+                <div class="story-card">
+                    <div class="story-img">
+                        <img src="https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="City Institute">
+                        <div class="story-badge">Institute</div>
+                    </div>
+                    <div class="story-content">
+                        <h3>City Institute Saves $200k Annually</h3>
+                        <div class="story-meta">
+                            <div><i class="fas fa-map-marker-alt"></i> Toronto, Canada</div>
+                            <div><i class="fas fa-calendar-alt"></i> March 2023</div>
+                        </div>
+                        <p class="story-excerpt">City Institute adopted EduCard to modernize their administrative processes and achieved significant cost savings while improving service delivery...</p>
+                        <a href="#" class="btn btn-outline read-more" data-story="3">Read Full Story</a>
+                        <div class="story-stats">
+                            <div class="stat">
+                                <div class="stat-number">$200k</div>
+                                <div class="stat-label">Annual Savings</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">60%</div>
+                                <div class="stat-label">Process Improvement</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">95%</div>
+                                <div class="stat-label">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story 4 -->
+                <div class="story-card">
+                    <div class="story-img">
+                        <img src="https://images.unsplash.com/photo-1524178232400-38d816f003ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="International School">
+                        <div class="story-badge">International</div>
+                    </div>
+                    <div class="story-content">
+                        <h3>International School Streamlines Operations</h3>
+                        <div class="story-meta">
+                            <div><i class="fas fa-map-marker-alt"></i> Singapore</div>
+                            <div><i class="fas fa-calendar-alt"></i> February 2023</div>
+                        </div>
+                        <p class="story-excerpt">This international school implemented EduCard to manage their diverse student body and saw dramatic improvements in communication and efficiency...</p>
+                        <a href="#" class="btn btn-outline read-more" data-story="4">Read Full Story</a>
+                        <div class="story-stats">
+                            <div class="stat">
+                                <div class="stat-number">70%</div>
+                                <div class="stat-label">Efficiency Gain</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">45%</div>
+                                <div class="stat-label">Time Saved</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">91%</div>
+                                <div class="stat-label">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story 5 -->
+                <div class="story-card">
+                    <div class="story-img">
+                        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Community College">
+                        <div class="story-badge">College</div>
+                    </div>
+                    <div class="story-content">
+                        <h3>Community College Boosts Enrollment</h3>
+                        <div class="story-meta">
+                            <div><i class="fas fa-map-marker-alt"></i> California, USA</div>
+                            <div><i class="fas fa-calendar-alt"></i> January 2023</div>
+                        </div>
+                        <p class="story-excerpt">After implementing EduCard's student management system, this community college saw a significant increase in enrollment and student retention...</p>
+                        <a href="#" class="btn btn-outline read-more" data-story="5">Read Full Story</a>
+                        <div class="story-stats">
+                            <div class="stat">
+                                <div class="stat-number">35%</div>
+                                <div class="stat-label">Enrollment Increase</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">28%</div>
+                                <div class="stat-label">Retention Improvement</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">87%</div>
+                                <div class="stat-label">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story 6 -->
+                <div class="story-card">
+                    <div class="story-img">
+                        <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Online University">
+                        <div class="story-badge">University</div>
+                    </div>
+                    <div class="story-content">
+                        <h3>Online University Enhances Learning Experience</h3>
+                        <div class="story-meta">
+                            <div><i class="fas fa-map-marker-alt"></i> Remote</div>
+                            <div><i class="fas fa-calendar-alt"></i> December 2022</div>
+                        </div>
+                        <p class="story-excerpt">This fully online university leveraged EduCard's platform to create a seamless digital learning environment for students worldwide...</p>
+                        <a href="#" class="btn btn-outline read-more" data-story="6">Read Full Story</a>
+                        <div class="story-stats">
+                            <div class="stat">
+                                <div class="stat-number">62%</div>
+                                <div class="stat-label">Engagement Increase</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">40%</div>
+                                <div class="stat-label">Process Improvement</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-number">94%</div>
+                                <div class="stat-label">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Stats -->
+    <section class="impact-stats">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Impact in Numbers</h2>
+                <p>Quantifiable results from institutions using EduCard</p>
+            </div>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="stat-number">500+</div>
+                    <div class="stat-text">Institutions</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number">250k+</div>
+                    <div class="stat-text">Students</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-number">15k+</div>
+                    <div class="stat-text">Faculty</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-number">68%</div>
+                    <div class="stat-text">Average Efficiency Gain</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Stories -->
+    <section class="video-stories">
+        <div class="container">
+            <div class="section-title">
+                <h2>Success Stories in Action</h2>
+                <p>Watch how EduCard has transformed educational institutions</p>
+            </div>
+            <div class="video-container">
+                <div class="video-card">
+                    <div class="video-thumb">
+                        <img src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Video Thumbnail">
+                        <div class="play-btn">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-content">
+                        <h3>Tech University Transformation</h3>
+                        <div class="video-meta">
+                            <i class="fas fa-clock"></i> 4:32
+                        </div>
+                        <p>How Tech University increased efficiency by 65% with EduCard</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="video-thumb">
+                        <img src="https://images.unsplash.com/photo-1591123120675-6f7f1aae0e5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Video Thumbnail">
+                        <div class="play-btn">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-content">
+                        <h3>Global College Experience</h3>
+                        <div class="video-meta">
+                            <i class="fas fa-clock"></i> 5:15
+                        </div>
+                        <p>See how Global College enhanced student engagement</p>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="video-thumb">
+                        <img src="https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Video Thumbnail">
+                        <div class="play-btn">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-content">
+                        <h3>City Institute Savings</h3>
+                        <div class="video-meta">
+                            <i class="fas fa-clock"></i> 3:48
+                        </div>
+                        <p>How City Institute saved $200k annually with EduCard</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Create Your Success Story?</h2>
+            <p>Join hundreds of educational institutions that have transformed their operations with EduCard</p>
+            <div class="cta-buttons">
+                <a href="contact.html" class="btn btn-primary">Get Started Today</a>
+                <a href="contact.html" class="btn btn-accent">Request a Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EduCard</h3>
+                    <p>Revolutionizing education management with innovative solutions designed for modern institutions.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#features">Features</a></li>
+                        <li><a href="success-stories.html">Success Stories</a></li>
+                        <li><a href="index.html#about">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">System Status</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Education St, Learn City</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@educard.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 EduCard. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Story Modal -->
+    <div class="modal" id="storyModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body">
+                <div class="modal-story-header">
+                    <h2 class="modal-story-title">Tech University Increases Efficiency by 65%</h2>
+                    <div class="modal-story-meta">
+                        <div><i class="fas fa-map-marker-alt"></i> New York, USA</div>
+                        <div><i class="fas fa-calendar-alt"></i> June 2023</div>
+                        <div><i class="fas fa-tag"></i> University</div>
+                    </div>
+                </div>
+                <div class="modal-story-content">
+                    <p>Tech University, a leading institution in the heart of New York, was facing significant challenges with their legacy student management system. The outdated platform was causing administrative bottlenecks, communication gaps, and frustration among both staff and students.</p>
+                    
+                    <p>After extensive research, they chose EduCard for its comprehensive features and scalability. The implementation process was seamless, with EduCard's support team working closely with Tech University's IT department to ensure a smooth transition.</p>
+                    
+                    <h3>Results Achieved</h3>
+                    <p>Within just three months of implementation, Tech University saw dramatic improvements:</p>
+                    <ul>
+                        <li>65% increase in operational efficiency</li>
+                        <li>42% reduction in administrative costs</li>
+                        <li>89% satisfaction rate among staff and students</li>
+                        <li>50% faster student registration process</li>
+                        <li>75% improvement in communication between departments</li>
+                    </ul>
+                    
+                    <p>"EduCard has transformed how we operate," said Dr. Sarah Johnson, Dean of Administration. "We're now able to focus more on educational excellence rather than administrative challenges."</p>
+                    
+                    <p>The university continues to leverage EduCard's analytics features to make data-driven decisions and further optimize their operations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Story Modal functionality
+        const modal = document.getElementById('storyModal');
+        const readMoreButtons = document.querySelectorAll('.read-more');
+        const closeModal = document.querySelector('.close-modal');
+        
+        readMoreButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Here you would typically filter the stories
+                // For this example, we'll just simulate filtering
+                console.log('Filtering by: ' + this.textContent);
+            });
+        });
+        
+        // Video play buttons
+        const playButtons = document.querySelectorAll('.play-btn');
+        
+        playButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Video playback would start here. In a real implementation, this would open a video player.');
+            });
+        });
+    </script>
+</body>
+</html>
