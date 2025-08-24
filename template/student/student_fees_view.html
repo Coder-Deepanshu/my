@@ -496,42 +496,40 @@
     background-color: rgba(158, 158, 158, 0.2);
     color: #9e9e9e;
 }
+.header-btn {
+  text-decoration: none;
+  color: inherit;}
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3 style="color: white; margin: 0;">College Logo</h3>
+            <h3 style="color: white; margin: 0;">
+                <i class="fas fa-graduation-cap me-2"></i>
+                EduTrack
+            </h3>
         </div>
         
         <div class="sidebar-menu">
-            <div class="menu-title">Navigation</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="{% url 'dashboard2' %}" class="menu-link">
                         <i class="fas fa-tachometer-alt menu-icon"></i>
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link active">
-                        <i class="fas fa-rupee-sign menu-icon"></i>
-                        <span class="menu-text">Fee Details</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-arrow-left menu-icon"></i>
-                        <span class="menu-text">Back</span>
+                    <a href="{% url 'student_fees_view' %}" class="menu-link active">
+                        <i class="fas fa-wallet"></i>
+                        <span class="menu-text">My Fee</span>
                     </a>
                 </li>
             </ul>
             
-            <div class="menu-title">Account</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="{% url 'logoutdoor' %}" class="menu-link">
                         <i class="fas fa-sign-out-alt menu-icon"></i>
                         <span class="menu-text">Logout</span>
                     </a>
@@ -540,7 +538,11 @@
         </div>
         
         <div class="sidebar-footer">
-            <img src="https://via.placeholder.com/150" alt="User" class="user-avatar">
+                        {% if student.profile_picture %}
+                        <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="user-avatar">
+                        {% else %}
+                        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="user-avatar">
+                        {% endif %}
             <div class="user-info">
                 <div class="user-name">{{ student.name }}</div>
                 <div class="user-role">Student</div>
@@ -559,15 +561,15 @@
             </button>
             <h1><i class="fas fa-rupee-sign"></i> My Fee Details</h1>
             <div class="header-actions">
-                <button class="header-btn" title="Back">
+                <a  href="{% url 'dashboard2' %}" class="header-btn" title="Back">
                     <i class="fas fa-arrow-left"></i>
-                </button>
-                <button class="header-btn" title="Dashboard">
+                </a>
+                <a  href="{% url 'dashboard2' %}" class="header-btn" title="Dashboard">
                     <i class="fas fa-tachometer-alt"></i>
-                </button>
-                <button class="header-btn" title="Logout">
+                </a>
+                <a  href="{% url 'logoutdoor' %}" class="header-btn" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
-                </button>
+                </a>
             </div>
         </div>
 
@@ -1003,6 +1005,11 @@
                 alert('Payment submitted! In a real app, this would process the payment.');
                 $('#paymentModal').modal('hide');
             });
+        });
+        // Back button functionality
+        $(document).on('click', '.menu-link.active', function(e) {
+            e.preventDefault();
+            window.history.back();
         });
     </script>
 </body>

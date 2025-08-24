@@ -3,411 +3,1169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Attendance Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ID Card | Academic Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .filter-active { background: #4f46e5; color: white; }
-        .sidebar { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
-        .sidebar.open { transform: translateX(0); }
-        .overlay { opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out; }
-        .overlay.active { opacity: 1; visibility: visible; }
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #f0f2ff;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --border-radius: 10px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --box-shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12);
+            --sidebar-bg: #2a3042;
+            --sidebar-text: #a6b0cf;
+            --sidebar-active: rgba(67, 97, 238, 0.2);
+            --sidebar-hover: #343b52;
+            --sidebar-icon: #6e84a3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            height: 70px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            border-bottom: 1px solid var(--light-gray);
+            width: 100%;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--gray);
+            cursor: pointer;
+            display: flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-sidebar:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown:hover {
+            background-color: var(--light-gray);
+        }
+
+        .user-dropdown-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--light-gray);
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown:hover .user-dropdown-avatar {
+            transform: scale(1.1);
+            border-color: var(--primary-light);
+        }
+
+        .user-dropdown-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+
+        .user-dropdown:hover .user-dropdown-name {
+            color: var(--primary);
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            min-width: 220px;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            padding: 0.5rem 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            z-index: 100;
+        }
+
+        .user-dropdown:hover .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.25rem;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding-left: 1.5rem;
+        }
+
+        .dropdown-item i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--light-gray);
+            margin: 0.5rem 0;
+        }
+
+        /* Content Styles */
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .id-card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ID Card Styles - Redesigned */
+        .id-card {
+            width: 380px;
+            min-height: 220px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .id-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .id-card-left {
+            width: 35%;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            position: relative;
+            z-index: 2;
+        }
+
+        .id-card-right {
+            width: 65%;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+
+        .id-card-logo {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .id-card-logo i {
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+
+        .id-card-photo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid white;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .id-card-qr {
+            width: 60px;
+            height: 60px;
+            background: white;
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .id-card-qr img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .id-card-title {
+            font-size: 0.9rem;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .id-card-name {
+            font-size: 1.3rem;
+            color: var(--dark);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .id-card-name::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+        }
+
+        .id-card-details {
+            margin-top: 0.5rem;
+        }
+
+        .id-card-detail-row {
+            display: flex;
+            margin-bottom: 0.6rem;
+            align-items: center;
+        }
+
+        .id-card-detail-label {
+            width: 100px;
+            font-size: 0.75rem;
+            color: var(--gray);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .id-card-detail-value {
+            flex: 1;
+            font-size: 0.85rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .id-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .id-card-validity {
+            font-size: 0.6rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .id-card-signature {
+            font-size: 0.65rem;
+            color: var(--gray);
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* Card Type Specific Styles */
+        .id-card.student .id-card-left {
+            background: linear-gradient(135deg, #4361ee, #4895ef);
+        }
+
+        .id-card.faculty .id-card-left {
+            background: linear-gradient(135deg, #f8961e, #f9c74f);
+        }
+
+        .id-card.admin .id-card-left {
+            background: linear-gradient(135deg, #f72585, #b5179e);
+        }
+
+        .id-card.student .id-card-name::after {
+            background: linear-gradient(90deg, #4361ee, #4895ef);
+        }
+
+        .id-card.faculty .id-card-name::after {
+            background: linear-gradient(90deg, #f8961e, #f9c74f);
+        }
+
+        .id-card.admin .id-card-name::after {
+            background: linear-gradient(90deg, #f72585, #b5179e);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            left: -280px;
+            top: 0;
+            transition: var(--transition);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            height: var(--header-height);
+        }
+
+        .logo-container {
+            padding: 0 20px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(-15deg);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
+        }
+
+        .sidebar-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background-color: var(--sidebar-hover);
+            border-radius: 3px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background-color: var(--sidebar-bg);
+        }
+
+        .menu-title {
+            padding: 0.75rem 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--sidebar-text);
+            font-weight: 600;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-item {
+            position: relative;
+            margin: 0.15rem 0;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+            margin: 0 0.5rem;
+            border-radius: 6px;
+        }
+
+        .menu-link:hover {
+            color: white;
+            background-color: var(--sidebar-hover);
+            transform: translateX(5px);
+        }
+
+        .menu-link.active {
+            color: white;
+            background-color: var(--sidebar-active);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-icon {
+            font-size: 1rem;
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            color: var(--sidebar-icon);
+            transition: var(--transition);
+        }
+
+        .menu-link:hover .menu-icon,
+        .menu-link.active .menu-icon {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .menu-text {
+            flex: 1;
+            transition: var(--transition);
+        }
+
+        .menu-link:hover .menu-text {
+            transform: translateX(3px);
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .sidebar-footer:hover .user-avatar {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.1rem;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--sidebar-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .logout-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: rotate(180deg);
+        }
+
+        /* Overlay for sidebar on mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 992px) {
+            .sidebar {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-width);
+            }
+            
+            .toggle-sidebar {
+                display: none;
+            }
+            
+            .page-title {
+                margin-left: 0 !important;
+            }
+        }
+
+        @media (max-width: 991px) {
+            .page-title {
+                margin-left: 0 !important;
+            }
+            
+            .id-card {
+                margin-top: 30px !important;
+                margin-right: 0 !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header {
+                padding: 0 1rem;
+            }
+            
+            .id-card {
+                flex-direction: column;
+                width: 90%;
+                height: auto;
+            }
+            
+            .id-card-left, .id-card-right {
+                width: 100%;
+            }
+            
+            .id-card-left {
+                padding: 1rem;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-around;
+            }
+            
+            .id-card-right {
+                padding: 1.5rem;
+            }
+            
+            .id-card-logo {
+                margin-bottom: 0;
+                order: 1;
+            }
+            
+            .id-card-photo {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 0;
+                order: 2;
+            }
+            
+            .id-card-qr {
+                order: 3;
+            }
+            
+            .id-card-title {
+                display: none;
+            }
+        }
+         /* Additional hover details panel */
+        .id-card-hover-details {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.4s ease;
+            border-radius: var(--border-radius);
+            z-index: 10;
+            text-align: center;
+        }
+
+        .id-card:hover .id-card-hover-details {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .hover-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hover-detail {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hover-detail i {
+            margin-right: 0.5rem;
+            color: var(--accent);
+        }
+
+        .hover-note {
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            font-style: italic;
+            color: #ecf0f1;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body>
     <!-- Sidebar Overlay -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 overlay"></div>
+    <div class="sidebar-overlay"></div>
+    
+    <!-- Header Section -->
+    <header class="header">
+        <div class="header-left">
+            <button class="toggle-sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title">
+                <i class="fas fa-id-card"></i>
+                ID Card
+            </h1>
+        </div>
+        
+        <div class="header-right">
+            <button class="notification-btn">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            
+            <div class="user-dropdown">
+                {% if detail.profile_picture %}
+                    <img src="{{ detail.profile_picture.url }}" alt="User" class="user-dropdown-avatar">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
+                {% endif %}
+                <span class="user-dropdown-name">{{ detail.name }}</span>
+            </div>
+        </div>
+    </header>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed left-0 top-0 h-full w-80 bg-white z-50 sidebar shadow-2xl">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-bold text-gray-800">Menu</h2>
-                <button id="closeSidebar" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 style="color: white; margin: 0;">
+                <i class="fas fa-graduation-cap me-2"></i>
+                EduTrack
+            </h1>
         </div>
         
-        <div class="p-6">
-            <div class="space-y-4">
-                <button onclick="goBack()" class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Back
-                </button>
-                
-                <button onclick="showHelp()" class="w-full flex items-center px-4 py-3 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Help & Support
-                </button>
-                
-                <div class="border-t border-gray-200 pt-4 mt-6">
-                    <button onclick="logout()" class="w-full flex items-center px-4 py-3 text-left text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        Logout
-                    </button>
-                </div>
-            </div>
+        <div class="sidebar-menu">
+            {% if user_type == 'Student' %}
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{% url 'dashboard2' %}" class="menu-link">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+            {% elif user_type == 'Faculty' %}
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{% url 'dashboard1' %}" class="menu-link">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+            {% elif user_type == 'Admin' %}
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{% url 'dashboard' %}" class="menu-link">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
+            
+            {% if user_type == 'Student' %}
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{% url 'dashboard2' %}" class="menu-link active">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Back</span>
+                    </a>
+                </li>
+            </ul>
+            {% elif user_type == 'Faculty' %}
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{% url 'dashboard1' %}" class="menu-link active">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Back</span>
+                    </a>
+                </li>
+            </ul>
+            {% elif user_type == 'Admin' %}
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{% url 'dashboard' %}" class="menu-link active">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Back</span>
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
+            <ul>
+                <li class="menu-item">
+                    <a href="{% url 'logoutdoor' %}" class="menu-link">
+                        <i class="fas fa-book menu-icon"></i>
+                        <span class="menu-text">LogOut</span>
+                    </a>
+                </li>
+            </ul>
         </div>
         
-        <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 bg-gray-50">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span class="text-white font-semibold">AK</span>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm font-semibold text-gray-800">Ahmed Ali Khan</p>
-                    <p class="text-xs text-gray-600">CS-2021-001</p>
-                </div>
+        <div class="sidebar-footer">
+                        {% if detail.profile_picture %}
+                        <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="user-avatar">
+                        {% else %}
+                        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="user-avatar">
+                        {% endif %}
+            <div class="user-info">
+                <div class="user-name">{{ detail.name }}</div>
+                <div class="user-role">Student</div>
             </div>
+            <a href="{% url 'logoutdoor' %}">
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+            </a>
         </div>
-    </div>
+    </aside>
 
-    <!-- Header -->
-    <div class="gradient-bg text-white py-8">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <button id="openSidebar" class="mr-4 p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
+    <div class="content">
+        <div class="id-card-container">
+            <!-- Student ID Card -->
+            {% if user_type == 'Student' %}
+            <div class="id-card student">
+                <div class="id-card-left">
+                    <div class="id-card-logo">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    
+                    {% if detail.profile_picture %}
+                        <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="id-card-photo">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=4361ee&color=fff" alt="Student Photo" class="id-card-photo">
+                    {% endif %}
+                    
+                    <div class="id-card-qr">
+                        <!-- QR Code for Student ID -->
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STUDENT-{{ detail.college_id }}" alt="QR Code">
+                    </div>
+                    <div class="id-card-title">STUDENT ID CARD</div>
+                </div>
+                
+                <div class="id-card-right">
                     <div>
-                        <h1 class="text-3xl font-bold">Attendance Dashboard</h1>
-                        <p class="text-blue-100 mt-2">Track your academic attendance</p>
+                        <div class="id-card-name">{{ detail.name }}</div>
+                        
+                        <div class="id-card-details">
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">ID Number:</div>
+                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Course:</div>
+                                <div class="id-card-detail-value">{{ detail.course }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Semester:</div>
+                                <div class="id-card-detail-value">{{ detail.semester }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Valid Until:</div>
+                                <div class="id-card-detail-value">{{ detail.year|add:"4" }}-12-31</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="id-card-footer">
+                        <div class="id-card-validity">This card is property of University</div>
+                        <div class="id-card-signature">Registrar</div>
                     </div>
                 </div>
-                <div class="text-right">
-                    <p class="text-lg font-semibold">Ahmed Ali Khan</p>
-                    <p class="text-blue-100">Student ID: CS-2021-001</p>
+                <!-- Hover Details Panel -->
+                <div class="id-card-hover-details">
+                    <h3 class="hover-title">Additional Information</h3>
+                    <p class="hover-detail"><i class="fas fa-phone"></i> +1 (555) 987-6543</p>
+                    <p class="hover-detail"><i class="fas fa-envelope"></i> sarah.johnson@university.edu</p>
+                    <p class="hover-detail"><i class="fas fa-map-marker-alt"></i> Room 305, CS Building</p>
+                    <p class="hover-detail"><i class="fas fa-clock"></i> Office Hours: Mon-Wed 10AM-12PM</p>
+                    <p class="hover-detail"><i class="fas fa-book"></i> Specialization: AI & Machine Learning</p>
+                    <p class="hover-note">Present this card when requested by university authorities</p>
                 </div>
             </div>
-        </div>
-    </div>
+            
+            {% endif %}
+            
+            <!-- Faculty ID Card (Conditional) -->
+            {% if user_type == 'Faculty' %}
+            <div class="id-card faculty">
+                <div class="id-card-left">
+                    <div class="id-card-logo">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    
+                    {% if detail.profile_picture %}
+                        <img src="{{ detail.profile_picture.url }}" alt="Faculty Photo" class="id-card-photo">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=f8961e&color=fff" alt="Faculty Photo" class="id-card-photo">
+                    {% endif %}
+                    
+                    <div class="id-card-qr">
+                        <!-- QR Code for Faculty ID -->
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FACULTY-{{ detail.college_id }}" alt="QR Code">
+                    </div>
+                    <div class="id-card-title">FACULTY ID CARD</div>
+                </div>
+                
+                <div class="id-card-right">
+                    <div>
+                        <div class="id-card-name">{{ detail.name }}</div>
+                        
+                        <div class="id-card-details">
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Employee ID:</div>
+                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Department:</div>
+                                <div class="id-card-detail-value">{{ detail.department }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Designation:</div>
+                                <div class="id-card-detail-value">{{ detail.position }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Valid Until:</div>
+                                <div class="id-card-detail-value">Permanent</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="id-card-footer">
+                        <div class="id-card-validity">This card is property of University</div>
+                        <div class="id-card-signature">Vice Chancellor</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Admin ID Card (Conditional) -->
+            {% if user_type == 'Admin' %}
+            <div class="id-card admin">
+                <div class="id-card-left">
+                    <div class="id-card-logo">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    
+                    {% if detail.profile_picture %}
+                        <img src="{{ detail.profile_picture.url }}" alt="Admin Photo" class="id-card-photo">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=f72585&color=fff" alt="Admin Photo" class="id-card-photo">
+                    {% endif %}
+                    
+                    <div class="id-card-qr">
+                        <!-- QR Code for Admin ID -->
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ADMIN-{{ detail.college_id }}" alt="QR Code">
+                    </div>
+                    <div class="id-card-title">ADMINISTRATOR ID CARD</div>
+                </div>
+                
+                <div class="id-card-right">
+                    <div>
+                        <div class="id-card-name">{{ detail.name }}</div>
+                        
+                        <div class="id-card-details">
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Employee ID:</div>
+                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Department:</div>
+                                <div class="id-card-detail-value">{{ detail.department }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Access Level:</div>
+                                <div class="id-card-detail-value">{{ detail.position }}</div>
+                            </div>
+                            <div class="id-card-detail-row">
+                                <div class="id-card-detail-label">Valid Until:</div>
+                                <div class="id-card-detail-value">Permanent</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="id-card-footer">
+                        <div class="id-card-validity">This card is property of University</div>
+                        <div class="id-card-signature">Chancellor</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
-    <div class="max-w-7xl mx-auto px-6 py-8">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <div class="flex items-center">
-                    <div class="bg-green-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-gray-600 text-sm">Overall Attendance</p>
-                        <p class="text-2xl font-bold text-green-600" id="overallPercentage">85.5%</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <div class="flex items-center">
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-gray-600 text-sm">Total Classes</p>
-                        <p class="text-2xl font-bold text-blue-600" id="totalClasses">152</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <div class="flex items-center">
-                    <div class="bg-purple-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-gray-600 text-sm">Present</p>
-                        <p class="text-2xl font-bold text-purple-600" id="presentCount">130</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <div class="flex items-center">
-                    <div class="bg-red-100 p-3 rounded-full">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-gray-600 text-sm">Absent</p>
-                        <p class="text-2xl font-bold text-red-600" id="absentCount">22</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filters -->
-        <div class="bg-white rounded-xl p-6 card-shadow mb-8">
-            <h3 class="text-lg font-semibold mb-4">Filter Attendance</h3>
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Course</label>
-                    <select id="courseFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">All Courses</option>
-                        <option value="Computer Science">Computer Science</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="Physics">Physics</option>
-                        <option value="English">English</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Semester</label>
-                    <select id="semesterFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">All Semesters</option>
-                        <option value="1">Semester 1</option>
-                        <option value="2">Semester 2</option>
-                        <option value="3">Semester 3</option>
-                        <option value="4">Semester 4</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
-                    <select id="yearFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">All Years</option>
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                        <option value="2022">2022</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">All Status</option>
-                        <option value="Present">Present</option>
-                        <option value="Absent">Absent</option>
-                        <option value="Late">Late</option>
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    <button onclick="clearFilters()" class="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
-                        Clear Filters
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Attendance Table -->
-        <div class="bg-white rounded-xl card-shadow overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold">Attendance Records</h3>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Semester</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Table rows will be populated by JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Course-wise Breakdown -->
-        <div class="mt-8 bg-white rounded-xl p-6 card-shadow">
-            <h3 class="text-lg font-semibold mb-4">Course-wise Attendance</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="courseBreakdown">
-                <!-- Course cards will be populated by JavaScript -->
-            </div>
         </div>
     </div>
 
     <script>
-        // Sample attendance data
-        const attendanceData = [
-            { date: '2024-01-15', course: 'Computer Science', semester: '3', year: '2024', time: '09:00 AM', status: 'Present' },
-            { date: '2024-01-16', course: 'Mathematics', semester: '3', year: '2024', time: '11:00 AM', status: 'Present' },
-            { date: '2024-01-17', course: 'Physics', semester: '3', year: '2024', time: '02:00 PM', status: 'Absent' },
-            { date: '2024-01-18', course: 'English', semester: '3', year: '2024', time: '10:00 AM', status: 'Present' },
-            { date: '2024-01-19', course: 'Computer Science', semester: '3', year: '2024', time: '09:00 AM', status: 'Late' },
-            { date: '2024-01-22', course: 'Mathematics', semester: '3', year: '2024', time: '11:00 AM', status: 'Present' },
-            { date: '2024-01-23', course: 'Physics', semester: '3', year: '2024', time: '02:00 PM', status: 'Present' },
-            { date: '2024-01-24', course: 'English', semester: '3', year: '2024', time: '10:00 AM', status: 'Absent' },
-            { date: '2024-01-25', course: 'Computer Science', semester: '3', year: '2024', time: '09:00 AM', status: 'Present' },
-            { date: '2024-01-26', course: 'Mathematics', semester: '3', year: '2024', time: '11:00 AM', status: 'Present' },
-            { date: '2024-01-29', course: 'Physics', semester: '3', year: '2024', time: '02:00 PM', status: 'Present' },
-            { date: '2024-01-30', course: 'English', semester: '3', year: '2024', time: '10:00 AM', status: 'Present' },
-            { date: '2024-02-01', course: 'Computer Science', semester: '3', year: '2024', time: '09:00 AM', status: 'Present' },
-            { date: '2024-02-02', course: 'Mathematics', semester: '3', year: '2024', time: '11:00 AM', status: 'Absent' },
-            { date: '2024-02-05', course: 'Physics', semester: '3', year: '2024', time: '02:00 PM', status: 'Present' }
-        ];
-
-        let filteredData = [...attendanceData];
-
-        function getStatusBadge(status) {
-            const badges = {
-                'Present': '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Present</span>',
-                'Absent': '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Absent</span>',
-                'Late': '<span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Late</span>'
-            };
-            return badges[status] || status;
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('attendanceTableBody');
-            tbody.innerHTML = '';
-
-            filteredData.forEach(record => {
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-gray-50';
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.date}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.course}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.semester}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.year}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.time}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(record.status)}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function updateStats() {
-            const total = filteredData.length;
-            const present = filteredData.filter(r => r.status === 'Present' || r.status === 'Late').length;
-            const absent = filteredData.filter(r => r.status === 'Absent').length;
-            const percentage = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
-
-            document.getElementById('overallPercentage').textContent = `${percentage}%`;
-            document.getElementById('totalClasses').textContent = total;
-            document.getElementById('presentCount').textContent = present;
-            document.getElementById('absentCount').textContent = absent;
-        }
-
-        function updateCourseBreakdown() {
-            const courses = {};
+        // Toggle sidebar functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleSidebar = document.querySelector('.toggle-sidebar');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
             
-            filteredData.forEach(record => {
-                if (!courses[record.course]) {
-                    courses[record.course] = { total: 0, present: 0 };
-                }
-                courses[record.course].total++;
-                if (record.status === 'Present' || record.status === 'Late') {
-                    courses[record.course].present++;
-                }
-            });
-
-            const container = document.getElementById('courseBreakdown');
-            container.innerHTML = '';
-
-            Object.entries(courses).forEach(([course, data]) => {
-                const percentage = ((data.present / data.total) * 100).toFixed(1);
-                const card = document.createElement('div');
-                card.className = 'bg-gray-50 rounded-lg p-4';
-                card.innerHTML = `
-                    <h4 class="font-semibold text-gray-900 mb-2">${course}</h4>
-                    <div class="flex justify-between text-sm text-gray-600 mb-2">
-                        <span>Present: ${data.present}</span>
-                        <span>Total: ${data.total}</span>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${percentage}%"></div>
-                    </div>
-                    <p class="text-sm font-semibold text-blue-600">${percentage}%</p>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function applyFilters() {
-            const courseFilter = document.getElementById('courseFilter').value;
-            const semesterFilter = document.getElementById('semesterFilter').value;
-            const yearFilter = document.getElementById('yearFilter').value;
-            const statusFilter = document.getElementById('statusFilter').value;
-
-            filteredData = attendanceData.filter(record => {
-                return (!courseFilter || record.course === courseFilter) &&
-                       (!semesterFilter || record.semester === semesterFilter) &&
-                       (!yearFilter || record.year === yearFilter) &&
-                       (!statusFilter || record.status === statusFilter);
-            });
-
-            renderTable();
-            updateStats();
-            updateCourseBreakdown();
-        }
-
-        function clearFilters() {
-            document.getElementById('courseFilter').value = '';
-            document.getElementById('semesterFilter').value = '';
-            document.getElementById('yearFilter').value = '';
-            document.getElementById('statusFilter').value = '';
-            applyFilters();
-        }
-
-        // Sidebar functionality
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('open');
-            document.getElementById('sidebarOverlay').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('sidebarOverlay').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function goBack() {
-            alert('Going back to previous page...');
-            closeSidebar();
-        }
-
-        function showHelp() {
-            alert('Help & Support:\n\n• Use filters to view specific attendance records\n• Click on course cards to see detailed breakdown\n• Your overall attendance percentage is calculated automatically\n• Contact admin for any attendance discrepancies');
-            closeSidebar();
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                alert('Logging out... Redirecting to login page');
-                closeSidebar();
+            if(toggleSidebar) {
+                toggleSidebar.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                });
             }
-        }
+            
+            // Close sidebar when clicking on overlay
+            if(overlay) {
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+            
+            // Close sidebar when clicking on a menu link (for mobile)
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if(window.innerWidth < 992) {
+                        sidebar.classList.remove('active');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
 
-        // Event listeners for sidebar
-        document.getElementById('openSidebar').addEventListener('click', openSidebar);
-        document.getElementById('closeSidebar').addEventListener('click', closeSidebar);
-        document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+            // User dropdown functionality
+            const userDropdown = document.querySelector('.user-dropdown');
+            if(userDropdown) {
+                userDropdown.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelector('.user-dropdown-menu').classList.toggle('show');
+                });
 
-        // Event listeners for filters
-        document.getElementById('courseFilter').addEventListener('change', applyFilters);
-        document.getElementById('semesterFilter').addEventListener('change', applyFilters);
-        document.getElementById('yearFilter').addEventListener('change', applyFilters);
-        document.getElementById('statusFilter').addEventListener('change', applyFilters);
-
-        // Initialize the page
-        renderTable();
-        updateStats();
-        updateCourseBreakdown();
+                // Close dropdown when clicking outside
+                document.addEventListener('click', () => {
+                    const menu = document.querySelector('.user-dropdown-menu');
+                    if(menu) menu.classList.remove('show');
+                });
+            }
+        });
+        // Back button functionality
+        $(document).on('click', '.menu-link.active', function(e) {
+            e.preventDefault();
+            window.history.back();
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9739c94d80a8ff60',t:'MTc1NTk0MzQ3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

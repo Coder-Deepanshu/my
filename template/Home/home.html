@@ -3,945 +3,802 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduTrack - Transform Your Educational Journey with AI-Powered Learning</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Edutrack - Education Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
         }
-        
-        .hero-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
         }
-        
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Slider */
+        .hero-slider {
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-item {
+            height: 600px;
+            background-position: center;
+            background-size: cover;
+            position: relative;
+        }
+
+        .carousel-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));
+        }
+
+        .carousel-caption {
+            text-align: left;
+            bottom: 50%;
+            transform: translateY(50%);
+            max-width: 600px;
+            padding: 30px;
+        }
+
+        .carousel-caption h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation-delay: 0.3s;
+        }
+
+        .carousel-caption p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            animation-delay: 0.6s;
+        }
+
+        .carousel-control-prev, .carousel-control-next {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.8;
+        }
+
+        .carousel-control-prev {
+            left: 20px;
+        }
+
+        .carousel-control-next {
+            right: 20px;
+        }
+
+        .carousel-control-prev:hover, .carousel-control-next:hover {
+            opacity: 1;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
         .feature-card {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 10px;
+            transition: var(--transition);
+            background: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            height: 100%;
         }
-        
+
         .feature-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
-        
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-            opacity: 0;
-            transform: translateY(30px);
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            font-size: 2rem;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            transition: var(--transition);
         }
-        
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+        .feature-card:hover .feature-icon {
+            background: var(--primary);
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 80px 0;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-text {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Testimonials */
+        .testimonials-section {
+            padding: 80px 0;
+            background: var(--light);
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '\201C';
+            font-size: 5rem;
+            color: rgba(67, 97, 238, 0.1);
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            line-height: 1;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .author-info h5 {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .author-info p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1522881193457-37ae97c905bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .carousel-caption h2 {
+                font-size: 2.5rem;
+            }
+            
+            .carousel-caption {
+                padding: 20px;
             }
         }
-        
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        .stagger-4 { animation-delay: 0.4s; }
-        .stagger-5 { animation-delay: 0.5s; }
-        .stagger-6 { animation-delay: 0.6s; }
-        
-        .floating {
-            animation: floating 3s ease-in-out infinite;
+
+        @media (max-width: 768px) {
+            .carousel-caption h2 {
+                font-size: 2rem;
+            }
+            
+            .carousel-caption p {
+                font-size: 1rem;
+            }
+            
+            .hero-slider, .carousel-item {
+                height: 500px;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
         }
-        
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-        
-        .pulse-glow {
-            animation: pulseGlow 2s infinite;
-        }
-        
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
-        }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .stats-counter {
-            font-variant-numeric: tabular-nums;
-        }
-        
-        .typing-animation {
-            border-right: 2px solid #667eea;
-            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
-        }
-        
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: #667eea; }
-        }
-        
-        .scroll-indicator {
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-        
-        .testimonial-slider {
-            animation: slide 15s infinite linear;
-        }
-        
-        @keyframes slide {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+
+        @media (max-width: 576px) {
+            .hero-slider, .carousel-item {
+                height: 400px;
+            }
+            
+            .carousel-caption {
+                text-align: center;
+                padding: 15px;
+            }
+            
+            .carousel-caption h2 {
+                font-size: 1.8rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="glass-card fixed w-full top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mr-3">
-                        <span class="text-white font-bold text-lg">E</span>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'feature' %}">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'success_stories' %}">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'pricing' %}">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Login</a>
+                        <a href="{% url 'demo' %}" class="btn btn-primary">Book Demo</a>
                     </div>
-                    <span class="text-gray-800 font-bold text-2xl">EduTrack</span>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="{% url 'home' %}" class="text-blue-600 font-semibold">Home</a>
-                    <a href="{% url 'feature' %}" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Features</a>
-                    <a href="#pricing" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Pricing</a>
-                    <a href="{% url 'success_stories' %}" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Success Stories</a>
-                    <a href="{% url 'contact' %}" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Sign In</a>
-                    <button class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                        Start Free Trial
-                    </button>
                 </div>
             </div>
+        </nav>
+    </header>
+
+    <!-- Hero Slider -->
+    <section class="hero-slider">
+        <div id="mainCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active" style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    <div class="carousel-caption">
+                        <h2 class="animate__animated animate__fadeInDown">Transform Education Management</h2>
+                        <p class="animate__animated animate__fadeInUp">Streamline your institution's operations with our comprehensive education management system.</p>
+                        <a href="{% url 'new_enroll' %}" class="btn btn-primary animate__animated animate__fadeInUp">Get Started</a>
+                    </div>
+                </div>
+                <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    <div class="carousel-caption">
+                        <h2 class="animate__animated animate__fadeInDown">Track Student Progress</h2>
+                        <p class="animate__animated animate__fadeInUp">Monitor academic performance and identify areas for improvement with our advanced analytics.</p>
+                        <a href="{% url 'success_stories' %}" class="btn btn-primary animate__animated animate__fadeInUp">Learn More</a>
+                    </div>
+                </div>
+                <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    <div class="carousel-caption">
+                        <h2 class="animate__animated animate__fadeInDown">Simplify Fee Management</h2>
+                        <p class="animate__animated animate__fadeInUp">Automate fee collection, track payments, and generate reports with our intuitive system.</p>
+                        <a href="{% url 'feature' %}" class="btn btn-primary animate__animated animate__fadeInUp">View Features</a>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         </div>
-    </nav>
+    </section>
 
-    <!-- Hero Section -->
-    <section class="hero-gradient pt-24 pb-20 relative overflow-hidden min-h-screen flex items-center">
-        <div class="absolute inset-0 bg-black bg-opacity-10"></div>
-        
-        <!-- Floating Elements -->
-        <div class="absolute top-20 left-10 w-20 h-20 bg-white bg-opacity-10 rounded-full floating"></div>
-        <div class="absolute top-40 right-20 w-16 h-16 bg-yellow-300 bg-opacity-20 rounded-full floating" style="animation-delay: 1s;"></div>
-        <div class="absolute bottom-40 left-1/4 w-12 h-12 bg-pink-300 bg-opacity-20 rounded-full floating" style="animation-delay: 2s;"></div>
-        <div class="absolute top-60 right-1/3 w-8 h-8 bg-green-300 bg-opacity-20 rounded-full floating" style="animation-delay: 0.5s;"></div>
-        
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <!-- Left Content -->
-                <div class="text-center lg:text-left">
-                    <div class="fade-in-up">
-                        <span class="inline-block bg-white bg-opacity-20 text-white px-6 py-2 rounded-full text-sm font-medium mb-6">
-                            🚀 AI-Powered Education Platform
-                        </span>
-                        <h1 class="text-5xl lg:text-7xl font-black text-white mb-6 leading-tight" style="margin-left: -100px;">
-                            Transform Your
-                            <span class="block text-yellow-300 typing-animation overflow-hidden whitespace-nowrap" style="height: 80px;">Learning Journey</span>
-                        </h1>
-                        <p class="text-xl text-blue-100 mb-8 leading-relaxed max-w-2xl">
-                            Experience the future of education with EduTrack's AI-powered platform. 
-                            Personalized learning paths, real-time analytics, and seamless collaboration 
-                            for students and educators worldwide.
-                        </p>
-                    </div>
-                    
-                    <!-- CTA Buttons -->
-                    <div class="fade-in-up stagger-2 flex flex-col sm:flex-row gap-4 mb-12">
-                        <button class="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
-                            Start Free Trial
-                        </button>
-                        <button class="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all">
-                            Watch Demo
-                        </button>
-                    </div>
-                    
-                    <!-- Trust Indicators -->
-                    <div class="fade-in-up stagger-3 flex items-center justify-center lg:justify-start space-x-8">
-                        <div class="text-center">
-                            <div class="text-3xl font-bold text-white stats-counter" data-target="50000">0</div>
-                            <p class="text-blue-200 text-sm">Active Students</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-3xl font-bold text-white stats-counter" data-target="1200">0</div>
-                            <p class="text-blue-200 text-sm">Universities</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-3xl font-bold text-white stats-counter" data-target="150">0</div>
-                            <p class="text-blue-200 text-sm">Countries</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Content - Dashboard Preview -->
-                <div class="fade-in-up stagger-4">
-                    <div class="relative">
-                        <!-- Main Dashboard -->
-                        <div class="glass-card rounded-3xl p-8 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-gray-800">Student Dashboard</h3>
-                                <div class="flex space-x-2">
-                                    <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-                                    <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                                    <div class="w-3 h-3 bg-green-400 rounded-full"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Progress Cards -->
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-4 text-white">
-                                    <h4 class="font-semibold mb-2">Course Progress</h4>
-                                    <div class="text-2xl font-bold">87%</div>
-                                    <div class="w-full bg-white bg-opacity-30 rounded-full h-2 mt-2">
-                                        <div class="bg-white h-2 rounded-full" style="width: 87%"></div>
-                                    </div>
-                                </div>
-                                <div class="bg-gradient-to-r from-green-500 to-teal-600 rounded-xl p-4 text-white">
-                                    <h4 class="font-semibold mb-2">Assignments</h4>
-                                    <div class="text-2xl font-bold">12/15</div>
-                                    <p class="text-sm opacity-90">Completed</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Recent Activity -->
-                            <div class="space-y-3">
-                                <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-gray-800">Assignment Submitted</p>
-                                        <p class="text-sm text-gray-600">Data Structures - Project 3</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-gray-800">New Achievement</p>
-                                        <p class="text-sm text-gray-600">Problem Solver Badge</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Floating Cards -->
-                        <div class="absolute -top-4 -right-4 glass-card rounded-2xl p-4 shadow-lg floating">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
-                                    <span class="text-yellow-600 text-sm font-bold">AI</span>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800 text-sm">Smart Recommendation</p>
-                                    <p class="text-xs text-gray-600">Study Machine Learning next</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="absolute -bottom-4 -left-4 glass-card rounded-2xl p-4 shadow-lg floating" style="animation-delay: 1s;">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800 text-sm">Grade: A+</p>
-                                    <p class="text-xs text-gray-600">Algorithm Analysis</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Features</h2>
+                <p>Discover how Edutrack can transform your educational institution</p>
             </div>
-            
-            <!-- Scroll Indicator -->
-            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white text-center fade-in-up stagger-5">
-                <p class="text-sm mb-2 opacity-80" style="margin-bottom: -30px;">Discover More</p>
-                <div class="scroll-indicator">
-                    <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                    </svg>
+            <div class="row">
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3>Student Management</h3>
+                        <p>Efficiently manage student records, attendance, and academic progress in one centralized system.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h3>Fee Management</h3>
+                        <p>Automate fee collection, track payments, and generate detailed financial reports with ease.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Performance Analytics</h3>
+                        <p>Gain valuable insights with advanced analytics and visual reports on student performance.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3>Timetable Management</h3>
+                        <p>Create and manage class schedules, assign teachers, and avoid conflicts automatically.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>Library Management</h3>
+                        <p>Track books, manage checkouts, and maintain your library inventory with our system.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Mobile Access</h3>
+                        <p>Access all features on the go with our mobile-responsive design and dedicated apps.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 fade-in-up">
-                <span class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                    ✨ Powerful Features
-                </span>
-                <h2 class="text-4xl lg:text-5xl font-bold gradient-text mb-6" style="height: 80px;">Everything You Need for Success</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Discover the comprehensive suite of tools designed to enhance your educational experience
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="feature-card bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 fade-in-up stagger-1">
-                    <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                        </svg>
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6 mb-4 mb-md-0">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="500">0</div>
+                        <div class="stat-text">Institutions</div>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">AI-Powered Learning</h3>
-                    <p class="text-gray-600 mb-6">
-                        Personalized course recommendations and adaptive learning paths powered by advanced AI algorithms.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Smart course suggestions
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Adaptive difficulty levels
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Predictive analytics
-                        </li>
-                    </ul>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="feature-card bg-gradient-to-br from-green-50 to-teal-50 rounded-3xl p-8 fade-in-up stagger-2">
-                    <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
+                <div class="col-md-3 col-6 mb-4 mb-md-0">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="100000">0</div>
+                        <div class="stat-text">Students</div>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Real-time Analytics</h3>
-                    <p class="text-gray-600 mb-6">
-                        Track your progress with detailed analytics and insights to optimize your learning journey.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Performance dashboards
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Progress tracking
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Detailed reports
-                        </li>
-                    </ul>
                 </div>
-
-                <!-- Feature 3 -->
-                <div class="feature-card bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-8 fade-in-up stagger-3">
-                    <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="15000">0</div>
+                        <div class="stat-text">Teachers</div>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Collaborative Learning</h3>
-                    <p class="text-gray-600 mb-6">
-                        Connect with peers and instructors through integrated collaboration tools and discussion forums.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Discussion forums
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Group projects
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Peer reviews
-                        </li>
-                    </ul>
                 </div>
-
-                <!-- Feature 4 -->
-                <div class="feature-card bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 fade-in-up stagger-4">
-                    <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                        </svg>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="98">0</div>
+                        <div class="stat-text">Satisfaction %</div>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Mobile Learning</h3>
-                    <p class="text-gray-600 mb-6">
-                        Learn anywhere, anytime with our responsive design and native mobile applications.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            iOS & Android apps
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Offline access
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Sync across devices
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="feature-card bg-gradient-to-br from-indigo-50 to-blue-50 rounded-3xl p-8 fade-in-up stagger-5">
-                    <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Secure & Private</h3>
-                    <p class="text-gray-600 mb-6">
-                        Your data is protected with enterprise-grade security and privacy compliance.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            End-to-end encryption
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            GDPR compliant
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            SOC 2 certified
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="feature-card bg-gradient-to-br from-yellow-50 to-orange-50 rounded-3xl p-8 fade-in-up stagger-6">
-                    <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">24/7 Support</h3>
-                    <p class="text-gray-600 mb-6">
-                        Get help whenever you need it with our round-the-clock customer support team.
-                    </p>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Live chat support
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Video tutorials
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            Knowledge base
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Testimonials Section -->
-    <section class="py-20 bg-gray-50 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 fade-in-up">
-                <span class="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                    💬 What Our Users Say
-                </span>
-                <h2 class="text-4xl lg:text-5xl font-bold gradient-text mb-6" style="height: 70px;">Loved by Students Worldwide</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    See how EduTrack is transforming educational experiences across the globe
-                </p>
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>What Our Clients Say</h2>
+                <p>Hear from educational institutions that have transformed with Edutrack</p>
             </div>
-
-            <!-- Testimonials Slider -->
-            <div class="relative">
-                <div class="flex space-x-6 testimonial-slider">
-                    <!-- Testimonial 1 -->
-                    <div class="flex-shrink-0 w-80 bg-white rounded-3xl p-8 shadow-lg">
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
-                                <svg viewBox="0 0 100 100" class="w-full h-full">
-                                    <circle cx="50" cy="50" r="50" fill="#3b82f6"/>
-                                    <circle cx="50" cy="35" r="15" fill="white"/>
-                                    <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white"/>
-                                </svg>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">Edutrack has revolutionized how we manage our school. The fee management system alone has saved us countless hours of administrative work.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="John Smith">
                             </div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">Sarah Johnson</h4>
-                                <p class="text-sm text-gray-600">Computer Science Student</p>
+                            <div class="author-info">
+                                <h5>John Smith</h5>
+                                <p>Principal, Greenwood High</p>
                             </div>
                         </div>
-                        <div class="flex text-yellow-400 mb-4">★★★★★</div>
-                        <p class="text-gray-700 italic">
-                            "EduTrack's AI recommendations helped me discover courses I never knew I needed. 
-                            My GPA improved from 3.2 to 3.8 in just one semester!"
-                        </p>
-                    </div>
-
-                    <!-- Testimonial 2 -->
-                    <div class="flex-shrink-0 w-80 bg-white rounded-3xl p-8 shadow-lg">
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
-                                <svg viewBox="0 0 100 100" class="w-full h-full">
-                                    <circle cx="50" cy="50" r="50" fill="#10b981"/>
-                                    <circle cx="50" cy="35" r="15" fill="white"/>
-                                    <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">Michael Chen</h4>
-                                <p class="text-sm text-gray-600">Engineering Student</p>
-                            </div>
-                        </div>
-                        <div class="flex text-yellow-400 mb-4">★★★★★</div>
-                        <p class="text-gray-700 italic">
-                            "The mobile app is incredible! I can study during my commute and everything syncs perfectly. 
-                            It's like having a personal tutor in my pocket."
-                        </p>
-                    </div>
-
-                    <!-- Testimonial 3 -->
-                    <div class="flex-shrink-0 w-80 bg-white rounded-3xl p-8 shadow-lg">
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
-                                <svg viewBox="0 0 100 100" class="w-full h-full">
-                                    <circle cx="50" cy="50" r="50" fill="#8b5cf6"/>
-                                    <circle cx="50" cy="35" r="15" fill="white"/>
-                                    <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">Emily Rodriguez</h4>
-                                <p class="text-sm text-gray-600">Medical Student</p>
-                            </div>
-                        </div>
-                        <div class="flex text-yellow-400 mb-4">★★★★★</div>
-                        <p class="text-gray-700 italic">
-                            "The analytics dashboard shows exactly where I need to focus my studies. 
-                            I've never felt more organized and confident about my academic progress."
-                        </p>
-                    </div>
-
-                    <!-- Duplicate testimonials for seamless loop -->
-                    <div class="flex-shrink-0 w-80 bg-white rounded-3xl p-8 shadow-lg">
-                        <div class="flex items-center mb-6">
-                            <div class="w-12 h-12 rounded-full overflow-hidden mr-4">
-                                <svg viewBox="0 0 100 100" class="w-full h-full">
-                                    <circle cx="50" cy="50" r="50" fill="#f59e0b"/>
-                                    <circle cx="50" cy="35" r="15" fill="white"/>
-                                    <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-gray-900">David Kim</h4>
-                                <p class="text-sm text-gray-600">Business Student</p>
-                            </div>
-                        </div>
-                        <div class="flex text-yellow-400 mb-4">★★★★★</div>
-                        <p class="text-gray-700 italic">
-                            "The collaboration features made group projects so much easier. 
-                            We completed our final project 2 weeks ahead of schedule!"
-                        </p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 fade-in-up">
-                <span class="inline-block bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                    💰 Simple Pricing
-                </span>
-                <h2 class="text-4xl lg:text-5xl font-bold gradient-text mb-6">Choose Your Plan</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Start free and upgrade as you grow. All plans include our core features.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                <!-- Basic Plan -->
-                <div class="bg-gray-50 rounded-3xl p-8 fade-in-up stagger-1">
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Basic</h3>
-                        <p class="text-gray-600 mb-6">Perfect for individual students</p>
-                        <div class="text-4xl font-bold text-gray-900 mb-2">Free</div>
-                        <p class="text-gray-600">Forever</p>
+                <div class="col-lg-6 mb-4">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">The analytics and reporting features have given us insights we never had before. We've been able to improve student performance significantly.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Johnson">
+                            </div>
+                            <div class="author-info">
+                                <h5>Sarah Johnson</h5>
+                                <p>Director, Bright Future Academy</p>
+                            </div>
+                        </div>
                     </div>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Up to 3 courses</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Basic analytics</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Mobile app access</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Community support</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-colors">
-                        Get Started Free
-                    </button>
                 </div>
-
-                <!-- Pro Plan -->
-                <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 relative fade-in-up stagger-2 pulse-glow">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <span class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-medium">
-                            Most Popular
-                        </span>
+                <div class="col-lg-6 mb-4">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">Implementation was smooth, and the support team was incredibly helpful. Our teachers love the intuitive interface and powerful features.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Robert Davis">
+                            </div>
+                            <div class="author-info">
+                                <h5>Robert Davis</h5>
+                                <p>IT Manager, Central College</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-                        <p class="text-gray-600 mb-6">For serious students</p>
-                        <div class="text-4xl font-bold text-gray-900 mb-2">$29</div>
-                        <p class="text-gray-600">per month</p>
-                    </div>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Unlimited courses</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Advanced AI features</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Detailed analytics</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Priority support</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Collaboration tools</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg">
-                        Start Pro Trial
-                    </button>
                 </div>
-
-                <!-- Enterprise Plan -->
-                <div class="bg-gray-50 rounded-3xl p-8 fade-in-up stagger-3">
-                    <div class="text-center mb-8">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
-                        <p class="text-gray-600 mb-6">For institutions</p>
-                        <div class="text-4xl font-bold text-gray-900 mb-2">Custom</div>
-                        <p class="text-gray-600">Contact us</p>
+                <div class="col-lg-6 mb-4">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">Parents appreciate the transparency and easy access to their children's progress. Communication has never been better.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Maria Garcia">
+                            </div>
+                            <div class="author-info">
+                                <h5>Maria Garcia</h5>
+                                <p>Administrator, Sunshine School</p>
+                            </div>
+                        </div>
                     </div>
-                    <ul class="space-y-4 mb-8">
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Everything in Pro</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Custom integrations</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">Dedicated support</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span class="text-gray-700">SLA guarantee</span>
-                        </li>
-                    </ul>
-                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-colors">
-                        Contact Sales
-                    </button>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 hero-gradient relative overflow-hidden">
-        <div class="absolute inset-0 bg-black bg-opacity-20"></div>
-        <div class="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 fade-in-up">
-            <h2 class="text-4xl lg:text-5xl font-bold text-white mb-6">
-                Ready to Transform Your Learning?
-            </h2>
-            <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-                Join over 50,000 students who are already using EduTrack to achieve their academic goals.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-colors shadow-lg transform hover:scale-105">
-                    Start Free Trial
-                </button>
-                <button class="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors">
-                    Schedule Demo
-                </button>
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Institution?</h2>
+                <p>Join thousands of educational institutions that have streamlined their operations with Edutrack. Get started today with our free trial.</p>
+                <a href="{% url 'new_enroll' %}" class="btn btn-primary me-3">Enroll Now</a>
+                <a href="{% url 'demo' %}" class="btn btn-outline-light">Schedule a Demo</a>
             </div>
-            <p class="text-blue-200 text-sm mt-6">
-                No credit card required • 14-day free trial • Cancel anytime
-            </p>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center mb-4">
-                        <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                            <span class="text-white font-bold">E</span>
-                        </div>
-                        <span class="text-xl font-bold">EduTrack</span>
-                    </div>
-                    <p class="text-gray-400 mb-4">Transforming education through innovative technology and AI-powered learning solutions.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                        </a>
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h4 class="footer-title">Edutrack</h4>
+                    <p>Comprehensive education management system designed to streamline operations and enhance learning outcomes.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Product</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="{% url 'feature' %}" class="hover:text-white transition-colors">Features</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Integrations</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">API</a></li>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'feature' %}">Features</a></li>
+                        <li><a href="{% url 'pricing' %}">Courses</a></li>
+                        <li><a href="{% url 'success_stories' %}">About Us</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Company</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white transition-colors">About</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Press</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h4 class="footer-title">Features</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Student Management</a></li>
+                        <li><a href="#">Fee Management</a></li>
+                        <li><a href="#">Attendance</a></li>
+                        <li><a href="#">Timetable</a></li>
+                        <li><a href="#">Reports</a></li>
                     </ul>
                 </div>
-                <div>
-                    <h4 class="font-semibold mb-4">Support</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Community</a></li>
-                        <li><a href="{% url 'success_stories' %}" class="hover:text-white transition-colors">Status</a></li>
+                <div class="col-lg-4 col-md-4">
+                    <h4 class="footer-title">Contact Us</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Education St, Learning City</li>
+                        <li><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@edutrack.com</li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 EduTrack. All rights reserved. | Privacy Policy | Terms of Service</p>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Edutrack. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Animated counter for stats
-        function animateCounter(element, target) {
-            let current = 0;
-            const increment = target / 100;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    current = target;
-                    clearInterval(timer);
-                }
-                element.textContent = Math.floor(current).toLocaleString();
-            }, 20);
-        }
-
-        // Initialize everything when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate counters
-            const counters = document.querySelectorAll('.stats-counter');
-            counters.forEach(counter => {
-                const target = parseInt(counter.getAttribute('data-target'));
-                animateCounter(counter, target);
-            });
-
-            // Add click functionality to buttons
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const text = this.textContent.trim();
-                    if (text.includes('Start Free Trial') || text.includes('Get Started Free')) {
-                        alert('🎉 Welcome to EduTrack! Your free trial is starting now. Check your email for setup instructions.');
-                    } else if (text.includes('Watch Demo') || text.includes('Schedule Demo')) {
-                        alert('📅 Demo scheduled! Our team will contact you within 24 hours to arrange your personalized EduTrack demonstration.');
-                    } else if (text.includes('Start Pro Trial')) {
-                        alert('🚀 Starting your Pro trial! You now have access to all premium features for 14 days.');
-                    } else if (text.includes('Contact Sales')) {
-                        alert('📞 Thank you for your interest! Our sales team will contact you within 2 hours to discuss your enterprise needs.');
+        $(document).ready(function() {
+            // Animate elements on scroll
+            function animateElements() {
+                $('.feature-card, .testimonial-card').each(function() {
+                    var position = $(this).offset().top;
+                    var scroll = $(window).scrollTop();
+                    var windowHeight = $(window).height();
+                    
+                    if (scroll + windowHeight - 100 > position) {
+                        $(this).addClass('animate__animated animate__fadeInUp');
                     }
                 });
-            });
-
-            // Scroll animations
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, observerOptions);
-
-            // Observe all fade-in elements
-            document.querySelectorAll('.fade-in-up').forEach(el => {
-                observer.observe(el);
-            });
-
-            // Feature card hover effects
-            document.querySelectorAll('.feature-card').forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-10px) scale(1.02)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-            });
-        });
-
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Typing animation for hero text
-        setTimeout(() => {
-            const typingElement = document.querySelector('.typing-animation');
-            if (typingElement) {
-                typingElement.style.borderRight = 'none';
             }
-        }, 3500);
+            
+            // Initialize animation
+            animateElements();
+            
+            // Animate on scroll
+            $(window).scroll(function() {
+                animateElements();
+                
+                // Animate stats counting
+                $('.stat-number').each(function() {
+                    var position = $(this).offset().top;
+                    var scroll = $(window).scrollTop();
+                    var windowHeight = $(window).height();
+                    
+                    if (scroll + windowHeight - 150 > position && !$(this).hasClass('counted')) {
+                        $(this).addClass('counted');
+                        var $this = $(this);
+                        var countTo = $this.attr('data-count');
+                        $({ countNum: $this.text() }).animate({
+                            countNum: countTo
+                        }, {
+                            duration: 2000,
+                            easing: 'swing',
+                            step: function() {
+                                $this.text(Math.floor(this.countNum));
+                            },
+                            complete: function() {
+                                $this.text(this.countNum);
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Add animation to carousel captions
+            $('#mainCarousel').on('slide.bs.carousel', function(e) {
+                var $next = $(e.relatedTarget);
+                var nextIndex = $next.index();
+                
+                $next.find('.carousel-caption h2').removeClass().addClass('animate__animated').addClass('animate__fadeInDown');
+                $next.find('.carousel-caption p').removeClass().addClass('animate__animated').addClass('animate__fadeInUp');
+                $next.find('.carousel-caption a').removeClass().addClass('animate__animated').addClass('animate__fadeInUp');
+            });
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9738367da1ab5984',t:'MTc1NTkyNjk3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

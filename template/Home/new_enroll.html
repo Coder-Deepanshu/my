@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book a Demo | Edutrack University</title>
+    <title>Enroll Now | Edutrack University</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -104,33 +104,15 @@
             position: relative;
         }
 
-        /* Demo Booking Section */
-        .demo-section {
+        /* Enrollment Process */
+        .process-section {
             padding: 80px 0;
-        }
-
-        .demo-container {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            margin-bottom: 40px;
-        }
-
-        .demo-sidebar {
-            background: linear-gradient(to bottom, var(--primary), var(--secondary));
-            color: white;
-            padding: 40px;
-            height: 100%;
-        }
-
-        .demo-content {
-            padding: 40px;
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
 
         .section-title h2 {
@@ -157,6 +139,99 @@
             color: var(--gray);
             max-width: 600px;
             margin: 0 auto;
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 2px;
+            background: var(--light-gray);
+            z-index: 1;
+        }
+
+        .process-step {
+            text-align: center;
+            padding: 0 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin: 0 auto 20px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .process-step.active .step-icon {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        /* Enrollment Form */
+        .enroll-section {
+            padding: 80px 0;
+            background: var(--light);
+        }
+
+        .enroll-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .enroll-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .enroll-content {
+            padding: 40px;
         }
 
         /* Form Styles */
@@ -202,90 +277,15 @@
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
         }
 
-        /* Calendar Styles */
-        .calendar-container {
+        .input-group-text {
             background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-        }
-
-        .calendar-day {
-            text-align: center;
-            font-weight: 600;
-            padding: 10px;
-            color: var(--gray);
-        }
-
-        .calendar-date {
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .calendar-date:hover {
-            background: rgba(67, 97, 238, 0.1);
-        }
-
-        .calendar-date.selected {
-            background: var(--primary);
-            color: white;
-        }
-
-        .calendar-date.disabled {
-            color: var(--light-gray);
-            cursor: not-allowed;
-        }
-
-        /* Time Slot Styles */
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .time-slot {
-            padding: 12px;
-            text-align: center;
             border: 2px solid var(--light-gray);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .time-slot:hover {
-            border-color: var(--primary);
-        }
-
-        .time-slot.selected {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+            border-left: none;
         }
 
         /* Benefits Section */
         .benefits-section {
             padding: 80px 0;
-            background: var(--light);
         }
 
         .benefit-card {
@@ -330,6 +330,7 @@
         /* Testimonials */
         .testimonials-section {
             padding: 80px 0;
+            background: var(--light);
         }
 
         .testimonial-card {
@@ -496,12 +497,17 @@
                 font-size: 2.5rem;
             }
             
-            .demo-sidebar {
-                padding: 30px;
+            .process-steps {
+                flex-wrap: wrap;
             }
             
-            .demo-content {
-                padding: 30px;
+            .process-steps::before {
+                display: none;
+            }
+            
+            .process-step {
+                flex: 0 0 50%;
+                margin-bottom: 30px;
             }
         }
 
@@ -514,20 +520,16 @@
                 padding: 80px 0 50px;
             }
             
-            .demo-sidebar, .demo-content {
-                padding: 25px;
+            .process-step {
+                flex: 0 0 100%;
+            }
+            
+            .enroll-content {
+                padding: 30px;
             }
             
             .section-title h2 {
                 font-size: 2rem;
-            }
-            
-            .calendar-grid {
-                gap: 5px;
-            }
-            
-            .time-slots {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             }
         }
 
@@ -540,13 +542,8 @@
                 font-size: 1.5rem;
             }
             
-            .demo-sidebar, .demo-content {
+            .enroll-content {
                 padding: 20px;
-            }
-            
-            .calendar-date {
-                height: 35px;
-                font-size: 0.9rem;
             }
         }
     </style>
@@ -577,12 +574,12 @@
                             <a class="nav-link" href="{% url 'contact' %}">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'demo' %}">Book Demo</a>
+                            <a class="nav-link active" href="{% url 'new_enroll' %}">Enroll</a>
                         </li>
                     </ul>
                     <div class="ms-lg-3 mt-3 mt-lg-0">
                         <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Login</a>
-                        <a href="{% url 'new_enroll' %}" class="btn btn-primary">Enroll Now</a>
+                        <a href="{% url 'demo' %}" class="btn btn-primary">Book Demo</a>
                     </div>
                 </div>
             </div>
@@ -592,94 +589,138 @@
     <!-- Page Header -->
     <section class="page-header">
         <div class="container">
-            <h1 class="animate__animated animate__fadeInDown">Book a Demo Session</h1>
-            <p class="animate__animated animate__fadeInUp">Experience our innovative learning platform with a personalized one-on-one demo</p>
+            <h1 class="animate__animated animate__fadeInDown">Begin Your Educational Journey</h1>
+            <p class="animate__animated animate__fadeInUp">Join thousands of students who have transformed their careers with Edutrack University</p>
         </div>
     </section>
 
-    <!-- Demo Booking Section -->
-    <section class="demo-section">
+    <!-- Enrollment Process -->
+    <section class="process-section">
         <div class="container">
-            <div class="row demo-container">
-                <div class="col-lg-5 demo-sidebar">
-                    <h2 class="mb-4">Why Book a Demo?</h2>
-                    <p>Our personalized demo sessions help you understand how our platform can transform your learning experience.</p>
-                    
-                    <div class="mt-5">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="bg-white rounded-circle p-3 me-3">
-                                <i class="fas fa-calendar-check text-primary fa-lg"></i>
-                            </div>
-                            <div>
-                                <h5 class="text-white">Flexible Scheduling</h5>
-                                <p class="mb-0">Choose a time that works best for you</p>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="bg-white rounded-circle p-3 me-3">
-                                <i class="fas fa-user-tie text-primary fa-lg"></i>
-                            </div>
-                            <div>
-                                <h5 class="text-white">Expert Guidance</h5>
-                                <p class="mb-0">Get insights from our experienced instructors</p>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="bg-white rounded-circle p-3 me-3">
-                                <i class="fas fa-laptop text-primary fa-lg"></i>
-                            </div>
-                            <div>
-                                <h5 class="text-white">Platform Tour</h5>
-                                <p class="mb-0">See all features in action</p>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex align-items-center">
-                            <div class="bg-white rounded-circle p-3 me-3">
-                                <i class="fas fa-handshake text-primary fa-lg"></i>
-                            </div>
-                            <div>
-                                <h5 class="text-white">No Commitment</h5>
-                                <p class="mb-0">No obligation to enroll after the demo</p>
-                            </div>
-                        </div>
+            <div class="section-title">
+                <h2>Simple Enrollment Process</h2>
+                <p>Follow these easy steps to join our learning community</p>
+            </div>
+            
+            <div class="process-steps">
+                <div class="process-step active">
+                    <div class="step-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                        <div class="step-number">1</div>
                     </div>
+                    <h4 class="step-title">Fill Application</h4>
+                    <p class="mb-0">Complete the enrollment form</p>
                 </div>
                 
-                <div class="col-lg-7 demo-content">
-                    <h3 class="mb-4">Schedule Your Demo Session</h3>
-                    <p class="text-muted mb-4">Fill out the form below and our team will contact you to confirm your demo session</p>
-                    
-                    <form id="demoForm">
+                <div class="process-step">
+                    <div class="step-icon">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="step-number">2</div>
+                    </div>
+                    <h4 class="step-title">Get Approved</h4>
+                    <p class="mb-0">Receive confirmation within 24 hours</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-icon">
+                        <i class="fas fa-credit-card"></i>
+                        <div class="step-number">3</div>
+                    </div>
+                    <h4 class="step-title">Payment</h4>
+                    <p class="mb-0">Secure payment options</p>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-icon">
+                        <i class="fas fa-book-open"></i>
+                        <div class="step-number">4</div>
+                    </div>
+                    <h4 class="step-title">Start Learning</h4>
+                    <p class="mb-0">Access your courses immediately</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enrollment Form -->
+    <section class="enroll-section">
+        <div class="container">
+            <div class="enroll-container">
+                <div class="enroll-header">
+                    <h3>Student Enrollment Form</h3>
+                    <p class="mb-0">Complete your application to join Edutrack University</p>
+                </div>
+                
+                <div class="enroll-content">
+                    <form id="enrollmentForm">
+                        <h4 class="mb-4">Personal Information</h4>
+                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fullName" class="form-label"><i class="fas fa-user"></i> Full Name</label>
-                                    <input type="text" class="form-control" id="fullName" placeholder="Enter your full name" required>
+                                    <label for="firstName" class="form-label"><i class="fas fa-user"></i> First Name</label>
+                                    <input type="text" class="form-control" id="firstName" placeholder="Enter your first name" required>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lastName" class="form-label"><i class="fas fa-user"></i> Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" placeholder="Enter your last name" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
                                     <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="phone" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
                                     <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" required>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address" class="form-label"><i class="fas fa-home"></i> Address</label>
+                            <input type="text" class="form-control" id="address" placeholder="Enter your street address" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" placeholder="Enter your city" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="state" class="form-label">State</label>
+                                    <input type="text" class="form-control" id="state" placeholder="Enter your state" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="zipCode" class="form-label">ZIP Code</label>
+                                    <input type="text" class="form-control" id="zipCode" placeholder="Enter your ZIP code" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-5">
+                        
+                        <h4 class="mb-4">Academic Information</h4>
+                        
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="course" class="form-label"><i class="fas fa-book"></i> Course Interest</label>
+                                    <label for="course" class="form-label"><i class="fas fa-book"></i> Select Course</label>
                                     <select class="form-select" id="course" required>
-                                        <option value="" selected disabled>Select a course</option>
+                                        <option value="" selected disabled>Choose a course</option>
                                         <option value="web-development">Web Development</option>
                                         <option value="data-science">Data Science</option>
                                         <option value="graphic-design">Graphic Design</option>
@@ -689,94 +730,51 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label"><i class="fas fa-calendar"></i> Select Date & Time</label>
-                            
-                            <div class="calendar-container">
-                                <div class="calendar-header">
-                                    <h5 class="mb-0">June 2023</h5>
-                                    <div>
-                                        <button type="button" class="btn btn-sm btn-outline-primary me-2"><i class="fas fa-chevron-left"></i></button>
-                                        <button type="button" class="btn btn-sm btn-outline-primary"><i class="fas fa-chevron-right"></i></button>
-                                    </div>
-                                </div>
-                                
-                                <div class="calendar-grid">
-                                    <div class="calendar-day">Sun</div>
-                                    <div class="calendar-day">Mon</div>
-                                    <div class="calendar-day">Tue</div>
-                                    <div class="calendar-day">Wed</div>
-                                    <div class="calendar-day">Thu</div>
-                                    <div class="calendar-day">Fri</div>
-                                    <div class="calendar-day">Sat</div>
-                                    
-                                    <!-- Calendar dates -->
-                                    <div class="calendar-date disabled">28</div>
-                                    <div class="calendar-date disabled">29</div>
-                                    <div class="calendar-date disabled">30</div>
-                                    <div class="calendar-date disabled">31</div>
-                                    <div class="calendar-date">1</div>
-                                    <div class="calendar-date">2</div>
-                                    <div class="calendar-date">3</div>
-                                    
-                                    <div class="calendar-date">4</div>
-                                    <div class="calendar-date">5</div>
-                                    <div class="calendar-date">6</div>
-                                    <div class="calendar-date">7</div>
-                                    <div class="calendar-date">8</div>
-                                    <div class="calendar-date">9</div>
-                                    <div class="calendar-date">10</div>
-                                    
-                                    <div class="calendar-date">11</div>
-                                    <div class="calendar-date">12</div>
-                                    <div class="calendar-date">13</div>
-                                    <div class="calendar-date">14</div>
-                                    <div class="calendar-date">15</div>
-                                    <div class="calendar-date selected">16</div>
-                                    <div class="calendar-date">17</div>
-                                    
-                                    <div class="calendar-date">18</div>
-                                    <div class="calendar-date">19</div>
-                                    <div class="calendar-date">20</div>
-                                    <div class="calendar-date">21</div>
-                                    <div class="calendar-date">22</div>
-                                    <div class="calendar-date">23</div>
-                                    <div class="calendar-date">24</div>
-                                    
-                                    <div class="calendar-date">25</div>
-                                    <div class="calendar-date">26</div>
-                                    <div class="calendar-date">27</div>
-                                    <div class="calendar-date">28</div>
-                                    <div class="calendar-date">29</div>
-                                    <div class="calendar-date">30</div>
-                                    <div class="calendar-date disabled">1</div>
-                                </div>
-                                
-                                <div class="mt-4">
-                                    <label class="form-label">Available Time Slots</label>
-                                    <div class="time-slots">
-                                        <div class="time-slot">9:00 AM</div>
-                                        <div class="time-slot">10:00 AM</div>
-                                        <div class="time-slot">11:00 AM</div>
-                                        <div class="time-slot selected">12:00 PM</div>
-                                        <div class="time-slot">2:00 PM</div>
-                                        <div class="time-slot">3:00 PM</div>
-                                        <div class="time-slot">4:00 PM</div>
-                                        <div class="time-slot">5:00 PM</div>
-                                    </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="education" class="form-label"><i class="fas fa-graduation-cap"></i> Education Level</label>
+                                    <select class="form-select" id="education" required>
+                                        <option value="" selected disabled>Select your education level</option>
+                                        <option value="high-school">High School</option>
+                                        <option value="associate">Associate Degree</option>
+                                        <option value="bachelor">Bachelor's Degree</option>
+                                        <option value="master">Master's Degree</option>
+                                        <option value="doctorate">Doctorate</option>
+                                        <option value="other">Other</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="message" class="form-label"><i class="fas fa-comment"></i> Additional Notes (Optional)</label>
-                            <textarea class="form-control" id="message" rows="3" placeholder="Any specific topics you'd like to focus on?"></textarea>
+                            <label for="background" class="form-label"><i class="fas fa-file-alt"></i> Educational Background</label>
+                            <textarea class="form-control" id="background" rows="3" placeholder="Briefly describe your educational background and experience"></textarea>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary w-100 py-3">
-                            <i class="fas fa-calendar-check me-2"></i> Schedule Demo
+                        <hr class="my-5">
+                        
+                        <h4 class="mb-4">Payment Information</h4>
+                        
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                <label class="form-check-label" for="agreeTerms">
+                                    I agree to the <a href="#">Terms and Conditions</a> and <a href="#">Privacy Policy</a>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="newsletter">
+                                <label class="form-check-label" for="newsletter">
+                                    I would like to receive updates about courses and promotions
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 py-3 mt-4">
+                            <i class="fas fa-paper-plane me-2"></i> Submit Enrollment Application
                         </button>
                     </form>
                 </div>
@@ -788,8 +786,8 @@
     <section class="benefits-section">
         <div class="container">
             <div class="section-title">
-                <h2>What to Expect in Your Demo</h2>
-                <p>Get a comprehensive overview of our platform and how it can benefit you</p>
+                <h2>Why Choose Edutrack?</h2>
+                <p>Discover the benefits of learning with our innovative platform</p>
             </div>
             
             <div class="row">
@@ -798,8 +796,8 @@
                         <div class="benefit-icon">
                             <i class="fas fa-laptop-code"></i>
                         </div>
-                        <h3>Platform Tour</h3>
-                        <p>See our learning management system in action with a guided tour of all features and capabilities.</p>
+                        <h3>Interactive Learning</h3>
+                        <p>Engage with interactive content, quizzes, and hands-on projects that make learning enjoyable and effective.</p>
                     </div>
                 </div>
                 
@@ -808,18 +806,18 @@
                         <div class="benefit-icon">
                             <i class="fas fa-chalkboard-teacher"></i>
                         </div>
-                        <h3>Teaching Methodology</h3>
-                        <p>Understand our unique approach to online education and how it maximizes learning outcomes.</p>
+                        <h3>Expert Instructors</h3>
+                        <p>Learn from industry professionals with years of experience in their respective fields.</p>
                     </div>
                 </div>
                 
                 <div class="col-md-4 mb-4">
                     <div class="benefit-card">
                         <div class="benefit-icon">
-                            <i class="fas fa-graduation-cap"></i>
+                            <i class="fas fa-briefcase"></i>
                         </div>
-                        <h3>Success Planning</h3>
-                        <p>Discuss your learning goals and create a personalized roadmap for your educational journey.</p>
+                        <h3>Career Support</h3>
+                        <p>Get career guidance, resume reviews, and interview preparation to boost your job prospects.</p>
                     </div>
                 </div>
             </div>
@@ -830,21 +828,21 @@
     <section class="testimonials-section">
         <div class="container">
             <div class="section-title">
-                <h2>What Students Say About Our Demos</h2>
-                <p>Hear from students who experienced our demo sessions</p>
+                <h2>What Our Students Say</h2>
+                <p>Hear from students who have transformed their careers with Edutrack</p>
             </div>
             
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="testimonial-card">
-                        <p class="testimonial-text">The demo session helped me understand the course structure and how it would benefit my career. The instructor was knowledgeable and answered all my questions.</p>
+                        <p class="testimonial-text">Edutrack completely changed my career path. The courses are well-structured, and the instructors are always available to help. I landed a job as a web developer just 3 months after completing the course!</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">
                                 <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Alex Johnson">
                             </div>
                             <div class="author-info">
                                 <h5>Alex Johnson</h5>
-                                <p>Web Development Student</p>
+                                <p>Web Development Graduate</p>
                             </div>
                         </div>
                     </div>
@@ -852,14 +850,14 @@
                 
                 <div class="col-lg-6 mb-4">
                     <div class="testimonial-card">
-                        <p class="testimonial-text">I was unsure about which course to choose, but the demo session gave me clarity. The platform is user-friendly and the learning materials are comprehensive.</p>
+                        <p class="testimonial-text">The data science program at Edutrack exceeded my expectations. The projects were challenging and relevant to real-world problems. I now work as a data analyst at a major tech company.</p>
                         <div class="testimonial-author">
                             <div class="author-avatar">
                                 <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=776&q=80" alt="Sarah Miller">
                             </div>
                             <div class="author-info">
                                 <h5>Sarah Miller</h5>
-                                <p>Data Science Student</p>
+                                <p>Data Science Graduate</p>
                             </div>
                         </div>
                     </div>
@@ -922,7 +920,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Demo Scheduled Successfully</h5>
+                    <h5 class="modal-title">Enrollment Submitted</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -930,11 +928,8 @@
                         <i class="fas fa-check"></i>
                     </div>
                     <h4>Thank You!</h4>
-                    <p>Your demo session has been scheduled for <strong>June 16, 2023 at 12:00 PM</strong>.</p>
-                    <p>We've sent a confirmation email with all the details and a calendar invitation.</p>
-                    <div class="alert alert-info mt-3">
-                        <i class="fas fa-info-circle me-2"></i> A representative will call you within 24 hours to confirm your session.
-                    </div>
+                    <p>Your enrollment application has been received. Our admissions team will contact you within 24 hours to complete the process.</p>
+                    <p class="text-muted">A confirmation email has been sent to your email address.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue Browsing</button>
@@ -947,25 +942,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Calendar date selection
-            $('.calendar-date:not(.disabled)').click(function() {
-                $('.calendar-date').removeClass('selected');
-                $(this).addClass('selected');
-            });
-            
-            // Time slot selection
-            $('.time-slot').click(function() {
-                $('.time-slot').removeClass('selected');
-                $(this).addClass('selected');
-            });
-            
             // Form submission
-            $('#demoForm').submit(function(e) {
+            $('#enrollmentForm').submit(function(e) {
                 e.preventDefault();
                 
                 // Basic validation
                 let isValid = true;
-                $('#demoForm input:required, #demoForm select:required').each(function() {
+                $('#enrollmentForm input:required, #enrollmentForm select:required').each(function() {
                     if (!$(this).val()) {
                         isValid = false;
                         $(this).addClass('is-invalid');
@@ -974,28 +957,12 @@
                     }
                 });
                 
-                // Check if date and time are selected
-                if ($('.calendar-date.selected').length === 0) {
-                    isValid = false;
-                    $('.calendar-container').css('border', '1px solid #e63946');
-                } else {
-                    $('.calendar-container').css('border', 'none');
-                }
-                
-                if ($('.time-slot.selected').length === 0) {
-                    isValid = false;
-                    $('.time-slots').css('border', '1px solid #e63946');
-                } else {
-                    $('.time-slots').css('border', 'none');
-                }
-                
                 if (isValid) {
                     // Show success modal
                     $('#successModal').modal('show');
                     
                     // Reset form
-                    $('#demoForm')[0].reset();
-                    $('.calendar-date, .time-slot').removeClass('selected');
+                    $('#enrollmentForm')[0].reset();
                 }
             });
             

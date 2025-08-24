@@ -422,7 +422,7 @@
 <body>
     <header class="chat-header">
         <div class="chat-header-info">
-            <a href="{% if role == 'student' %}{% url 'faculty_filtering' %}{% else %}{% url 'faculty_student_list' %}{% endif %}" class="chat-header-btn">
+            <a href="{% url 'get_faculty_details' %}" class="chat-header-btn">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <img src="{% if other_user.profile_picture %}{{ other_user.profile_picture.url }}{% else %}https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180{% endif %}" 

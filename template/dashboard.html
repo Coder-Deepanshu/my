@@ -1275,7 +1275,7 @@
             <div class="logo-container">
                 <div class="logo">
                     <i class="fas fa-graduation-cap logo-icon"></i>
-                    <span>Edu<span>Track</span></span>
+                    <span>EduTrack</span>
                 </div>
             </div>
         </div>
@@ -1413,7 +1413,7 @@
                     <img src="https://tse4.mm.bing.net/th/id/OIP.4-vvnJtnPtgaKBmpg8t13AHaHa?pid=0" alt="User" class="user-dropdown-avatar">
                     <span class="user-dropdown-name">{{ username }}</span>
                     <div class="user-dropdown-menu">
-                        <a href="#" class="dropdown-item">
+                        <a href="{% url 'profile_details' %}" class="dropdown-item">
                             <i class="fas fa-user mr-2" style="color: var(--primary);"></i> Profile
                         </a>
                         <a href="{% url 'id_card' %}" class="dropdown-item">
@@ -2643,7 +2643,5 @@
         }
     });
 </script>
-
-
 </body>
 </html>

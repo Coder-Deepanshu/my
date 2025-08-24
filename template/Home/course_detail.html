@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses | Edutrack University</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 100px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Courses Section */
+        .courses-section {
+            padding: 80px 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px 30px 0 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--primary);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--light-gray);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            margin-bottom: 30px;
+            height: 100%;
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(67, 97, 238, 0.15);
+        }
+
+        .course-img {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .course-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .course-content {
+            padding: 25px;
+        }
+
+        .course-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .course-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .course-info span {
+            display: flex;
+            align-items: center;
+        }
+
+        .course-info i {
+            margin-right: 5px;
+        }
+
+        .course-description {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .course-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .course-features li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .course-features li i {
+            color: var(--primary);
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        .course-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .course-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .course-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            padding: 80px 0;
+            background: rgba(248, 249, 250, 0.95);
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--dark);
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .testimonial-text::before,
+        .testimonial-text::after {
+            content: '"';
+            font-size: 3rem;
+            color: var(--primary);
+            opacity: 0.2;
+            position: absolute;
+        }
+
+        .testimonial-text::before {
+            top: -20px;
+            left: 0;
+        }
+
+        .testimonial-text::after {
+            bottom: -40px;
+            right: 0;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 3px solid var(--primary);
+        }
+
+        .testimonial-info h5 {
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .testimonial-info p {
+            color: var(--gray);
+            margin: 0;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(33, 37, 41, 0.95);
+            color: white;
+            padding: 60px 0 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .category-filter {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .course-actions {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Contact</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="#" class="btn btn-outline-primary me-2">Login</a>
+                        <a href="#" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title animate__animated animate__fadeInDown">Explore Our Courses</h1>
+            <p class="hero-subtitle animate__animated animate__fadeIn">Discover a wide range of programs designed to help you achieve your academic and career goals</p>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section class="courses-section">
+        <div class="container">
+            <h2 class="section-title animate__animated animate__fadeIn">Our Programs</h2>
+            
+            <div class="category-filter">
+                <button class="category-btn active" data-filter="all">All Courses</button>
+                <button class="category-btn" data-filter="undergraduate">Undergraduate</button>
+                <button class="category-btn" data-filter="graduate">Graduate</button>
+                <button class="category-btn" data-filter="certificate">Certificate</button>
+                <button class="category-btn" data-filter="diploma">Diploma</button>
+            </div>
+            
+            <div class="row" id="courseContainer">
+                <!-- Computer Science Course -->
+                <div class="col-lg-4 col-md-6 course-item" data-category="undergraduate">
+                    <div class="course-card">
+                        <div style="background: linear-gradient(135deg, #4361ee, #3a56d4); height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <span class="course-badge">Bachelors</span>
+                        <div class="course-content">
+                            <h3 class="course-title">Computer Science</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock"></i> 4 Years</span>
+                                <span><i class="fas fa-users"></i> 120 Credits</span>
+                            </div>
+                            <p class="course-description">Learn programming, algorithms, data structures, and software development from industry experts.</p>
+                            <ul class="course-features">
+                                <li><i class="fas fa-check"></i> Software Engineering</li>
+                                <li><i class="fas fa-check"></i> Artificial Intelligence</li>
+                                <li><i class="fas fa-check"></i> Database Systems</li>
+                                <li><i class="fas fa-check"></i> Web Development</li>
+                            </ul>
+                            <div class="course-actions">
+                                <div class="course-price">$12,000/yr</div>
+                                <button class="course-btn">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Business Administration Course -->
+                <div class="col-lg-4 col-md-6 course-item" data-category="graduate">
+                    <div class="course-card">
+                        <div style="background: linear-gradient(135deg, #7209b7, #5a08a1); height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="course-badge">Masters</span>
+                        <div class="course-content">
+                            <h3 class="course-title">Business Administration</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock"></i> 2 Years</span>
+                                <span><i class="fas fa-users"></i> 60 Credits</span>
+                            </div>
+                            <p class="course-description">Develop leadership skills and business acumen to excel in today's competitive corporate world.</p>
+                            <ul class="course-features">
+                                <li><i class="fas fa-check"></i> Strategic Management</li>
+                                <li><i class="fas fa-check"></i> Financial Analysis</li>
+                                <li><i class="fas fa-check"></i> Marketing Strategy</li>
+                                <li><i class="fas fa-check"></i> Organizational Behavior</li>
+                            </ul>
+                            <div class="course-actions">
+                                <div class="course-price">$15,000/yr</div>
+                                <button class="course-btn">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Science Certificate -->
+                <div class="col-lg-4 col-md-6 course-item" data-category="certificate">
+                    <div class="course-card">
+                        <div style="background: linear-gradient(135deg, #f8961e, #e68a1b); height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <span class="course-badge">Certificate</span>
+                        <div class="course-content">
+                            <h3 class="course-title">Data Science</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock"></i> 6 Months</span>
+                                <span><i class="fas fa-users"></i> 18 Credits</span>
+                            </div>
+                            <p class="course-description">Master data analysis, machine learning, and statistical modeling to become a data science expert.</p>
+                            <ul class="course-features">
+                                <li><i class="fas fa-check"></i> Machine Learning</li>
+                                <li><i class="fas fa-check"></i> Data Visualization</li>
+                                <li><i class="fas fa-check"></i> Statistical Analysis</li>
+                                <li><i class="fas fa-check"></i> Python Programming</li>
+                            </ul>
+                            <div class="course-actions">
+                                <div class="course-price">$4,500</div>
+                                <button class="course-btn">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Electrical Engineering Course -->
+                <div class="col-lg-4 col-md-6 course-item" data-category="undergraduate">
+                    <div class="course-card">
+                        <div style="background: linear-gradient(135deg, #e63946, #d32f2f); height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <span class="course-badge">Bachelors</span>
+                        <div class="course-content">
+                            <h3 class="course-title">Electrical Engineering</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock"></i> 4 Years</span>
+                                <span><i class="fas fa-users"></i> 130 Credits</span>
+                            </div>
+                            <p class="course-description">Learn about circuits, power systems, electronics, and electrical machines from experienced faculty.</p>
+                            <ul class="course-features">
+                                <li><i class="fas fa-check"></i> Circuit Design</li>
+                                <li><i class="fas fa-check"></i> Power Systems</li>
+                                <li><i class="fas fa-check"></i> Control Systems</li>
+                                <li><i class="fas fa-check"></i> Digital Electronics</li>
+                            </ul>
+                            <div class="course-actions">
+                                <div class="course-price">$13,500/yr</div>
+                                <button class="course-btn">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Psychology Course -->
+                <div class="col-lg-4 col-md-6 course-item" data-category="graduate">
+                    <div class="course-card">
+                        <div style="background: linear-gradient(135deg, #3a86ff, #2667cc); height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <span class="course-badge">Masters</span>
+                        <div class="course-content">
+                            <h3 class="course-title">Psychology</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock"></i> 2 Years</span>
+                                <span><i class="fas fa-users"></i> 60 Credits</span>
+                            </div>
+                            <p class="course-description">Study human behavior, mental processes, and psychological assessment techniques.</p>
+                            <ul class="course-features">
+                                <li><i class="fas fa-check"></i> Clinical Psychology</li>
+                                <li><i class="fas fa-check"></i> Cognitive Neuroscience</li>
+                                <li><i class="fas fa-check"></i> Research Methods</li>
+                                <li><i class="fas fa-check"></i> Psychological Assessment</li>
+                            </ul>
+                            <div class="course-actions">
+                                <div class="course-price">$14,000/yr</div>
+                                <button class="course-btn">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Graphic Design Diploma -->
+                <div class="col-lg-4 col-md-6 course-item" data-category="diploma">
+                    <div class="course-card">
+                        <div style="background: linear-gradient(135deg, #ff9e00, #e68a00); height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <span class="course-badge">Diploma</span>
+                        <div class="course-content">
+                            <h3 class="course-title">Graphic Design</h3>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock"></i> 1 Year</span>
+                                <span><i class="fas fa-users"></i> 36 Credits</span>
+                            </div>
+                            <p class="course-description">Develop creative skills in visual communication, typography, and digital design tools.</p>
+                            <ul class="course-features">
+                                <li><i class="fas fa-check"></i> Adobe Creative Suite</li>
+                                <li><i class="fas fa-check"></i> Typography</li>
+                                <li><i class="fas fa-check"></i> Brand Identity</li>
+                                <li><i class="fas fa-check"></i> UI/UX Design</li>
+                            </ul>
+                            <div class="course-actions">
+                                <div class="course-price">$8,500</div>
+                                <button class="course-btn">Apply Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="section-title animate__animated animate__fadeIn">What Our Students Say</h2>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">The Computer Science program at Edutrack provided me with the skills and knowledge needed to secure a job at a top tech company right after graduation.</p>
+                        <div class="testimonial-author">
+                            <div style="background: linear-gradient(135deg, #4361ee, #3a56d4); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                                AS
+                            </div>
+                            <div class="testimonial-info">
+                                <h5>Alex Johnson</h5>
+                                <p>Software Engineer at TechCorp</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">The Business Administration program transformed my career. The practical knowledge and industry connections I gained were invaluable.</p>
+                        <div class="testimonial-author">
+                            <div style="background: linear-gradient(135deg, #7209b7, #5a08a1); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                                SM
+                            </div>
+                            <div class="testimonial-info">
+                                <h5>Sarah Williams</h5>
+                                <p>Marketing Director at GlobalBiz</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">The Data Science certificate program gave me the specialized skills I needed to transition into a high-demand field with excellent growth potential.</p>
+                        <div class="testimonial-author">
+                            <div style="background: linear-gradient(135deg, #f8961e, #e68a1b); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
+                                RK
+                            </div>
+                            <div class="testimonial-info">
+                                <h5>Robert Kim</h5>
+                                <p>Data Scientist at DataWorks</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6 stat-item">
+                    <div class="stat-number" data-count="50">0</div>
+                    <div class="stat-label">Programs</div>
+                </div>
+                <div class="col-md-3 col-6 stat-item">
+                    <div class="stat-number" data-count="200">0</div>
+                    <div class="stat-label">Faculty</div>
+                </div>
+                <div class="col-md-3 col-6 stat-item">
+                    <div class="stat-number" data-count="5000">0</div>
+                    <div class="stat-label">Students</div>
+                </div>
+                <div class="col-md-3 col-6 stat-item">
+                    <div class="stat-number" data-count="96">0</div>
+                    <div class="stat-label">Placement %</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h4 class="footer-title">Edutrack</h4>
+                    <p>Comprehensive education management system designed to streamline operations and enhance learning outcomes.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'feature' %}">Features</a></li>
+                        <li><a href="{% url 'pricing' %}">Courses</a></li>
+                        <li><a href="{% url 'success_stories' %}">About Us</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h4 class="footer-title">Programs</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Undergraduate</a></li>
+                        <li><a href="#">Graduate</a></li>
+                        <li><a href="#">Certificate</a></li>
+                        <li><a href="#">Diploma</a></li>
+                        <li><a href="#">Online Courses</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h4 class="footer-title">Contact Us</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Education St, Learning City</li>
+                        <li><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@edutrack.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Edutrack. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Course filtering functionality
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get filter value
+                const filter = this.getAttribute('data-filter');
+                
+                // Show/hide courses based on filter
+                document.querySelectorAll('.course-item').forEach(course => {
+                    if (filter === 'all' || course.getAttribute('data-category') === filter) {
+                        course.style.display = 'block';
+                    } else {
+                        course.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Animated counter for stats
+        function animateCounter() {
+            const counters = document.querySelectorAll('.stat-number');
+            const speed = 200;
+            
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = Math.ceil(target / speed);
+                
+                if (count < target) {
+                    counter.innerText = Math.min(count + increment, target);
+                    setTimeout(() => animateCounter(), 1);
+                }
+            });
+        }
+        
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate elements with delay
+            const animatedElements = document.querySelectorAll('.animate__animated');
+            animatedElements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // Start counter animation when stats section is in view
+            setTimeout(animateCounter, 1000);
+        });
+    </script>
+</body>
+</html>

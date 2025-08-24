@@ -67,17 +67,6 @@
             padding: 1rem 0;
         }
 
-        .menu-title {
-            padding: 0.75rem 1.5rem 0.5rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--sidebar-text);
-            font-weight: 600;
-            opacity: 0.7;
-            margin-top: 0.5rem;
-        }
-
         .menu-list {
             list-style: none;
             padding: 0;
@@ -419,42 +408,38 @@
                 grid-template-columns: 1fr;
             }
         }
+        .header-btn {
+  text-decoration: none;
+  color: inherit;}
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3 style="color: white; margin: 0;">College Logo</h3>
+            <h3 style="color: white; margin: 0;">
+                <i class="fas fa-graduation-cap me-2"></i>EduTrack</h3>
         </div>
         
         <div class="sidebar-menu">
-            <div class="menu-title">Navigation</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="{% url 'dashboard2' %}" class="menu-link">
                         <i class="fas fa-tachometer-alt menu-icon"></i>
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link active">
-                        <i class="fas fa-calendar-check menu-icon"></i>
-                        <span class="menu-text">My Attendance</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-arrow-left menu-icon"></i>
-                        <span class="menu-text">Back</span>
+                    <a href="{% url 'student_attendance_view' %}" class="menu-link active">
+                        <i class="fas fa-calendar-check"></i>
+                        <span class="menu-text">Attendance</span>
                     </a>
                 </li>
             </ul>
-            
-            <div class="menu-title">Account</div>
+
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
+                    <a href="{% url 'logoutdoor' %}" class="menu-link">
                         <i class="fas fa-sign-out-alt menu-icon"></i>
                         <span class="menu-text">Logout</span>
                     </a>
@@ -463,7 +448,11 @@
         </div>
         
         <div class="sidebar-footer">
-            <img src="https://via.placeholder.com/150" alt="User" class="user-avatar">
+                        {% if student.profile_picture %}
+                        <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="user-avatar">
+                        {% else %}
+                        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="user-avatar">
+                        {% endif %}
             <div class="user-info">
                 <div class="user-name">{{ student.name }}</div>
                 <div class="user-role">Student</div>
@@ -482,15 +471,15 @@
             </button>
             <h1><i class="fas fa-calendar-check"></i> My Attendance</h1>
             <div class="header-actions">
-                <button class="header-btn" title="Back">
+                <a  href="{% url 'dashboard2' %}" class="header-btn" title="Back">
                     <i class="fas fa-arrow-left"></i>
-                </button>
-                <button class="header-btn" title="Dashboard">
+                </a>
+                <a  href="{% url 'dashboard2' %}" class="header-btn" title="Dashboard">
                     <i class="fas fa-tachometer-alt"></i>
-                </button>
-                <button class="header-btn" title="Logout">
+                </a>
+                <a  href="{% url 'logoutdoor' %}" class="header-btn" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
-                </button>
+                </a>
             </div>
         </div>
 
@@ -727,6 +716,11 @@
             
             // Initial load
             loadAttendanceData();
+        });
+        // Back button functionality
+        $(document).on('click', '.menu-link.active', function(e) {
+            e.preventDefault();
+            window.history.back();
         });
     </script>
 </body>

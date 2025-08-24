@@ -1,4 +1,3 @@
-
 {% for faculties in faculty_detail %}
 <a href="{% url 'chat_home' %}?faculty_id={{ faculties.college_id }}" class="admin-card-link">
 <div class="admin-card">
@@ -53,6 +52,33 @@
     </div>
 </div>
 </a>
+<script>
+        // Handle card clicks
+        document.querySelectorAll('.admin-card-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Check if this is a follow button click
+                if (e.target.closest('.follow-btn')) {
+                    return;
+                }
+                
+                const card = this.querySelector('.admin-card');
+                const followBtn = card.querySelector('.follow-btn');
+                const isFollowing = followBtn.classList.contains('following');
+                
+                if (!isFollowing) {
+                    e.preventDefault();
+                    showToast('error', 'You must follow this faculty before you can chat with them');
+                    followBtn.style.transform = 'scale(1.1)';
+                    followBtn.style.boxShadow = '0 0 10px rgba(255, 235, 59, 0.7)';
+                    setTimeout(() => {
+                        followBtn.style.transform = 'scale(1)';
+                        followBtn.style.boxShadow = 'none';
+                    }, 300);
+                }
+            });
+        });
+
+</script>
 {% endfor %}
 
 

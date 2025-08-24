@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features | Edutrack University</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 100px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px 30px 0 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--primary);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            height: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(67, 97, 238, 0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 25px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .feature-description {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li i {
+            color: var(--primary);
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Slider Section */
+        .slider-section {
+            padding: 80px 0;
+            background: rgba(248, 249, 250, 0.95);
+        }
+
+        .slider-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slider-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .slider-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .slider-img {
+            width: 100%;
+            height: 200px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .slider-item-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .slider-item-description {
+            color: var(--gray);
+        }
+
+        .slider-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .slider-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .slider-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(33, 37, 41, 0.95);
+            color: white;
+            padding: 60px 0 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .feature-card {
+                margin-bottom: 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .slider-container {
+                padding: 20px;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Features</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Contact</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="#" class="btn btn-outline-primary me-2">Login</a>
+                        <a href="#" class="btn btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title animate__animated animate__fadeInDown">Edutrack University Management System</h1>
+            <p class="hero-subtitle animate__animated animate__fadeIn">Comprehensive education management platform designed to streamline operations and enhance learning outcomes</p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title animate__animated animate__fadeIn">Our Features</h2>
+            
+            <div class="row">
+                <!-- Student Management -->
+                <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3 class="feature-title">Student Management</h3>
+                        <p class="feature-description">Complete student lifecycle management from enrollment to graduation.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Student profiles & records</li>
+                            <li><i class="fas fa-check"></i> Enrollment & registration</li>
+                            <li><i class="fas fa-check"></i> Academic progress tracking</li>
+                            <li><i class="fas fa-check"></i> Performance analytics</li>
+                            <li><i class="fas fa-check"></i> Document management</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Fee Management -->
+                <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h3 class="feature-title">Fee Management</h3>
+                        <p class="feature-description">Streamlined financial management for tuition and other fees.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Online fee payment</li>
+                            <li><i class="fas fa-check"></i> Automated invoicing</li>
+                            <li><i class="fas fa-check"></i> Payment reminders</li>
+                            <li><i class="fas fa-check"></i> Financial reports</li>
+                            <li><i class="fas fa-check"></i> Scholarship management</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Attendance -->
+                <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3 class="feature-title">Attendance System</h3>
+                        <p class="feature-description">Efficient tracking and management of student attendance.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Digital attendance records</li>
+                            <li><i class="fas fa-check"></i> Real-time tracking</li>
+                            <li><i class="fas fa-check"></i> Automated notifications</li>
+                            <li><i class="fas fa-check"></i> Attendance reports</li>
+                            <li><i class="fas fa-check"></i> Integration with timetable</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Timetable -->
+                <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3 class="feature-title">Timetable Management</h3>
+                        <p class="feature-description">Dynamic scheduling for classes, exams, and resources.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Class scheduling</li>
+                            <li><i class="fas fa-check"></i> Exam timetable</li>
+                            <li><i class="fas fa-check"></i> Room allocation</li>
+                            <li><i class="fas fa-check"></i> Faculty scheduling</li>
+                            <li><i class="fas fa-check"></i> Conflict resolution</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Reports -->
+                <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="feature-title">Reports & Analytics</h3>
+                        <p class="feature-description">Comprehensive reporting for data-driven decision making.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Academic performance</li>
+                            <li><i class="fas fa-check"></i> Financial reports</li>
+                            <li><i class="fas fa-check"></i> Attendance analytics</li>
+                            <li><i class="fas fa-check"></i> Custom report builder</li>
+                            <li><i class="fas fa-check"></i> Export to multiple formats</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Additional Feature -->
+                <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3 class="feature-title">Security & Compliance</h3>
+                        <p class="feature-description">Enterprise-grade security for your institution's data.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Role-based access control</li>
+                            <li><i class="fas fa-check"></i> Data encryption</li>
+                            <li><i class="fas fa-check"></i> Audit trails</li>
+                            <li><i class="fas fa-check"></i> Regular backups</li>
+                            <li><i class="fas fa-check"></i> GDPR compliance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slider Section -->
+    <section class="slider-section">
+        <div class="container">
+            <h2 class="section-title animate__animated animate__fadeIn">See How It Works</h2>
+            
+            <div class="slider-container">
+                <h3 class="slider-title">Feature Showcase</h3>
+                
+                <div class="row" id="sliderRow">
+                    <!-- Slider Item 1 -->
+                    <div class="col-md-4 slider-item">
+                        <div class="slider-img" style="background: linear-gradient(135deg, #4361ee, #3a56d4); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h4 class="slider-item-title">Student Dashboard</h4>
+                        <p class="slider-item-description">Interactive dashboard for students to track their progress, attendance, and fees.</p>
+                    </div>
+                    
+                    <!-- Slider Item 2 -->
+                    <div class="col-md-4 slider-item">
+                        <div class="slider-img" style="background: linear-gradient(135deg, #7209b7, #5a08a1); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h4 class="slider-item-title">Faculty Portal</h4>
+                        <p class="slider-item-description">Dedicated portal for faculty to manage classes, attendance, and grades.</p>
+                    </div>
+                    
+                    <!-- Slider Item 3 -->
+                    <div class="col-md-4 slider-item">
+                        <div class="slider-img" style="background: linear-gradient(135deg, #f8961e, #e68a1b); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h4 class="slider-item-title">Analytics Dashboard</h4>
+                        <p class="slider-item-description">Comprehensive analytics for administrators to monitor institutional performance.</p>
+                    </div>
+                </div>
+                
+                <div class="slider-controls">
+                    <button class="slider-btn" id="prevSlider">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="slider-btn" id="nextSlider">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6 stat-item">
+                    <div class="stat-number" data-count="50">0</div>
+                    <div class="stat-label">Institutions</div>
+                </div>
+                <div class="col-md-3 col-6 stat-item">
+                    <div class="stat-number" data-count="50000">0</div>
+                    <div class="stat-label">Students</div>
+                </div>
+                <div class="col-md-3 col-6 stat-item">
+                    <div class="stat-number" data-count="2500">0</div>
+                    <div class="stat-label">Faculty</div>
+                </div>
+                <div class="col-md-3 col-6 stat-item">
+                    <div class="stat-number" data-count="98">0</div>
+                    <div class="stat-label">Satisfaction %</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h4 class="footer-title">Edutrack</h4>
+                    <p>Comprehensive education management system designed to streamline operations and enhance learning outcomes.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h4 class="footer-title">Features</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Student Management</a></li>
+                        <li><a href="#">Fee Management</a></li>
+                        <li><a href="#">Attendance</a></li>
+                        <li><a href="#">Timetable</a></li>
+                        <li><a href="#">Reports</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h4 class="footer-title">Contact Us</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Education St, Learning City</li>
+                        <li><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@edutrack.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Edutrack. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Slider functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slider-item');
+        const totalSlides = slides.length;
+        
+        function showSlide(index) {
+            if (index >= totalSlides) {
+                currentSlide = 0;
+            } else if (index < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = index;
+            }
+            
+            document.getElementById('sliderRow').style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+        
+        document.getElementById('nextSlider').addEventListener('click', () => {
+            showSlide(currentSlide + 1);
+        });
+        
+        document.getElementById('prevSlider').addEventListener('click', () => {
+            showSlide(currentSlide - 1);
+        });
+        
+        // Initialize slider
+        document.getElementById('sliderRow').style.display = 'flex';
+        document.getElementById('sliderRow').style.transition = 'transform 0.5s ease';
+        showSlide(0);
+        
+        // Animated counter for stats
+        function animateCounter() {
+            const counters = document.querySelectorAll('.stat-number');
+            const speed = 200;
+            
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = Math.ceil(target / speed);
+                
+                if (count < target) {
+                    counter.innerText = Math.min(count + increment, target);
+                    setTimeout(() => animateCounter(), 1);
+                }
+            });
+        }
+        
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate elements with delay
+            const animatedElements = document.querySelectorAll('.animate__animated');
+            animatedElements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // Start counter animation when stats section is in view
+            setTimeout(animateCounter, 1000);
+        });
+    </script>
+</body>
+</html>

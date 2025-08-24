@@ -18,6 +18,18 @@ def success_stories(request):
 def contact(request):
     return render(request,'Home/contact.html')
 
+def pricing(request):
+    return render(request,'Home/pricing.html')
+
+def demo(request):
+    return render(request,'Home/demo.html')
+
+def enroll(request):
+    return render(request,'Home/enroll.html')
+
+def new_enroll(request):
+    return render(request,'Home/new_enroll.html')
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -110,44 +122,75 @@ def login_view(request):
 
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt  # Still needed for other potential AJAX requests
+@csrf_exempt
 def forget_password(request):
-    if request.method == 'GET':
-        college_id = request.GET.get('collegeId')
-        ID_str=str(college_id)
-        try:
-         if ID_str[0:2] == 'ST':
-            student_detail = Student.objects.get(college_id=college_id)
-            return JsonResponse({
-                'success': True,
-                'username': student_detail.username,
-                'user_id': student_detail.user_id,
-                'password': student_detail.password  # Make sure this field exists in your model
-            })
-         elif ID_str[0:2] == 'GK':
-             faculty_detail = Faculty.objects.get(college_id=college_id)
-             return JsonResponse({
-                'success': True,
-                'username': faculty_detail.username,
-                'user_id': faculty_detail.user_id,
-                'password': faculty_detail.password  # Make sure this field exists in your model
-            })
-         elif ID_str[0:2] == 'AD':
-             admin_detail = Admin.objects.get(college_id=college_id)
-             return JsonResponse({
-                'success': True,
-                'username': admin_detail.username,
-                'user_id': admin_detail.user_id,
-                'password': admin_detail.password  # Make sure this field exists in your model
-            })
-        except (Student.DoesNotExist,Faculty.DoesNotExist):
+    if request.method == 'POST':
+        college_id = request.POST.get('collegeId')
+        
+        if not college_id:
             return JsonResponse({
                 'success': False,
-                'error': 'User not found'
-            }, status=404)
+                'error': 'College ID is required'
+            }, status=400)
         
-    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
-
+        try:
+            # Check if college_id starts with specific prefixes
+            if college_id.startswith('ST'):
+                student_detail = Student.objects.get(college_id=college_id)
+                return JsonResponse({
+                    'success': True,
+                    'username': student_detail.email,  # Using email as username
+                    'user_id': student_detail.college_id,
+                    'password': student_detail.phone  # Phone is being used as password
+                })
+            elif college_id.startswith('GK'):
+                faculty_detail = Faculty.objects.get(college_id=college_id)
+                return JsonResponse({
+                    'success': True,
+                    'username': faculty_detail.email,  # Using email as username
+                    'user_id': faculty_detail.college_id,
+                    'password': faculty_detail.phone  # Phone is being used as password
+                })
+            elif college_id.startswith('AD'):
+                admin_detail = Admin.objects.get(college_id=college_id)
+                return JsonResponse({
+                    'success': True,
+                    'username': admin_detail.email,  # Using email as username
+                    'user_id': admin_detail.college_id,
+                    'password': admin_detail.phone  # Phone is being used as password
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Invalid College ID format'
+                }, status=400)
+                
+        except Student.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'Student not found with this College ID'
+            }, status=404)
+        except Faculty.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'Faculty not found with this College ID'
+            }, status=404)
+        except Admin.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'Admin not found with this College ID'
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': f'An error occurred: {str(e)}'
+            }, status=500)
+    
+    # For GET requests or other methods
+    return JsonResponse({
+        'success': False,
+        'error': 'Invalid request method. Use POST.'
+    }, status=400)
 
 def admin_adding_page(request):
     username = request.session.get('User_name')
@@ -212,8 +255,6 @@ def profile_upload(request):
             messages.success(request, 'Profile picture updated successfully!')
             return redirect('profile_details')
     
-
-
 # for id card
 def id_card(request):
     role=request.session.get('role')
@@ -261,9 +302,11 @@ def dashboard1(request):
 # for student dashboard
 def dashboard2(request):
     # Check if the user is logged in
-    username = request.session.get('username3')  # Retrieve username from session
+    username = request.session.get('username3')
+    college_id = request.session.get('student_college_id')
+    detail = Student.objects.get(college_id = college_id)  # Retrieve username from session
     if username:
-        return render(request, 'dashboard2.html', {'username': username})
+        return render(request, 'dashboard2.html', {'username': username,'detail':detail})
     else:
         return redirect('login') 
 

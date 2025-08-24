@@ -1,1107 +1,2039 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Success Stories - EduCard College Management</title>
+    <title>Student Management | Student Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* Primary Colors */
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #f0f4ff;
+            --primary-extra-light: #e6ecff;
+            
+            /* Secondary Colors */
+            --secondary: #6c63ff;
+            --accent: #5c7cff;
+            --success: #4cc9f0;
+            --warning: #ff9f1c;
+            --danger: #ff477e;
+            --info: #4299e1;
+            
+            /* Neutral Colors */
+            --dark: #2d3748;
+            --darker: #1a202c;
+            --light: #f8fafc;
+            --lighter: #ffffff;
+            --gray: #718096;
+            --light-gray: #e2e8f0;
+            --dark-gray: #4a5568;
+            
+            /* Status Colors */
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --info: #4299e1;
+            
+            /* Sidebar Colors */
+            --sidebar-bg: #2d3748;
+            --sidebar-text: #cbd5e0;
+            --sidebar-active: rgba(74, 107, 255, 0.2);
+            --sidebar-hover: #4a5568;
+            --sidebar-icon: #a0aec0;
+            
+            /* Other Variables */
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --box-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Dark Theme Variables */
+        .dark-theme {
+            --primary: #5c7cff;
+            --primary-dark: #4a6bff;
+            --primary-light: #1a202c;
+            --primary-extra-light: #2d3748;
+            
+            --dark: #f8fafc;
+            --darker: #ffffff;
+            --light: #1a202c;
+            --lighter: #2d3748;
+            --gray: #a0aec0;
+            --light-gray: #4a5568;
+            --dark-gray: #e2e8f0;
+            
+            --sidebar-bg: #1a202c;
+            --sidebar-text: #cbd5e0;
+            --sidebar-hover: #2d3748;
+            
+            background-color: #1a202c;
+            color: #f8fafc;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        :root {
-            --primary: #4a6cfa;
-            --secondary: #ff6b6b;
-            --accent: #45c7d5;
-            --dark: #2d3748;
-            --light: #f8f9fa;
-            --success: #3dd598;
-            --warning: #ffce73;
-            --gray: #718096;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         body {
             background-color: #f5f7fb;
             color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
             line-height: 1.6;
         }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header Styles */
-        header {
-            background: linear-gradient(120deg, var(--primary), var(--accent));
-            color: white;
-            padding: 15px 0;
-            position: sticky;
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            left: 0;
             top: 0;
+            transition: var(--transition);
             z-index: 100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-content {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .logo {
+        .sidebar-header {
+            padding: 1.5rem 1.5rem 1rem;
             display: flex;
             align-items: center;
-            font-size: 24px;
-            font-weight: 700;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            height: var(--header-height);
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
         }
 
-        .logo i {
-            margin-right: 10px;
-            font-size: 28px;
+        .sidebar-menu::-webkit-scrollbar {
+            width: 6px;
         }
 
-        nav ul {
-            display: flex;
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background-color: var(--sidebar-hover);
+            border-radius: 3px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background-color: var(--sidebar-bg);
+        }
+
+        .menu-title {
+            padding: 0.75rem 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--sidebar-text);
+            font-weight: 600;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
+        .menu-list {
             list-style: none;
         }
 
-        nav ul li {
-            margin-left: 30px;
+        .menu-item {
+            position: relative;
+            margin: 0.15rem 0;
         }
 
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        nav ul li a:hover {
-            color: var(--warning);
-        }
-
-        .auth-buttons {
+        .menu-link {
             display: flex;
             align-items: center;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 0.8rem 1.5rem;
+            color: var(--sidebar-text);
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-outline {
-            border: 2px solid white;
-            color: white;
-            background: transparent;
-            margin-right: 15px;
-        }
-
-        .btn-outline:hover {
-            background: white;
-            color: var(--primary);
-        }
-
-        .btn-primary {
-            background: white;
-            color: var(--primary);
-            border: 2px solid white;
-        }
-
-        .btn-primary:hover {
-            background: transparent;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: var(--secondary);
-            color: white;
-            border: 2px solid var(--secondary);
-        }
-
-        .btn-secondary:hover {
-            background: transparent;
-            color: var(--secondary);
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            color: white;
-            border: 2px solid var(--accent);
-        }
-
-        .btn-accent:hover {
-            background: transparent;
-            color: var(--accent);
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 100px 0;
-            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80');
-            background-size: cover;
-            background-position: center;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--gray);
-            max-width: 700px;
-            margin: 0 auto 40px;
-        }
-
-        /* Success Stories Section */
-        .success-stories {
-            padding: 80px 0;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--dark);
-            margin-bottom: 15px;
-        }
-
-        .section-title p {
-            color: var(--gray);
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .filters {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 50px;
-        }
-
-        .filter-btn {
-            padding: 10px 25px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
             font-weight: 500;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+            margin: 0 0.5rem;
+            border-radius: 6px;
         }
 
-        .filter-btn.active, .filter-btn:hover {
-            background: var(--primary);
+        .menu-link:hover {
             color: white;
-            border-color: var(--primary);
+            background-color: var(--sidebar-hover);
+            transform: translateX(5px);
         }
 
-        .stories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
+        .menu-link.active {
+            color: white;
+            background-color: var(--sidebar-active);
+            border-left-color: var(--primary);
+            font-weight: 600;
         }
 
-        .story-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease;
+        .menu-icon {
+            font-size: 1rem;
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            color: var(--sidebar-icon);
+            transition: var(--transition);
         }
 
-        .story-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .story-img {
-            height: 250px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .story-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .story-card:hover .story-img img {
+        .menu-link:hover .menu-icon,
+        .menu-link.active .menu-icon {
+            color: white;
             transform: scale(1.1);
         }
 
-        .story-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 600;
+        .menu-text {
+            flex: 1;
+            transition: var(--transition);
         }
 
-        .story-content {
-            padding: 30px;
+        .menu-link:hover .menu-text {
+            transform: translateX(3px);
         }
 
-        .story-content h3 {
-            margin-bottom: 15px;
-            color: var(--dark);
-            font-size: 1.5rem;
-        }
-
-        .story-meta {
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            color: var(--gray);
-            font-size: 0.9rem;
+            gap: 0.75rem;
+            background: rgba(0, 0, 0, 0.1);
         }
 
-        .story-meta i {
-            margin-right: 8px;
-            color: var(--primary);
-        }
-
-        .story-meta div {
-            margin-right: 20px;
-        }
-
-        .story-excerpt {
-            color: var(--gray);
-            margin-bottom: 25px;
-            line-height: 1.8;
-        }
-
-        .story-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            line-height: 1;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        /* Video Stories */
-        .video-stories {
-            padding: 80px 0;
-            background: linear-gradient(to right, #f5f7fb, #e8ecf1);
-        }
-
-        .video-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .video-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        }
-
-        .video-thumb {
-            height: 200px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .video-thumb img {
-            width: 100%;
-            height: 100%;
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
             object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
         }
 
-        .play-btn {
+        .sidebar-footer:hover .user-avatar {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.1rem;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--sidebar-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .logout-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: rotate(180deg);
+        }
+
+        /* Logo Styles */
+        .logo-container {
+            padding: 0 20px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(-15deg);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: var(--transition);
+        }
+
+        /* Header Styles */
+        .header {
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--gray);
+            cursor: pointer;
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-sidebar:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .notification-btn:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.9);
+            top: 5px;
+            right: 5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 0.6rem;
+            font-weight: bold;
+            border: 2px solid white;
         }
 
-        .play-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .video-content {
-            padding: 20px;
-        }
-
-        .video-content h3 {
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-
-        .video-meta {
+        .user-dropdown {
             display: flex;
             align-items: center;
-            color: var(--gray);
-            font-size: 0.9rem;
-            margin-bottom: 15px;
+            gap: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+            border-radius: 50px;
+            transition: var(--transition);
         }
 
-        .video-meta i {
-            margin-right: 8px;
+        .user-dropdown:hover {
+            background-color: var(--light-gray);
+        }
+
+        .user-dropdown-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .user-dropdown:hover .user-dropdown-avatar {
+            transform: scale(1.1);
+            border-color: var(--primary-light);
+        }
+
+        .user-dropdown-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+
+        .user-dropdown:hover .user-dropdown-name {
             color: var(--primary);
         }
 
-        /* Impact Stats */
-        .impact-stats {
-            padding: 80px 0;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-            text-align: center;
-        }
-
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 40px;
-        }
-
-        .stat-item {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .stat-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .stat-text {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        /* CTA Section */
-        .cta {
-            padding: 100px 0;
-            text-align: center;
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
             background: white;
+            min-width: 220px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow-lg);
+            padding: 0.5rem 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+            z-index: 100;
         }
 
-        .cta h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+        .user-dropdown:hover .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.25rem;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding-left: 1.5rem;
+        }
+
+        .dropdown-item i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--light-gray);
+            margin: 0.5rem 0;
+        }
+
+        /* Content Styles */
+        .content {
+            padding: 2rem;
+        }
+
+        /* Header-1 Styles */
+        .header-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .page-title h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .page-title p {
+            margin: 0.5rem 0 0;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* Student Actions Container */
+        .student-actions-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .student-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+
+        .student-action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .student-action-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: var(--transition);
+            height: auto;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .form-control.error {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        /* Form Steps */
+        .form-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--light-gray);
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--light-gray);
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .step.active .step-number {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Form Pages */
+        .form-page {
+            display: none;
+        }
+
+        .form-page.active {
+            display: block;
+        }
+
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--light-gray);
             color: var(--dark);
         }
 
-        .cta p {
-            color: var(--gray);
-            max-width: 700px;
-            margin: 0 auto 40px;
-            font-size: 1.2rem;
+        .btn-outline:hover {
+            background-color: var(--light-gray);
         }
 
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--dark);
-            color: white;
-            padding: 60px 0 30px;
-        }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-column h3 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: var(--accent);
-        }
-
-        .footer-column ul {
-            list-style: none;
-        }
-
-        .footer-column ul li {
-            margin-bottom: 15px;
-        }
-
-        .footer-column ul li a {
-            color: #c5c5c5;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-column ul li a:hover {
+        .btn-success {
+            background-color: var(--success);
             color: white;
         }
 
-        .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #c5c5c5;
+        .btn-success:hover {
+            background-color: #3aa76d;
         }
 
-        /* Modal */
-        .modal {
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e53e3e;
+        }
+
+        /* Student Details */
+        .student-details {
             display: none;
+        }
+
+        .student-details.active {
+            display: block;
+        }
+
+        .photo-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .student-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: var(--border-radius);
+            object-fit: cover;
+            box-shadow: var(--box-shadow);
+        }
+
+        .photo-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background-color: var(--primary-extra-light);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            min-width: 150px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: var(--dark);
+        }
+
+        /* Modal Styles */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
         }
 
         .modal-content {
-            background: white;
+            background-color: white;
+            border-radius: var(--border-radius);
             width: 90%;
-            max-width: 900px;
-            border-radius: 15px;
+            max-width: 600px;
             overflow: hidden;
-            position: relative;
+            box-shadow: var(--box-shadow-lg);
         }
 
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            background-color: var(--danger);
             color: white;
-            background: rgba(0, 0, 0, 0.5);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 10;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .modal-body {
-            padding: 40px;
-            max-height: 80vh;
-            overflow-y: auto;
+            padding: 1.5rem;
         }
 
-        .modal-story-header {
-            margin-bottom: 30px;
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            background-color: var(--light-gray);
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
         }
 
-        .modal-story-title {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: var(--dark);
-        }
-
-        .modal-story-meta {
+        /* Alert Messages */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
-            color: var(--gray);
-            margin-bottom: 20px;
+            gap: 0.75rem;
+            font-size: 0.9rem;
         }
 
-        .modal-story-meta div {
-            margin-right: 20px;
-            display: flex;
-            align-items: center;
+        .alert-success {
+            background-color: #f0fff4;
+            color: #2f855a;
+            border-left: 4px solid var(--success);
         }
 
-        .modal-story-meta i {
-            margin-right: 8px;
-            color: var(--primary);
+        .alert-error {
+            background-color: #fff5f5;
+            color: #c53030;
+            border-left: 4px solid var(--danger);
         }
 
-        .modal-story-content {
-            line-height: 1.8;
-            color: var(--gray);
+        /* Checkbox Styles */
+        .checkbox-container {
+            display: block;
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            user-select: none;
         }
 
-        .modal-story-content p {
-            margin-bottom: 20px;
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
         }
 
-        /* Responsive Design */
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #eee;
+            border-radius: 4px;
+        }
+
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: var(--primary);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-container .checkmark:after {
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .toggle-sidebar {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .content {
+                padding: 1.5rem;
+            }
+            
+            .header-1 {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .student-actions-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
+            .detail-grid {
+                grid-template-columns: 1fr;
             }
+            
+            .header {
+                padding: 0 1.25rem;
+            }
+            
+            .photo-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .detail-label {
+                min-width: auto;
+            }
+        }
 
-            nav ul {
-                margin: 20px 0;
+        @media (max-width: 576px) {
+            .content {
+                padding: 1.25rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
                 justify-content: center;
-            }
-
-            nav ul li {
-                margin: 0 10px;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .stats-container {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>EduCard</span>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="index.html#features">Features</a></li>
-                        <li><a href="success-stories.html" class="active">Success Stories</a></li>
-                        <li><a href="index.html#about">About</a></li>
-                        <li><a href="contact.html">Contact</a></li>
-                    </ul>
-                </nav>
-                <div class="auth-buttons">
-                    <a href="login.html" class="btn btn-outline">Login</a>
-                    <a href="signup.html" class="btn btn-primary">Sign Up</a>
-                </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap logo-icon"></i>
+                <span>Student</span> Management
             </div>
         </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>Transforming Education Institutions</h1>
-            <p>Discover how EduCard has helped colleges and universities around the world streamline their operations and enhance the learning experience.</p>
-            <div class="cta-buttons">
-                <a href="#stories" class="btn btn-primary">Read Success Stories</a>
-                <a href="contact.html" class="btn btn-accent">Share Your Story</a>
-            </div>
+        <div class="sidebar-menu">
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a class="menu-link active" href="{% url 'dashboard' %}">
+                        <i class="fas fa-arrow-left menu-icon"></i>
+                        <span class="menu-text">Back</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="{% url 'dashboard' %}" class="menu-link">
+                        <i class="fas fa-home menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="{% url 'logoutdoor' %}" class="menu-link">
+                        <i class="fas fa-sign-out-alt menu-icon"></i>
+                        <span class="menu-text">Logout</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-    </section>
-
-    <!-- Success Stories Section -->
-    <section class="success-stories" id="stories">
-        <div class="container">
-            <div class="section-title">
-                <h2>Institution Success Stories</h2>
-                <p>Real stories from educational institutions that have transformed their operations with EduCard</p>
+        <div class="sidebar-footer">
+            <img src="https://via.placeholder.com/40" alt="User" class="user-avatar">
+            <div class="user-info">
+                <div class="user-name">Admin User</div>
+                <div class="user-role">Administrator</div>
             </div>
-
-            <div class="filters">
-                <button class="filter-btn active">All</button>
-                <button class="filter-btn">Universities</button>
-                <button class="filter-btn">Colleges</button>
-                <button class="filter-btn">Schools</button>
-                <button class="filter-btn">International</button>
-            </div>
-
-            <div class="stories-grid">
-                <!-- Story 1 -->
-                <div class="story-card">
-                    <div class="story-img">
-                        <img src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Tech University">
-                        <div class="story-badge">University</div>
-                    </div>
-                    <div class="story-content">
-                        <h3>Tech University Increases Efficiency by 65%</h3>
-                        <div class="story-meta">
-                            <div><i class="fas fa-map-marker-alt"></i> New York, USA</div>
-                            <div><i class="fas fa-calendar-alt"></i> June 2023</div>
-                        </div>
-                        <p class="story-excerpt">Tech University implemented EduCard to streamline their student management system and saw dramatic improvements in operational efficiency...</p>
-                        <a href="#" class="btn btn-outline read-more" data-story="1">Read Full Story</a>
-                        <div class="story-stats">
-                            <div class="stat">
-                                <div class="stat-number">65%</div>
-                                <div class="stat-label">Efficiency Gain</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">42%</div>
-                                <div class="stat-label">Cost Reduction</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">89%</div>
-                                <div class="stat-label">Satisfaction</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Story 2 -->
-                <div class="story-card">
-                    <div class="story-img">
-                        <img src="https://images.unsplash.com/photo-1591123120675-6f7f1aae0e5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Global College">
-                        <div class="story-badge">College</div>
-                    </div>
-                    <div class="story-content">
-                        <h3>Global College Enhances Student Experience</h3>
-                        <div class="story-meta">
-                            <div><i class="fas fa-map-marker-alt"></i> London, UK</div>
-                            <div><i class="fas fa-calendar-alt"></i> April 2023</div>
-                        </div>
-                        <p class="story-excerpt">By implementing EduCard's comprehensive platform, Global College was able to significantly improve student engagement and satisfaction...</p>
-                        <a href="#" class="btn btn-outline read-more" data-story="2">Read Full Story</a>
-                        <div class="story-stats">
-                            <div class="stat">
-                                <div class="stat-number">78%</div>
-                                <div class="stat-label">Engagement Increase</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">54%</div>
-                                <div class="stat-label">Time Saved</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">92%</div>
-                                <div class="stat-label">Satisfaction</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Story 3 -->
-                <div class="story-card">
-                    <div class="story-img">
-                        <img src="https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="City Institute">
-                        <div class="story-badge">Institute</div>
-                    </div>
-                    <div class="story-content">
-                        <h3>City Institute Saves $200k Annually</h3>
-                        <div class="story-meta">
-                            <div><i class="fas fa-map-marker-alt"></i> Toronto, Canada</div>
-                            <div><i class="fas fa-calendar-alt"></i> March 2023</div>
-                        </div>
-                        <p class="story-excerpt">City Institute adopted EduCard to modernize their administrative processes and achieved significant cost savings while improving service delivery...</p>
-                        <a href="#" class="btn btn-outline read-more" data-story="3">Read Full Story</a>
-                        <div class="story-stats">
-                            <div class="stat">
-                                <div class="stat-number">$200k</div>
-                                <div class="stat-label">Annual Savings</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">60%</div>
-                                <div class="stat-label">Process Improvement</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">95%</div>
-                                <div class="stat-label">Satisfaction</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Story 4 -->
-                <div class="story-card">
-                    <div class="story-img">
-                        <img src="https://images.unsplash.com/photo-1524178232400-38d816f003ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="International School">
-                        <div class="story-badge">International</div>
-                    </div>
-                    <div class="story-content">
-                        <h3>International School Streamlines Operations</h3>
-                        <div class="story-meta">
-                            <div><i class="fas fa-map-marker-alt"></i> Singapore</div>
-                            <div><i class="fas fa-calendar-alt"></i> February 2023</div>
-                        </div>
-                        <p class="story-excerpt">This international school implemented EduCard to manage their diverse student body and saw dramatic improvements in communication and efficiency...</p>
-                        <a href="#" class="btn btn-outline read-more" data-story="4">Read Full Story</a>
-                        <div class="story-stats">
-                            <div class="stat">
-                                <div class="stat-number">70%</div>
-                                <div class="stat-label">Efficiency Gain</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">45%</div>
-                                <div class="stat-label">Time Saved</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">91%</div>
-                                <div class="stat-label">Satisfaction</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Story 5 -->
-                <div class="story-card">
-                    <div class="story-img">
-                        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Community College">
-                        <div class="story-badge">College</div>
-                    </div>
-                    <div class="story-content">
-                        <h3>Community College Boosts Enrollment</h3>
-                        <div class="story-meta">
-                            <div><i class="fas fa-map-marker-alt"></i> California, USA</div>
-                            <div><i class="fas fa-calendar-alt"></i> January 2023</div>
-                        </div>
-                        <p class="story-excerpt">After implementing EduCard's student management system, this community college saw a significant increase in enrollment and student retention...</p>
-                        <a href="#" class="btn btn-outline read-more" data-story="5">Read Full Story</a>
-                        <div class="story-stats">
-                            <div class="stat">
-                                <div class="stat-number">35%</div>
-                                <div class="stat-label">Enrollment Increase</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">28%</div>
-                                <div class="stat-label">Retention Improvement</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">87%</div>
-                                <div class="stat-label">Satisfaction</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Story 6 -->
-                <div class="story-card">
-                    <div class="story-img">
-                        <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Online University">
-                        <div class="story-badge">University</div>
-                    </div>
-                    <div class="story-content">
-                        <h3>Online University Enhances Learning Experience</h3>
-                        <div class="story-meta">
-                            <div><i class="fas fa-map-marker-alt"></i> Remote</div>
-                            <div><i class="fas fa-calendar-alt"></i> December 2022</div>
-                        </div>
-                        <p class="story-excerpt">This fully online university leveraged EduCard's platform to create a seamless digital learning environment for students worldwide...</p>
-                        <a href="#" class="btn btn-outline read-more" data-story="6">Read Full Story</a>
-                        <div class="story-stats">
-                            <div class="stat">
-                                <div class="stat-number">62%</div>
-                                <div class="stat-label">Engagement Increase</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">40%</div>
-                                <div class="stat-label">Process Improvement</div>
-                            </div>
-                            <div class="stat">
-                                <div class="stat-number">94%</div>
-                                <div class="stat-label">Satisfaction</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Impact Stats -->
-    <section class="impact-stats">
-        <div class="container">
-            <div class="section-title">
-                <h2>Our Impact in Numbers</h2>
-                <p>Quantifiable results from institutions using EduCard</p>
-            </div>
-            <div class="stats-container">
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <div class="stat-number">500+</div>
-                    <div class="stat-text">Institutions</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="stat-number">250k+</div>
-                    <div class="stat-text">Students</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
-                    <div class="stat-number">15k+</div>
-                    <div class="stat-text">Faculty</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-number">68%</div>
-                    <div class="stat-text">Average Efficiency Gain</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Video Stories -->
-    <section class="video-stories">
-        <div class="container">
-            <div class="section-title">
-                <h2>Success Stories in Action</h2>
-                <p>Watch how EduCard has transformed educational institutions</p>
-            </div>
-            <div class="video-container">
-                <div class="video-card">
-                    <div class="video-thumb">
-                        <img src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Video Thumbnail">
-                        <div class="play-btn">
-                            <i class="fas fa-play"></i>
-                        </div>
-                    </div>
-                    <div class="video-content">
-                        <h3>Tech University Transformation</h3>
-                        <div class="video-meta">
-                            <i class="fas fa-clock"></i> 4:32
-                        </div>
-                        <p>How Tech University increased efficiency by 65% with EduCard</p>
-                    </div>
-                </div>
-                <div class="video-card">
-                    <div class="video-thumb">
-                        <img src="https://images.unsplash.com/photo-1591123120675-6f7f1aae0e5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Video Thumbnail">
-                        <div class="play-btn">
-                            <i class="fas fa-play"></i>
-                        </div>
-                    </div>
-                    <div class="video-content">
-                        <h3>Global College Experience</h3>
-                        <div class="video-meta">
-                            <i class="fas fa-clock"></i> 5:15
-                        </div>
-                        <p>See how Global College enhanced student engagement</p>
-                    </div>
-                </div>
-                <div class="video-card">
-                    <div class="video-thumb">
-                        <img src="https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Video Thumbnail">
-                        <div class="play-btn">
-                            <i class="fas fa-play"></i>
-                        </div>
-                    </div>
-                    <div class="video-content">
-                        <h3>City Institute Savings</h3>
-                        <div class="video-meta">
-                            <i class="fas fa-clock"></i> 3:48
-                        </div>
-                        <p>How City Institute saved $200k annually with EduCard</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta">
-        <div class="container">
-            <h2>Ready to Create Your Success Story?</h2>
-            <p>Join hundreds of educational institutions that have transformed their operations with EduCard</p>
-            <div class="cta-buttons">
-                <a href="contact.html" class="btn btn-primary">Get Started Today</a>
-                <a href="contact.html" class="btn btn-accent">Request a Demo</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>EduCard</h3>
-                    <p>Revolutionizing education management with innovative solutions designed for modern institutions.</p>
-                </div>
-                <div class="footer-column">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="index.html#features">Features</a></li>
-                        <li><a href="success-stories.html">Success Stories</a></li>
-                        <li><a href="index.html#about">About Us</a></li>
-                        <li><a href="contact.html">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Support</h3>
-                    <ul>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">FAQs</a></li>
-                        <li><a href="#">Contact Support</a></li>
-                        <li><a href="#">System Status</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contact Us</h3>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Education St, Learn City</li>
-                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
-                        <li><i class="fas fa-envelope"></i> info@educard.com</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2023 EduCard. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Story Modal -->
-    <div class="modal" id="storyModal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <div class="modal-body">
-                <div class="modal-story-header">
-                    <h2 class="modal-story-title">Tech University Increases Efficiency by 65%</h2>
-                    <div class="modal-story-meta">
-                        <div><i class="fas fa-map-marker-alt"></i> New York, USA</div>
-                        <div><i class="fas fa-calendar-alt"></i> June 2023</div>
-                        <div><i class="fas fa-tag"></i> University</div>
-                    </div>
-                </div>
-                <div class="modal-story-content">
-                    <p>Tech University, a leading institution in the heart of New York, was facing significant challenges with their legacy student management system. The outdated platform was causing administrative bottlenecks, communication gaps, and frustration among both staff and students.</p>
-                    
-                    <p>After extensive research, they chose EduCard for its comprehensive features and scalability. The implementation process was seamless, with EduCard's support team working closely with Tech University's IT department to ensure a smooth transition.</p>
-                    
-                    <h3>Results Achieved</h3>
-                    <p>Within just three months of implementation, Tech University saw dramatic improvements:</p>
-                    <ul>
-                        <li>65% increase in operational efficiency</li>
-                        <li>42% reduction in administrative costs</li>
-                        <li>89% satisfaction rate among staff and students</li>
-                        <li>50% faster student registration process</li>
-                        <li>75% improvement in communication between departments</li>
-                    </ul>
-                    
-                    <p>"EduCard has transformed how we operate," said Dr. Sarah Johnson, Dean of Administration. "We're now able to focus more on educational excellence rather than administrative challenges."</p>
-                    
-                    <p>The university continues to leverage EduCard's analytics features to make data-driven decisions and further optimize their operations.</p>
-                </div>
-            </div>
+            <a href="{% url 'logoutdoor' %}">
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+            </a>
         </div>
     </div>
 
-    <script>
-        // Story Modal functionality
-        const modal = document.getElementById('storyModal');
-        const readMoreButtons = document.querySelectorAll('.read-more');
-        const closeModal = document.querySelector('.close-modal');
-        
-        readMoreButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            });
-        });
-        
-        closeModal.addEventListener('click', function() {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        });
-        
-        window.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        // Filter functionality
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                // Here you would typically filter the stories
-                // For this example, we'll just simulate filtering
-                console.log('Filtering by: ' + this.textContent);
-            });
-        });
-        
-        // Video play buttons
-        const playButtons = document.querySelectorAll('.play-btn');
-        
-        playButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                alert('Video playback would start here. In a real implementation, this would open a video player.');
-            });
-        });
-    </script>
-</body>
-</html>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="page-title">
+                    <i class="fas fa-users"></i>
+                    <span>Student Management</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-dropdown">
+                    <img src="https://via.placeholder.com/40" alt="User" class="user-dropdown-avatar">
+                    <span class="user-dropdown-name">Admin User</span>
+                </div>
+            </div>
+        </header>
+        <!-- Content -->
+        <div class="content">
+            <div class="header-1">
+                <div>
+                    <h1>Student Management</h1>
+                    <p>Manage student records and information</p>
+                </div>
+            </div>
+
+            <!-- Student Actions -->
+            <div class="student-actions-container">
+                <button class="student-action-btn" id="addStudentBtn">
+                    <i class="fas fa-user-plus"></i>
+                    Add Student
+                </button>
+                <button class="student-action-btn" id="viewStudentBtn" style="background: var(--success);">
+                    <i class="fas fa-search"></i>
+                    View Student
+                </button>
+            </div>
+
+            <!-- Alert Messages -->
+            {% if messages %}
+            <div id="alertContainer">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- Add this right after your existing alert container -->
+            <div id="settingsAlertContainer" style="display: none;">
+                 <div class="alert alert-success">
+                 <i class="fas fa-check-circle"></i>
+                 <span id="settingsAlertMessage"></span>
+                 </div>
+            </div>
+
+            <!-- Add Student Form (Multi-step) -->
+            <div class="card" id="addStudentForm" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-plus"></i>
+                        Add New Student
+                    </h2>
+                    <button class="btn btn-icon btn-outline" onclick="hideForm('addStudentForm')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- Form Steps Indicator -->
+                    <div class="form-steps">
+                        <div class="step active" id="step1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Personal Info</div>
+                        </div>
+                        <div class="step" id="step2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Contact Details</div>
+                        </div>
+                        <div class="step" id="step3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Academic Info</div>
+                        </div>
+                        <div class="step" id="step4">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Government IDs</div>
+                        </div>
+                        <div class="step" id="step5">
+                            <div class="step-number">5</div>
+                            <div class="step-label">Caste & National Identity</div>
+                        </div>
+                        <div class="step" id="step6">
+                            <div class="step-number">6</div>
+                            <div class="step-label">Review & Submit</div>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{% url 'student' %}" id="multiStepForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add">
+                        
+                        <!-- Step 1: Personal Information -->
+                        <div class="form-page active" id="page1">
+                            <div class="detail-grid">
+                                <div class="form-group">
+                                    <label for="name" class="form-label">Full Name</label>
+                                    <input type="text" id="name" name="name" class="form-control" required>
+                                    <div class="error-message" id="name-error">Please enter student's full name</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="father_name" class="form-label">Father's Name</label>
+                                    <input type="text" id="father_name" name="father_name" class="form-control" required>
+                                    <div class="error-message" id="father_name-error">Please enter father's name</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="mother_name" class="form-label">Mother's Name</label>
+                                    <input type="text" id="mother_name" name="mother_name" class="form-control" required>
+                                    <div class="error-message" id="mother_name-error">Please enter mother's name</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="occupation" class="form-label">Father's Occupation</label>
+                                    <input type="text" id="occupation" name="occupation" class="form-control" required>
+                                    <div class="error-message" id="occupation-error">Please enter Occupation</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="income" class="form-label">Income</label>
+                                    <input type="text" id="income" name="income" class="form-control" required>
+                                    <div class="error-message" id="income-error">Please enter Income</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="birthday" class="form-label">Date of Birth</label>
+                                    <input type="date" id="birthday" name="birthday" class="form-control" required>
+                                    <div class="error-message" id="birthday-error">Please select date of birth</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="gender" class="form-label">Gender</label>
+                                    <select id="gender" name="gender" class="form-control" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="error-message" id="gender-error">Please select gender</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="hideForm('addStudentForm')">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="validateStep(1)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Contact Details -->
+                        <div class="form-page" id="page2">
+                            <div class="detail-grid">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" id="phone" name="phone" class="form-control" required>
+                                    <div class="error-message" id="phone-error">Please enter a valid phone number</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="other_phone_no" class="form-label">Parent Phone No.</label>
+                                    <input type="tel" id="other_phone_no" name="other_phone_no" class="form-control" required>
+                                    <div class="error-message" id="other_phone_no-error">Please enter a valid phone number</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" id="email" name="email" class="form-control" required>
+                                    <div class="error-message" id="email-error">Please enter a valid email address</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="address" class="form-label">Street Address</label>
+                                    <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
+                                    <div class="error-message" id="address-error">Please enter address</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" id="city" name="city" class="form-control" required>
+                                    <div class="error-message" id="city-error">Please enter city</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="state" class="form-label">State</label>
+                                    <input type="text" id="state" name="state" class="form-control" required>
+                                    <div class="error-message" id="state-error">Please enter state</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="state_code" class="form-label">State Code</label>
+                                    <input type="text" id="state_code" name="state_code" class="form-control" required>
+                                    <div class="error-message" id="state_code-error">Please enter state code</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="country" class="form-label">Country</label>
+                                    <input type="text" id="country" name="country" class="form-control" value="India" required>
+                                    <div class="error-message" id="country-error">Please enter country</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(2)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="validateStep(2)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Academic Information -->
+                        <div class="form-page" id="page3">
+                            <div class="detail-grid">
+                                <div class="form-group">
+                                    <label for="course" class="form-label">Course</label>
+                                    <select id="course" name="course" class="form-control" required>
+                                        <option value="">-- Select Course --</option>
+                                        <option value="B.Com">Bachelor of Commerce</option>
+                                        <option value="B.Sc">Bachelor of Science</option>
+                                        <option value="B.A">Bachelor of Arts</option>
+                                        <option value="B.C.A">Bachelor of Computer Application</option>
+                                        <option value="B.B.A">Bachelor of Business Administration</option>
+                                    </select>
+                                    <div class="error-message" id="course-error">Please select course</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="date_of_joining" class="form-label">Date of Joining</label>
+                                    <input type="date" id="date_of_joining" name="date_of_joining" class="form-control" required>
+                                    <div class="error-message" id="date_of_joining-error">Please select date of joining</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="tenth_percent" class="form-label">10th Percentage</label>
+                                    <input type="number" id="tenth_percent" name="tenth_percent" min="0" max="100" step="0.01" class="form-control" required>
+                                    <div class="error-message" id="tenth_percent-error">Please enter valid percentage (0-100)</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="twelfth_percent" class="form-label">12th Percentage</label>
+                                    <input type="number" id="twelfth_percent" name="twelfth_percent" min="0" max="100" step="0.01" class="form-control" required>
+                                    <div class="error-message" id="twelfth_percent-error">Please enter valid percentage (0-100)</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(3)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="validateStep(3)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Government IDs Information -->
+                        <div class="form-page" id="page4">
+                            <div class="detail-grid">
+                                <div class="form-group">
+                                    <label for="adhar_no" class="form-label">Adhar Number</label>
+                                    <input type="text" id="adhar_no" name="adhar_no" class="form-control" required>
+                                    <div class="error-message" id="adhar_no-error">Please enter adhar number</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="pan_no" class="form-label">PAN ID</label>
+                                    <input type="pan_no" id="pan_no" name="pan_no" class="form-control" required>
+                                    <div class="error-message" id="pan_no-error">Please select Pan Number</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="family_id" class="form-label">Family ID No.</label>
+                                    <input type="text" id="family_id" name="family_id" class="form-control" required>
+                                    <div class="error-message" id="family_id-error">Please enter valid family id</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="family_id_phone_no" class="form-label">Family ID Mobile No.</label>
+                                    <input type="text" id="family_id_phone_no" name="family_id_phone_no" class="form-control" required>
+                                    <div class="error-message" id="family_id_phone_no-error">Please enter valid mobile no.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(4)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="validateStep(4)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Caste & National Indentity Information -->
+                        <div class="form-page" id="page5">
+                            <div class="detail-grid">
+                                <div class="form-group">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select id="category" name="category" class="form-control" required>
+                                        <option value="">-- Select Category --</option>
+                                        <option value="General">General</option>
+                                        <option value="BC(A)">BC(A)</option>
+                                        <option value="BC(B)">BC(B)</option>
+                                        <option value="SC">SC</option>
+                                        <option value="ST">ST</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                    <div class="error-message" id="category-error">Please select category</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="nationality" class="form-label">Nationality</label>
+                                    <select id="nationality" name="nationality" class="form-control" required>
+                                        <option value="">-- Select Nationality --</option>
+                                        <option value="Indian">Indian</option>
+                                        <option value="NRI">NRI</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="error-message" id="nationality-error">Please select nationality</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="religion" class="form-label">Religion</label>
+                                    <select id="religion" name="religion" class="form-control" required>
+                                        <option value="">-- Select Religion --</option>
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Muslim">Muslim</option>
+                                        <option value="Sikh">Sikh</option>
+                                        <option value="Christan">Christan</option>
+                                        <option value="Jain">Jain</option>
+                                        <option value="Buddhist">Buddhist</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="error-message" id="religion-error">Please select religion</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="martial_status" class="form-label">Martial Status</label>
+                                    <select id="martial_status" name="martial_status" class="form-control" required>
+                                        <option value="">-- Martial Status --</option>
+                                        <option value="Married">Married</option>
+                                        <option value="Unmarried">Unmarried</option>
+                                    </select>
+                                    <div class="error-message" id="martial_status-error">Please select martial staus</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(5)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="validateStep(5)">
+                                    Next <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 6: Review and Submit -->
+                        <div class="form-page" id="page6">
+                            <div class="review-container">
+                                <!-- Personal Information Section -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-user"></i>
+                                        Personal Information
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Full Name:</span>
+                                            <span class="detail-value" id="review-name"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Father's Name:</span>
+                                            <span class="detail-value" id="review-father"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Mother's Name:</span>
+                                            <span class="detail-value" id="review-mother"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Father's Occupation:</span>
+                                            <span class="detail-value" id="review-occupation"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Income:</span>
+                                            <span class="detail-value" id="review-income"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Date of Birth:</span>
+                                            <span class="detail-value" id="review-birthday"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Gender:</span>
+                                            <span class="detail-value" id="review-gender"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Contact Information Section -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-address-card"></i>
+                                        Contact Details
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Phone:</span>
+                                            <span class="detail-value" id="review-phone"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label"> Parent Phone:</span>
+                                            <span class="detail-value" id="review-other_phone_no"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Email:</span>
+                                            <span class="detail-value" id="review-email"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Address:</span>
+                                            <span class="detail-value" id="review-address"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Academic Information Section -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Academic Information
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Course:</span>
+                                            <span class="detail-value" id="review-course"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Admission Date:</span>
+                                            <span class="detail-value" id="review-admission"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">10th Percentage:</span>
+                                            <span class="detail-value" id="review-tenth"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">12th Percentage:</span>
+                                            <span class="detail-value" id="review-twelth"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Government IDs Information -->
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Government IDs Information
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Adhar Number:</span>
+                                            <span class="detail-value" id="review-adhar_no"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">PAN ID:</span>
+                                            <span class="detail-value" id="review-pan_no"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Family ID:</span>
+                                            <span class="detail-value" id="review-family_id"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Family ID Phone No.:</span>
+                                            <span class="detail-value" id="review-family_id_phone_no"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="section-card">
+                                    <div class="section-header">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Caste & National Indentity Information
+                                    </div>
+                                    <div class="section-body">
+                                        <div class="detail-row">
+                                            <span class="detail-label">Category:</span>
+                                            <span class="detail-value" id="review-category"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Nationality:</span>
+                                            <span class="detail-value" id="review-nationality"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Religion:</span>
+                                            <span class="detail-value" id="review-religion"></span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">Martial Status:</span>
+                                            <span class="detail-value" id="review-martial_status"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" onclick="prevStep(6)">
+                                    <i class="fas fa-arrow-left"></i> Previous
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Submit
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-text" id="progressText">Step 1 of 6 - Personal Information</div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- View Student Form -->
+            <div class="card" id="viewStudentForm" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-search"></i>
+                        Find Student
+                    </h2>
+                    <button class="btn btn-icon btn-outline" onclick="hideForm('viewStudentForm')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'student' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="view">
+                        <div class="form-group">
+                            <label for="searchRollNumber" class="form-label">Enter Roll Number</label>
+                            <input type="text" id="searchRollNumber" name="college_id" class="form-control" placeholder="e.g. STU2023001" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" onclick="hideForm('viewStudentForm')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Student Details -->
+            {% if student %}
+            <div class="card student-details active" id="studentDetails">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-user"></i>
+                        Student Details
+                    </h2>
+                    <button class="btn btn-icon btn-outline" onclick="hideStudentDetails()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="photo-section">
+                        <div class="photo-container">
+                            <img src="https://ui-avatars.com/api/?name={{ student.name }}&background=4f46e5&color=fff&size=120" alt="Student Photo" class="student-photo">
+                        </div>
+                        <div class="photo-actions">
+                            <button class="btn btn-icon btn-primary">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <button class="btn btn-icon btn-secondary">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="review-container">
+                        <!-- Personal Information Section -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <i class="fas fa-user"></i>
+                                Personal Information
+                            </div>
+                            <div class="section-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Full Name:</span>
+                                    <span class="detail-value">{{ student.name }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Father's Name:</span>
+                                    <span class="detail-value">{{ student.father_name }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Mother's Name:</span>
+                                    <span class="detail-value">{{ student.mother_name }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Occupation:</span>
+                                    <span class="detail-value">{{ student.occupation }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Income:</span>
+                                    <span class="detail-value">{{ student.income }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Date of Birth:</span>
+                                    <span class="detail-value">{{ student.birthday }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Gender:</span>
+                                    <span class="detail-value">{{ student.gender }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information Section -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <i class="fas fa-address-card"></i>
+                                Contact Details
+                            </div>
+                            <div class="section-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Phone:</span>
+                                    <span class="detail-value">{{ student.phone }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label"> Parent Phone No.:</span>
+                                    <span class="detail-value">{{ student.other_phone_no }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Email:</span>
+                                    <span class="detail-value">{{ student.email }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Address:</span>
+                                    <span class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}, {{ student.country }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Academic Information Section -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <i class="fas fa-graduation-cap"></i>
+                                Academic Information
+                            </div>
+                            <div class="section-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Course:</span>
+                                    <span class="detail-value">{{ student.course }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Semester:</span>
+                                    <span class="detail-value">{{ student.semester }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Year:</span>
+                                    <span class="detail-value">{{ student.year }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Admission Date:</span>
+                                    <span class="detail-value">{{ student.date_of_joining }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">10th Percentage:</span>
+                                    <span class="detail-value">{{ student.tenth_percent }}%</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">12th Percentage:</span>
+                                    <span class="detail-value">{{ student.twelfth_percent }}%</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Status:</span>
+                                    <span class="detail-value">
+                                        <span class="badge" style="background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: var(--border-radius);">
+                                            <i class="fas fa-check-circle"></i> Active
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Government IDs Section -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <i class="fas fa-graduation-cap"></i>
+                                Government IDs Information
+                            </div>
+                            <div class="section-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Adhar Number:</span>
+                                    <span class="detail-value">{{ student.adhar_no }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">PAN ID:</span>
+                                    <span class="detail-value">{{ student.pan_no }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Family ID:</span>
+                                    <span class="detail-value">{{ student.family_id }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Family ID Phone No.:</span>
+                                    <span class="detail-value">{{ student.family_id_phone_no }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Caste & National Identity Section -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <i class="fas fa-graduation-cap"></i>
+                                Caste & National Identity Information
+                            </div>
+                            <div class="section-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Category:</span>
+                                    <span class="detail-value">{{ student.category }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Nationality:</span>
+                                    <span class="detail-value">{{ student.nationality }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Religion:</span>
+                                    <span class="detail-value">{{ student.religion }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Martial Status:</span>
+                                    <span class="detail-value">{{ student.martial_status }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- login Information Section -->
+                        <div class="section-card">
+                            <div class="section-header">
+                                <i class="fas fa-graduation-cap"></i>
+                                Login Information
+                            </div>
+                            <div class="section-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Username:</span>
+                                    <span class="detail-value">{{ student.username }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">User ID:</span>
+                                    <span class="detail-value">{{ student.user_id }}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Password:</span>
+                                    <span class="detail-value">{{ student.password }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-outline" onclick="hideStudentDetails()">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ student.college_id }}')">
+                            <i class="fas fa-edit"></i> Edit Details
+                        </button>
+                        <button class="btn btn-danger" onclick="showDeleteModal('{{ student.college_id }}', '{{ student.name }}', '{{ student.course }}')">
+                            <i class="fas fa-trash"></i> Delete Record
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Edit Student Form -->
+            {% if student %}
+            <div class="card" id="editStudentForm" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-edit"></i>
+                        Edit Student Details
+                    </h2>
+                    <button class="btn btn-icon btn-outline" onclick="hideForm('editStudentForm')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{% url 'student' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="alter">
+                        <input type="hidden" name="college_id" value="{{ student.college_id }}">
+                        
+                        <div class="review-container">
+                            <!-- Personal Information Section -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <i class="fas fa-user"></i>
+                                    Personal Information
+                                </div>
+                                <div class="section-body">
+                                    <div class="form-group">
+                                        <label for="editRollNumber" class="form-label">Roll Number</label>
+                                        <input type="text" id="editRollNumber" class="form-control" value="{{ student.college_id }}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editName" class="form-label">Full Name</label>
+                                        <input type="text" id="editName" name="name" class="form-control" value="{{ student.name }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editFatherName" class="form-label">Father's Name</label>
+                                        <input type="text" id="editFatherName" name="father_name" class="form-control" value="{{ student.father_name }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editMotherName" class="form-label">Mother's Name</label>
+                                        <input type="text" id="editMotherName" name="mother_name" class="form-control" value="{{ student.mother_name }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editBirthday" class="form-label">Date of Birth</label>
+                                        <input type="date" id="editBirthday" name="birthday" class="form-control" value="{{ student.birthday|date:'Y-m-d' }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editGender" class="form-label">Gender</label>
+                                        <select id="editGender" name="gender" class="form-control" required>
+                                            <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
+                                            <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
+                                            <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information Section -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <i class="fas fa-address-card"></i>
+                                    Contact Details
+                                </div>
+                                <div class="section-body">
+                                    <div class="form-group">
+                                        <label for="editPhone" class="form-label">Phone Number</label>
+                                        <input type="tel" id="editPhone" name="phone" class="form-control" value="{{ student.phone }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editPhone" class="form-label">Parent Number</label>
+                                        <input type="tel" id="editPhone" name="other_phone_no" class="form-control" value="{{ student.other_phone_no }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editEmail" class="form-label">Email Address</label>
+                                        <input type="email" id="editEmail" name="email" class="form-control" value="{{ student.email }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editAddress" class="form-label">Address</label>
+                                        <textarea id="editAddress" name="address" class="form-control" rows="3" required>{{ student.address }}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editCity" class="form-label">City</label>
+                                        <input type="text" id="editCity" name="city" class="form-control" value="{{ student.city }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editState" class="form-label">State</label>
+                                        <input type="text" id="editState" name="state" class="form-control" value="{{ student.state }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editStateCode" class="form-label">State Code</label>
+                                        <input type="text" id="editStateCode" name="state_code" class="form-control" value="{{ student.state_code }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editCountry" class="form-label">Country</label>
+                                        <input type="text" id="editCountry" name="country" class="form-control" value="{{ student.country }}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Academic Information Section -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    Academic Information
+                                </div>
+                                <div class="section-body">
+                                    <div class="form-group">
+                                        <label for="editCourse" class="form-label">Course</label>
+                                        <select id="editCourse" name="course" class="form-control" required>
+                                            <option value="B.Com" {% if student.course == 'B.Com' %}selected{% endif %}>Bachelor of Commerce</option>
+                                            <option value="B.Sc" {% if student.course == 'B.Sc' %}selected{% endif %}>Bachelor of Science</option>
+                                            <option value="B.A" {% if student.course == 'B.A' %}selected{% endif %}>Bachelor of Arts</option>
+                                            <option value="B.C.A" {% if student.course == 'B.C.A' %}selected{% endif %}>Bachelor of Computer Application</option>
+                                            <option value="B.B.A" {% if student.course == 'B.B.A' %}selected{% endif %}>Bachelor of Business Administration</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editSemester" class="form-label">Semester</label>
+                                        <input type="text" id="editSemester" name="semester" class="form-control" value="{{ student.semester }}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editYear" class="form-label">Year</label>
+                                        <input type="text" id="editYear" name="year" class="form-control" value="{{ student.year }}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" onclick="hideForm('editStudentForm')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Save Changes
+                            </button>
+                        </div>
+                    </

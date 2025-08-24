@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Profile | Academic Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4361ee;
@@ -22,7 +23,7 @@
             --sidebar-width: 280px;
             --header-height: 70px;
             --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            --border-radius: 10px;
+            --border-radius: 12px;
             --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             --box-shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12);
             --sidebar-bg: #2a3042;
@@ -30,6 +31,10 @@
             --sidebar-active: rgba(67, 97, 238, 0.2);
             --sidebar-hover: #343b52;
             --sidebar-icon: #6e84a3;
+            --card-bg: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
         }
 
         * {
@@ -39,14 +44,9 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
-        @font-face {
-            font-family: 'Inter';
-            src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        }
-
         body {
-            background-color: #f5f7fb;
-            color: var(--dark);
+            background-color: #f7fafc;
+            color: var(--text-primary);
             display: flex;
             min-height: 100vh;
             overflow-x: hidden;
@@ -77,32 +77,13 @@
             height: var(--header-height);
         }
 
-        .logo-container {
-            padding: 0 20px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-            width: 100%;
-        }
-
         .logo {
             font-size: 20px;
             font-weight: 700;
             color: white;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 0.5rem;
-            transition: var(--transition);
-        }
-
-        .logo-icon {
-            font-size: 1.5rem;
-            color: var(--primary);
-            transition: var(--transition);
-        }
-
-        .logo:hover .logo-icon {
-            transform: rotate(-15deg);
         }
 
         .logo span {
@@ -113,21 +94,6 @@
             flex: 1;
             overflow-y: auto;
             padding: 1rem 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
-        }
-
-        .sidebar-menu::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar-menu::-webkit-scrollbar-thumb {
-            background-color: var(--sidebar-hover);
-            border-radius: 3px;
-        }
-
-        .sidebar-menu::-webkit-scrollbar-track {
-            background-color: var(--sidebar-bg);
         }
 
         .menu-title {
@@ -190,15 +156,6 @@
         .menu-link.active .menu-icon {
             color: white;
             transform: scale(1.1);
-        }
-
-        .menu-text {
-            flex: 1;
-            transition: var(--transition);
-        }
-
-        .menu-link:hover .menu-text {
-            transform: translateX(3px);
         }
 
         .sidebar-footer {
@@ -278,7 +235,7 @@
         /* Header Styles */
         .header {
             height: var(--header-height);
-            background: white;
+            background: var(--card-bg);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -287,7 +244,7 @@
             position: sticky;
             top: 0;
             z-index: 90;
-            border-bottom: 1px solid var(--light-gray);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .header-left {
@@ -317,7 +274,7 @@
         .page-title {
             font-size: 1.4rem;
             font-weight: 700;
-            color: var(--dark);
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -405,63 +362,12 @@
         .user-dropdown-name {
             font-size: 0.9rem;
             font-weight: 500;
-            color: var(--dark);
+            color: var(--text-primary);
             transition: var(--transition);
         }
 
         .user-dropdown:hover .user-dropdown-name {
             color: var(--primary);
-        }
-
-        .user-dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            background: white;
-            min-width: 220px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow-lg);
-            padding: 0.5rem 0;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: var(--transition);
-            z-index: 100;
-        }
-
-        .user-dropdown:hover .user-dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 0.7rem 1.25rem;
-            color: var(--dark);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: var(--transition);
-        }
-
-        .dropdown-item:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding-left: 1.5rem;
-        }
-
-        .dropdown-item i {
-            margin-right: 0.75rem;
-            width: 20px;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: var(--light-gray);
-            margin: 0.5rem 0;
         }
 
         /* Content Styles */
@@ -472,18 +378,18 @@
         /* Profile Container */
         .profile-container {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 320px 1fr;
             gap: 1.5rem;
         }
 
         /* Sidebar */
         .profile-sidebar {
-            background: white;
+            background: var(--card-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             padding: 1.5rem;
             height: fit-content;
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
         }
@@ -513,6 +419,7 @@
             border: 5px solid var(--light-gray);
             display: block;
             transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         .profile-upload-btn {
@@ -538,21 +445,17 @@
             transform: scale(1.1);
         }
 
-        .profile-upload-btn i {
-            margin-right: 0;
-        }
-
         .student-name {
             text-align: center;
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
-            color: var(--dark);
+            color: var(--text-primary);
         }
 
         .student-id {
             text-align: center;
-            color: var(--gray);
+            color: var(--text-secondary);
             margin-bottom: 1.5rem;
             font-size: 0.85rem;
         }
@@ -564,7 +467,7 @@
         .info-item {
             margin-bottom: 1rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--light-gray);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .info-item:last-child {
@@ -575,7 +478,7 @@
 
         .info-label {
             font-size: 0.75rem;
-            color: var(--gray);
+            color: var(--text-secondary);
             text-transform: uppercase;
             font-weight: 600;
             margin-bottom: 0.25rem;
@@ -584,7 +487,7 @@
 
         .info-value {
             font-size: 0.95rem;
-            color: var(--dark);
+            color: var(--text-primary);
             font-weight: 500;
         }
 
@@ -595,19 +498,19 @@
 
         /* Main Content */
         .profile-main {
-            background: white;
+            background: var(--card-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             padding: 1.75rem;
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
         }
 
         .section-title {
             font-size: 1.2rem;
-            color: var(--dark);
+            color: var(--text-primary);
             margin-bottom: 1.5rem;
             padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--light-gray);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             font-weight: 600;
@@ -631,7 +534,7 @@
             border-radius: var(--border-radius);
             padding: 1.25rem;
             transition: var(--transition);
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
         }
 
         .detail-card:hover {
@@ -665,7 +568,7 @@
 
         .detail-label {
             width: 120px;
-            color: var(--gray);
+            color: var(--text-secondary);
             font-size: 0.85rem;
             flex-shrink: 0;
         }
@@ -729,7 +632,7 @@
         }
 
         .document-card {
-            border: 1px solid var(--light-gray);
+            border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             padding: 1.25rem;
             transition: var(--transition);
@@ -756,7 +659,7 @@
 
         .document-date {
             font-size: 0.75rem;
-            color: var(--gray);
+            color: var(--text-secondary);
             margin-bottom: 0.75rem;
         }
 
@@ -797,30 +700,32 @@
             transform: translateY(-2px);
         }
 
-        /* Bubbles Background */
-        .bubbles {
+        /* Messages */
+        .messages {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
         }
 
-        .bubble {
-            position: absolute;
-            bottom: -100px;
-            background: rgba(106, 163, 255, 0.1);
-            border-radius: 50%;
-            animation: float 15s infinite ease-in;
-            opacity: 0.5;
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        @keyframes float {
-            0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
-            10% { opacity: 0.5; }
-            100% { transform: translateY(-1000px) translateX(100px) scale(1.5); opacity: 0; }
+        .alert-success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border: 1px solid #badbcc;
+        }
+
+        .alert i {
+            margin-right: 8px;
         }
 
         /* Responsive Styles */
@@ -881,506 +786,81 @@
                 display: none;
             }
         }
-        .messages {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-}
-
-.alert-success {
-    color: #3c763d;
-    background-color: #dff0d8;
-    border-color: #d6e9c6;
-}
     </style>
 </head>
 <body>
-    <div class="bubbles">
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-    </div>
     <!-- Sidebar -->
-
-    {% if student %}
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-container">
-                <div class="logo">
-                    <i class="fas fa-user-graduate logo-icon"></i>
-                    <span>Student<span>Portal</span></span>
-                </div>
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Edu<span>Track</span></span>
             </div>
         </div>
         
         <div class="sidebar-menu">
-            <h3 class="menu-title">Main</h3>
+            <h3 class="menu-title">Navigation</h3>
             <ul class="menu-list">
+                {% if student %}
                 <li class="menu-item">
                     <a href="{% url 'dashboard2' %}" class="menu-link">
                         <i class="fas fa-tachometer-alt menu-icon"></i>
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
-            </ul>
-            
-            <h3 class="menu-title">Academics</h3>
-            <ul class="menu-list">
-                <li class="menu-item active">
+                {% elif faculty %}
+                <li class="menu-item">
+                    <a href="{% url 'dashboard1' %}" class="menu-link">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                {% elif admin %}
+                <li class="menu-item">
+                    <a href="{% url 'dashboard' %}" class="menu-link">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+                {% endif %}
+                <li class="menu-item">
                     <a href="{% url 'profile_details' %}" class="menu-link active">
-                        <i class="fas fa-user-graduate menu-icon"></i>
+                        <i class="fas fa-id-badge"></i>
                         <span class="menu-text">My Profile</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-calendar-check menu-icon"></i>
-                        <span class="menu-text">Attendance</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-book menu-icon"></i>
-                        <span class="menu-text">Courses</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-tasks menu-icon"></i>
-                        <span class="menu-text">Assignments</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-chart-line menu-icon"></i>
-                        <span class="menu-text">Grades</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-calendar-alt menu-icon"></i>
-                        <span class="menu-text">Schedule</span>
-                    </a>
-                </li>
-            </ul>
-            
-            <h3 class="menu-title">Services</h3>
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-comments menu-icon"></i>
-                        <span class="menu-text">Messages</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-file-invoice-dollar menu-icon"></i>
-                        <span class="menu-text">Fees</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="{% url 'id_card' %}" class="menu-link">
-                        <i class="fas fa-id-card menu-icon"></i>
-                        <span class="menu-text">ID Card</span>
+                    <a href="{% url 'logoutdoor' %}" class="menu-link">
+                        <i class="fas fa-sign-out-alt menu-icon"></i>
+                        <span class="menu-text">Logout</span>
                     </a>
                 </li>
             </ul>
         </div>
         
         <div class="sidebar-footer">
-            <img src="https://ui-avatars.com/api/?name={{ student.name }}&background=4361ee&color=fff" alt="User" class="user-avatar">
+            {% if student.profile_picture %}
+            <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="user-avatar">
+            {% elif faculty.profile_picture %}
+            <img src="{{ faculty.profile_picture.url }}" alt="Faculty Photo" class="user-avatar">
+            {% elif admin.profile_picture %}
+            <img src="{{ admin.profile_picture.url }}" alt="Admin Photo" class="user-avatar">
+            {% else %}
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Photo" class="user-avatar">
+            {% endif %}
             <div class="user-info">
+                {% if student %}
                 <div class="user-name">{{ student.name }}</div>
                 <div class="user-role">Student</div>
-            </div>
-            <a href="{% url 'logoutdoor' %}">
-            <button class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-            </a>
-        </div>
-    </aside>
-    
-    
-        <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <button class="toggle-sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 class="page-title">
-                    <i class="fas fa-user-graduate"></i>
-                    Student Profile
-                </h1>
-            </div>
-            
-            <div class="header-right">
-                <button class="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </button>
-                
-                <div class="user-dropdown">
-                    <img src="https://ui-avatars.com/api/?name={{ student.name }}&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
-                    <span class="user-dropdown-name">{{ student.name }}</span>
-                    <div class="user-dropdown-menu">
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-user mr-2"></i> Profile
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog mr-2"></i> Settings
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{% url 'logoutdoor' %}" class="dropdown-item">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </header>
-        {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-        <div class="content" >
-        <div class="profile-container">
-            <!-- Sidebar -->
-            <div  class="profile-sidebar">
-            <div class="profile-picture-container">
-                {% if student.profile_picture %}
-                <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="profile-picture">
-                {% else %}
-                <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="profile-picture">
-                {% endif %}
-    
-                <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
-                {% csrf_token %}
-                <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
-                <i class="fas fa-camera"></i>
-                </button>
-                <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
-                </form>
-            </div>
-                <h2 class="student-name">{{ student.name }}</h2>
-                <p class="student-id">ID: {{ student.college_id }}</p>
-                
-                <div class="profile-info">
-                    <div class="info-item">
-                        <div class="info-label">Course</div>
-                        <div class="info-value">{{ student.course }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Batch</div>
-                        <div class="info-value">2023-2027</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Semester</div>
-                        <div class="info-value">{{ student.semester }} Semester</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Department</div>
-                        <div class="info-value">Computer Science</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Status</div>
-                        <div class="info-value status-active">Active</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="profile-main">
-                <div class="personal-info">
-                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
-                    
-                    <div class="personal-details">
-                        <div class="detail-card">
-                            <h3><i class="fas fa-id-card"></i> Basic Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Full Name:</div>
-                                <div class="detail-value">{{ student.name }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Date of Birth:</div>
-                                <div class="detail-value">{{ student.birthday }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Date of Joining:</div>
-                                <div class="detail-value">{{ student.date_of_joining }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Gender:</div>
-                                <div class="detail-value">{{ student.gender }}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-card">
-                            <h3><i class="fas fa-address-book"></i> Contact Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Email:</div>
-                                <div class="detail-value">{{ student.email }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Phone:</div>
-                                <div class="detail-value">+91 {{ student.phone }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Parent Contact:</div>
-                                <div class="detail-value">+91 {{ student.other_phone_no }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Address:</div>
-                                <div class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-card">
-                            <h3><i class="fas fa-users"></i> Family Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Father's Name:</div>
-                                <div class="detail-value">Mr. {{ student.father_name }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Mother's Name:</div>
-                                <div class="detail-value">Mrs. {{ student.mother_name }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Father Occupation:</div>
-                                <div class="detail-value">{{ student.occupation }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Income:</div>
-                                <div class="detail-value">Rs. {{ student.income }}</div>
-                            </div>
-                        </div>
-                        <div class="detail-card">
-                            <h3><i class="fas fa-dna"></i>Caste & National Identity</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Category:</div>
-                                <div class="detail-value">{{ student.category }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Nationality:</div>
-                                <div class="detail-value">{{ student.nationality }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Religion:</div>
-                                <div class="detail-value">{{ student.religion }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Martial Status:</div>
-                                <div class="detail-value">{{ student.martial_status }}</div>
-                            </div>
-                        </div>
-                       <div class="detail-card">
-                            <h3><i class="fas fa-lock"></i> Login Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">User Name:</div>
-                                <div class="detail-value">{{ student.username }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">User ID:</div>
-                                <div class="detail-value">{{ student.user_id }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Password:</div>
-                                <div class="detail-value">{{ student.password }}</div>
-                            </div>
-                        </div>
-                        <div class="detail-card">
-                            <h3><i class="fas fa-passport"></i>Government IDs</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Adhar Number:</div>
-                                <div class="detail-value">{{ student.adhar_no }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Pan ID:</div>
-                                <div class="detail-value">{{ student.pan_no }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Family ID Number:</div>
-                                <div class="detail-value">{{ student.family_id }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Family ID Mobile No:</div>
-                                <div class="detail-value">{{ student.family_id_phone_no }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="academic-progress">
-                    <h2 class="section-title"><i class="fas fa-chart-line"></i> Academic Progress</h2>
-                    
-                    <div class="progress-item">
-                        <div class="progress-header">
-                            <div class="progress-title">Mathematics</div>
-                            <div class="progress-percent">85%</div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 85%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-item">
-                        <div class="progress-header">
-                            <div class="progress-title">Computer Programming</div>
-                            <div class="progress-percent">92%</div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 92%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-item">
-                        <div class="progress-header">
-                            <div class="progress-title">Data Structures</div>
-                            <div class="progress-percent">78%</div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 78%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-item">
-                        <div class="progress-header">
-                            <div class="progress-title">Database Systems</div>
-                            <div class="progress-percent">88%</div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 88%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-    </main>
-    {% elif faculty %}
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-container">
-                <div class="logo">
-                    <i class="fas fa-user-graduate logo-icon"></i>
-                    <span>Faculty<span>Portal</span></span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="sidebar-menu">
-            <h3 class="menu-title">Main</h3>
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'dashboard2' %}" class="menu-link">
-                        <i class="fas fa-tachometer-alt menu-icon"></i>
-                        <span class="menu-text">Dashboard</span>
-                    </a>
-                </li>
-            </ul>
-            
-            <h3 class="menu-title">Academics</h3>
-            <ul class="menu-list">
-                <li class="menu-item active">
-                    <a href="{% url 'profile_details' %}" class="menu-link active">
-                        <i class="fas fa-user-graduate menu-icon"></i>
-                        <span class="menu-text">My Profile</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-calendar-check menu-icon"></i>
-                        <span class="menu-text">Attendance</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-book menu-icon"></i>
-                        <span class="menu-text">Courses</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-tasks menu-icon"></i>
-                        <span class="menu-text">Assignments</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-chart-line menu-icon"></i>
-                        <span class="menu-text">Grades</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-calendar-alt menu-icon"></i>
-                        <span class="menu-text">Schedule</span>
-                    </a>
-                </li>
-            </ul>
-            
-            <h3 class="menu-title">Services</h3>
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-comments menu-icon"></i>
-                        <span class="menu-text">Messages</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-file-invoice-dollar menu-icon"></i>
-                        <span class="menu-text">Fees</span>
-                    </a>
-                </li>
-                
-                <li class="menu-item">
-                    <a href="{% url 'id_card' %}" class="menu-link">
-                        <i class="fas fa-id-card menu-icon"></i>
-                        <span class="menu-text">ID Card</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
-        <div class="sidebar-footer">
-            <img src="https://ui-avatars.com/api/?name={{ faculty.name }}&background=4361ee&color=fff" alt="User" class="user-avatar">
-            <div class="user-info">
+                {% elif faculty %}
                 <div class="user-name">{{ faculty.name }}</div>
                 <div class="user-role">Faculty</div>
+                {% elif admin %}
+                <div class="user-name">{{ admin.name }}</div>
+                <div class="user-role">Admin</div>
+                {% endif %}
+                
             </div>
             <a href="{% url 'logoutdoor' %}">
             <button class="logout-btn">
@@ -1390,8 +870,7 @@
         </div>
     </aside>
     
-    
-        <!-- Main Content -->
+    <!-- Main Content -->
     <main class="main-content">
         <!-- Header -->
         <header class="header">
@@ -1401,7 +880,7 @@
                 </button>
                 <h1 class="page-title">
                     <i class="fas fa-user-graduate"></i>
-                    Faculty Profile
+                    My Profile
                 </h1>
             </div>
             
@@ -1412,183 +891,557 @@
                 </button>
                 
                 <div class="user-dropdown">
-                    <img src="https://ui-avatars.com/api/?name={{ faculty.name }}&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
+                    {% if student.profile_picture %}
+                    <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="user-dropdown-avatar">
+                    <span class="user-dropdown-name">{{ student.name }}</span>
+                    {% elif faculty.profile_picture %}
+                    <img src="{{ faculty.profile_picture.url }}" alt="Faculty Photo" class="user-dropdown-avatar">
                     <span class="user-dropdown-name">{{ faculty.name }}</span>
-                    <div class="user-dropdown-menu">
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-user mr-2"></i> Profile
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog mr-2"></i> Settings
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{% url 'logoutdoor' %}" class="dropdown-item">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                        </a>
-                    </div>
+                    {% elif admin.profile_picture %}
+                    <img src="{{ admin.profile_picture.url }}" alt="Admin Photo" class="user-dropdown-avatar">
+                    <span class="user-dropdown-name">{{ admin.name }}</span>
+                    {% else %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Photo" class="user-dropdown-avatar">
+                    {% endif %}
                 </div>
             </div>
         </header>
+        
         {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-        <div class="content" >
-        <div class="profile-container">
-            <!-- Sidebar -->
-            <div  class="profile-sidebar">
-            <div class="profile-picture-container">
-                {% if faculty.profile_picture %}
-                <img src="{{ faculty.profile_picture.url }}" alt="Faculty Photo" class="profile-picture">
-                {% else %}
-                <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Faculty Photo" class="profile-picture">
-                {% endif %}
-    
-                <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
-                {% csrf_token %}
-                <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
-                <i class="fas fa-camera"></i>
-                </button>
-                <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
-                </form>
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <i class="fas fa-check-circle"></i> {{ message }}
             </div>
-                <h2 class="student-name">{{ faculty.name }}</h2>
-                <p class="student-id">ID: {{ faculty.college_id }}</p>
-                
-                <div class="profile-info">
-                    <div class="info-item">
-                        <div class="info-label">Position</div>
-                        <div class="info-value">{{ faculty.position }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if student %}
+        <div class="content">
+            <div class="profile-container">
+                <!-- Sidebar -->
+                <div class="profile-sidebar">
+                    <div class="profile-picture-container">
+                        {% if student.profile_picture %}
+                        <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="profile-picture">
+                        {% else %}
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo" class="profile-picture">
+                        {% endif %}
+        
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
+                        {% csrf_token %}
+                        <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
+                        <i class="fas fa-camera"></i>
+                        </button>
+                        <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                        </form>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Department</div>
-                        <div class="info-value">{{ faculty.department }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Joining Date</div>
-                        <div class="info-value">{{ faculty.date_of_joining }}</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Status</div>
-                        <div class="info-value status-active">Active</div>
+                    <h2 class="student-name">{{ student.name }}</h2>
+                    <p class="student-id">ID: {{ student.college_id }}</p>
+                    
+                    <div class="profile-info">
+                        <div class="info-item">
+                            <div class="info-label">Course</div>
+                            <div class="info-value">{{ student.course }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Batch</div>
+                            <div class="info-value">2023-2027</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Semester</div>
+                            <div class="info-value">{{ student.semester }} Semester</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Department</div>
+                            <div class="info-value">Computer Science</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value status-active">Active</div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Main Content -->
-            <div class="profile-main">
-                <div class="personal-info">
-                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+                <!-- Main Content -->
+                <div class="profile-main">
+                    <div class="personal-info">
+                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+                        
+                        <div class="personal-details">
+                            <div class="detail-card">
+                                <h3><i class="fas fa-id-card"></i> Basic Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Full Name:</div>
+                                    <div class="detail-value">{{ student.name }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Date of Birth:</div>
+                                    <div class="detail-value">{{ student.birthday }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Date of Joining:</div>
+                                    <div class="detail-value">{{ student.date_of_joining }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Gender:</div>
+                                    <div class="detail-value">{{ student.gender }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-address-book"></i> Contact Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Email:</div>
+                                    <div class="detail-value">{{ student.email }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Phone:</div>
+                                    <div class="detail-value">+91 {{ student.phone }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Parent Contact:</div>
+                                    <div class="detail-value">+91 {{ student.other_phone_no }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Address:</div>
+                                    <div class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-users"></i> Family Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Father's Name:</div>
+                                    <div class="detail-value">Mr. {{ student.father_name }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Mother's Name:</div>
+                                    <div class="detail-value">Mrs. {{ student.mother_name }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Father Occupation:</div>
+                                    <div class="detail-value">{{ student.occupation }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Income:</div>
+                                    <div class="detail-value">Rs. {{ student.income }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Category:</div>
+                                    <div class="detail-value">{{ student.category }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Nationality:</div>
+                                    <div class="detail-value">{{ student.nationality }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Religion:</div>
+                                    <div class="detail-value">{{ student.religion }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Martial Status:</div>
+                                    <div class="detail-value">{{ student.martial_status }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-lock"></i> Login Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">User Name:</div>
+                                    <div class="detail-value">{{ student.username }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">User ID:</div>
+                                    <div class="detail-value">{{ student.user_id }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Password:</div>
+                                    <div class="detail-value">••••••••</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-passport"></i> Government IDs</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Adhar Number:</div>
+                                    <div class="detail-value">{{ student.adhar_no }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Pan ID:</div>
+                                    <div class="detail-value">{{ student.pan_no }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Family ID Number:</div>
+                                    <div class="detail-value">{{ student.family_id }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Family ID Mobile No:</div>
+                                    <div class="detail-value">{{ student.family_id_phone_no }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div class="personal-details">
-                        <div class="detail-card">
-                            <h3><i class="fas fa-id-card"></i> Basic Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Full Name:</div>
-                                <div class="detail-value">{{ faculty.name }}</div>
+                    <div class="academic-progress">
+                        <h2 class="section-title"><i class="fas fa-chart-line"></i> Academic Progress</h2>
+                        
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <div class="progress-title">Mathematics</div>
+                                <div class="progress-percent">85%</div>
                             </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Faculty ID:</div>
-                                <div class="detail-value">{{ faculty.college_id }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Date of Birth:</div>
-                                <div class="detail-value">{{ faculty.birthday }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Gender:</div>
-                                <div class="detail-value">{{ faculty.gender }}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
                             </div>
                         </div>
                         
-                        <div class="detail-card">
-                            <h3><i class="fas fa-address-book"></i> Contact Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Email:</div>
-                                <div class="detail-value">{{ faculty.email }}</div>
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <div class="progress-title">Computer Programming</div>
+                                <div class="progress-percent">92%</div>
                             </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Phone:</div>
-                                <div class="detail-value">+91 {{ faculty.phone }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Phone 2:</div>
-                                <div class="detail-value">+91 {{ faculty.other_phone_no }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Address:</div>
-                                <div class="detail-value">{{ faculty.address }}, {{ faculty.city }}, {{ faculty.state }} - {{ faculty.state_code }}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 92%"></div>
                             </div>
                         </div>
                         
-                        <div class="detail-card">
-                            <h3><i class="fas fa-users"></i> Family & ID Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Father's Name:</div>
-                                <div class="detail-value">Mr. {{ faculty.father_name }}</div>
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <div class="progress-title">Data Structures</div>
+                                <div class="progress-percent">78%</div>
                             </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Mother's Name:</div>
-                                <div class="detail-value">Mrs. {{ faculty.mother_name }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Adhar Number:</div>
-                                <div class="detail-value">{{ faculty.adhar_no }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Pan ID:</div>
-                                <div class="detail-value">{{ faculty.pan_no }}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
                             </div>
                         </div>
-                    
-                        <div class="detail-card">
-                            <h3><i class="fas fa-dna"></i>Caste & National Identity</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">Category:</div>
-                                <div class="detail-value">{{ faculty.category }}</div>
+                        
+                        <div class="progress-item">
+                            <div class="progress-header">
+                                <div class="progress-title">Database Systems</div>
+                                <div class="progress-percent">88%</div>
                             </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Nationality:</div>
-                                <div class="detail-value">{{ faculty.nationality }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Religion:</div>
-                                <div class="detail-value">{{ faculty.religion }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Martial Status:</div>
-                                <div class="detail-value">{{ faculty.martial_status }}</div>
-                            </div>
-                        </div>
-                       <div class="detail-card">
-                            <h3><i class="fas fa-lock"></i> Login Details</h3>
-                            <div class="detail-row">
-                                <div class="detail-label">User Name:</div>
-                                <div class="detail-value">{{ faculty.email }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">User ID:</div>
-                                <div class="detail-value">{{ faculty.college_id }}</div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">Password:</div>
-                                <div class="detail-value">{{ faculty.phone }}</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 88%"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-            
             </div>
         </div>
+        {% elif faculty %}
+        <div class="content">
+            <div class="profile-container">
+                <!-- Sidebar -->
+                <div class="profile-sidebar">
+                    <div class="profile-picture-container">
+                        {% if faculty.profile_picture %}
+                        <img src="{{ faculty.profile_picture.url }}" alt="Faculty Photo" class="profile-picture">
+                        {% else %}
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Faculty Photo" class="profile-picture">
+                        {% endif %}
+        
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
+                        {% csrf_token %}
+                        <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
+                        <i class="fas fa-camera"></i>
+                        </button>
+                        <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                        </form>
+                    </div>
+                    <h2 class="student-name">{{ faculty.name }}</h2>
+                    <p class="student-id">ID: {{ faculty.college_id }}</p>
+                    
+                    <div class="profile-info">
+                        <div class="info-item">
+                            <div class="info-label">Position</div>
+                            <div class="info-value">{{ faculty.position }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date of Joining</div>
+                            <div class="info-value">{{ faculty.date_of_joining }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Department</div>
+                            <div class="info-value">{{ faculty.department }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value status-active">Active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="profile-main">
+                    <div class="personal-info">
+                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+                        
+                        <div class="personal-details">
+                            <div class="detail-card">
+                                <h3><i class="fas fa-id-card"></i> Basic Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Full Name:</div>
+                                    <div class="detail-value">{{ faculty.name }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Date of Birth:</div>
+                                    <div class="detail-value">{{ faculty.birthday }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Date of Joining:</div>
+                                    <div class="detail-value">{{ faculty.date_of_joining }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Gender:</div>
+                                    <div class="detail-value">{{ faculty.gender }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-address-book"></i> Contact Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Email:</div>
+                                    <div class="detail-value">{{ faculty.email }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Phone:</div>
+                                    <div class="detail-value">+91 {{ faculty.phone }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Parent Contact:</div>
+                                    <div class="detail-value">+91 {{ faculty.other_phone_no }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Address:</div>
+                                    <div class="detail-value">{{ faculty.address }}, {{ faculty.city }}, {{ faculty.state }} - {{ faculty.state_code }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-users"></i> Family Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Father's Name:</div>
+                                    <div class="detail-value">Mr. {{ faculty.father_name }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Mother's Name:</div>
+                                    <div class="detail-value">Mrs. {{ faculty.mother_name }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Category:</div>
+                                    <div class="detail-value">{{ faculty.category }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Nationality:</div>
+                                    <div class="detail-value">{{ faculty.nationality }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Religion:</div>
+                                    <div class="detail-value">{{ faculty.religion }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Martial Status:</div>
+                                    <div class="detail-value">{{ faculty.martial_status }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-lock"></i> Login Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">User Name:</div>
+                                    <div class="detail-value">{{ faculty.username }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">User ID:</div>
+                                    <div class="detail-value">{{ faculty.user_id }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Password:</div>
+                                    <div class="detail-value">••••••••</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-passport"></i> Government IDs</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Adhar Number:</div>
+                                    <div class="detail-value">{{ faculty.adhar_no }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Pan ID:</div>
+                                    <div class="detail-value">{{ faculty.pan_no }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+        {% elif admin %}
+        <div class="content">
+            <div class="profile-container">
+                <!-- Sidebar -->
+                <div class="profile-sidebar">
+                    <div class="profile-picture-container">
+                        {% if admin.profile_picture %}
+                        <img src="{{ admin.profile_picture.url }}" alt="Admin Photo" class="profile-picture">
+                        {% else %}
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Photo" class="profile-picture">
+                        {% endif %}
+        
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
+                        {% csrf_token %}
+                        <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
+                        <i class="fas fa-camera"></i>
+                        </button>
+                        <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                        </form>
+                    </div>
+                    <h2 class="student-name">{{ admin.name }}</h2>
+                    <p class="student-id">ID: {{ admin.college_id }}</p>
+                    
+                    <div class="profile-info">
+                        <div class="info-item">
+                            <div class="info-label">Position</div>
+                            <div class="info-value">{{ admin.position }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date of Joining</div>
+                            <div class="info-value">{{ admin.date_of_joining }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Department</div>
+                            <div class="info-value">{{ admin.department }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value status-active">Active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="profile-main">
+                    <div class="personal-info">
+                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+                        
+                        <div class="personal-details">
+                            <div class="detail-card">
+                                <h3><i class="fas fa-id-card"></i> Basic Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Full Name:</div>
+                                    <div class="detail-value">{{ admin.name }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Date of Birth:</div>
+                                    <div class="detail-value">{{ admin.birthday }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Date of Joining:</div>
+                                    <div class="detail-value">{{ admin.date_of_joining }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Gender:</div>
+                                    <div class="detail-value">{{ admin.gender }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-address-book"></i> Contact Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Email:</div>
+                                    <div class="detail-value">{{ admin.email }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Phone:</div>
+                                    <div class="detail-value">+91 {{ admin.phone }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Parent Contact:</div>
+                                    <div class="detail-value">+91 {{ admin.other_phone_no }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Address:</div>
+                                    <div class="detail-value">{{ admin.address }}, {{ admin.city }}, {{ admin.state }} - {{ admin.state_code }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-users"></i> Family Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Father's Name:</div>
+                                    <div class="detail-value">Mr. {{ admin.father_name }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Mother's Name:</div>
+                                    <div class="detail-value">Mrs. {{ admin.mother_name }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Category:</div>
+                                    <div class="detail-value">{{ admin.category }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Nationality:</div>
+                                    <div class="detail-value">{{ admin.nationality }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Religion:</div>
+                                    <div class="detail-value">{{ admin.religion }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Martial Status:</div>
+                                    <div class="detail-value">{{ admin.martial_status }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-lock"></i> Login Details</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">User Name:</div>
+                                    <div class="detail-value">{{ admin.username }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">User ID:</div>
+                                    <div class="detail-value">{{ admin.user_id }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Password:</div>
+                                    <div class="detail-value">••••••••</div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-card">
+                                <h3><i class="fas fa-passport"></i> Government IDs</h3>
+                                <div class="detail-row">
+                                    <div class="detail-label">Adhar Number:</div>
+                                    <div class="detail-value">{{ admin.adhar_no }}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Pan ID:</div>
+                                    <div class="detail-value">{{ admin.pan_no }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </main>
-    {% endif %}
-    
+
     <script>
         // Toggle Sidebar
         const toggleSidebar = document.querySelector('.toggle-sidebar');
@@ -1601,37 +1454,19 @@
         });
 
         // Profile picture preview functionality
-document.getElementById('profile_picture_upload').addEventListener('change', function(e) {
-    if (this.files && this.files[0]) {
-        const reader = new FileReader();
-        const profilePicture = document.querySelector('.profile-picture');
-        
-        reader.onload = function(e) {
-            profilePicture.src = e.target.result;
-        }
-        
-        reader.readAsDataURL(this.files[0]);
-    }
-});
-
-        // Generate random bubble positions and sizes
-        const bubbles = document.querySelectorAll('.bubble');
-        bubbles.forEach(bubble => {
-            // Random size between 50px and 200px
-            const size = Math.random() * 150 + 50;
-            bubble.style.width = `${size}px`;
-            bubble.style.height = `${size}px`;
-            
-            // Random horizontal position
-            bubble.style.left = `${Math.random() * 100}%`;
-            
-            // Random animation duration between 10s and 20s
-            bubble.style.animationDuration = `${Math.random() * 10 + 10}s`;
-            
-            // Random delay up to 10s
-            bubble.style.animationDelay = `${Math.random() * 10}s`;
+        document.getElementById('profile_picture_upload').addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                const profilePicture = document.querySelector('.profile-picture');
+                
+                reader.onload = function(e) {
+                    profilePicture.src = e.target.result;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
         });
-        
+
         // Animate progress bars on page load
         document.addEventListener('DOMContentLoaded', () => {
             const progressFills = document.querySelectorAll('.progress-fill');
@@ -1642,8 +1477,15 @@ document.getElementById('profile_picture_upload').addEventListener('change', fun
                     fill.style.width = width;
                 }, 100);
             });
+            
+            // Auto-hide messages after 5 seconds
+            setTimeout(() => {
+                const messages = document.querySelector('.messages');
+                if (messages) {
+                    messages.style.display = 'none';
+                }
+            }, 5000);
         });
-        
     </script>
 </body>
 </html>
