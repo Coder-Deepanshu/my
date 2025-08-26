@@ -111,6 +111,7 @@ class Student(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     college_id = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     father_name = models.CharField(max_length=100)
     mother_name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -119,7 +120,8 @@ class Student(models.Model):
     occupation=models.CharField(max_length=50,null=True)
     income=models.CharField(max_length=20,null=True)
     gender = models.CharField(max_length=10)
-    course = models.CharField(max_length=100)  # Changed to ForeignKey
+    course = models.CharField(max_length=100)
+    level = models.CharField(max_length=100)  # Changed to ForeignKey
     birthday = models.DateField()
     address = models.TextField()
     semester = models.IntegerField(default=1)
@@ -127,7 +129,7 @@ class Student(models.Model):
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
     state_code = models.CharField(max_length=10)
-    country = models.CharField(max_length=100, blank=True, null=True,default='India')
+    country = models.CharField(max_length=100,default='India')
     date_of_joining = models.DateField()
     tenth_percent = models.DecimalField(max_digits=5, decimal_places=2)
     twelfth_percent = models.DecimalField(max_digits=5, decimal_places=2)

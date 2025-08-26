@@ -3,1168 +3,1185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Card | Academic Portal</title>
+    <title>Student Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         :root {
             --primary: #4361ee;
             --primary-dark: #3a56d4;
-            --primary-light: #f0f2ff;
             --secondary: #3f37c9;
-            --accent: #4895ef;
-            --success: #4cc9f0;
-            --warning: #f8961e;
-            --danger: #f72585;
-            --dark: #212529;
+            --accent: #7209b7;
             --light: #f8f9fa;
+            --dark: #212529;
             --gray: #6c757d;
             --light-gray: #e9ecef;
-            --sidebar-width: 280px;
-            --header-height: 70px;
-            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            --border-radius: 10px;
-            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --box-shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12);
-            --sidebar-bg: #2a3042;
-            --sidebar-text: #a6b0cf;
-            --sidebar-active: rgba(67, 97, 238, 0.2);
-            --sidebar-hover: #343b52;
-            --sidebar-icon: #6e84a3;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --transition: all 0.3s ease;
         }
 
         body {
             background-color: #f5f7fb;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
         }
 
         /* Header Styles */
         .header {
-            height: 70px;
             background: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
-            z-index: 90;
-            border-bottom: 1px solid var(--light-gray);
-            width: 100%;
+            z-index: 1000;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .toggle-sidebar {
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            color: var(--gray);
-            cursor: pointer;
-            display: flex;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-sidebar:hover {
-            background-color: var(--light-gray);
-            color: var(--dark);
-        }
-
-        .page-title {
-            font-size: 1.4rem;
+        .navbar-brand {
             font-weight: 700;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .page-title i {
             color: var(--primary);
-            font-size: 1.2rem;
+            font-size: 1.8rem;
         }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .notification-btn {
-            position: relative;
-            background: none;
-            border: none;
-            color: var(--gray);
-            font-size: 1.25rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .notification-btn:hover {
-            background-color: var(--light-gray);
+        .nav-link {
             color: var(--dark);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--danger);
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.6rem;
-            font-weight: bold;
-            border: 2px solid white;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            position: relative;
-            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-        }
-
-        .user-dropdown:hover {
-            background-color: var(--light-gray);
-        }
-
-        .user-dropdown-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--light-gray);
-            transition: all 0.3s ease;
-        }
-
-        .user-dropdown:hover .user-dropdown-avatar {
-            transform: scale(1.1);
-            border-color: var(--primary-light);
-        }
-
-        .user-dropdown-name {
-            font-size: 0.9rem;
             font-weight: 500;
-            color: var(--dark);
-            transition: all 0.3s ease;
+            margin: 0 10px;
+            transition: var(--transition);
         }
 
-        .user-dropdown:hover .user-dropdown-name {
+        .nav-link:hover {
             color: var(--primary);
         }
 
-        .user-dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            background: white;
-            min-width: 220px;
-            border-radius: 10px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-            padding: 0.5rem 0;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            z-index: 100;
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 600;
         }
 
-        .user-dropdown:hover .user-dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
         }
 
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 0.7rem 1.25rem;
-            color: var(--dark);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-item:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding-left: 1.5rem;
-        }
-
-        .dropdown-item i {
-            margin-right: 0.75rem;
-            width: 20px;
+        /* Page Header */
+        .page-header {
+            padding: 80px 0 40px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
             text-align: center;
-            font-size: 0.95rem;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: var(--light-gray);
-            margin: 0.5rem 0;
-        }
-
-        /* Content Styles */
-        .content {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-        }
-
-        .id-card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* ID Card Styles - Redesigned */
-        .id-card {
-            width: 380px;
-            min-height: 220px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            background: white;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
         }
 
-        .id-card:hover {
-            transform: translateY(-5px);
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* Action Buttons */
+        .action-section {
+            padding: 40px 0;
+            background: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-10px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
 
-        .id-card-left {
-            width: 35%;
-            padding: 1.5rem 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            position: relative;
-            z-index: 2;
+        .action-btn.active {
+            background: var(--primary);
+            color: white;
         }
 
-        .id-card-right {
-            width: 65%;
-            padding: 1.5rem;
+        .action-btn.active .action-icon {
+            background: white;
+            color: var(--primary);
+        }
+
+        .action-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--light);
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .action-btn h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        /* Form Container */
+        .form-container {
+            padding: 40px 0 80px;
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .enroll-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .enroll-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .enroll-content {
+            padding: 30px;
+        }
+
+        /* Multi-step Form */
+        .form-steps {
+            display: flex;
             justify-content: space-between;
+            margin-bottom: 30px;
             position: relative;
+        }
+
+        .form-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--light-gray);
             z-index: 1;
         }
 
-        .id-card-logo {
+        .step-indicator {
             width: 40px;
             height: 40px;
+            border-radius: 50%;
             background: white;
-            border-radius: 8px;
+            border: 2px solid var(--light-gray);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .id-card-logo i {
-            font-size: 1.4rem;
-            color: var(--primary);
-        }
-
-        .id-card-photo {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 3px solid white;
-            object-fit: cover;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
-        }
-
-        .id-card-qr {
-            width: 60px;
-            height: 60px;
-            background: white;
-            padding: 4px;
-            border-radius: 6px;
-        }
-
-        .id-card-qr img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .id-card-title {
-            font-size: 0.9rem;
-            color: white;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-align: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .id-card-name {
-            font-size: 1.3rem;
-            color: var(--dark);
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-
-        .id-card-name::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 3px;
-        }
-
-        .id-card-details {
-            margin-top: 0.5rem;
-        }
-
-        .id-card-detail-row {
-            display: flex;
-            margin-bottom: 0.6rem;
-            align-items: center;
-        }
-
-        .id-card-detail-label {
-            width: 100px;
-            font-size: 0.75rem;
+            font-weight: 600;
             color: var(--gray);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
         }
 
-        .id-card-detail-value {
-            flex: 1;
+        .step-indicator.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .step-indicator.completed {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+
+        .step-label {
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
             font-size: 0.85rem;
-            color: var(--dark);
+            color: var(--gray);
+        }
+
+        .step-indicator.active .step-label {
+            color: var(--primary);
             font-weight: 600;
         }
 
-        .id-card-footer {
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Navigation Buttons */
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        /* Student View Form */
+        .search-student-form {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .student-details-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .student-details-card.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .student-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid var(--light-gray);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
         }
 
-        .id-card-validity {
-            font-size: 0.6rem;
-            color: var(--gray);
-            font-weight: 500;
-        }
-
-        .id-card-signature {
-            font-size: 0.65rem;
-            color: var(--gray);
-            text-align: right;
-            font-weight: 600;
-        }
-
-        /* Card Type Specific Styles */
-        .id-card.student .id-card-left {
-            background: linear-gradient(135deg, #4361ee, #4895ef);
-        }
-
-        .id-card.faculty .id-card-left {
-            background: linear-gradient(135deg, #f8961e, #f9c74f);
-        }
-
-        .id-card.admin .id-card-left {
-            background: linear-gradient(135deg, #f72585, #b5179e);
-        }
-
-        .id-card.student .id-card-name::after {
-            background: linear-gradient(90deg, #4361ee, #4895ef);
-        }
-
-        .id-card.faculty .id-card-name::after {
-            background: linear-gradient(90deg, #f8961e, #f9c74f);
-        }
-
-        .id-card.admin .id-card-name::after {
-            background: linear-gradient(90deg, #f72585, #b5179e);
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            height: 100vh;
-            position: fixed;
-            left: -280px;
-            top: 0;
-            transition: var(--transition);
-            z-index: 100;
+        .student-actions {
             display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            gap: 10px;
         }
 
-        .sidebar.active {
-            left: 0;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem 1.5rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            height: var(--header-height);
-        }
-
-        .logo-container {
-            padding: 0 20px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-            width: 100%;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-        }
-
-        .logo-icon {
-            font-size: 1.5rem;
-            color: var(--primary);
-            transition: var(--transition);
-        }
-
-        .logo:hover .logo-icon {
-            transform: rotate(-15deg);
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
-        }
-
-        .sidebar-menu::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar-menu::-webkit-scrollbar-thumb {
-            background-color: var(--sidebar-hover);
-            border-radius: 3px;
-        }
-
-        .sidebar-menu::-webkit-scrollbar-track {
-            background-color: var(--sidebar-bg);
-        }
-
-        .menu-title {
-            padding: 0.75rem 1.5rem 0.5rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--sidebar-text);
-            font-weight: 600;
-            opacity: 0.7;
-            margin-top: 0.5rem;
-        }
-
-        .menu-list {
-            list-style: none;
-        }
-
-        .menu-item {
-            position: relative;
-            margin: 0.15rem 0;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1.5rem;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            border-left: 3px solid transparent;
-            font-size: 0.9rem;
-            margin: 0 0.5rem;
-            border-radius: 6px;
-        }
-
-        .menu-link:hover {
-            color: white;
-            background-color: var(--sidebar-hover);
-            transform: translateX(5px);
-        }
-
-        .menu-link.active {
-            color: white;
-            background-color: var(--sidebar-active);
-            border-left-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .menu-icon {
-            font-size: 1rem;
-            margin-right: 0.75rem;
-            width: 20px;
-            text-align: center;
-            color: var(--sidebar-icon);
-            transition: var(--transition);
-        }
-
-        .menu-link:hover .menu-icon,
-        .menu-link.active .menu-icon {
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .menu-text {
-            flex: 1;
-            transition: var(--transition);
-        }
-
-        .menu-link:hover .menu-text {
-            transform: translateX(3px);
-        }
-
-        .sidebar-footer {
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-        }
-
-        .sidebar-footer:hover .user-avatar {
-            transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .user-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .user-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.1rem;
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-role {
-            font-size: 0.7rem;
-            color: var(--sidebar-text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .logout-btn {
-            background: none;
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
             border: none;
-            color: var(--sidebar-text);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: var(--transition);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
-        .logout-btn:hover {
+        .modal-header {
+            border-bottom: 1px solid var(--light-gray);
+            padding: 20px 25px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: rotate(180deg);
+            border-radius: 15px 15px 0 0;
         }
 
-        /* Overlay for sidebar on mobile */
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 99;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-        }
-
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Responsive adjustments */
-        @media (min-width: 992px) {
-            .sidebar {
-                left: 0;
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
             }
             
-            .main-content {
-                margin-left: var(--sidebar-width);
+            .action-btn {
+                width: 150px;
+                height: 150px;
             }
             
-            .toggle-sidebar {
-                display: none;
+            .action-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
             }
             
-            .page-title {
-                margin-left: 0 !important;
-            }
-        }
-
-        @media (max-width: 991px) {
-            .page-title {
-                margin-left: 0 !important;
+            .enroll-content {
+                padding: 20px;
             }
             
-            .id-card {
-                margin-top: 30px !important;
-                margin-right: 0 !important;
+            .step-label {
+                font-size: 0.75rem;
             }
         }
 
         @media (max-width: 576px) {
-            .header {
-                padding: 0 1rem;
+            .page-header h1 {
+                font-size: 1.8rem;
             }
             
-            .id-card {
-                flex-direction: column;
-                width: 90%;
-                height: auto;
+            .navbar-brand {
+                font-size: 1.5rem;
             }
             
-            .id-card-left, .id-card-right {
-                width: 100%;
+            .action-buttons {
+                gap: 15px;
             }
             
-            .id-card-left {
-                padding: 1rem;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-around;
+            .action-btn {
+                width: 130px;
+                height: 130px;
             }
             
-            .id-card-right {
-                padding: 1.5rem;
+            .action-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
             }
             
-            .id-card-logo {
-                margin-bottom: 0;
-                order: 1;
+            .action-btn h3 {
+                font-size: 1.1rem;
             }
             
-            .id-card-photo {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 0;
-                order: 2;
+            .form-steps {
+                margin-bottom: 50px;
             }
             
-            .id-card-qr {
-                order: 3;
+            .step-label {
+                top: 40px;
             }
-            
-            .id-card-title {
-                display: none;
-            }
-        }
-         /* Additional hover details panel */
-        .id-card-hover-details {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(44, 62, 80, 0.95);
-            color: white;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.4s ease;
-            border-radius: var(--border-radius);
-            z-index: 10;
-            text-align: center;
-        }
-
-        .id-card:hover .id-card-hover-details {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .hover-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .hover-detail {
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .hover-detail i {
-            margin-right: 0.5rem;
-            color: var(--accent);
-        }
-
-        .hover-note {
-            margin-top: 1.5rem;
-            font-size: 0.7rem;
-            font-style: italic;
-            color: #ecf0f1;
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay"></div>
-    
-    <!-- Header Section -->
+    <!-- Header -->
     <header class="header">
-        <div class="header-left">
-            <button class="toggle-sidebar">
-                <i class="fas fa-bars"></i>
-            </button>
-            <h1 class="page-title">
-                <i class="fas fa-id-card"></i>
-                ID Card
-            </h1>
-        </div>
-        
-        <div class="header-right">
-            <button class="notification-btn">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge">3</span>
-            </button>
-            
-            <div class="user-dropdown">
-                {% if detail.profile_picture %}
-                    <img src="{{ detail.profile_picture.url }}" alt="User" class="user-dropdown-avatar">
-                {% else %}
-                    <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
-                {% endif %}
-                <span class="user-dropdown-name">{{ detail.name }}</span>
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard2' %}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Back</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Student Management</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="#" class="btn btn-outline-primary me-2">LogOut</a>
+                    </div>
+                </div>
             </div>
-        </div>
+        </nav>
     </header>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h1 style="color: white; margin: 0;">
-                <i class="fas fa-graduation-cap me-2"></i>
-                EduTrack
-            </h1>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">Student Management System</h1>
+            <p class="animate__animated animate__fadeInUp">Manage student records efficiently and effectively</p>
         </div>
-        
-        <div class="sidebar-menu">
-            {% if user_type == 'Student' %}
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'dashboard2' %}" class="menu-link">
-                        <i class="fas fa-tachometer-alt menu-icon"></i>
-                        <span class="menu-text">Dashboard</span>
-                    </a>
-                </li>
-            </ul>
-            {% elif user_type == 'Faculty' %}
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'dashboard1' %}" class="menu-link">
-                        <i class="fas fa-tachometer-alt menu-icon"></i>
-                        <span class="menu-text">Dashboard</span>
-                    </a>
-                </li>
-            </ul>
-            {% elif user_type == 'Admin' %}
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'dashboard' %}" class="menu-link">
-                        <i class="fas fa-tachometer-alt menu-icon"></i>
-                        <span class="menu-text">Dashboard</span>
-                    </a>
-                </li>
-            </ul>
-            {% endif %}
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="action-section">
+        <div class="container">
+            <div class="action-buttons">
+                <div class="action-btn active" id="addStudentBtn">
+                    <div class="action-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3>Add Student</h3>
+                </div>
+                <div class="action-btn" id="viewStudentBtn">
+                    <div class="action-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>View Student</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Student Form -->
+    <section class="form-container active" id="addStudentForm">
+        <div class="container">
+            <div class="enroll-container">
+                <div class="enroll-header">
+                    <h3>Add New Student</h3>
+                    <p class="mb-0">Complete all steps to add a new student record</p>
+                </div>
+                {% if messages %}
+               <div id="alertContainer">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="enroll-content">
+                    <!-- Form Steps Indicator -->
+                    <div class="form-steps">
+                        <div class="step">
+                            <div class="step-indicator active" id="step1Indicator">
+                                1
+                                <span class="step-label">Personal</span>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-indicator" id="step2Indicator">
+                                2
+                                <span class="step-label">Contact</span>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-indicator" id="step3Indicator">
+                                3
+                                <span class="step-label">Academic</span>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-indicator" id="step4Indicator">
+                                4
+                                <span class="step-label">Government</span>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-indicator" id="step5Indicator">
+                                5
+                                <span class="step-label">Documents</span>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-indicator" id="step6Indicator">
+                                6
+                                <span class="step-label">Review</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 1: Personal Information -->
+                    <div class="form-step active" id="step1">
+                        <h4 class="mb-4">Personal Information</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name" class="form-label"><i class="fas fa-user"></i> First Name</label>
+                                    <input type="text" class="form-control" id="name" placeholder="Enter first name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lastName" class="form-label"><i class="fas fa-user"></i> Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" placeholder="Enter last name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fathername" class="form-label"><i class="fas fa-user"></i> Father's Name</label>
+                                    <input type="text" class="form-control" id="fathername" placeholder="Enter father name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="motherame" class="form-label"><i class="fas fa-user"></i> Mother's Name</label>
+                                    <input type="text" class="form-control" id="mothername" placeholder="Enter mother name" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="birthday" class="form-label"><i class="fas fa-calendar"></i> Date of Birth</label>
+                                    <input type="date" class="form-control" id="birthday" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="gender" class="form-label"><i class="fas fa-venus-mars"></i> Gender</label>
+                                    <select class="form-select" id="gender" required>
+                                        <option value="" selected disabled>Select gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="startDate" class="form-label"><i class="fas fa-calendar-alt"></i> Start Date</label>
+                                    <input type="date" class="form-control" id="startDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="occupation" class="form-label"><i class="fas fa-user"></i> Father Occupation</label>
+                                    <input type="text" class="form-control" id="occupation" placeholder="Enter father occupation" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="income" class="form-label"><i class="fas fa-user"></i> Father Income</label>
+                                    <input type="text" class="form-control" id="income" placeholder="Enter father income" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-primary" disabled>Previous</button>
+                            <button type="button" class="btn btn-primary next-btn" data-next="2">Next</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Contact Information -->
+                    <div class="form-step" id="step2">
+                        <h4 class="mb-4">Contact Information</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Enter email address" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" placeholder="Enter phone number" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="otherphone" class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+                                    <input type="tel" class="form-control" id="otherphone" placeholder="Enter Father phone number" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address" class="form-label"><i class="fas fa-home"></i> Address</label>
+                            <input type="text" class="form-control" id="address" placeholder="Enter street address" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" placeholder="Enter city" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="state" class="form-label">State</label>
+                                    <input type="text" class="form-control" id="state" placeholder="Enter state" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="zipCode" class="form-label">ZIP Code</label>
+                                    <input type="text" class="form-control" id="zipCode" placeholder="Enter ZIP code" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-primary prev-btn" data-prev="1">Previous</button>
+                            <button type="button" class="btn btn-primary next-btn" data-next="3">Next</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Academic Information -->
+                    <div class="form-step" id="step3">
+                        <h4 class="mb-4">Academic Information</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="education" class="form-label"><i class="fas fa-graduation-cap"></i> Education Level</label>
+                                    <select class="form-select" id="education" required>
+                                        <option value="" selected disabled>Select education level</option>
+                                        <option value="AI">AI</option>
+                                        <option value="Honours">Honours</option>
+                                        <option value="General">General</option>
+                                        <option value="SF">Self-Finance</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                            <div class="form-group">
+                            <label for="course" class="form-label"><i class="fas fa-book"></i> Select Course</label>
+                            <select class="form-select" id="course" required>
+                                <option value="" selected disabled>Choose a course</option>
+                                <option value="B.Com">Bachelor of Commerce</option>
+                                <option value="B.Sc">Bachelor of Science</option>
+                                <option value="B.A">Bachelor of Arts</option>
+                                <option value="B.C.A">Bachelor of Computer Application</option>
+                                <option value="B.B.A">Bachelor of Business Administration</option>
+                            </select>
+                           </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="tenthgpa" class="form-label"><i class="fas fa-chart-line"></i> Tenth GPA</label>
+                                    <input type="number" step="0.01" min="0" max="4" class="form-control" id="tenthgpa" placeholder="Enter tenth GPA">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="twelthgpa" class="form-label"><i class="fas fa-chart-line"></i> Twelth GPA</label>
+                                    <input type="number" step="0.01" min="0" max="4" class="form-control" id="twelthgpa" placeholder="Enter twelth GPA">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-primary prev-btn" data-prev="2">Previous</button>
+                            <button type="button" class="btn btn-primary next-btn" data-next="4">Next</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Government Selection -->
+                    <div class="form-step" id="step4">
+                        <h4 class="mb-4">Government</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="adharno" class="form-label">Adhar Number</label>
+                                    <input type="text" class="form-control" id="adharno" placeholder="Enter Adhar number" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="panno" class="form-label">PAN Number</label>
+                                    <input type="text" class="form-control" id="panno" placeholder="Enter Pan number" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="familyidno" class="form-label">Family ID Number</label>
+                                    <input type="text" class="form-control" id="familyidno" placeholder="Enter family ID number" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="familyidphone" class="form-label">PAN Number</label>
+                                    <input type="text" class="form-control" id="familyidphone" placeholder="Enter phone number" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-primary prev-btn" data-prev="3">Previous</button>
+                            <button type="button" class="btn btn-primary next-btn" data-next="5">Next</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 5: Document  -->
+                    <div class="form-step" id="step5">
+                        <h4 class="mb-4">Caste & Religion </h4>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="caste" class="form-label"><i class="fas fa-graduation-cap"></i> Caste</label>
+                                    <select class="form-select" id="caste" required>
+                                        <option value="" selected disabled>Select caste</option>
+                                        <option value="General">General</option>
+                                        <option value="BC(A)">BC(A)</option>
+                                        <option value="BC(B)">BC(B)</option>
+                                        <option value="SC">SC</option>
+                                        <option value="ST">ST</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                            <div class="form-group">
+                            <label for="nationality" class="form-label"><i class="fas fa-book"></i> Select Nationality</label>
+                            <select class="form-select" id="nationality" required>
+                                <option value="" selected disabled>Select nationality</option>
+                                <option value="Indian">Indian</option>
+                                <option value="NRI">NRI</option>
+                                <option value="Other">Other</option>
+                            </select>
+                           </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="religion" class="form-label"><i class="fas fa-graduation-cap"></i> Religion</label>
+                                    <select class="form-select" id="religion" required>
+                                        <option value="" selected disabled>Select religion</option>
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Muslim">Muslim</option>
+                                        <option value="Sikh">Sikh</option>
+                                        <option value="Christan">Christan</option>
+                                        <option value="Jain">Jain</option>
+                                        <option value="Buddhist">Buddhist</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                            <div class="form-group">
+                            <label for="martialstatus" class="form-label"><i class="fas fa-book"></i> Martial Status</label>
+                            <select class="form-select" id="martialstatus" required>
+                                <option value="" selected disabled>Select martial status</option>
+                                <option value="">-- Martial Status --</option>
+                                <option value="Married">Married</option>
+                                <option value="Unmarried">Unmarried</option>
+                            </select>
+                           </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-primary prev-btn" data-prev="4">Previous</button>
+                            <button type="button" class="btn btn-primary next-btn" data-next="6">Next</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 6: Review and Submit -->
+                    <div class="form-step" id="step6">
+                        <h4 class="mb-4">Review Information</h4>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Please review all information before submitting.
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Personal Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Name:</strong> <span id="reviewName"></span></p>
+                                <p><strong>Father's Name:</strong> <span id="reviewfatherName"></span></p>
+                                <p><strong>Mother's Name:</strong> <span id="reviewmotherName"></span></p>
+                                <p><strong>Date of Birth:</strong> <span id="reviewDob"></span></p>
+                                <p><strong>Gender:</strong> <span id="reviewGender"></span></p>
+                                <p><strong>Father Occupation:</strong> <span id="reviewoccupation"></span></p>
+                                <p><strong>Father Income:</strong> <span id="reviewincome"></span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Contact Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Email:</strong> <span id="reviewEmail"></span></p>
+                                <p><strong>Phone:</strong> <span id="reviewPhone"></span></p>
+                                <p><strong>Father Phone:</strong> <span id="reviewfatherPhone"></span></p>
+                                <p><strong>Address:</strong> <span id="reviewAddress"></span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Academic Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Education Level:</strong> <span id="reviewEducation"></span></p>
+                                <p><strong>Course:</strong> <span id="reviewcourse"></span></p>
+                                <p><strong>Tenth GPA:</strong> <span id="reviewtenthGpa"></span></p>
+                                <p><strong>Twelth GPA:</strong> <span id="reviewtwelthGpa"></span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Government ID Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Adhar No.:</strong> <span id="reviewadharno"></span></p>
+                                <p><strong>PAN No.:</strong> <span id="reviewpanno"></span></p>
+                                <p><strong>Family ID No.:</strong> <span id="reviewfamilyid"></span></p>
+                                <p><strong>Family ID Phone:</strong> <span id="reviewfamilyidphone"></span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                <label class="form-check-label" for="agreeTerms">
+                                    I confirm that all information provided is accurate
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-outline-primary prev-btn" data-prev="5">Previous</button>
+                            <button type="submit" class="btn btn-primary" id="submitForm">
+                                <i class="fas fa-paper-plane me-2"></i> Submit Application
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- View Student Form -->
+    <section class="form-container" id="viewStudentForm">
+        <div class="container">
+            <div class="search-student-form">
+                <h3 class="mb-4">Find Student Record</h3>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="studentId" class="form-label"><i class="fas fa-id-card"></i> Enter College ID</label>
+                            <input type="text" class="form-control" id="studentId" placeholder="Enter student's college ID">
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" id="searchStudentBtn">
+                            <i class="fas fa-search me-2"></i> Search Student
+                        </button>
+                    </div>
+                </div>
+            </div>
             
-            {% if user_type == 'Student' %}
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'dashboard2' %}" class="menu-link active">
-                        <i class="fas fa-tachometer-alt menu-icon"></i>
-                        <span class="menu-text">Back</span>
-                    </a>
-                </li>
-            </ul>
-            {% elif user_type == 'Faculty' %}
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'dashboard1' %}" class="menu-link active">
-                        <i class="fas fa-tachometer-alt menu-icon"></i>
-                        <span class="menu-text">Back</span>
-                    </a>
-                </li>
-            </ul>
-            {% elif user_type == 'Admin' %}
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'dashboard' %}" class="menu-link active">
-                        <i class="fas fa-tachometer-alt menu-icon"></i>
-                        <span class="menu-text">Back</span>
-                    </a>
-                </li>
-            </ul>
-            {% endif %}
-            <ul>
-                <li class="menu-item">
-                    <a href="{% url 'logoutdoor' %}" class="menu-link">
-                        <i class="fas fa-book menu-icon"></i>
-                        <span class="menu-text">LogOut</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
-        <div class="sidebar-footer">
-                        {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="user-avatar">
+            <div class="student-details-card" id="studentDetails">
+                <div class="student-header">
+                    <h3 class="mb-0">Student Details</h3>
+                    <div class="student-actions">
+                        <button class="btn btn-outline-primary" id="editStudentBtn">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </button>
+                        <button class="btn btn-outline-danger" id="deleteStudentBtn">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4">
+                        {% if student.profile_picture %}
+                        <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="img-fluid rounded-circle mb-3" style="max-width: 200px;">
                         {% else %}
-                        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="user-avatar">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo" class="img-fluid rounded-circle mb-3" style="max-width: 200px;">
                         {% endif %}
-            <div class="user-info">
-                <div class="user-name">{{ detail.name }}</div>
-                <div class="user-role">Student</div>
+                        <h4>{{ student.name }}</h4>
+                        <p class="text-muted">ID: {{ student.college_id }}</p>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Personal Information</h5>
+                                <p><strong>Date of Birth:</strong> {{ student.birthday }}</p>
+                                <p><strong>Gender:</strong> {{ student.gender }}</p>
+                                <p><strong>Email:</strong> {{ student.email }}</p>
+                                <p><strong>Phone:</strong> +91 {{ student.phone }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Academic Information</h5>
+                                <p><strong>Course:</strong> {{ student.course }}</p>
+                                <p><strong>Level:</strong> {{ student.level }}</p>
+                                <p><strong>Start Date:</strong> {{ student.date_of_joining }}</p>
+                                <p><strong>Semester:</strong> {{ student.semester }}</p>
+                                <p><strong>Year:</strong> {{ student.year }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h5>Address</h5>
+                            <p>{{ student.address }}, {{ student.city }}, {{ student.state }}, {{ student.pin_code }},India</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <a href="{% url 'logoutdoor' %}">
-            <button class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-            </a>
         </div>
-    </aside>
+    </section>
 
-    <div class="content">
-        <div class="id-card-container">
-            <!-- Student ID Card -->
-            {% if user_type == 'Student' %}
-            <div class="id-card student">
-                <div class="id-card-left">
-                    <div class="id-card-logo">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    
-                    {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="id-card-photo">
-                    {% else %}
-                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=4361ee&color=fff" alt="Student Photo" class="id-card-photo">
-                    {% endif %}
-                    
-                    <div class="id-card-qr">
-                        <!-- QR Code for Student ID -->
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STUDENT-{{ detail.college_id }}" alt="QR Code">
-                    </div>
-                    <div class="id-card-title">STUDENT ID CARD</div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
-                <div class="id-card-right">
-                    <div>
-                        <div class="id-card-name">{{ detail.name }}</div>
-                        
-                        <div class="id-card-details">
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">ID Number:</div>
-                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Course:</div>
-                                <div class="id-card-detail-value">{{ detail.course }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Semester:</div>
-                                <div class="id-card-detail-value">{{ detail.semester }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Valid Until:</div>
-                                <div class="id-card-detail-value">{{ detail.year|add:"4" }}-12-31</div>
-                            </div>
-                        </div>
+                <div class="modal-body">
+                    <div class="text-center text-danger mb-4">
+                        <i class="fas fa-exclamation-circle fa-3x"></i>
                     </div>
-                    
-                    <div class="id-card-footer">
-                        <div class="id-card-validity">This card is property of University</div>
-                        <div class="id-card-signature">Registrar</div>
-                    </div>
+                    <h4 class="text-center mb-3">Are you sure?</h4>
+                    <p class="text-center">You are about to delete the student record for <strong>{{ student.name }}</strong>. This action cannot be undone.</p>
                 </div>
-                <!-- Hover Details Panel -->
-                <div class="id-card-hover-details">
-                    <h3 class="hover-title">Additional Information</h3>
-                    <p class="hover-detail"><i class="fas fa-phone"></i> +1 (555) 987-6543</p>
-                    <p class="hover-detail"><i class="fas fa-envelope"></i> sarah.johnson@university.edu</p>
-                    <p class="hover-detail"><i class="fas fa-map-marker-alt"></i> Room 305, CS Building</p>
-                    <p class="hover-detail"><i class="fas fa-clock"></i> Office Hours: Mon-Wed 10AM-12PM</p>
-                    <p class="hover-detail"><i class="fas fa-book"></i> Specialization: AI & Machine Learning</p>
-                    <p class="hover-note">Present this card when requested by university authorities</p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Student</button>
                 </div>
             </div>
-            
-            {% endif %}
-            
-            <!-- Faculty ID Card (Conditional) -->
-            {% if user_type == 'Faculty' %}
-            <div class="id-card faculty">
-                <div class="id-card-left">
-                    <div class="id-card-logo">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
-                    
-                    {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Faculty Photo" class="id-card-photo">
-                    {% else %}
-                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=f8961e&color=fff" alt="Faculty Photo" class="id-card-photo">
-                    {% endif %}
-                    
-                    <div class="id-card-qr">
-                        <!-- QR Code for Faculty ID -->
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FACULTY-{{ detail.college_id }}" alt="QR Code">
-                    </div>
-                    <div class="id-card-title">FACULTY ID CARD</div>
-                </div>
-                
-                <div class="id-card-right">
-                    <div>
-                        <div class="id-card-name">{{ detail.name }}</div>
-                        
-                        <div class="id-card-details">
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Employee ID:</div>
-                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Department:</div>
-                                <div class="id-card-detail-value">{{ detail.department }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Designation:</div>
-                                <div class="id-card-detail-value">{{ detail.position }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Valid Until:</div>
-                                <div class="id-card-detail-value">Permanent</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="id-card-footer">
-                        <div class="id-card-validity">This card is property of University</div>
-                        <div class="id-card-signature">Vice Chancellor</div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-            
-            <!-- Admin ID Card (Conditional) -->
-            {% if user_type == 'Admin' %}
-            <div class="id-card admin">
-                <div class="id-card-left">
-                    <div class="id-card-logo">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    
-                    {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Admin Photo" class="id-card-photo">
-                    {% else %}
-                        <img src="https://ui-avatars.com/api/?name={{ detail.name }}&background=f72585&color=fff" alt="Admin Photo" class="id-card-photo">
-                    {% endif %}
-                    
-                    <div class="id-card-qr">
-                        <!-- QR Code for Admin ID -->
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ADMIN-{{ detail.college_id }}" alt="QR Code">
-                    </div>
-                    <div class="id-card-title">ADMINISTRATOR ID CARD</div>
-                </div>
-                
-                <div class="id-card-right">
-                    <div>
-                        <div class="id-card-name">{{ detail.name }}</div>
-                        
-                        <div class="id-card-details">
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Employee ID:</div>
-                                <div class="id-card-detail-value">{{ detail.college_id }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Department:</div>
-                                <div class="id-card-detail-value">{{ detail.department }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Access Level:</div>
-                                <div class="id-card-detail-value">{{ detail.position }}</div>
-                            </div>
-                            <div class="id-card-detail-row">
-                                <div class="id-card-detail-label">Valid Until:</div>
-                                <div class="id-card-detail-value">Permanent</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="id-card-footer">
-                        <div class="id-card-validity">This card is property of University</div>
-                        <div class="id-card-signature">Chancellor</div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
         </div>
     </div>
 
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Student Added Successfully</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="success-icon text-center mb-4">
+                        <i class="fas fa-check-circle text-success fa-3x"></i>
+                    </div>
+                    <h4 class="text-center mb-3">Congratulations!</h4>
+                    <p class="text-center">The student has been successfully added to the system with ID: <strong>{{ college_id }}</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Toggle sidebar functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggleSidebar = document.querySelector('.toggle-sidebar');
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
+        $(document).ready(function() {
+            // Toggle between Add and View forms
+            $('#addStudentBtn').click(function() {
+                $('.action-btn').removeClass('active');
+                $(this).addClass('active');
+                $('.form-container').removeClass('active');
+                $('#addStudentForm').addClass('active');
+            });
             
-            if(toggleSidebar) {
-                toggleSidebar.addEventListener('click', () => {
-                    sidebar.classList.toggle('active');
-                    overlay.classList.toggle('active');
-                });
-            }
+            $('#viewStudentBtn').click(function() {
+                $('.action-btn').removeClass('active');
+                $(this).addClass('active');
+                $('.form-container').removeClass('active');
+                $('#viewStudentForm').addClass('active');
+            });
             
-            // Close sidebar when clicking on overlay
-            if(overlay) {
-                overlay.addEventListener('click', () => {
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
-                });
-            }
-            
-            // Close sidebar when clicking on a menu link (for mobile)
-            const menuLinks = document.querySelectorAll('.menu-link');
-            menuLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if(window.innerWidth < 992) {
-                        sidebar.classList.remove('active');
-                        overlay.classList.remove('active');
+            // Multi-step form navigation
+            $('.next-btn').click(function() {
+                const nextStep = $(this).data('next');
+                const currentStep = nextStep - 1;
+                
+                // Validate current step before proceeding
+                let isValid = true;
+                $(`#step${currentStep} input:required, #step${currentStep} select:required`).each(function() {
+                    if (!$(this).val()) {
+                        isValid = false;
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
                     }
                 });
+                
+                if (isValid) {
+                    // Update step indicators
+                    $(`#step${currentStep}Indicator`).removeClass('active').addClass('completed');
+                    $(`#step${nextStep}Indicator`).addClass('active');
+                    
+                    // Show next step
+                    $(`.form-step`).removeClass('active');
+                    $(`#step${nextStep}`).addClass('active');
+                    
+                    // If we're on the review step, populate the review data
+                    if (nextStep === 6) {
+                        populateReviewData();
+                    }
+                }
             });
-
-            // User dropdown functionality
-            const userDropdown = document.querySelector('.user-dropdown');
-            if(userDropdown) {
-                userDropdown.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    document.querySelector('.user-dropdown-menu').classList.toggle('show');
-                });
-
-                // Close dropdown when clicking outside
-                document.addEventListener('click', () => {
-                    const menu = document.querySelector('.user-dropdown-menu');
-                    if(menu) menu.classList.remove('show');
-                });
+            
+            $('.prev-btn').click(function() {
+                const prevStep = $(this).data('prev');
+                const currentStep = prevStep + 1;
+                
+                // Update step indicators
+                $(`#step${currentStep}Indicator`).removeClass('active');
+                $(`#step${prevStep}Indicator`).removeClass('completed').addClass('active');
+                
+                // Show previous step
+                $(`.form-step`).removeClass('active');
+                $(`#step${prevStep}`).addClass('active');
+            });
+            
+            // Populate review data
+            function populateReviewData() {
+                $('#reviewName').text($('#name').val() + ' ' + $('#lastName').val());
+                $('#reviewDob').text($('#birthday').val());
+                $('#reviewmotherName').text($('#mothername').val());
+                $('#reviewfatherName').text($('#fathername').val());
+                $('#reviewoccupation').text($('#occupation').val());
+                $('#reviewincome').text($('#income').val());
+                $('#reviewGender').text($('#gender').val());
+                $('#reviewEmail').text($('#email').val());
+                $('#reviewPhone').text($('#phone').val());
+                $('#reviewfatherPhone').text($('#otherphone').val());
+                $('#reviewAddress').text($('#address').val() + ', ' + $('#city').val() + ', ' + $('#state').val() + ' ' + $('#zipCode').val());
+                $('#reviewEducation').text($('#education').val());
+                $('#reviewtenthGpa').text($('#tenthgpa').val());
+                $('#reviewtwelthGpa').text($('#twelthgpa').val());
+                $('#reviewCourse').text($('#course').val());
+                $('#reviewStartDate').text($('#startDate').val());
+                $('#reviewadharno').text($('#adharno').val());
+                $('#reviewpanno').text($('#panno').val());
+                $('#reviewfamilyid').text($('#familyid').val());
+                $('#reviewfamilyidphone').text($('#familyidphone').val());
+                
             }
-        });
-        // Back button functionality
-        $(document).on('click', '.menu-link.active', function(e) {
-            e.preventDefault();
-            window.history.back();
+            
+            // Form submission
+            $('#submitForm').click(function() {
+                if ($('#agreeTerms').is(':checked')) {
+                    $('#successModal').modal('show');
+                    
+                    // Reset form after successful submission
+                    setTimeout(function() {
+                        $('#enrollmentForm')[0].reset();
+                        $('.form-step').removeClass('active');
+                        $('#step1').addClass('active');
+                        $('.step-indicator').removeClass('active completed');
+                        $('#step1Indicator').addClass('active');
+                    }, 2000);
+                }
+            });
+            
+            // Search student functionality
+            $('#searchStudentBtn').click(function() {
+                if ($('#studentId').val()) {
+                    $('#studentDetails').addClass('active');
+                }
+            });
+            
+            // Delete student confirmation
+            $('#deleteStudentBtn').click(function() {
+                $('#deleteModal').modal('show');
+            });
+            
+            $('#confirmDeleteBtn').click(function() {
+                $('#deleteModal').modal('hide');
+                $('#studentDetails').removeClass('active');
+                $('#studentId').val('');
+                
+                // Show success message (in a real app, this would be an API call)
+                alert('Student record deleted successfully!');
+            });
+            
+            // Edit student functionality
+            $('#editStudentBtn').click(function() {
+                // Switch to Add Student form with edit mode
+                $('.action-btn').removeClass('active');
+                $('#addStudentBtn').addClass('active');
+                $('.form-container').removeClass('active');
+                $('#addStudentForm').addClass('active');
+                
+                // In a real app, you would populate the form with the student's data
+                alert('Edit mode activated. Form would be populated with student data in a real application.');
+            });
         });
     </script>
 </body>

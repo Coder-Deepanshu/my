@@ -1,1159 +1,469 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Management | Student Management System</title>
+    <title>Faculty Attendance System - Bulk Student Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         :root {
-            /* Primary Colors */
             --primary: #4361ee;
             --primary-dark: #3a56d4;
-            --primary-light: #f0f4ff;
-            --primary-extra-light: #e6ecff;
-            
-            /* Secondary Colors */
-            --secondary: #6c63ff;
-            --accent: #5c7cff;
-            --success: #4cc9f0;
-            --warning: #ff9f1c;
-            --danger: #ff477e;
-            --info: #4299e1;
-            
-            /* Neutral Colors */
-            --dark: #2d3748;
-            --darker: #1a202c;
-            --light: #f8fafc;
-            --lighter: #ffffff;
-            --gray: #718096;
-            --light-gray: #e2e8f0;
-            --dark-gray: #4a5568;
-            
-            /* Status Colors */
-            --success: #48bb78;
-            --warning: #ed8936;
-            --danger: #f56565;
-            --info: #4299e1;
-            
-            /* Sidebar Colors */
-            --sidebar-bg: #2d3748;
-            --sidebar-text: #cbd5e0;
-            --sidebar-active: rgba(74, 107, 255, 0.2);
-            --sidebar-hover: #4a5568;
-            --sidebar-icon: #a0aec0;
-            
-            /* Other Variables */
-            --sidebar-width: 280px;
-            --header-height: 70px;
-            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            --border-radius: 12px;
-            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --box-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
-        }
-
-        /* Dark Theme Variables */
-        .dark-theme {
-            --primary: #5c7cff;
-            --primary-dark: #4a6bff;
-            --primary-light: #1a202c;
-            --primary-extra-light: #2d3748;
-            
-            --dark: #f8fafc;
-            --darker: #ffffff;
-            --light: #1a202c;
-            --lighter: #2d3748;
-            --gray: #a0aec0;
-            --light-gray: #4a5568;
-            --dark-gray: #e2e8f0;
-            
-            --sidebar-bg: #1a202c;
-            --sidebar-text: #cbd5e0;
-            --sidebar-hover: #2d3748;
-            
-            background-color: #1a202c;
-            color: #f8fafc;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
         }
 
         body {
             background-color: #f5f7fb;
             color: var(--dark);
-            display: flex;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            transition: var(--transition);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-header {
-            padding: 1.5rem 1.5rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            height: var(--header-height);
-        }
-        
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
-        }
-
-        .sidebar-menu::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar-menu::-webkit-scrollbar-thumb {
-            background-color: var(--sidebar-hover);
-            border-radius: 3px;
-        }
-
-        .sidebar-menu::-webkit-scrollbar-track {
-            background-color: var(--sidebar-bg);
-        }
-
-        .menu-title {
-            padding: 0.75rem 1.5rem 0.5rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--sidebar-text);
-            font-weight: 600;
-            opacity: 0.7;
-            margin-top: 0.5rem;
-        }
-
-        .menu-list {
-            list-style: none;
-        }
-
-        .menu-item {
-            position: relative;
-            margin: 0.15rem 0;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1.5rem;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            border-left: 3px solid transparent;
-            font-size: 0.9rem;
-            margin: 0 0.5rem;
-            border-radius: 6px;
-        }
-
-        .menu-link:hover {
-            color: white;
-            background-color: var(--sidebar-hover);
-            transform: translateX(5px);
-        }
-
-        .menu-link.active {
-            color: white;
-            background-color: var(--sidebar-active);
-            border-left-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .menu-icon {
-            font-size: 1rem;
-            margin-right: 0.75rem;
-            width: 20px;
-            text-align: center;
-            color: var(--sidebar-icon);
-            transition: var(--transition);
-        }
-
-        .menu-link:hover .menu-icon,
-        .menu-link.active .menu-icon {
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .menu-text {
-            flex: 1;
-            transition: var(--transition);
-        }
-
-        .menu-link:hover .menu-text {
-            transform: translateX(3px);
-        }
-
-        .sidebar-footer {
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-        }
-
-        .sidebar-footer:hover .user-avatar {
-            transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .user-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .user-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.1rem;
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-role {
-            font-size: 0.7rem;
-            color: var(--sidebar-text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--sidebar-text);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: var(--transition);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .logout-btn:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: rotate(180deg);
-        }
-
-        /* Logo Styles */
-        .logo-container {
-            padding: 0 20px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-            width: 100%;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-        }
-
-        .logo-icon {
-            font-size: 1.5rem;
-            color: var(--primary);
-            transition: var(--transition);
-        }
-
-        .logo:hover .logo-icon {
-            transform: rotate(-15deg);
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            transition: var(--transition);
         }
 
         /* Header Styles */
         .header {
-            height: var(--header-height);
             background: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
-            z-index: 90;
-            border-bottom: 1px solid var(--light-gray);
+            z-index: 1000;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .toggle-sidebar {
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            color: var(--gray);
-            cursor: pointer;
-            display: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .toggle-sidebar:hover {
-            background-color: var(--light-gray);
-            color: var(--dark);
-        }
-
-        .page-title {
-            font-size: 1.4rem;
+        .navbar-brand {
             font-weight: 700;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .page-title i {
             color: var(--primary);
-            font-size: 1.2rem;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .notification-btn {
-            position: relative;
-            background: none;
-            border: none;
-            color: var(--gray);
-            font-size: 1.25rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .notification-btn:hover {
-            background-color: var(--light-gray);
-            color: var(--dark);
-            transform: translateY(-2px);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--danger);
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.6rem;
-            font-weight: bold;
-            border: 2px solid white;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            position: relative;
-            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
-            border-radius: 50px;
-            transition: var(--transition);
-        }
-
-        .user-dropdown:hover {
-            background-color: var(--light-gray);
-        }
-
-        .user-dropdown-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--light-gray);
-            transition: var(--transition);
-        }
-
-        .user-dropdown:hover .user-dropdown-avatar {
-            transform: scale(1.1);
-            border-color: var(--primary-light);
-        }
-
-        .user-dropdown-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--dark);
-            transition: var(--transition);
-        }
-
-        .user-dropdown:hover .user-dropdown-name {
-            color: var(--primary);
-        }
-
-        .user-dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            background: white;
-            min-width: 220px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow-lg);
-            padding: 0.5rem 0;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: var(--transition);
-            z-index: 100;
-        }
-
-        .user-dropdown:hover .user-dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 0.7rem 1.25rem;
-            color: var(--dark);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: var(--transition);
-        }
-
-        .dropdown-item:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding-left: 1.5rem;
-        }
-
-        .dropdown-item i {
-            margin-right: 0.75rem;
-            width: 20px;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: var(--light-gray);
-            margin: 0.5rem 0;
-        }
-
-        /* Content Styles */
-        .content {
-            padding: 2rem;
-        }
-
-        /* Header-1 Styles */
-        .header-1 {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-
-        .page-title h1 {
-            margin: 0;
             font-size: 1.8rem;
+        }
+
+        .nav-link {
             color: var(--dark);
-            font-weight: 700;
-        }
-
-        .page-title p {
-            margin: 0.5rem 0 0;
-            color: var(--gray);
-            font-size: 0.95rem;
-        }
-
-        /* Student Actions Container */
-        .student-actions-container {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .student-action-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: var(--border-radius);
             font-weight: 500;
-            cursor: pointer;
+            margin: 0 10px;
             transition: var(--transition);
-            box-shadow: var(--box-shadow);
         }
 
-        .student-action-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--box-shadow-lg);
-        }
-
-        .student-action-btn i {
-            font-size: 1.1rem;
-        }
-
-        /* Card Styles */
-        .card {
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-bottom: 2rem;
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            transition: var(--transition);
-            height: auto;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--box-shadow-lg);
-        }
-
-        .card-header {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--light-gray);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .card-title i {
+        .nav-link:hover {
             color: var(--primary);
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--dark-gray);
-            font-size: 0.9rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            font-size: 0.95rem;
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .form-control.error {
-            border-color: var(--danger);
-        }
-
-        .error-message {
-            color: var(--danger);
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
-            display: none;
-        }
-
-        /* Form Steps */
-        .form-steps {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .form-steps::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: var(--light-gray);
-            z-index: 1;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .step-number {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: var(--light-gray);
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .step.active .step-number {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .step.completed .step-number {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .step-label {
-            font-size: 0.8rem;
-            color: var(--gray);
-            font-weight: 500;
-        }
-
-        .step.active .step-label {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        /* Form Pages */
-        .form-page {
-            display: none;
-        }
-
-        .form-page.active {
-            display: block;
-        }
-
-        /* Detail Grid */
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Form Actions */
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--light-gray);
-            margin-top: 1.5rem;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--border-radius);
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            border: none;
         }
 
         .btn-primary {
             background-color: var(--primary);
-            color: white;
+            border-color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 600;
         }
 
         .btn-primary:hover {
             background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
         }
 
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--light-gray);
-            color: var(--dark);
-        }
-
-        .btn-outline:hover {
-            background-color: var(--light-gray);
-        }
-
-        .btn-success {
-            background-color: var(--success);
+        /* Page Header */
+        .page-header {
+            padding: 80px 0 40px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #3aa76d;
-        }
-
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #e53e3e;
-        }
-
-        /* Student Details */
-        .student-details {
-            display: none;
-        }
-
-        .student-details.active {
-            display: block;
-        }
-
-        .photo-section {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .student-photo {
-            width: 150px;
-            height: 150px;
-            border-radius: var(--border-radius);
-            object-fit: cover;
-            box-shadow: var(--box-shadow);
-        }
-
-        .photo-actions {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        /* Section Cards */
-        .section-card {
-            background-color: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
             overflow: hidden;
         }
 
-        .section-header {
-            background-color: var(--primary-extra-light);
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--light-gray);
-            font-weight: 600;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .section-body {
-            padding: 1.5rem;
-        }
-
-        .detail-row {
-            display: flex;
-            margin-bottom: 1rem;
-        }
-
-        .detail-label {
-            font-weight: 500;
-            min-width: 150px;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .detail-value {
-            flex: 1;
-            color: var(--dark);
-        }
-
-        /* Modal Styles */
-        .modal {
-            position: fixed;
+        .page-header::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
         }
 
-        .modal-content {
-            background-color: white;
-            border-radius: var(--border-radius);
-            width: 90%;
-            max-width: 600px;
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* Main Content */
+        .f-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            box-shadow: var(--box-shadow-lg);
+            transition: var(--transition);
+        }
+
+        .enroll-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .enroll-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .enroll-content {
+            padding: 30px;
+        }
+
+        .alert {
+            margin: 0;
+            border-radius: 0;
+            text-align: center;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            padding: 20px;
+            background: var(--light);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-group label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .filter-group select, 
+        .filter-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .filter-group select:focus, 
+        .filter-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        .btn-filter {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .btn-filter:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Results Section */
+        .results-section {
+            padding: 30px;
+        }
+
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .student-table th, 
+        .student-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .student-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .student-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Bulk Actions */
+        .bulk-actions {
+            padding: 20px;
+            background: var(--light);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .bulk-select {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 10px;
+        }
+
+        .pagination button {
+            margin: 0 5px;
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination button:hover {
+            border-color: var(--primary);
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
         .modal-header {
-            padding: 1.25rem 1.5rem;
-            background-color: var(--danger);
+            border-bottom: 1px solid var(--light-gray);
+            padding: 20px 25px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            border-radius: 15px 15px 0 0;
         }
 
-        .modal-title {
-            font-size: 1.2rem;
+        /* Form Elements */
+        .form-label {
             font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
         }
 
-        .modal-body {
-            padding: 1.5rem;
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary);
         }
 
-        .modal-footer {
-            padding: 1rem 1.5rem;
-            background-color: var(--light-gray);
-            border-top: 1px solid var(--light-gray);
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
+        .form-control {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
         }
 
-        /* Alert Messages */
-        .alert {
-            padding: 1rem 1.25rem;
-            border-radius: var(--border-radius);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.9rem;
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
         }
 
-        .alert-success {
-            background-color: #f0fff4;
-            color: #2f855a;
-            border-left: 4px solid var(--success);
+        .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
         }
 
-        .alert-error {
-            background-color: #fff5f5;
-            color: #c53030;
-            border-left: 4px solid var(--danger);
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
         }
 
-        /* Checkbox Styles */
-        .checkbox-container {
-            display: block;
-            position: relative;
-            padding-left: 30px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .checkbox-container input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 0;
-            width: 0;
-        }
-
-        .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 20px;
-            width: 20px;
-            background-color: #eee;
-            border-radius: 4px;
-        }
-
-        .checkbox-container:hover input ~ .checkmark {
-            background-color: #ccc;
-        }
-
-        .checkbox-container input:checked ~ .checkmark {
-            background-color: var(--primary);
-        }
-
-        .checkmark:after {
-            content: "";
-            position: absolute;
-            display: none;
-        }
-
-        .checkbox-container input:checked ~ .checkmark:after {
-            display: block;
-        }
-
-        .checkbox-container .checkmark:after {
-            left: 7px;
-            top: 3px;
-            width: 5px;
-            height: 10px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
-
-        
         /* Responsive Styles */
-        @media (max-width: 1200px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .toggle-sidebar {
-                display: flex;
-            }
-        }
-
         @media (max-width: 992px) {
-            .content {
-                padding: 1.5rem;
+            .filter-section {
+                flex-direction: column;
             }
             
-            .header-1 {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .student-actions-container {
-                flex-direction: column;
-                gap: 1rem;
+            .filter-group {
+                width: 100%;
             }
         }
 
         @media (max-width: 768px) {
-            .detail-grid {
-                grid-template-columns: 1fr;
+            .page-header h1 {
+                font-size: 2rem;
             }
             
-            .header {
-                padding: 0 1.25rem;
-            }
-            
-            .photo-section {
+            .action-buttons {
                 flex-direction: column;
-                align-items: flex-start;
             }
             
-            .detail-row {
-                flex-direction: column;
-                gap: 0.25rem;
+            .bulk-actions {
+                flex-wrap: wrap;
             }
             
-            .detail-label {
-                min-width: auto;
+            .student-table {
+                display: block;
+                overflow-x: auto;
             }
         }
 
         @media (max-width: 576px) {
-            .content {
-                padding: 1.25rem;
+            .page-header h1 {
+                font-size: 1.8rem;
             }
             
-            .form-actions {
-                flex-direction: column;
+            .navbar-brand {
+                font-size: 1.5rem;
             }
             
-            .btn {
-                width: 100%;
-                justify-content: center;
+            .enroll-content {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <i class="fas fa-graduation-cap logo-icon"></i>
-                <span>Student</span> Management
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Back</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="{% url ''logoutdoor %}" class="btn btn-outline-primary me-2">LogOut</a>
+                    </div>
+                </div>
             </div>
+        </nav>
+    </header>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">Student Management System</h1>
+            <p class="animate__animated animate__fadeInUp">Manage student records efficiently and effectively</p>
         </div>
-        <div class="sidebar-menu">
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a class="menu-link active" href="{% url 'dashboard' %}">
-                        <i class="fas fa-arrow-left menu-icon"></i>
-                        <span class="menu-text">Back</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="{% url 'dashboard' %}" class="menu-link">
-                        <i class="fas fa-home menu-icon"></i>
-                        <span class="menu-text">Dashboard</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="{% url 'logoutdoor' %}" class="menu-link">
-                        <i class="fas fa-sign-out-alt menu-icon"></i>
-                        <span class="menu-text">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="sidebar-footer">
-            <img src="https://via.placeholder.com/40" alt="User" class="user-avatar">
-            <div class="user-info">
-                <div class="user-name">Admin User</div>
-                <div class="user-role">Administrator</div>
-            </div>
-            <a href="{% url 'logoutdoor' %}">
-            <button class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-            </a>
-        </div>
-    </div>
+    </section>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <button class="toggle-sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="page-title">
-                    <i class="fas fa-users"></i>
-                    <span>Student Management</span>
-                </div>
-            </div>
-            <div class="header-right">
-                <button class="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </button>
-                <div class="user-dropdown">
-                    <img src="https://via.placeholder.com/40" alt="User" class="user-dropdown-avatar">
-                    <span class="user-dropdown-name">Admin User</span>
-                </div>
-            </div>
-        </header>
-        <!-- Content -->
-        <div class="content">
-            <div class="header-1">
-                <div>
-                    <h1>Student Management</h1>
-                    <p>Manage student records and information</p>
-                </div>
+    <div class="f-container">
+        <div class="enroll-container">
+            <div class="enroll-header">
+                <h3>Bulk Student Management</h3>
+                <p class="mb-0">Filter and manage multiple students at once</p>
             </div>
 
-            <!-- Student Actions -->
-            <div class="student-actions-container">
-                <button class="student-action-btn" id="addStudentBtn">
-                    <i class="fas fa-user-plus"></i>
-                    Add Student
-                </button>
-                <button class="student-action-btn" id="viewStudentBtn" style="background: var(--success);">
-                    <i class="fas fa-search"></i>
-                    View Student
-                </button>
-            </div>
-
+            <!-- Messages will appear here -->
+            <div id="messageContainer"></div>
             <!-- Alert Messages -->
             {% if messages %}
             <div id="alertContainer">
@@ -1165,875 +475,496 @@
                 {% endfor %}
             </div>
             {% endif %}
-            <!-- Add this right after your existing alert container -->
-            <div id="settingsAlertContainer" style="display: none;">
-                 <div class="alert alert-success">
-                 <i class="fas fa-check-circle"></i>
-                 <span id="settingsAlertMessage"></span>
-                 </div>
-            </div>
 
-            <!-- Add Student Form (Multi-step) -->
-            <div class="card" id="addStudentForm" style="display: none;">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-user-plus"></i>
-                        Add New Student
-                    </h2>
-                    <button class="btn btn-icon btn-outline" onclick="hideForm('addStudentForm')">
-                        <i class="fas fa-times"></i>
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="course"><i class="fas fa-book"></i> Course:</label>
+                    <select id="course" class="form-select">
+                        <option value="all">All Courses</option>
+                        <option value="btech">B.Tech</option>
+                        <option value="mba">MBA</option>
+                        <option value="mca">MCA</option>
+                        <option value="bca">BCA</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="year"><i class="fas fa-calendar-alt"></i> Year:</label>
+                    <select id="year" class="form-select">
+                        <option value="all">All Years</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="semester"><i class="fas fa-calendar-check"></i> Semester:</label>
+                    <select id="semester" class="form-select">
+                        <option value="all">All Semesters</option>
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                        <option value="5">Semester 5</option>
+                        <option value="6">Semester 6</option>
+                        <option value="7">Semester 7</option>
+                        <option value="8">Semester 8</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="college_id"><i class="fas fa-id-card"></i> College ID:</label>
+                    <input type="text" id="college_id" class="form-control" placeholder="Enter College ID">
+                </div>
+
+                <div class="filter-group">
+                    <button id="filterBtn" class="btn-filter w-100">
+                        <i class="fas fa-filter"></i> Filter Students
                     </button>
                 </div>
-                <div class="card-body">
-                    <!-- Form Steps Indicator -->
-                    <div class="form-steps">
-                        <div class="step active" id="step1">
-                            <div class="step-number">1</div>
-                            <div class="step-label">Personal Info</div>
+            </div>
+
+            <!-- Bulk Actions -->
+            <div class="bulk-actions">
+                <input type="checkbox" id="selectAll" class="bulk-select">
+                <label for="selectAll">Select All</label>
+                <button class="btn btn-primary btn-sm" id="editSelected">
+                    <i class="fas fa-edit"></i> Edit Selected
+                </button>
+                <button class="btn btn-danger btn-sm" id="deleteSelected">
+                    <i class="fas fa-trash"></i> Delete Selected
+                </button>
+                <button class="btn btn-success btn-sm" id="exportSelected">
+                    <i class="fas fa-file-export"></i> Export Selected
+                </button>
+            </div>
+
+            <div class="results-section">
+                <div id="loading" class="text-center py-4" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p>Loading student data...</p>
+                </div>
+                
+                <div id="results">
+                    <div class="table-responsive">
+                        <table class="student-table">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Profile</th>
+                                    <th>College ID</th>
+                                    <th>Name</th>
+                                    <th>Father's Name</th>
+                                    <th>Course</th>
+                                    <th>Year</th>
+                                    <th>Semester</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="checkbox" class="student-checkbox" data-id="1"></td>
+                                    <td>
+                                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar" alt="Student">
+                                    </td>
+                                    <td>COL2023001</td>
+                                    <td>Rahul Sharma</td>
+                                    <td>Rajesh Sharma</td>
+                                    <td>B.Tech</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view" data-id="1">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        <button class="btn-action btn-edit" data-id="1">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn-action btn-delete" data-id="1">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="student-checkbox" data-id="2"></td>
+                                    <td>
+                                        <img src="https://via.placeholder.com/100" class="avatar" alt="Student">
+                                    </td>
+                                    <td>COL2023002</td>
+                                    <td>Priya Patel</td>
+                                    <td>Sanjay Patel</td>
+                                    <td>MBA</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view" data-id="2">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        <button class="btn-action btn-edit" data-id="2">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn-action btn-delete" data-id="2">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" class="student-checkbox" data-id="3"></td>
+                                    <td>
+                                        <img src="https://via.placeholder.com/100" class="avatar" alt="Student">
+                                    </td>
+                                    <td>COL2023003</td>
+                                    <td>Amit Kumar</td>
+                                    <td>Vijay Kumar</td>
+                                    <td>BCA</td>
+                                    <td>3</td>
+                                    <td>5</td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view" data-id="3">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        <button class="btn-action btn-edit" data-id="3">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn-action btn-delete" data-id="3">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="pagination">
+                        <button><i class="fas fa-angle-double-left"></i></button>
+                        <button class="active">1</button>
+                        <button>2</button>
+                        <button>3</button>
+                        <button><i class="fas fa-angle-double-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Student Modal -->
+    <div class="modal fade" id="viewStudentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Student Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img src="https://via.placeholder.com/200" class="img-fluid rounded-circle mb-3" alt="Student">
+                            <h4 id="viewName">Rahul Sharma</h4>
+                            <p class="text-muted" id="viewCourse">B.Tech - Computer Science</p>
                         </div>
-                        <div class="step" id="step2">
-                            <div class="step-number">2</div>
-                            <div class="step-label">Contact Details</div>
-                        </div>
-                        <div class="step" id="step3">
-                            <div class="step-number">3</div>
-                            <div class="step-label">Academic Info</div>
-                        </div>
-                        <div class="step" id="step4">
-                            <div class="step-number">4</div>
-                            <div class="step-label">Government IDs</div>
-                        </div>
-                        <div class="step" id="step5">
-                            <div class="step-number">5</div>
-                            <div class="step-label">Caste & National Identity</div>
-                        </div>
-                        <div class="step" id="step6">
-                            <div class="step-number">6</div>
-                            <div class="step-label">Review & Submit</div>
+                        <div class="col-md-8">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>College ID:</strong> <span id="viewCollegeId">COL2023001</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Email:</strong> <span id="viewEmail">rahul@example.com</span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Father's Name:</strong> <span id="viewFather">Rajesh Sharma</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Mother's Name:</strong> <span id="viewMother">Sunita Sharma</span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Year/Semester:</strong> <span id="viewYearSem">2nd Year / 3rd Semester</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Date of Birth:</strong> <span id="viewDob">15-05-2002</span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <strong>Address:</strong> 
+                                    <span id="viewAddress">123, Main Street, New Delhi, India - 110001</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Phone:</strong> <span id="viewPhone">+91 9876543210</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Joined:</strong> <span id="viewJoined">01-08-2021</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <form method="POST" action="{% url 'student' %}" id="multiStepForm">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="add">
-                        
-                        <!-- Step 1: Personal Information -->
-                        <div class="form-page active" id="page1">
-                            <div class="detail-grid">
-                                <div class="form-group">
-                                    <label for="name" class="form-label">Full Name</label>
-                                    <input type="text" id="name" name="name" class="form-control" required>
-                                    <div class="error-message" id="name-error">Please enter student's full name</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="father_name" class="form-label">Father's Name</label>
-                                    <input type="text" id="father_name" name="father_name" class="form-control" required>
-                                    <div class="error-message" id="father_name-error">Please enter father's name</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="mother_name" class="form-label">Mother's Name</label>
-                                    <input type="text" id="mother_name" name="mother_name" class="form-control" required>
-                                    <div class="error-message" id="mother_name-error">Please enter mother's name</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="occupation" class="form-label">Father's Occupation</label>
-                                    <input type="text" id="occupation" name="occupation" class="form-control" required>
-                                    <div class="error-message" id="occupation-error">Please enter Occupation</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="income" class="form-label">Income</label>
-                                    <input type="text" id="income" name="income" class="form-control" required>
-                                    <div class="error-message" id="income-error">Please enter Income</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="birthday" class="form-label">Date of Birth</label>
-                                    <input type="date" id="birthday" name="birthday" class="form-control" required>
-                                    <div class="error-message" id="birthday-error">Please select date of birth</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="gender" class="form-label">Gender</label>
-                                    <select id="gender" name="gender" class="form-control" required>
-                                        <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                    <div class="error-message" id="gender-error">Please select gender</div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="hideForm('addStudentForm')">
-                                    <i class="fas fa-times"></i> Cancel
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="validateStep(1)">
-                                    Next <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Step 2: Contact Details -->
-                        <div class="form-page" id="page2">
-                            <div class="detail-grid">
-                                <div class="form-group">
-                                    <label for="phone" class="form-label">Phone Number</label>
-                                    <input type="tel" id="phone" name="phone" class="form-control" required>
-                                    <div class="error-message" id="phone-error">Please enter a valid phone number</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="other_phone_no" class="form-label">Parent Phone No.</label>
-                                    <input type="tel" id="other_phone_no" name="other_phone_no" class="form-control" required>
-                                    <div class="error-message" id="other_phone_no-error">Please enter a valid phone number</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="email" class="form-label">Email Address</label>
-                                    <input type="email" id="email" name="email" class="form-control" required>
-                                    <div class="error-message" id="email-error">Please enter a valid email address</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="address" class="form-label">Street Address</label>
-                                    <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
-                                    <div class="error-message" id="address-error">Please enter address</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="city" class="form-label">City</label>
-                                    <input type="text" id="city" name="city" class="form-control" required>
-                                    <div class="error-message" id="city-error">Please enter city</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="state" class="form-label">State</label>
-                                    <input type="text" id="state" name="state" class="form-control" required>
-                                    <div class="error-message" id="state-error">Please enter state</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="state_code" class="form-label">State Code</label>
-                                    <input type="text" id="state_code" name="state_code" class="form-control" required>
-                                    <div class="error-message" id="state_code-error">Please enter state code</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="country" class="form-label">Country</label>
-                                    <input type="text" id="country" name="country" class="form-control" value="India" required>
-                                    <div class="error-message" id="country-error">Please enter country</div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="prevStep(2)">
-                                    <i class="fas fa-arrow-left"></i> Previous
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="validateStep(2)">
-                                    Next <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Step 3: Academic Information -->
-                        <div class="form-page" id="page3">
-                            <div class="detail-grid">
-                                <div class="form-group">
-                                    <label for="course" class="form-label">Course</label>
-                                    <select id="course" name="course" class="form-control" required>
-                                        <option value="">-- Select Course --</option>
-                                        <option value="B.Com">Bachelor of Commerce</option>
-                                        <option value="B.Sc">Bachelor of Science</option>
-                                        <option value="B.A">Bachelor of Arts</option>
-                                        <option value="B.C.A">Bachelor of Computer Application</option>
-                                        <option value="B.B.A">Bachelor of Business Administration</option>
-                                    </select>
-                                    <div class="error-message" id="course-error">Please select course</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="date_of_joining" class="form-label">Date of Joining</label>
-                                    <input type="date" id="date_of_joining" name="date_of_joining" class="form-control" required>
-                                    <div class="error-message" id="date_of_joining-error">Please select date of joining</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="tenth_percent" class="form-label">10th Percentage</label>
-                                    <input type="number" id="tenth_percent" name="tenth_percent" min="0" max="100" step="0.01" class="form-control" required>
-                                    <div class="error-message" id="tenth_percent-error">Please enter valid percentage (0-100)</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="twelfth_percent" class="form-label">12th Percentage</label>
-                                    <input type="number" id="twelfth_percent" name="twelfth_percent" min="0" max="100" step="0.01" class="form-control" required>
-                                    <div class="error-message" id="twelfth_percent-error">Please enter valid percentage (0-100)</div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="prevStep(3)">
-                                    <i class="fas fa-arrow-left"></i> Previous
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="validateStep(3)">
-                                    Next <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 4: Government IDs Information -->
-                        <div class="form-page" id="page4">
-                            <div class="detail-grid">
-                                <div class="form-group">
-                                    <label for="adhar_no" class="form-label">Adhar Number</label>
-                                    <input type="text" id="adhar_no" name="adhar_no" class="form-control" required>
-                                    <div class="error-message" id="adhar_no-error">Please enter adhar number</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="pan_no" class="form-label">PAN ID</label>
-                                    <input type="pan_no" id="pan_no" name="pan_no" class="form-control" required>
-                                    <div class="error-message" id="pan_no-error">Please select Pan Number</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="family_id" class="form-label">Family ID No.</label>
-                                    <input type="text" id="family_id" name="family_id" class="form-control" required>
-                                    <div class="error-message" id="family_id-error">Please enter valid family id</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="family_id_phone_no" class="form-label">Family ID Mobile No.</label>
-                                    <input type="text" id="family_id_phone_no" name="family_id_phone_no" class="form-control" required>
-                                    <div class="error-message" id="family_id_phone_no-error">Please enter valid mobile no.</div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="prevStep(4)">
-                                    <i class="fas fa-arrow-left"></i> Previous
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="validateStep(4)">
-                                    Next <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 5: Caste & National Indentity Information -->
-                        <div class="form-page" id="page5">
-                            <div class="detail-grid">
-                                <div class="form-group">
-                                    <label for="category" class="form-label">Category</label>
-                                    <select id="category" name="category" class="form-control" required>
-                                        <option value="">-- Select Category --</option>
-                                        <option value="General">General</option>
-                                        <option value="BC(A)">BC(A)</option>
-                                        <option value="BC(B)">BC(B)</option>
-                                        <option value="SC">SC</option>
-                                        <option value="ST">ST</option>
-                                        <option value="Others">Others</option>
-                                    </select>
-                                    <div class="error-message" id="category-error">Please select category</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="nationality" class="form-label">Nationality</label>
-                                    <select id="nationality" name="nationality" class="form-control" required>
-                                        <option value="">-- Select Nationality --</option>
-                                        <option value="Indian">Indian</option>
-                                        <option value="NRI">NRI</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                    <div class="error-message" id="nationality-error">Please select nationality</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="religion" class="form-label">Religion</label>
-                                    <select id="religion" name="religion" class="form-control" required>
-                                        <option value="">-- Select Religion --</option>
-                                        <option value="Hindu">Hindu</option>
-                                        <option value="Muslim">Muslim</option>
-                                        <option value="Sikh">Sikh</option>
-                                        <option value="Christan">Christan</option>
-                                        <option value="Jain">Jain</option>
-                                        <option value="Buddhist">Buddhist</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                    <div class="error-message" id="religion-error">Please select religion</div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="martial_status" class="form-label">Martial Status</label>
-                                    <select id="martial_status" name="martial_status" class="form-control" required>
-                                        <option value="">-- Martial Status --</option>
-                                        <option value="Married">Married</option>
-                                        <option value="Unmarried">Unmarried</option>
-                                    </select>
-                                    <div class="error-message" id="martial_status-error">Please select martial staus</div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="prevStep(5)">
-                                    <i class="fas fa-arrow-left"></i> Previous
-                                </button>
-                                <button type="button" class="btn btn-primary" onclick="validateStep(5)">
-                                    Next <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Step 6: Review and Submit -->
-                        <div class="form-page" id="page6">
-                            <div class="review-container">
-                                <!-- Personal Information Section -->
-                                <div class="section-card">
-                                    <div class="section-header">
-                                        <i class="fas fa-user"></i>
-                                        Personal Information
-                                    </div>
-                                    <div class="section-body">
-                                        <div class="detail-row">
-                                            <span class="detail-label">Full Name:</span>
-                                            <span class="detail-value" id="review-name"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Father's Name:</span>
-                                            <span class="detail-value" id="review-father"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Mother's Name:</span>
-                                            <span class="detail-value" id="review-mother"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Father's Occupation:</span>
-                                            <span class="detail-value" id="review-occupation"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Income:</span>
-                                            <span class="detail-value" id="review-income"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Date of Birth:</span>
-                                            <span class="detail-value" id="review-birthday"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Gender:</span>
-                                            <span class="detail-value" id="review-gender"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Contact Information Section -->
-                                <div class="section-card">
-                                    <div class="section-header">
-                                        <i class="fas fa-address-card"></i>
-                                        Contact Details
-                                    </div>
-                                    <div class="section-body">
-                                        <div class="detail-row">
-                                            <span class="detail-label">Phone:</span>
-                                            <span class="detail-value" id="review-phone"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label"> Parent Phone:</span>
-                                            <span class="detail-value" id="review-other_phone_no"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Email:</span>
-                                            <span class="detail-value" id="review-email"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Address:</span>
-                                            <span class="detail-value" id="review-address"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Academic Information Section -->
-                                <div class="section-card">
-                                    <div class="section-header">
-                                        <i class="fas fa-graduation-cap"></i>
-                                        Academic Information
-                                    </div>
-                                    <div class="section-body">
-                                        <div class="detail-row">
-                                            <span class="detail-label">Course:</span>
-                                            <span class="detail-value" id="review-course"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Admission Date:</span>
-                                            <span class="detail-value" id="review-admission"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">10th Percentage:</span>
-                                            <span class="detail-value" id="review-tenth"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">12th Percentage:</span>
-                                            <span class="detail-value" id="review-twelth"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Government IDs Information -->
-                                <div class="section-card">
-                                    <div class="section-header">
-                                        <i class="fas fa-graduation-cap"></i>
-                                        Government IDs Information
-                                    </div>
-                                    <div class="section-body">
-                                        <div class="detail-row">
-                                            <span class="detail-label">Adhar Number:</span>
-                                            <span class="detail-value" id="review-adhar_no"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">PAN ID:</span>
-                                            <span class="detail-value" id="review-pan_no"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Family ID:</span>
-                                            <span class="detail-value" id="review-family_id"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Family ID Phone No.:</span>
-                                            <span class="detail-value" id="review-family_id_phone_no"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="section-card">
-                                    <div class="section-header">
-                                        <i class="fas fa-graduation-cap"></i>
-                                        Caste & National Indentity Information
-                                    </div>
-                                    <div class="section-body">
-                                        <div class="detail-row">
-                                            <span class="detail-label">Category:</span>
-                                            <span class="detail-value" id="review-category"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Nationality:</span>
-                                            <span class="detail-value" id="review-nationality"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Religion:</span>
-                                            <span class="detail-value" id="review-religion"></span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">Martial Status:</span>
-                                            <span class="detail-value" id="review-martial_status"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-outline" onclick="prevStep(6)">
-                                    <i class="fas fa-arrow-left"></i> Previous
-                                </button>
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-check"></i> Submit
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="progress-text" id="progressText">Step 1 of 6 - Personal Information</div>
-                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Edit Details</button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- View Student Form -->
-            <div class="card" id="viewStudentForm" style="display: none;">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-search"></i>
-                        Find Student
-                    </h2>
-                    <button class="btn btn-icon btn-outline" onclick="hideForm('viewStudentForm')">
-                        <i class="fas fa-times"></i>
-                    </button>
+    <!-- Edit Student Modal -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Student Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'student' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="view">
-                        <div class="form-group">
-                            <label for="searchRollNumber" class="form-label">Enter Roll Number</label>
-                            <input type="text" id="searchRollNumber" name="college_id" class="form-control" placeholder="e.g. STU2023001" required>
+                <div class="modal-body">
+                    <form id="editStudentForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="editName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editCollegeId" class="form-label">College ID</label>
+                                <input type="text" class="form-control" id="editCollegeId" required>
+                            </div>
                         </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="hideForm('viewStudentForm')">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Search
-                            </button>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editFather" class="form-label">Father's Name</label>
+                                <input type="text" class="form-control" id="editFather" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editMother" class="form-label">Mother's Name</label>
+                                <input type="text" class="form-control" id="editMother" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="editCourse" class="form-label">Course</label>
+                                <select class="form-select" id="editCourse" required>
+                                    <option value="btech">B.Tech</option>
+                                    <option value="mba">MBA</option>
+                                    <option value="mca">MCA</option>
+                                    <option value="bca">BCA</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="editYear" class="form-label">Year</label>
+                                <select class="form-select" id="editYear" required>
+                                    <option value="1">1st Year</option>
+                                    <option value="2">2nd Year</option>
+                                    <option value="3">3rd Year</option>
+                                    <option value="4">4th Year</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="editSemester" class="form-label">Semester</label>
+                                <select class="form-select" id="editSemester" required>
+                                    <option value="1">Semester 1</option>
+                                    <option value="2">Semester 2</option>
+                                    <option value="3">Semester 3</option>
+                                    <option value="4">Semester 4</option>
+                                    <option value="5">Semester 5</option>
+                                    <option value="6">Semester 6</option>
+                                    <option value="7">Semester 7</option>
+                                    <option value="8">Semester 8</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="editPhone" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAddress" class="form-label">Address</label>
+                            <textarea class="form-control" id="editAddress" rows="3" required></textarea>
                         </div>
                     </form>
                 </div>
-            </div>
-
-            <!-- Student Details -->
-            {% if student %}
-            <div class="card student-details active" id="studentDetails">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-user"></i>
-                        Student Details
-                    </h2>
-                    <button class="btn btn-icon btn-outline" onclick="hideStudentDetails()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="photo-section">
-                        <div class="photo-container">
-                            <img src="https://ui-avatars.com/api/?name={{ student.name }}&background=4f46e5&color=fff&size=120" alt="Student Photo" class="student-photo">
-                        </div>
-                        <div class="photo-actions">
-                            <button class="btn btn-icon btn-primary">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                            <button class="btn btn-icon btn-secondary">
-                                <i class="fas fa-upload"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="review-container">
-                        <!-- Personal Information Section -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <i class="fas fa-user"></i>
-                                Personal Information
-                            </div>
-                            <div class="section-body">
-                                <div class="detail-row">
-                                    <span class="detail-label">Full Name:</span>
-                                    <span class="detail-value">{{ student.name }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Father's Name:</span>
-                                    <span class="detail-value">{{ student.father_name }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Mother's Name:</span>
-                                    <span class="detail-value">{{ student.mother_name }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Occupation:</span>
-                                    <span class="detail-value">{{ student.occupation }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Income:</span>
-                                    <span class="detail-value">{{ student.income }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Date of Birth:</span>
-                                    <span class="detail-value">{{ student.birthday }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Gender:</span>
-                                    <span class="detail-value">{{ student.gender }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Contact Information Section -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <i class="fas fa-address-card"></i>
-                                Contact Details
-                            </div>
-                            <div class="section-body">
-                                <div class="detail-row">
-                                    <span class="detail-label">Phone:</span>
-                                    <span class="detail-value">{{ student.phone }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label"> Parent Phone No.:</span>
-                                    <span class="detail-value">{{ student.other_phone_no }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Email:</span>
-                                    <span class="detail-value">{{ student.email }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Address:</span>
-                                    <span class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}, {{ student.country }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Academic Information Section -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <i class="fas fa-graduation-cap"></i>
-                                Academic Information
-                            </div>
-                            <div class="section-body">
-                                <div class="detail-row">
-                                    <span class="detail-label">Course:</span>
-                                    <span class="detail-value">{{ student.course }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Semester:</span>
-                                    <span class="detail-value">{{ student.semester }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Year:</span>
-                                    <span class="detail-value">{{ student.year }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Admission Date:</span>
-                                    <span class="detail-value">{{ student.date_of_joining }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">10th Percentage:</span>
-                                    <span class="detail-value">{{ student.tenth_percent }}%</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">12th Percentage:</span>
-                                    <span class="detail-value">{{ student.twelfth_percent }}%</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Status:</span>
-                                    <span class="detail-value">
-                                        <span class="badge" style="background: var(--success); color: white; padding: 0.25rem 0.5rem; border-radius: var(--border-radius);">
-                                            <i class="fas fa-check-circle"></i> Active
-                                        </span>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Government IDs Section -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <i class="fas fa-graduation-cap"></i>
-                                Government IDs Information
-                            </div>
-                            <div class="section-body">
-                                <div class="detail-row">
-                                    <span class="detail-label">Adhar Number:</span>
-                                    <span class="detail-value">{{ student.adhar_no }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">PAN ID:</span>
-                                    <span class="detail-value">{{ student.pan_no }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Family ID:</span>
-                                    <span class="detail-value">{{ student.family_id }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Family ID Phone No.:</span>
-                                    <span class="detail-value">{{ student.family_id_phone_no }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Caste & National Identity Section -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <i class="fas fa-graduation-cap"></i>
-                                Caste & National Identity Information
-                            </div>
-                            <div class="section-body">
-                                <div class="detail-row">
-                                    <span class="detail-label">Category:</span>
-                                    <span class="detail-value">{{ student.category }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Nationality:</span>
-                                    <span class="detail-value">{{ student.nationality }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Religion:</span>
-                                    <span class="detail-value">{{ student.religion }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Martial Status:</span>
-                                    <span class="detail-value">{{ student.martial_status }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- login Information Section -->
-                        <div class="section-card">
-                            <div class="section-header">
-                                <i class="fas fa-graduation-cap"></i>
-                                Login Information
-                            </div>
-                            <div class="section-body">
-                                <div class="detail-row">
-                                    <span class="detail-label">Username:</span>
-                                    <span class="detail-value">{{ student.username }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">User ID:</span>
-                                    <span class="detail-value">{{ student.user_id }}</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Password:</span>
-                                    <span class="detail-value">{{ student.password }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button class="btn btn-outline" onclick="hideStudentDetails()">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </button>
-                        <button class="btn btn-primary" id="editStudentBtn" onclick="showEditForm('{{ student.college_id }}')">
-                            <i class="fas fa-edit"></i> Edit Details
-                        </button>
-                        <button class="btn btn-danger" onclick="showDeleteModal('{{ student.college_id }}', '{{ student.name }}', '{{ student.course }}')">
-                            <i class="fas fa-trash"></i> Delete Record
-                        </button>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveStudentBtn">Save Changes</button>
                 </div>
             </div>
-            {% endif %}
+        </div>
+    </div>
 
-            <!-- Edit Student Form -->
-            {% if student %}
-            <div class="card" id="editStudentForm" style="display: none;">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-edit"></i>
-                        Edit Student Details
-                    </h2>
-                    <button class="btn btn-icon btn-outline" onclick="hideForm('editStudentForm')">
-                        <i class="fas fa-times"></i>
-                    </button>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="card-body">
-                    <form method="POST" action="{% url 'student' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="alter">
-                        <input type="hidden" name="college_id" value="{{ student.college_id }}">
-                        
-                        <div class="review-container">
-                            <!-- Personal Information Section -->
-                            <div class="section-card">
-                                <div class="section-header">
-                                    <i class="fas fa-user"></i>
-                                    Personal Information
-                                </div>
-                                <div class="section-body">
-                                    <div class="form-group">
-                                        <label for="editRollNumber" class="form-label">Roll Number</label>
-                                        <input type="text" id="editRollNumber" class="form-control" value="{{ student.college_id }}" readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editName" class="form-label">Full Name</label>
-                                        <input type="text" id="editName" name="name" class="form-control" value="{{ student.name }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editFatherName" class="form-label">Father's Name</label>
-                                        <input type="text" id="editFatherName" name="father_name" class="form-control" value="{{ student.father_name }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editMotherName" class="form-label">Mother's Name</label>
-                                        <input type="text" id="editMotherName" name="mother_name" class="form-control" value="{{ student.mother_name }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editBirthday" class="form-label">Date of Birth</label>
-                                        <input type="date" id="editBirthday" name="birthday" class="form-control" value="{{ student.birthday|date:'Y-m-d' }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editGender" class="form-label">Gender</label>
-                                        <select id="editGender" name="gender" class="form-control" required>
-                                            <option value="Male" {% if student.gender == 'Male' %}selected{% endif %}>Male</option>
-                                            <option value="Female" {% if student.gender == 'Female' %}selected{% endif %}>Female</option>
-                                            <option value="Other" {% if student.gender == 'Other' %}selected{% endif %}>Other</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the selected student(s)? This action cannot be undone.</p>
+                    <div id="deleteStudentsList"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                            <!-- Contact Information Section -->
-                            <div class="section-card">
-                                <div class="section-header">
-                                    <i class="fas fa-address-card"></i>
-                                    Contact Details
-                                </div>
-                                <div class="section-body">
-                                    <div class="form-group">
-                                        <label for="editPhone" class="form-label">Phone Number</label>
-                                        <input type="tel" id="editPhone" name="phone" class="form-control" value="{{ student.phone }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editPhone" class="form-label">Parent Number</label>
-                                        <input type="tel" id="editPhone" name="other_phone_no" class="form-control" value="{{ student.other_phone_no }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editEmail" class="form-label">Email Address</label>
-                                        <input type="email" id="editEmail" name="email" class="form-control" value="{{ student.email }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editAddress" class="form-label">Address</label>
-                                        <textarea id="editAddress" name="address" class="form-control" rows="3" required>{{ student.address }}</textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editCity" class="form-label">City</label>
-                                        <input type="text" id="editCity" name="city" class="form-control" value="{{ student.city }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editState" class="form-label">State</label>
-                                        <input type="text" id="editState" name="state" class="form-control" value="{{ student.state }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editStateCode" class="form-label">State Code</label>
-                                        <input type="text" id="editStateCode" name="state_code" class="form-control" value="{{ student.state_code }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editCountry" class="form-label">Country</label>
-                                        <input type="text" id="editCountry" name="country" class="form-control" value="{{ student.country }}" required>
-                                    </div>
-                                </div>
-                            </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
 
-                            <!-- Academic Information Section -->
-                            <div class="section-card">
-                                <div class="section-header">
-                                    <i class="fas fa-graduation-cap"></i>
-                                    Academic Information
-                                </div>
-                                <div class="section-body">
-                                    <div class="form-group">
-                                        <label for="editCourse" class="form-label">Course</label>
-                                        <select id="editCourse" name="course" class="form-control" required>
-                                            <option value="B.Com" {% if student.course == 'B.Com' %}selected{% endif %}>Bachelor of Commerce</option>
-                                            <option value="B.Sc" {% if student.course == 'B.Sc' %}selected{% endif %}>Bachelor of Science</option>
-                                            <option value="B.A" {% if student.course == 'B.A' %}selected{% endif %}>Bachelor of Arts</option>
-                                            <option value="B.C.A" {% if student.course == 'B.C.A' %}selected{% endif %}>Bachelor of Computer Application</option>
-                                            <option value="B.B.A" {% if student.course == 'B.B.A' %}selected{% endif %}>Bachelor of Business Administration</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editSemester" class="form-label">Semester</label>
-                                        <input type="text" id="editSemester" name="semester" class="form-control" value="{{ student.semester }}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="editYear" class="form-label">Year</label>
-                                        <input type="text" id="editYear" name="year" class="form-control" value="{{ student.year }}" required>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-outline" onclick="hideForm('editStudentForm')">
-                                <i class="fas fa-times"></i> Cancel
-                            </button>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-check"></i> Save Changes
-                            </button>
-                        </div>
-                    </
+            // View student details
+            $('.btn-view').click(function() {
+                const studentId = $(this).data('id');
+                // In a real application, you would fetch student data from the server
+                // Here we're just showing static data for demonstration
+                $('#viewStudentModal').modal('show');
+            });
+
+            // Edit student
+            $('.btn-edit').click(function() {
+                const studentId = $(this).data('id');
+                // In a real application, you would fetch student data from the server
+                // Here we're just showing static data for demonstration
+                $('#editStudentModal').modal('show');
+            });
+
+            // Delete student
+            $('.btn-delete').click(function() {
+                const studentId = $(this).data('id');
+                const studentName = $(this).closest('tr').find('td:eq(3)').text();
+                
+                $('#deleteStudentsList').html(`<p><strong>${studentName}</strong> (ID: ${studentId})</p>`);
+                $('#deleteConfirmModal').data('id', studentId);
+                $('#deleteConfirmModal').modal('show');
+            });
+
+            // Confirm delete
+            $('#confirmDeleteBtn').click(function() {
+                const studentId = $('#deleteConfirmModal').data('id');
+                // In a real application, you would send a delete request to the server
+                showMessage(`Student with ID ${studentId} has been deleted successfully.`, 'success');
+                $('#deleteConfirmModal').modal('hide');
+            });
+
+            // Select all checkbox
+            $('#selectAll').change(function() {
+                $('.student-checkbox').prop('checked', this.checked);
+            });
+
+            // Edit selected students
+            $('#editSelected').click(function() {
+                const selectedIds = [];
+                $('.student-checkbox:checked').each(function() {
+                    selectedIds.push($(this).data('id'));
+                });
+                
+                if (selectedIds.length === 0) {
+                    showMessage('Please select at least one student to edit.', 'warning');
+                    return;
+                }
+                
+                // In a real application, you would open a bulk edit modal or page
+                showMessage(`Editing ${selectedIds.length} selected students.`, 'info');
+            });
+
+            // Delete selected students
+            $('#deleteSelected').click(function() {
+                const selectedIds = [];
+                const selectedNames = [];
+                
+                $('.student-checkbox:checked').each(function() {
+                    const id = $(this).data('id');
+                    const name = $(this).closest('tr').find('td:eq(3)').text();
+                    selectedIds.push(id);
+                    selectedNames.push(name);
+                });
+                
+                if (selectedIds.length === 0) {
+                    showMessage('Please select at least one student to delete.', 'warning');
+                    return;
+                }
+                
+                let deleteListHtml = '<ul>';
+                selectedNames.forEach(name => {
+                    deleteListHtml += `<li>${name}</li>`;
+                });
+                deleteListHtml += '</ul>';
+                
+                $('#deleteStudentsList').html(deleteListHtml);
+                $('#deleteConfirmModal').data('ids', selectedIds);
+                $('#deleteConfirmModal').modal('show');
+            });
+
+            // Export selected students
+            $('#exportSelected').click(function() {
+                const selectedIds = [];
+                $('.student-checkbox:checked').each(function() {
+                    selectedIds.push($(this).data('id'));
+                });
+                
+                if (selectedIds.length === 0) {
+                    showMessage('Please select at least one student to export.', 'warning');
+                    return;
+                }
+                
+                // In a real application, you would make a request to export data
+                showMessage(`Exporting ${selectedIds.length} selected students.`, 'info');
+            });
+
+            // Filter students
+            $('#filterBtn').click(function() {
+                const course = $('#course').val();
+                const year = $('#year').val();
+                const semester = $('#semester').val();
+                const collegeId = $('#college_id').val();
+                
+                $('#loading').show();
+                
+                // In a real application, you would send a request to the server
+                // Here we're just simulating a delay
+                setTimeout(() => {
+                    $('#loading').hide();
+                    showMessage(`Filtered by: Course=${course}, Year=${year}, Semester=${semester}, ID=${collegeId}`, 'success');
+                }, 1000);
+            });
+
+            // Show message function
+            function showMessage(message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : 
+                                  type === 'warning' ? 'alert-warning' : 
+                                  type === 'info' ? 'alert-info' : 'alert-danger';
+                
+                const alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                $('#messageContainer').html(alertHtml);
+                
+                // Auto dismiss after 5 seconds
+                setTimeout(() => {
+                    $('.alert').alert('close');
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

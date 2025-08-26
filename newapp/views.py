@@ -321,6 +321,11 @@ from django.shortcuts import render, redirect
 from .models import Student
 from django.contrib import messages
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Student
+from django.db import models
+
 def student_functions(request):
     context = {}
 
@@ -330,6 +335,7 @@ def student_functions(request):
         # Add student
         if action == "add":
             try:
+                # Generate college ID
                 max_id = Student.objects.aggregate(max_id=models.Max('college_id'))['max_id']
                 
                 if max_id is None:
@@ -337,46 +343,50 @@ def student_functions(request):
                 else:
                     try:
                         # Extract numeric part and increment
-                        numeric_part = int(max_id[2:])  # Remove 'GK' prefix
+                        numeric_part = int(max_id[2:])  # Remove 'ST' prefix
                         college_id = f'ST{numeric_part + 1}'
                     except (ValueError, IndexError):
                         college_id = 'ST20250'  # Fallback if format is wrong
-                email=request.POST.get("email")
-                phone=request.POST.get("phone")
+                
+                email = request.POST.get("email")
+                phone = request.POST.get("phone")
+                
                 Student.objects.create(
-                    college_id = college_id,
+                    college_id=college_id,
                     name=request.POST.get("name"),
-                    father_name=request.POST.get("father_name"),
-                    mother_name=request.POST.get('mother_name'),
+                    last_name=request.POST.get("lastName"),
+                    father_name=request.POST.get("fathername"),
+                    mother_name=request.POST.get('mothername'),
                     occupation=request.POST.get('occupation'),
                     income=request.POST.get('income'),
                     email=email,
                     phone=phone,
-                    other_phone_no=request.POST.get("other_phone_no"),
+                    other_phone_no=request.POST.get("otherphone"),
                     gender=request.POST.get("gender"),
                     course=request.POST.get("course"),
+                    level=request.POST.get("education"),
                     birthday=request.POST.get("birthday"),
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
                     state=request.POST.get("state"),
-                    state_code=request.POST.get("state_code"),
-                    country=request.POST.get("coountry"),
-                    date_of_joining=request.POST.get("date_of_joining"),
-                    tenth_percent=request.POST.get("tenth_percent"),
-                    twelfth_percent=request.POST.get("twelfth_percent"),
-                    adhar_no=request.POST.get("adhar_no"),
-                    pan_no=request.POST.get("pan_no"),
-                    family_id=request.POST.get("family_id"),
-                    family_id_phone_no=request.POST.get("family_id_phone_no"),
-                    category=request.POST.get("category"),
+                    state_code=request.POST.get("zipcode"),
+                    date_of_joining=request.POST.get("startDate"),
+                    tenth_percent=request.POST.get("tenthgpa"),
+                    twelfth_percent=request.POST.get("twelthgpa"),
+                    adhar_no=request.POST.get("adharno"),
+                    pan_no=request.POST.get("panno"),
+                    family_id=request.POST.get("familyid"),
+                    family_id_phone_no=request.POST.get("familyidphone"),
+                    category=request.POST.get("caste"),
                     nationality=request.POST.get("nationality"),
                     religion=request.POST.get("religion"),
-                    martial_status=request.POST.get("martial_status"),
+                    martial_status=request.POST.get("martialstatus"),
                     user_id=college_id, 
                     username=email,
                     password=phone,
                 )
-                messages.success(request, "Student added successfully!")
+                messages.success(request, f"Student added successfully with ID: {college_id}!")
+                return redirect('student')  # Redirect to avoid form resubmission
             except Exception as e:
                 messages.error(request, f"Error: {str(e)}")
 
@@ -387,7 +397,7 @@ def student_functions(request):
                 student = Student.objects.get(college_id=college_id)
                 context["student"] = student
             except Student.DoesNotExist:
-                messages.error(request, "No student found with this roll number.")
+                messages.error(request, "No student found with this college ID.")
 
         # Delete student
         elif action == "delete":
@@ -396,6 +406,7 @@ def student_functions(request):
                 student = Student.objects.get(college_id=college_id)
                 student.delete()
                 messages.success(request, "Student deleted successfully.")
+                return redirect('student')  # Redirect to avoid form resubmission
             except Student.DoesNotExist:
                 messages.error(request, "Student not found.")
 
@@ -404,30 +415,40 @@ def student_functions(request):
             try:
                 student = Student.objects.get(college_id=request.POST.get("college_id"))
                 student.name = request.POST.get("name")
-                student.father_name = request.POST.get("father_name")
-                student.mother_name = request.POST.get("mother_name")
+                student.last_name = request.POST.get("lastName")
+                student.father_name = request.POST.get("fathername")
+                student.mother_name = request.POST.get("mothername")
                 student.occupation = request.POST.get("occupation")
                 student.income = request.POST.get("income")
                 student.email = request.POST.get("email")
                 student.phone = request.POST.get("phone")
-                student.other_phone_no = request.POST.get("other_phone_no")
+                student.other_phone_no = request.POST.get("otherphone")
                 student.gender = request.POST.get("gender")
                 student.course = request.POST.get("course")
+                student.level = request.POST.get("education")
                 student.birthday = request.POST.get("birthday")
                 student.address = request.POST.get("address")
-                student.semester = request.POST.get("semester")
-                student.year = request.POST.get("year")
                 student.city = request.POST.get("city")
                 student.state = request.POST.get("state")
-                student.country = request.POST.get("country",'India')
-                student.state_code = request.POST.get("state_code")
+                student.state_code = request.POST.get("zipcode")
+                student.date_of_joining = request.POST.get("startDate")
+                student.tenth_percent = request.POST.get("tenthgpa")
+                student.twelfth_percent = request.POST.get("twelthgpa")
+                student.adhar_no = request.POST.get("adharno")
+                student.pan_no = request.POST.get("panno")
+                student.family_id = request.POST.get("familyid")
+                student.family_id_phone_no = request.POST.get("familyidphone")
+                student.category = request.POST.get("caste")
+                student.nationality = request.POST.get("nationality")
+                student.religion = request.POST.get("religion")
+                student.martial_status = request.POST.get("martialstatus")
                 student.save()
-                messages.success(request, "Student details updated.")
+                messages.success(request, "Student details updated successfully.")
+                return redirect('student')  # Redirect to avoid form resubmission
             except Student.DoesNotExist:
                 messages.error(request, "Student not found.")
 
     return render(request, "student/student_page.html", context)
-
 #  for multiple student filtering
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
