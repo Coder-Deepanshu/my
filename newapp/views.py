@@ -317,15 +317,6 @@ def logout_view(request):
     return redirect('login')
 
 # for single students operations 
-from django.shortcuts import render, redirect
-from .models import Student
-from django.contrib import messages
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Student
-from django.db import models
-
 def student_functions(request):
     context = {}
 
@@ -351,6 +342,13 @@ def student_functions(request):
                 email = request.POST.get("email")
                 phone = request.POST.get("phone")
                 
+                # Convert tenth and twelfth percent to Decimal
+                tenth_percent = Decimal(request.POST.get("tenthgpa", 0))
+                twelfth_percent = Decimal(request.POST.get("twelthgpa", 0))
+                
+                # Convert adhar_no to BigInteger
+                adhar_no = int(request.POST.get("adharno", 0))
+                
                 Student.objects.create(
                     college_id=college_id,
                     name=request.POST.get("name"),
@@ -371,9 +369,9 @@ def student_functions(request):
                     state=request.POST.get("state"),
                     state_code=request.POST.get("zipcode"),
                     date_of_joining=request.POST.get("startDate"),
-                    tenth_percent=request.POST.get("tenthgpa"),
-                    twelfth_percent=request.POST.get("twelthgpa"),
-                    adhar_no=request.POST.get("adharno"),
+                    tenth_percent=tenth_percent,
+                    twelfth_percent=twelfth_percent,
+                    adhar_no=adhar_no,
                     pan_no=request.POST.get("panno"),
                     family_id=request.POST.get("familyid"),
                     family_id_phone_no=request.POST.get("familyidphone"),
@@ -384,9 +382,12 @@ def student_functions(request):
                     user_id=college_id, 
                     username=email,
                     password=phone,
+                    semester=1,  # Default value
+                    year=1,     # Default value
+                    country="India"  # Default value
                 )
                 messages.success(request, f"Student added successfully with ID: {college_id}!")
-                return redirect('student')  # Redirect to avoid form resubmission
+                return redirect(reverse('student_function') + '?success=true')  # Redirect to avoid form resubmission
             except Exception as e:
                 messages.error(request, f"Error: {str(e)}")
 
@@ -406,7 +407,7 @@ def student_functions(request):
                 student = Student.objects.get(college_id=college_id)
                 student.delete()
                 messages.success(request, "Student deleted successfully.")
-                return redirect('student')  # Redirect to avoid form resubmission
+                return redirect('student_function')  # Redirect to avoid form resubmission
             except Student.DoesNotExist:
                 messages.error(request, "Student not found.")
 
@@ -416,52 +417,34 @@ def student_functions(request):
                 student = Student.objects.get(college_id=request.POST.get("college_id"))
                 student.name = request.POST.get("name")
                 student.last_name = request.POST.get("lastName")
-                student.father_name = request.POST.get("fathername")
-                student.mother_name = request.POST.get("mothername")
-                student.occupation = request.POST.get("occupation")
-                student.income = request.POST.get("income")
+                student.father_name = request.POST.get("father_name")
+                student.mother_name = request.POST.get("mother_name")
                 student.email = request.POST.get("email")
                 student.phone = request.POST.get("phone")
-                student.other_phone_no = request.POST.get("otherphone")
-                student.gender = request.POST.get("gender")
-                student.course = request.POST.get("course")
-                student.level = request.POST.get("education")
-                student.birthday = request.POST.get("birthday")
+                student.other_phone_no = request.POST.get("other_phone")
                 student.address = request.POST.get("address")
                 student.city = request.POST.get("city")
                 student.state = request.POST.get("state")
-                student.state_code = request.POST.get("zipcode")
-                student.date_of_joining = request.POST.get("startDate")
-                student.tenth_percent = request.POST.get("tenthgpa")
-                student.twelfth_percent = request.POST.get("twelthgpa")
-                student.adhar_no = request.POST.get("adharno")
-                student.pan_no = request.POST.get("panno")
-                student.family_id = request.POST.get("familyid")
-                student.family_id_phone_no = request.POST.get("familyidphone")
-                student.category = request.POST.get("caste")
-                student.nationality = request.POST.get("nationality")
-                student.religion = request.POST.get("religion")
-                student.martial_status = request.POST.get("martialstatus")
+                student.state_code = request.POST.get("state_code")
                 student.save()
                 messages.success(request, "Student details updated successfully.")
-                return redirect('student')  # Redirect to avoid form resubmission
+                return redirect('student_function')  # Redirect to avoid form resubmission
             except Student.DoesNotExist:
                 messages.error(request, "Student not found.")
+            except Exception as e:
+                messages.error(request, f"Error: {str(e)}")
 
     return render(request, "student/student_page.html", context)
+
 #  for multiple student filtering
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
 from django.template.loader import render_to_string
-from .models import Student, Course
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib import messages
 
 def student_filter_page(request):
     try:
         # Get all courses from Course model (not from Student records)
         courses = Course.objects.all().values_list('name', flat=True)
-        return render(request, 'student/student_filter.html', {'courses': courses})
+        students = Student.objects.all()
+        return render(request, 'student/student_filter.html', {'courses': courses,'students':students})
     except Exception as e:
         messages.error(request, f"Error loading courses: {str(e)}")
         return render(request, 'student/student_filter.html', {'courses': []})
@@ -471,7 +454,7 @@ def get_course_details(request):
         course_name = request.GET.get('course_name')
         if not course_name:
             return JsonResponse({'error': 'Course name is required'}, status=400)
-            
+    
         course = Course.objects.get(name=course_name)
         return JsonResponse({
             'years': list(range(1, course.no_of_years + 1)),
@@ -487,7 +470,7 @@ def filter_students(request):
         'course': request.GET.get('course', 'all'),
         'year': request.GET.get('year', 'all'),
         'semester': request.GET.get('semester', 'all'),
-        'roll_no': request.GET.get('roll_no', '')
+        'college_id': request.GET.get('college_id', '')
     }
 
     students = Student.objects.all()
@@ -498,7 +481,7 @@ def filter_students(request):
         students = students.filter(year=filters['year'])
     if filters['semester'] != 'all':
         students = students.filter(semester=filters['semester'])
-    if filters['roll_no']:
+    if filters['college_id']:
         students = students.filter(college_id__icontains=filters['college_id'])
 
     html = render_to_string('student/student_result_partial.html', {'students': students})
@@ -548,15 +531,11 @@ def delete_students(request):
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-# for single faculty
-from django.db import models
-from django.contrib import messages
-from django.shortcuts import render
-from .models import Faculty,Admin
 
+# for  faculty management
+from django.db import models
 def faculty_functions(request):
     context = {}
-
     if request.method == "POST":
         action = request.POST.get("action")
 
@@ -576,16 +555,18 @@ def faculty_functions(request):
                     except (ValueError, IndexError):
                         college_id = 'GK20250'  # Fallback if format is wrong
                 email = request.POST.get("email")
-                phone =  request.POST.get("phone")        
+                phone =  request.POST.get("phone") 
+                adhar_no = int(request.POST.get("adharno", 0))       
                 # Create faculty with all required fields
                 Faculty.objects.create(
                     college_id=college_id,
                     name=request.POST.get("name"),
-                    father_name=request.POST.get("father_name"),
-                    mother_name=request.POST.get("mother_name"),
+                    last_name=request.POST.get("lastName"),
+                    father_name=request.POST.get("fathername"),
+                    mother_name=request.POST.get("mothername"),
                     email=email,
                     phone=phone,
-                    other_phone_no=request.POST.get("other_phone_no"),
+                    other_phone_no=request.POST.get("otherphone"),
                     position=request.POST.get("position"),
                     gender=request.POST.get("gender"),
                     department=request.POST.get("department"),
@@ -593,22 +574,22 @@ def faculty_functions(request):
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
                     state=request.POST.get("state"),
-                    state_code=request.POST.get("state_code"),
-                    country=request.POST.get("country", "India"),
-                    date_of_joining=request.POST.get("date_of_joining"),
+                    state_code=request.POST.get("zipcode"),
+                    date_of_joining=request.POST.get("startDate"),
                     experience=request.POST.get("experience"),
                     birthday=request.POST.get("birthday"),
-                    category=request.POST.get("category"),
+                    category=request.POST.get("caste"),
                     nationality=request.POST.get("nationality", "Indian"),
                     religion=request.POST.get("religion"),
-                    adhar_no=request.POST.get("adhar_no"),
-                    pan_no=request.POST.get("pan_no"),
-                    martial_status=request.POST.get("martial_status"),
+                    adhar_no=adhar_no,
+                    pan_no=request.POST.get("panno"),
+                    martial_status=request.POST.get("martialstatus"),
                     user_id=college_id, 
                     username=email,
                     password=phone,
+                    country='India'
                 )
-                messages.success(request, "Faculty added successfully!")
+                messages.success(request, F"Faculty added successfully with ID: {college_id}!")
             except Exception as e:
                 messages.error(request, f"Error adding faculty: {str(e)}")
 
@@ -643,27 +624,16 @@ def faculty_functions(request):
                 
                 # Update all fields
                 faculty.name = request.POST.get("name")
+                faculty.last_name = request.POST.get("lastName")
                 faculty.father_name = request.POST.get("father_name")
                 faculty.mother_name = request.POST.get("mother_name")
                 faculty.email = request.POST.get("email")
                 faculty.phone = request.POST.get("phone")
-                faculty.other_phone_no = request.POST.get("other_phone_no")
-                faculty.position = request.POST.get("position")
-                faculty.gender = request.POST.get("gender")
-                faculty.department = request.POST.get("department")
-                faculty.qualification = request.POST.get("qualification")
+                faculty.other_phone_no = request.POST.get("other_phone")
                 faculty.address = request.POST.get("address")
                 faculty.city = request.POST.get("city")
                 faculty.state = request.POST.get("state")
-                faculty.state_code = request.POST.get("state_code")
-                faculty.country = request.POST.get("country", "India")
-                faculty.date_of_joining = request.POST.get("date_of_joining")
-                faculty.experience = request.POST.get("experience")
-                faculty.birthday = request.POST.get("birthday")
-                faculty.adhar_no = request.POST.get("adhar_no")
-                faculty.pan_no = request.POST.get("pan_no")
-                faculty.martial_status = request.POST.get("martial_status")
-                
+                faculty.state_code = request.POST.get("state_code") 
                 faculty.save()
                 messages.success(request, "Faculty details updated successfully.")
             except Faculty.DoesNotExist:
@@ -673,6 +643,8 @@ def faculty_functions(request):
 
     return render(request, "faculty/faculty_page.html", context)
 
+
+# For admin management 
 from django.contrib.auth.models import User
 # for functions related to admin
 def admin_functions(request):
@@ -697,16 +669,18 @@ def admin_functions(request):
                     except (ValueError, IndexError):
                         college_id = 'AD20251'  # Fallback if format is wrong
                 email = request.POST.get("email")
-                phone =  request.POST.get("phone")        
+                phone =  request.POST.get("phone")  
+                adhar_no = int(request.POST.get("adharno", 0))       
                 # Create admin with all required fields
                 Admin.objects.create(
                     college_id=college_id,
                     name=request.POST.get("name"),
-                    father_name=request.POST.get("father_name"),
-                    mother_name=request.POST.get("mother_name"),
+                    last_name=request.POST.get("lastName"),
+                    father_name=request.POST.get("fathername"),
+                    mother_name=request.POST.get("mothername"),
                     email=email,
                     phone=phone,
-                    other_phone_no=request.POST.get("other_phone_no"),
+                    other_phone_no=request.POST.get("otherphone"),
                     position=request.POST.get("position"),
                     gender=request.POST.get("gender"),
                     department=request.POST.get("department"),
@@ -714,23 +688,23 @@ def admin_functions(request):
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
                     state=request.POST.get("state"),
-                    state_code=request.POST.get("state_code"),
+                    state_code=request.POST.get("zipcode"),
                     country=request.POST.get("country", "India"),
-                    date_of_joining=request.POST.get("date_of_joining"),
+                    date_of_joining=request.POST.get("startDate"),
                     experience=request.POST.get("experience"),
                     birthday=request.POST.get("birthday"),
-                    category=request.POST.get("category"),
+                    category=request.POST.get("caste"),
                     nationality=request.POST.get("nationality", "Indian"),
                     religion=request.POST.get("religion"),
-                    adhar_no=request.POST.get("adhar_no"),
-                    pan_no=request.POST.get("pan_no"),
-                    martial_status=request.POST.get("martial_status"),
+                    adhar_no=adhar_no,
+                    pan_no=request.POST.get("panno"),
+                    martial_status=request.POST.get("martialstatus"),
                     user_id=college_id, 
                     username=email,
                     password=phone,
                 )
                 User.objects.create_user(username=email,password=phone,is_staff=True,is_superuser=True)
-                messages.success(request, "Admin added successfully!")
+                messages.success(request, f"Admin added successfully with ID {college_id}!")
             except Exception as e:
                 messages.error(request, f"Error adding admin: {str(e)}")
 
@@ -768,26 +742,16 @@ def admin_functions(request):
                 
                 # Update all fields
                 admin.name = request.POST.get("name")
+                admin.last_name = request.POST.get("lastName")
                 admin.father_name = request.POST.get("father_name")
                 admin.mother_name = request.POST.get("mother_name")
                 admin.email = request.POST.get("email")
                 admin.phone = request.POST.get("phone")
-                admin.other_phone_no = request.POST.get("other_phone_no")
-                admin.position = request.POST.get("position")
-                admin.gender = request.POST.get("gender")
-                admin.department = request.POST.get("department")
-                admin.qualification = request.POST.get("qualification")
+                admin.other_phone_no = request.POST.get("other_phone")
                 admin.address = request.POST.get("address")
                 admin.city = request.POST.get("city")
                 admin.state = request.POST.get("state")
                 admin.state_code = request.POST.get("state_code")
-                admin.country = request.POST.get("country", "India")
-                admin.date_of_joining = request.POST.get("date_of_joining")
-                admin.experience = request.POST.get("experience")
-                admin.birthday = request.POST.get("birthday")
-                admin.adhar_no = request.POST.get("adhar_no")
-                admin.pan_no = request.POST.get("pan_no")
-                admin.martial_status = request.POST.get("martial_status")
                 
                 admin.save()
                 messages.success(request, "Admin details updated successfully.")

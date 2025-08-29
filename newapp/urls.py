@@ -24,7 +24,7 @@ urlpatterns = [
     path('Student/Dashboard/', views.dashboard2, name='dashboard2'), 
 
     # urls for student functions
-    path("student/", views.student_functions, name="student"),
+    path("Admin-Dashboard/Student-Management/", views.student_functions, name="student_function"),
     path('students/', views.student_filter_page,name='students'),
     path('get_course_details/', views.get_course_details),
     path('filter_students/', views.filter_students),
@@ -32,8 +32,8 @@ urlpatterns = [
     path('bulk_update_students/', views.bulk_update_students, name='bulk_update_students'),
 
     # urls for faculty functions 
-    path("faculty_functions/", views.faculty_functions, name="faculty_functions"),
-    path("admin_functions/", views.admin_functions, name="admin_functions"),
+    path("Admin-Dashboard/Faculty-Management/", views.faculty_functions, name="faculty_functions"),
+    path("Super-Admin/Admin-Management/", views.admin_functions, name="admin_functions"),
 
     # urls for profile
     path("Dashboard/Profile/", views.profile_details, name="profile_details"),

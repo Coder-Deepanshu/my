@@ -16,15 +16,16 @@
             --light: #f8f9fa;
             --dark: #212529;
             --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --transition: all 0.3s ease;
+            --light-gray: #f0f2f5;
+            --border-gray: #dee2e6;
             --student-color: #4361ee;
             --faculty-color: #f8961e;
             --admin-color: #e63946;
+            --transition: all 0.3s ease;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--light-gray);
             color: var(--dark);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
@@ -35,12 +36,11 @@
 
         /* Header Styles */
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 0;
             z-index: 1000;
-            backdrop-filter: blur(10px);
         }
 
         .navbar-brand {
@@ -76,7 +76,7 @@
 
         /* Login Section */
         .login-section {
-            padding: 40px 0;
+            padding: 60px 0;
             flex: 1;
             display: flex;
             align-items: center;
@@ -84,73 +84,35 @@
         }
 
         .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
             overflow: hidden;
             width: 100%;
-            max-width: 1000px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .login-left {
-            background: linear-gradient(to right, var(--student-color), var(--secondary));
-            color: white;
-            padding: 50px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .login-left::before {
-            content: '';
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .login-left::after {
-            content: '';
-            position: absolute;
-            bottom: -80px;
-            left: -80px;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            max-width: 900px;
         }
 
         .login-right {
-            padding: 50px;
-            position: relative;
+            padding: 40px;
         }
 
         .login-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: var(--dark);
-            transition: var(--transition);
         }
 
         .login-subtitle {
             color: var(--gray);
             margin-bottom: 30px;
+            font-size: 1rem;
         }
 
         .form-control {
-            padding: 15px 20px;
-            border: 2px solid var(--light-gray);
-            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
             margin-bottom: 20px;
             transition: var(--transition);
             font-size: 1rem;
@@ -158,108 +120,94 @@
 
         .form-control:focus {
             border-color: var(--student-color);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
         }
 
         .input-group-text {
             background: white;
-            border: 2px solid var(--light-gray);
-            border-left: none;
-            transition: var(--transition);
-        }
-
-        .form-control:focus + .input-group-text {
-            border-color: var(--student-color);
+            border: 1px solid var(--border-gray);
             border-left: none;
         }
 
         .role-selection {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 25px;
         }
 
         .role-btn {
             flex: 1;
             text-align: center;
-            padding: 15px 10px;
-            border: 2px solid var(--light-gray);
-            border-radius: 12px;
+            padding: 12px 8px;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.4s ease;
+            transition: var(--transition);
             background: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
         .role-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
 
         .role-btn.active {
             border-color: var(--student-color);
-            background: rgba(67, 97, 238, 0.1);
+            background: rgba(67, 97, 238, 0.05);
             color: var(--student-color);
-            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.2);
         }
 
         .role-btn.active.student {
             border-color: var(--student-color);
-            background: rgba(67, 97, 238, 0.1);
+            background: rgba(67, 97, 238, 0.05);
             color: var(--student-color);
         }
 
         .role-btn.active.faculty {
             border-color: var(--faculty-color);
-            background: rgba(248, 150, 30, 0.1);
+            background: rgba(248, 150, 30, 0.05);
             color: var(--faculty-color);
         }
 
         .role-btn.active.admin {
             border-color: var(--admin-color);
-            background: rgba(230, 57, 70, 0.1);
+            background: rgba(230, 57, 70, 0.05);
             color: var(--admin-color);
         }
 
         .role-btn i {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
+            font-size: 1.2rem;
+            margin-bottom: 6px;
             display: block;
-            transition: var(--transition);
         }
 
         .login-btn {
             background: var(--student-color);
             color: white;
             border: none;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 8px;
             font-weight: 600;
             width: 100%;
-            transition: all 0.4s ease;
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
-            font-size: 1.1rem;
+            transition: var(--transition);
+            font-size: 1rem;
         }
 
         .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
         }
 
         .login-btn.student {
             background: var(--student-color);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
         }
 
         .login-btn.faculty {
             background: var(--faculty-color);
-            box-shadow: 0 5px 15px rgba(248, 150, 30, 0.2);
         }
 
         .login-btn.admin {
             background: var(--admin-color);
-            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.2);
         }
 
         .divider {
@@ -272,7 +220,7 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: var(--light-gray);
+            background: var(--border-gray);
         }
 
         .divider span {
@@ -281,73 +229,27 @@
             font-size: 0.9rem;
         }
 
-        .social-login {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .social-btn {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid var(--light-gray);
-            border-radius: 10px;
-            background: white;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .social-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .social-btn i {
-            font-size: 1.2rem;
-        }
-
-        .login-feature {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .login-feature i {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 1.1rem;
+        .form-check-input:checked {
+            background-color: var(--student-color);
+            border-color: var(--student-color);
         }
 
         /* Alert Messages */
         .alert {
-            border-radius: 12px;
-            padding: 15px 20px;
+            border-radius: 8px;
+            padding: 12px 16px;
             margin-bottom: 20px;
             border: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
         .alert-danger {
             background: rgba(230, 57, 70, 0.1);
             color: #e63946;
-            border-left: 4px solid #e63946;
         }
 
         .alert-success {
             background: rgba(76, 201, 240, 0.1);
             color: #4cc9f0;
-            border-left: 4px solid #4cc9f0;
         }
 
         /* Footer */
@@ -355,14 +257,13 @@
             background: rgba(33, 37, 41, 0.95);
             color: white;
             padding: 30px 0 15px;
-            backdrop-filter: blur(10px);
         }
 
         .footer-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
             position: relative;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
         .footer-title::after {
@@ -370,8 +271,8 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 50px;
-            height: 3px;
+            width: 40px;
+            height: 2px;
             background: var(--primary);
         }
 
@@ -382,29 +283,29 @@
         }
 
         .footer-links li {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .footer-links a {
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             transition: var(--transition);
+            font-size: 0.9rem;
         }
 
         .footer-links a:hover {
             color: white;
-            padding-left: 5px;
         }
 
         .footer-social {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .footer-social a {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -416,68 +317,65 @@
 
         .footer-social a:hover {
             background: var(--primary);
-            transform: translateY(-3px);
         }
 
         .footer-bottom {
             text-align: center;
-            padding-top: 30px;
-            margin-top: 30px;
+            padding-top: 25px;
+            margin-top: 25px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
         }
 
         /* Modal */
         .modal-content {
-            border-radius: 20px;
+            border-radius: 12px;
             border: none;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
         }
 
         .modal-header {
-            border-bottom: 1px solid var(--light-gray);
-            padding: 20px 25px;
-            background: linear-gradient(to right, var(--student-color), var(--secondary));
-            color: white;
+            border-bottom: 1px solid var(--border-gray);
+            padding: 20px;
         }
 
         .modal-body {
-            padding: 25px;
+            padding: 20px;
         }
 
         .modal-footer {
-            border-top: 1px solid var(--light-gray);
-            padding: 20px 25px;
+            border-top: 1px solid var(--border-gray);
+            padding: 15px 20px;
         }
 
         /* Help Button */
         .help-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
+            bottom: 25px;
+            right: 25px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             background: var(--primary);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 20px rgba(67, 97, 238, 0.3);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
             z-index: 100;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             cursor: pointer;
         }
 
         .help-btn:hover {
-            transform: scale(1.1) rotate(10deg);
-            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
         }
 
         /* Floating Animation */
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
             100% { transform: translateY(0px); }
         }
 
@@ -487,27 +385,22 @@
 
         /* Responsive Styles */
         @media (max-width: 992px) {
-            .login-left {
-                padding: 40px;
-            }
-            
             .login-right {
-                padding: 40px;
+                padding: 35px;
             }
         }
 
         @media (max-width: 768px) {
             .login-container {
-                flex-direction: column;
                 margin: 20px;
             }
             
-            .login-left, .login-right {
+            .login-right {
                 padding: 30px;
             }
             
             .login-title {
-                font-size: 1.8rem;
+                font-size: 1.7rem;
             }
             
             .role-selection {
@@ -516,12 +409,8 @@
         }
 
         @media (max-width: 576px) {
-            .login-left, .login-right {
-                padding: 25px;
-            }
-            
-            .social-login {
-                flex-direction: column;
+            .login-right {
+                padding: 25px 20px;
             }
             
             .navbar-brand {
@@ -531,8 +420,12 @@
             .help-btn {
                 bottom: 20px;
                 right: 20px;
-                width: 50px;
-                height: 50px;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .footer {
+                padding: 25px 0 10px;
             }
         }
     </style>
@@ -576,159 +469,92 @@
     </header>
 
     <!-- Login Section -->
-    <section class="login-section" style="margin-left: 250px;">
+    <section class="login-section">
         <div class="container">
-            <div class="row login-container">
-                <div class="col-lg-6 login-left">
-                    <h2 class="mb-4 animate__animated animate__fadeInDown">Welcome to Edutrack</h2>
-                    <p class="mb-4 animate__animated animate__fadeInDown">Access your education management dashboard to track progress, manage courses, and connect with your institution.</p>
-                    
-                    <div class="login-features mt-5">
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Track academic performance with advanced analytics</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-book"></i>
-                            <span>Access all your courses and learning materials</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-users"></i>
-                            <span>Connect with faculty and fellow students</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-lock"></i>
-                            <span>Enterprise-grade security for your data</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-book"></i>
-                            <span>Access all your courses and learning materials</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-users"></i>
-                            <span>Connect with faculty and fellow students</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-lock"></i>
-                            <span>Enterprise-grade security for your data</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-lock"></i>
-                            <span>Enterprise-grade security for your data</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-book"></i>
-                            <span>Access all your courses and learning materials</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-users"></i>
-                            <span>Connect with faculty and fellow students</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-lock"></i>
-                            <span>Enterprise-grade security for your data</span>
-                        </div>
-                        <div class="login-feature animate__animated animate__fadeInLeft">
-                            <i class="fas fa-lock"></i>
-                            <span>Enterprise-grade security for your data</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 login-right">
-                    <h2 class="login-title animate__animated animate__fadeIn">Sign In</h2>
-                    <p class="login-subtitle animate__animated animate__fadeIn">Enter your credentials to access your account</p>
-                    
-                    <!-- Display Django messages -->
-                    {% if messages %}
-                    <div class="messages">
-                        {% for message in messages %}
-                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn">
-                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{ message }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Role Selection -->
-                    <div class="role-selection animate__animated animate__fadeIn">
-                        <div class="role-btn student active" data-role="student">
-                            <i class="fas fa-user-graduate"></i>
-                            <span>Student</span>
-                        </div>
-                        <div class="role-btn faculty" data-role="faculty">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Faculty</span>
-                        </div>
-                        <div class="role-btn admin" data-role="admin">
-                            <i class="fas fa-user-cog"></i>
-                            <span>Admin</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Login Form -->
-                    <form method="POST" id="loginForm" action="{% url 'login' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="role" id="role" value="student">
-                        
-                        <div class="mb-3 animate__animated animate__fadeIn">
-                            <label for="id_username" class="form-label">Username</label>
-                            <div class="input-group">
-                                <input type="text" name="username" id="id_username" 
-                                       class="form-control"
-                                       placeholder="Enter your username" required>
-                                <span class="input-group-text" style="height: 57.8px;"><i class="fas fa-user"></i></span>
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="login-container">
+                        <div class="login-right">
+                            <h2 class="login-title animate__animated animate__fadeIn">Sign In</h2>
+                            <p class="login-subtitle animate__animated animate__fadeIn">Enter your credentials to access your account</p>
+                            
+                            <!-- Display Django messages -->
+                            {% if messages %}
+                            <div class="messages">
+                                {% for message in messages %}
+                                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn">
+                                    <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{ message }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Role Selection -->
+                            <div class="role-selection animate__animated animate__fadeIn">
+                                <div class="role-btn student active" data-role="student">
+                                    <i class="fas fa-user-graduate"></i>
+                                    <span>Student</span>
+                                </div>
+                                <div class="role-btn faculty" data-role="faculty">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    <span>Faculty</span>
+                                </div>
+                                <div class="role-btn admin" data-role="admin">
+                                    <i class="fas fa-user-cog"></i>
+                                    <span>Admin</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Login Form -->
+                            <form method="POST" id="loginForm" action="{% url 'login' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="role" id="role" value="student">
+                                
+                                <div class="mb-3 animate__animated animate__fadeIn">
+                                    <label for="id_username" class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <input type="text" name="username" id="id_username" 
+                                               class="form-control"
+                                               placeholder="Enter your username" required>
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3 animate__animated animate__fadeIn">
+                                    <label for="id_user" class="form-label">User ID</label>
+                                    <div class="input-group">
+                                        <input type="text" name="userId" id="id_user" 
+                                               class="form-control"
+                                               placeholder="Enter your user ID" required>
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3 animate__animated animate__fadeIn">
+                                    <label for="id_password" class="form-label">Password</label>
+                                    <div class="input-group">
+                                        <input type="password" name="password" id="id_password" 
+                                               class="form-control"
+                                               placeholder="Enter your password" required>
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3 form-check animate__animated animate__fadeIn">
+                                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                                    <a href="#" class="float-end" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot password?</a>
+                                </div>
+                                
+                                <button type="submit" class="login-btn student animate__animated animate__fadeIn">
+                                    <i class="fas fa-sign-in-alt me-2"></i> Sign In
+                                </button>
+                            </form>
+                            
+                            <div class="text-center mt-4 animate__animated animate__fadeIn">
+                                <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your institution</a></p>
                             </div>
                         </div>
-                        
-                        <div class="mb-3 animate__animated animate__fadeIn">
-                            <label for="id_user" class="form-label">User ID</label>
-                            <div class="input-group">
-                                <input type="text" name="userId" id="id_user" 
-                                       class="form-control"
-                                       placeholder="Enter your user ID" required>
-                                <span class="input-group-text" style="height: 57.8px;"><i class="fas fa-id-card"></i></span>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3 animate__animated animate__fadeIn">
-                            <label for="id_password" class="form-label">Password</label>
-                            <div class="input-group">
-                                <input type="password" name="password" id="id_password" 
-                                       class="form-control"
-                                       placeholder="Enter your password" required>
-                                <span class="input-group-text" style="height: 57.8px;"><i class="fas fa-lock"></i></span>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3 form-check animate__animated animate__fadeIn">
-                            <input type="checkbox" class="form-check-input" id="rememberMe">
-                            <label class="form-check-label" for="rememberMe">Remember me</label>
-                            <a href="#" class="float-end" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot password?</a>
-                        </div>
-                        
-                        <button type="submit" class="login-btn student animate__animated animate__fadeIn">
-                            <i class="fas fa-sign-in-alt me-2"></i> Sign In
-                        </button>
-                    </form>
-                    
-                    <div class="divider animate__animated animate__fadeIn">
-                        <span>Or continue with</span>
-                    </div>
-                    
-                    <div class="social-login animate__animated animate__fadeIn">
-                        <button class="social-btn">
-                            <i class="fab fa-google text-danger"></i>
-                        </button>
-                        <button class="social-btn">
-                            <i class="fab fa-microsoft text-primary"></i>
-                        </button>
-                        <button class="social-btn">
-                            <i class="fab fa-apple"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="text-center animate__animated animate__fadeIn">
-                        <p>Don't have an account? <a href="#" class="text-primary">Contact your institution</a></p>
                     </div>
                 </div>
             </div>
@@ -737,7 +563,7 @@
 
     <!-- Help Button -->
     <div class="help-btn floating" data-bs-toggle="modal" data-bs-target="#needHelpModal">
-        <i class="fas fa-question fa-lg"></i>
+        <i class="fas fa-question"></i>
     </div>
 
     <!-- Footer -->
@@ -859,7 +685,6 @@
     const roleBtns = document.querySelectorAll('.role-btn');
     const roleInput = document.getElementById('role');
     const loginBtn = document.querySelector('.login-btn');
-    const loginLeft = document.querySelector('.login-left');
     
     roleBtns.forEach(btn => {
         btn.addEventListener('click', function() {
@@ -878,13 +703,10 @@
             
             if (role === 'admin') {
                 loginBtn.classList.add('admin');
-                loginLeft.style.background = 'linear-gradient(to right, var(--admin-color), #c1121f)';
             } else if (role === 'faculty') {
                 loginBtn.classList.add('faculty');
-                loginLeft.style.background = 'linear-gradient(to right, var(--faculty-color), #f3722c)';
             } else {
                 loginBtn.classList.add('student');
-                loginLeft.style.background = 'linear-gradient(to right, var(--student-color), var(--secondary))';
             }
         });
     });
@@ -960,8 +782,6 @@
                         <p><strong>Password:</strong> ${data.password}</p>
                     </div>
                 `;
-                
-               
             } else {
                 resultDiv.innerHTML = `
                     <div class="alert alert-danger">
@@ -997,8 +817,6 @@
     
     // Form submission with animation
     document.getElementById('loginForm').addEventListener('submit', function(e) {
-        // No need to prevent default, let the form submit normally
-        
         // Show loading animation on button
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;

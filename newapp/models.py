@@ -3,6 +3,7 @@ from django.utils import timezone # Import timezone for default date
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
+   
     department=models.CharField(max_length=50)
     no_of_years = models.IntegerField()
     no_of_semesters = models.IntegerField()
@@ -19,6 +20,7 @@ class Faculty(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     college_id=models.CharField(max_length=15,unique=True)
     name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     father_name = models.CharField(max_length=100)
     mother_name = models.CharField(max_length=100)
@@ -31,8 +33,8 @@ class Faculty(models.Model):
     date_of_joining = models.DateField()
 
     # Contact Info
-    phone = models.CharField(max_length=15)
-    other_phone_no = models.CharField(max_length=15,null=True)
+    phone = models.CharField(max_length=15,unique=True)
+    other_phone_no = models.CharField(max_length=15,null=True,unique=True)
     gender = models.CharField(max_length=10, choices=[
         ('male', 'Male'),
         ('female', 'Female'),
@@ -54,7 +56,7 @@ class Faculty(models.Model):
     ('Japan', 'Japan'),
     ('China', 'China'),
     ('Other', 'Other')
-])
+],default='India')
 
     # Category
     category = models.CharField(max_length=10, choices=[
@@ -83,8 +85,8 @@ class Faculty(models.Model):
     ])
 
     # Identity Info
-    adhar_no = models.BigIntegerField()
-    pan_no = models.CharField(max_length=20)
+    adhar_no = models.BigIntegerField(unique=True)
+    pan_no = models.CharField(max_length=20,unique=True)
 
     # Marital Status
     martial_status = models.CharField(max_length=15, choices=[
@@ -114,9 +116,9 @@ class Student(models.Model):
     last_name = models.CharField(max_length=100)
     father_name = models.CharField(max_length=100)
     mother_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone = models.CharField(max_length=15)
-    other_phone_no=models.CharField(max_length=15,null=True)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15,unique=True)
+    other_phone_no=models.CharField(max_length=15,null=True,unique=True)
     occupation=models.CharField(max_length=50,null=True)
     income=models.CharField(max_length=20,null=True)
     gender = models.CharField(max_length=10)
@@ -191,6 +193,7 @@ class Admin(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     college_id=models.CharField(max_length=15,unique=True)
     name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     father_name = models.CharField(max_length=100)
     mother_name = models.CharField(max_length=100)
@@ -203,8 +206,8 @@ class Admin(models.Model):
     date_of_joining = models.DateField()
 
     # Contact Info
-    phone = models.CharField(max_length=15)
-    other_phone_no = models.CharField(max_length=15,null=True)
+    phone = models.CharField(max_length=15,unique=True)
+    other_phone_no = models.CharField(max_length=15,null=True,unique=True)
     gender = models.CharField(max_length=10, choices=[
         ('male', 'Male'),
         ('female', 'Female'),

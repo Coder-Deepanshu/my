@@ -1413,11 +1413,19 @@
                     <img src="https://tse4.mm.bing.net/th/id/OIP.4-vvnJtnPtgaKBmpg8t13AHaHa?pid=0" alt="User" class="user-dropdown-avatar">
                     <span class="user-dropdown-name">{{ username }}</span>
                     <div class="user-dropdown-menu">
+                        {% if college_id == 'AD20250' %}
                         <a href="{% url 'profile_details' %}" class="dropdown-item">
                             <i class="fas fa-user mr-2" style="color: var(--primary);"></i> Profile
                         </a>
                         <a href="{% url 'id_card' %}" class="dropdown-item">
                             <i class="fas fa-cog mr-2" style="color: var(--primary);"></i> ID Card
+                        </a>
+                        {% endif %}
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog mr-2" style="color: var(--primary);"></i> Attendance
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog mr-2" style="color: var(--primary);"></i> Salary
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="{% url 'logoutdoor' %}" class="dropdown-item">
@@ -1670,7 +1678,7 @@
                         </div>
                         <h3 class="student-action-title">Single Student</h3>
                         <p class="student-action-desc">View and edit individual student records</p>
-                        <a href="{% url 'student' %}" class="student-action-btn">Open</a>
+                        <a href="{% url 'student_function' %}" class="student-action-btn">Open</a>
                     </div>
                     
                     <div class="student-action-card">
@@ -2226,7 +2234,7 @@
                 title: 'Students Management',
                 icon: 'fa-user-graduate',
                 items: [
-                    {icon: 'fa-user', text: 'Single Student', url: '{% url "student" %}'},
+                    {icon: 'fa-user', text: 'Single Student', url: '{% url "student_function" %}'},
                     {icon: 'fa-users', text: 'All Students', url: '#'},
                     {icon: 'fa-calendar-check', text: 'Attendance', url: '#'},
                     {icon: 'fa-history', text: 'History', url: '#'}
