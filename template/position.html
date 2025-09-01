@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Position Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 70px;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 60px 0 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            background: var(--light);
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Form Styles */
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-control, .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Table Styles */
+        .table-container {
+            padding: 30px;
+        }
+
+        .position-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .position-table th, 
+        .position-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .position-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .position-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: var(--primary);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--light-gray);
+            padding: 1rem 1.5rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .content-container {
+                margin: 0 15px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .position-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-container, .table-container {
+                padding: 20px;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <style>
+.alert {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+</style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Back</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="#" class="btn btn-outline-primary me-2">LogOut</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>College Position Management System</h1>
+            <p>Create and manage administrative and faculty positions</p>
+        </div>
+    </section>
+
+    <!-- Messages Display -->
+    {% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="content-container">
+        <ul class="nav nav-tabs" id="positionTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab" aria-controls="admin" aria-selected="true">
+                    <i class="fas fa-user-tie"></i> Admin Positions
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="faculty-tab" data-bs-toggle="tab" data-bs-target="#faculty" type="button" role="tab" aria-controls="faculty" aria-selected="false">
+                    <i class="fas fa-chalkboard-teacher"></i> Faculty Positions
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="view-tab" data-bs-toggle="tab" data-bs-target="#view" type="button" role="tab" aria-controls="view" aria-selected="false">
+                    <i class="fas fa-list"></i> View All Positions
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="positionTabsContent">
+            <!-- Admin Positions Tab -->
+            <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                <div class="form-container">
+                    <h3 class="mb-4"><i class="fas fa-plus-circle"></i> Create New Admin Position</h3>
+                    <form id="adminPositionForm" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_name" value="adminPositionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="adminPosition" class="form-label"><i class="fas fa-heading"></i> Position Name</label>
+                                <input type="text" class="form-control" id="adminPosition" name="adminPosition" placeholder="e.g., Registrar, Dean of Students" required>
+                            </div>
+                            {% if admin_department_list %}
+                            <div class="col-md-6 mb-3">
+                                <label for="adminDepartment" class="form-label"><i class="fas fa-building"></i> Department</label>
+                                <select class="form-select" id="adminDepartment" name="adminDepartment" required>
+                                    <option value="">Select Department</option>
+                                    {% for list in admin_department_list %}
+                                    <option value="{{ list.id }}">{{ list.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="adminLevel" class="form-label"><i class="fas fa-layer-group"></i> Level/Grade</label>
+                                <select class="form-select" id="adminLevel" name="adminLevel" required>
+                                    <option value="">Select Level</option>
+                                    <option value="1">Level 1</option>
+                                    <option value="2">Level 2</option>
+                                    <option value="3">Level 3</option>
+                                    <option value="4">Level 4</option>
+                                    <option value="5">Level 5</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+    <label for="adminSalary" class="form-label"><i class="fas fa-money-bill-wave"></i> Salary</label>
+    <input type="number" class="form-control" id="adminSalary" name="adminSalary" placeholder="e.g., 45000" required>
+</div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="adminType" class="form-label"><i class="fas fa-check-circle"></i> Type</label>
+                                <select class="form-select" id="adminType" name="adminType" required>
+                                    <option value="Full-Time">Full-Time</option>
+                                    <option value="Part-Time">Part-Time</option>
+                                    <option value="Visiting">Visiting</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="adminSpecialization" class="form-label"><i class="fas fa-star"></i> Specialization</label>
+                                <input type="text" class="form-control" id="adminSpecialization" name="adminSpecialization" placeholder="e.g., Artificial Intelligence, Organic Chemistry" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="adminResponsibility" class="form-label"><i class="fas fa-tasks"></i> Key Responsibilities</label>
+                            <textarea class="form-control" id="adminResponsibility" rows="4" name="adminResponsibility" placeholder="List the main responsibilities of this position" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="adminRequirment" class="form-label"><i class="fas fa-graduation-cap"></i> Requirements</label>
+                            <textarea class="form-control" id="adminRequirment" name="adminRequirment" rows="4" placeholder="List the requirements for this position" required></textarea>
+                        </div>
+                
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                            <button type="submit" class="btn btn-primary">Create Position</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Faculty Positions Tab -->
+            <div class="tab-pane fade" id="faculty" role="tabpanel" aria-labelledby="faculty-tab">
+                <div class="form-container">
+                    <h3 class="mb-4"><i class="fas fa-plus-circle"></i> Create New Faculty Position</h3>
+                    <form id="facultyPositionForm" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_name" value="facultyPositionForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="facultyPosition" class="form-label"><i class="fas fa-heading"></i> Position Name</label>
+                                <input type="text" class="form-control" id="facultyPosition" name="facultyPosition"  placeholder="e.g., Professor of Computer Science" required>
+                            </div>
+                            {% if faculty_department_list %}
+                            <div class="col-md-6 mb-3">
+                                <label for="facultyDepartment" class="form-label"><i class="fas fa-building"></i> Department</label>
+                                <select class="form-select" id="facultyDepartment" name="facultyDepartment" required>
+                                    <option value="">Select Department</option>
+                                    {% for list in faculty_department_list %}
+                                    <option value="{{ list.id }}">{{ list.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="facultyLevel" class="form-label"><i class="fas fa-layer-group"></i> Level/Grade</label>
+                                <select class="form-select" id="facultyLevel" name="facultyLevel" required>
+                                    <option value="">Select Level</option>
+                                    <option value="1">Level 1</option>
+                                    <option value="2">Level 2</option>
+                                    <option value="3">Level 3</option>
+                                    <option value="4">Level 4</option>
+                                    <option value="5">Level 5</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="facultyType" class="form-label"><i class="fas fa-briefcase"></i> Position Type</label>
+                                <select class="form-select" id="facultyType" name="facultyType" required>
+                                    <option value="Full-time">Full-time</option>
+                                    <option value="Part-time">Part-time</option>
+                                    <option value="Visiting">Visiting</option>
+                                </select>
+                            </div>
+                           
+                            <div class="col-md-4 mb-3">
+    <label for="facultySalary" class="form-label"><i class="fas fa-money-bill-wave"></i> Salary</label>
+    <input type="number" class="form-control" id="facultySalary" name="facultySalary" placeholder="e.g., 60000" required>
+</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="facultySpecialization" class="form-label"><i class="fas fa-star"></i> Specialization</label>
+                                <input type="text" class="form-control" id="facultySpecialization" name="facultySpecialization" placeholder="e.g., Artificial Intelligence, Organic Chemistry" required>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="facultyResponsibility" class="form-label"><i class="fas fa-tasks"></i> Key Responsibilities</label>
+                            <textarea class="form-control" id="facultyResponsibility" name="facultyResponsibility" rows="4" placeholder="List the main responsibilities of this position" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="facultyRequirment" class="form-label"><i class="fas fa-graduation-cap"></i> Requirements</label>
+                            <textarea class="form-control" id="facultyRequirment" name="facultyRequirment" rows="3" placeholder="List the requirements for this position" required></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                            <button type="submit" class="btn btn-primary">Create Position</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- View Positions Tab -->
+            <div class="tab-pane fade" id="view" role="tabpanel" aria-labelledby="view-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-list"></i> All Positions</h3>
+                        <div class="d-flex gap-2">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search positions..." style="max-width: 250px;">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    {% if details %}
+                    <div class="table-responsive">
+                        <table class="position-table">
+                            <thead>
+                                <tr>
+                                    <th>Position ID</th>
+                                    <th>Position Name</th>
+                                    <th>Type</th>
+                                    <th>Department</th>
+                                    <th>Level/Rank</th>
+                                    <th>Salary</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="positionsTable">
+                                {% for detail in details %}
+                                <tr>
+                                    <td>{{ detail.position_id }}</td>
+                                    <td>{{ detail.name }}</td>
+                                    <td>{{ detail.type }}</td>
+                                    <td>{{ detail.department.name }}</td>
+                                    <td>Level - {{ detail.level }}</td>
+                                    <td>Rs.{{ detail.salary }}</td>
+                                    {% if detail.role == 'Admin' %}
+                                    <td><span class="badge bg-primary">{{ detail.role }}</span></td>
+                                    {% else %}
+                                    <td><span class="badge bg-info">{{ detail.role }}</span></td>
+                                    {% endif %}
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-edit" data-id="{{ detail.position_id }}" data-bs-toggle="modal" data-bs-target="#editPositionModal">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn-action btn-delete" data-id="{{ detail.position_id }}" data-bs-toggle="modal" data-bs-target="#deletePositionModal">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        No positions found. Please create a new position.
+                    </div>
+                    {% endif %}
+                    
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Position Modal mein department field add karo -->
+<div class="modal fade" id="editPositionModal" tabindex="-1" aria-labelledby="editPositionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPositionModalLabel">Edit Position</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPositionForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="editPositionId" name="position_id">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editPositionName" class="form-label">Position Name</label>
+                            <input type="text" class="form-control" id="editPositionName" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editPositionType" class="form-label">Type</label>
+                            <select class="form-select" id="editPositionType" name="type" required>
+                                <option value="Full-Time">Full-Time</option>
+                                <option value="Part-Time">Part-Time</option>
+                                <option value="Visiting">Visiting</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editPositionLevel" class="form-label">Level/Grade</label>
+                            <select class="form-select" id="editPositionLevel" name="level" required>
+                                <option value="1">Level 1</option>
+                                <option value="2">Level 2</option>
+                                <option value="3">Level 3</option>
+                                <option value="4">Level 4</option>
+                                <option value="5">Level 5</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                           <label for="editPositionSalary" class="form-label">Salary</label>
+                           <input type="number" class="form-control" id="editPositionSalary" name="salary" required>
+                        </div>
+                    </div>
+                    <div class="row">
+    <div class="col-md-6 mb-3">
+        <label for="editPositionDepartment" class="form-label">Department</label>
+        <select class="form-select" id="editPositionDepartment" name="department_id" required>
+            <option value="">Select Department</option>
+            {% for list in admin_department_list %}
+            <option value="{{ list.id }}">{{ list.name }}</option>
+            {% endfor %}
+            {% for list in faculty_department_list %}
+            <option value="{{ list.id }}">{{ list.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="editPositionSpecialization" class="form-label">Specialization</label>
+        <input type="text" class="form-control" id="editPositionSpecialization" name="specialization" required>
+    </div>
+</div>
+                    <div class="mb-3">
+                        <label for="editPositionResponsibility" class="form-label">Key Responsibilities</label>
+                        <textarea class="form-control" id="editPositionResponsibility" name="responsibility" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPositionRequirment" class="form-label">Requirements</label>
+                        <textarea class="form-control" id="editPositionRequirment" name="requirment" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditPosition">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deletePositionModal" tabindex="-1" aria-labelledby="deletePositionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletePositionModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this position? This action cannot be undone.</p>
+                    <p class="fw-bold" id="deletePositionName"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeletePosition">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const positionsTable = document.getElementById('positionsTable');
+    
+    if (searchInput && positionsTable) {
+        searchInput.addEventListener('keyup', function() {
+            const searchText = this.value.toLowerCase();
+            const rows = positionsTable.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const rowText = rows[i].textContent.toLowerCase();
+                if (rowText.includes(searchText)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        });
+    }
+    
+    // Edit button handlers
+    const editButtons = document.querySelectorAll('.btn-edit');
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const positionId = this.getAttribute('data-id');
+            
+            // Show loading state
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            this.disabled = true;
+            
+            // Fetch position data from server
+            fetch('{% url "get_position_data" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ position_id: positionId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    const position = data.data;
+                    document.getElementById('editPositionId').value = position.position_id;
+                    document.getElementById('editPositionName').value = position.name;
+                    document.getElementById('editPositionType').value = position.type;
+                    document.getElementById('editPositionLevel').value = position.level;
+                    document.getElementById('editPositionSalary').value = position.salary;
+                    document.getElementById('editPositionDepartment').value = position.department_id;
+                    document.getElementById('editPositionSpecialization').value = position.specialization;
+                    document.getElementById('editPositionResponsibility').value = position.responsibility;
+                    document.getElementById('editPositionRequirment').value = position.requirment;
+                } else {
+                    console.error('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                // Reset button state
+                this.innerHTML = originalText;
+                this.disabled = false;
+            });
+        });
+    });
+    
+    // Save edit button handler
+    const saveEditButton = document.getElementById('saveEditPosition');
+    if (saveEditButton) {
+        saveEditButton.addEventListener('click', function() {
+            const positionId = document.getElementById('editPositionId').value;
+            const formData = {
+                position_id: positionId,
+                name: document.getElementById('editPositionName').value,
+                type: document.getElementById('editPositionType').value,
+                level: document.getElementById('editPositionLevel').value,
+                salary: document.getElementById('editPositionSalary').value,
+                department_id: document.getElementById('editPositionDepartment').value,
+                specialization: document.getElementById('editPositionSpecialization').value,
+                responsibility: document.getElementById('editPositionResponsibility').value,
+                requirment: document.getElementById('editPositionRequirment').value
+            };
+            
+            // Show loading state
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            this.disabled = true;
+            
+            // Send update request to server
+            fetch('{% url "update_position" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    $('#editPositionModal').modal('hide');
+                    // Force a complete page reload after successful update
+                    setTimeout(function() {
+                        window.location.href = window.location.href;
+                    }, 500);
+                } else {
+                    console.error('Error: ' + data.message);
+                    // Reset button state on error
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Reset button state on error
+                this.innerHTML = originalText;
+                this.disabled = false;
+            });
+        });
+    }
+    
+    // Delete button handlers
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    let deletePositionId = null;
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            deletePositionId = this.getAttribute('data-id');
+            const positionName = this.closest('tr').querySelector('td:nth-child(2)').textContent;
+            document.getElementById('deletePositionName').textContent = positionName;
+        });
+    });
+    
+    // Confirm delete button handler
+    const confirmDeleteButton = document.getElementById('confirmDeletePosition');
+    if (confirmDeleteButton) {
+        confirmDeleteButton.addEventListener('click', function() {
+            if (deletePositionId) {
+                // Show loading state
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                this.disabled = true;
+                
+                // Send delete request to server
+                fetch('{% url "delete_position" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ position_id: deletePositionId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        $('#deletePositionModal').modal('hide');
+                        // Force a complete page reload after successful deletion
+                        setTimeout(function() {
+                            window.location.href = window.location.href;
+                        }, 500);
+                    } else {
+                        console.error('Error: ' + data.message);
+                        // Reset button state on error
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Reset button state on error
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                });
+            }
+        });
+    }
+    
+    // Function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+</body>
+</html>

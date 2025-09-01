@@ -439,12 +439,17 @@ def student_functions(request):
 #  for multiple student filtering
 from django.template.loader import render_to_string
 
+from django.http import JsonResponse
+from django.contrib import messages
+from django.shortcuts import render
+from .models import Course, Student
+
 def student_filter_page(request):
     try:
         # Get all courses from Course model (not from Student records)
         courses = Course.objects.all().values_list('name', flat=True)
         students = Student.objects.all()
-        return render(request, 'student/student_filter.html', {'courses': courses,'students':students})
+        return render(request, 'student/student_filter.html', {'courses': courses, 'students': students})
     except Exception as e:
         messages.error(request, f"Error loading courses: {str(e)}")
         return render(request, 'student/student_filter.html', {'courses': []})
@@ -464,7 +469,6 @@ def get_course_details(request):
         return JsonResponse({'error': 'Course not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
 def filter_students(request):
     filters = {
         'course': request.GET.get('course', 'all'),
@@ -2117,3 +2121,388 @@ def delete_chat(request, room_id):
         'status': 'error',
         'message': 'Invalid request method'
     }, status=405)
+
+from .models import Department
+# department creation
+def department_creation(request):
+    # Always get departments list for the template
+    details = Department.objects.all()
+    total_department = Department.objects.count()
+    total_faculty = Faculty.objects.count()
+    enrolled_students = Student.objects.count()
+    total_course = Course.objects.count()
+    programs = Course.objects.all()
+    
+    if request.method == 'POST':
+        action = request.POST.get('form_name')
+        
+        if action == 'departmentCreation':
+            try:
+                Department.objects.create(
+                    name=request.POST.get('name'),
+                    code=request.POST.get('code'),
+                    type=request.POST.get('type'),
+                    description=request.POST.get('description'),
+                    programs_count=request.POST.get('programe'),
+                    faculty_count=request.POST.get('facultyCount'),
+                    student_capacity=request.POST.get('studentCapacity'),
+                )
+                messages.success(request, "Department Created Successfully!")
+            except Exception as e:
+                messages.error(request, f"Error adding department: {str(e)}")
+
+    # Always return the render with details
+    return render(request, 'department.html', {
+        'details': details,
+        'total_department':total_department,
+        'total_faculty':total_faculty,
+        'enrolled_students':enrolled_students,
+        'total_course':total_course,
+        'programs':programs
+         })
+
+# course craetion
+from .models import Department, Course,Level
+
+def course_creation(request):
+    details = Course.objects.all()
+    try:
+        # Get lists for both GET and POST requests
+        department_list = Department.objects.filter(type='Faculty')
+        level_list = Level.objects.all()
+        
+        if request.method == 'POST':
+            action = request.POST.get('form_name')
+            if action == 'courseCreation':
+                try:
+                    # Get and convert form data
+                    duration = int(request.POST.get('courseDuration'))
+                    capacity = int(request.POST.get('studentCapacity'))
+                    fees = float(request.POST.get('courseFees'))
+                    
+                    # Create course with foreign key IDs
+                    Course.objects.create(
+                        name=request.POST.get('courseName'),
+                        department_id=request.POST.get('courseDepartment'),  # Use _id field
+                        no_of_years=duration,
+                        no_of_semesters=duration * 2,
+                        code=request.POST.get('courseCode'),
+                        description=request.POST.get('courseDescription'),
+                        student_capacity=capacity,
+                        level_id=request.POST.get('courseLevel'),  # Use _id field
+                        fees_per_year=fees
+                    )
+                    messages.success(request, "Course Created Successfully!")
+                    
+                except ValueError:
+                    messages.error(request, "Invalid number format in form data")
+                except Exception as e:
+                    messages.error(request, f"Error adding course: {str(e)}")
+        
+        # Return with context for both GET and POST
+        return render(request, 'course_creation.html', {
+            'department_list': department_list,
+            'level_list': level_list,
+            'details':details
+            
+        })
+            
+    except Exception as e:
+        messages.error(request, f"Error loading page: {str(e)}")
+        return render(request, 'course_creation.html', {
+            'department_list': [],
+            'level_list': [],
+            'details':[]
+        })
+    
+# Created Positions
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.contrib import messages
+import json
+from .models import Position, Department
+
+def position_creation(request):
+    details = Position.objects.all().select_related('department')
+    try:
+        # Get lists for both GET and POST requests
+        faculty_department_list = Department.objects.filter(type='Faculty')
+        admin_department_list = Department.objects.filter(type='Admin')
+        
+        if request.method == 'POST':
+            action = request.POST.get('form_name')
+            if action == 'adminPositionForm':
+                try:
+                    # Get form data
+                    position_name = request.POST.get('adminPosition')
+                    department_id = request.POST.get('adminDepartment')
+                    level = request.POST.get('adminLevel')
+                    
+                    # Check if position already exists
+                    existing_position = Position.objects.filter(
+                        name=position_name,
+                        department_id=department_id,
+                        level=level,
+                        role='Admin'
+                    ).first()
+                    
+                    if existing_position:
+                        messages.error(request, f"Admin position '{position_name}' already exists in this department with the same level!")
+                    else:
+                        # Get and convert form data
+                        salary_str = request.POST.get('adminSalary')
+                        # Clean salary string - remove any non-numeric characters
+                        salary_str = ''.join(filter(str.isdigit, salary_str))
+                        salary = int(salary_str) if salary_str else 0
+                        
+                        role_filter = Position.objects.filter(role='Admin')
+                        
+                        # Check if any admin positions exist
+                        if not role_filter.exists():
+                            position_id = 'GKP-AD-1'  # Initial ID
+                        else:
+                            max_id = role_filter.aggregate(max_id=models.Max('position_id'))['max_id']
+                            
+                            if max_id is None:
+                                position_id = 'GKP-AD-1'
+                            else:
+                                try:
+                                    # Extract numeric part and increment
+                                    numeric_part = int(max_id.split('-')[-1])  # Get the last part after splitting by '-'
+                                    position_id = f'GKP-AD-{numeric_part + 1}'
+                                except (ValueError, IndexError):
+                                    position_id = 'GKP-AD-1'
+                        
+                        # Handle both possible field names for requirement
+                        requirement = request.POST.get('adminRequirment') or request.POST.get('adminRequirement')
+                        if not requirement:
+                            messages.error(request, "Requirement field is required")
+                            raise ValueError("Requirement field is required")
+                        
+                        # Create position with foreign key IDs
+                        Position.objects.create(
+                            position_id=position_id,
+                            name=position_name,
+                            type=request.POST.get('adminType'),
+                            department_id=department_id,
+                            level=level,
+                            salary=salary,
+                            role='Admin',
+                            specialization=request.POST.get('adminSpecialization'),
+                            requirment=requirement,
+                            responsibility=request.POST.get('adminResponsibility'),
+                        )
+                        messages.success(request, "Admin Position Created Successfully!")
+                        return redirect('position_creation')  # Redirect to prevent form resubmission
+                    
+                except ValueError as e:
+                    if "Requirement field is required" in str(e):
+                        # Already handled by error message above
+                        pass
+                    else:
+                        messages.error(request, "Invalid number format in form data")
+                except Exception as e:
+                    messages.error(request, f"Error adding position: {str(e)}")
+
+            elif action == 'facultyPositionForm':
+                try:
+                    # Get form data
+                    position_name = request.POST.get('facultyPosition')
+                    department_id = request.POST.get('facultyDepartment')
+                    level = request.POST.get('facultyLevel')
+                    
+                    # Check if position already exists
+                    existing_position = Position.objects.filter(
+                        name=position_name,
+                        department_id=department_id,
+                        level=level,
+                        role='Faculty'
+                    ).first()
+                    
+                    if existing_position:
+                        messages.error(request, f"Faculty position '{position_name}' already exists in this department with the same level!")
+                    else:
+                        # Get and convert form data
+                        salary_str = request.POST.get('facultySalary')
+                        # Clean salary string - remove any non-numeric characters
+                        salary_str = ''.join(filter(str.isdigit, salary_str))
+                        salary = int(salary_str) if salary_str else 0
+                        
+                        role_filter = Position.objects.filter(role='Faculty')
+                        
+                        # Check if any faculty positions exist
+                        if not role_filter.exists():
+                            position_id = 'GKP-FA-1'  # Initial ID
+                        else:
+                            max_id = role_filter.aggregate(max_id=models.Max('position_id'))['max_id']
+                            
+                            if max_id is None:
+                                position_id = 'GKP-FA-1'
+                            else:
+                                try:
+                                    # Extract numeric part and increment
+                                    numeric_part = int(max_id.split('-')[-1])  # Get the last part after splitting by '-'
+                                    position_id = f'GKP-FA-{numeric_part + 1}'
+                                except (ValueError, IndexError):
+                                    position_id = 'GKP-FA-1'
+                        
+                        # Handle both possible field names for requirement
+                        requirement = request.POST.get('facultyRequirment') or request.POST.get('facultyRequirement')
+                        if not requirement:
+                            messages.error(request, "Requirement field is required")
+                            raise ValueError("Requirement field is required")
+                        
+                        # Create position with foreign key IDs
+                        Position.objects.create(
+                            position_id=position_id,
+                            name=position_name,
+                            type=request.POST.get('facultyType'),
+                            department_id=department_id,
+                            level=level,
+                            role='Faculty',
+                            salary=salary,
+                            specialization=request.POST.get('facultySpecialization'),
+                            requirment=requirement,
+                            responsibility=request.POST.get('facultyResponsibility'),
+                        )
+                        messages.success(request, "Faculty Position Created Successfully!")
+                        return redirect('position_creation')  # Redirect to prevent form resubmission
+                    
+                except ValueError as e:
+                    if "Requirement field is required" in str(e):
+                        # Already handled by error message above
+                        pass
+                    else:
+                        messages.error(request, "Invalid number format in form data")
+                except Exception as e:
+                    messages.error(request, f"Error adding position: {str(e)}")
+        
+        # Return with context for both GET and POST
+        return render(request, 'position.html', {
+            'faculty_department_list': faculty_department_list,
+            'admin_department_list': admin_department_list,
+            'details': details
+        })
+            
+    except Exception as e:
+        messages.error(request, f"Error loading page: {str(e)}")
+        return render(request, 'position.html', {
+            'faculty_department_list': [],
+            'admin_department_list': [],
+            'details': []
+        })
+
+
+@csrf_exempt
+@require_POST
+def get_position_data(request):
+    """Get position data for editing"""
+    try:
+        data = json.loads(request.body)
+        position_id = data.get('position_id')
+        
+        position = get_object_or_404(Position, position_id=position_id)
+        
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'position_id': position.position_id,
+                'name': position.name,
+                'type': position.type,
+                'department_id': position.department.id,
+                'level': position.level,
+                'salary': position.salary,
+                'specialization': position.specialization,
+                'requirment': position.requirment,
+                'responsibility': position.responsibility,
+            }
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error retrieving position data: {str(e)}'
+        })
+
+
+@csrf_exempt
+@require_POST
+def update_position(request):
+    """Update position data"""
+    try:
+        data = json.loads(request.body)
+        position_id = data.get('position_id')
+        
+        position = get_object_or_404(Position, position_id=position_id)
+        
+        # Update position fields
+        position.name = data.get('name')
+        position.type = data.get('type')
+        position.level = data.get('level')
+        
+        # Handle salary conversion
+        try:
+            salary_value = data.get('salary')
+            if isinstance(salary_value, str):
+                # Clean salary string - remove any non-numeric characters
+                salary_str = ''.join(filter(str.isdigit, salary_value))
+                position.salary = int(salary_str) if salary_str else 0
+            else:
+                position.salary = int(salary_value) if salary_value else 0
+        except (ValueError, TypeError) as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Invalid salary format: {str(e)}'
+            })
+        
+        position.specialization = data.get('specialization')
+        position.requirment = data.get('requirment')
+        position.responsibility = data.get('responsibility')
+        
+        # Update department if provided
+        department_id = data.get('department_id')
+        if department_id:
+            try:
+                department = Department.objects.get(id=department_id)
+                position.department = department
+            except Department.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Invalid department ID'
+                })
+        
+        position.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Position updated successfully!'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error updating position: {str(e)}'
+        })
+
+
+@csrf_exempt
+@require_POST
+def delete_position(request):
+    """Delete a position"""
+    try:
+        data = json.loads(request.body)
+        position_id = data.get('position_id')
+        
+        position = get_object_or_404(Position, position_id=position_id)
+        position_name = position.name
+        position.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Position "{position_name}" deleted successfully!'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Error deleting position: {str(e)}'
+        })

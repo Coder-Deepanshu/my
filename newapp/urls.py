@@ -26,8 +26,8 @@ urlpatterns = [
     # urls for student functions
     path("Admin-Dashboard/Student-Management/", views.student_functions, name="student_function"),
     path('students/', views.student_filter_page,name='students'),
-    path('get_course_details/', views.get_course_details),
-    path('filter_students/', views.filter_students),
+    path('get_course_details/', views.get_course_details,name='get_course_details'),
+    path('filter_students/', views.filter_students,name='filter_students'),
     path('student/<int:id>/delete/', views.delete_students, name='delete_student'),
     path('bulk_update_students/', views.bulk_update_students, name='bulk_update_students'),
 
@@ -79,6 +79,13 @@ urlpatterns = [
     path('faculty/students/', views.student_filter_details, name='student_list_partial'),
     # urls.py
     path('delete_chat/<int:room_id>/', views.delete_chat, name='delete_chat'),
+
+    path('Admin-Dashboard/Department-Creation/',views.department_creation,name='department_creation'),
+    path('Admin-Dashboard/Course-Creation/',views.course_creation,name='course_creation'),
+    path('Admin-Dashboard/Staff-Positions-Creation/',views.position_creation,name='position_creation'),
+    path('positions/get_data/', views.get_position_data, name='get_position_data'),
+    path('positions/update/', views.update_position, name='update_position'),
+    path('positions/delete/', views.delete_position, name='delete_position'),
     
 ]
 

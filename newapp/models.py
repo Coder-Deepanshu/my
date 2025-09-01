@@ -1,16 +1,61 @@
 from django.db import models
 from django.utils import timezone # Import timezone for default date
 
+
+# for department
+class Department(models.Model):
+    name = models.CharField(max_length=200)
+    code = models.CharField(max_length=20, unique=True)
+    type = models.CharField(max_length=10)
+    description = models.TextField()
+    programs_count = models.PositiveIntegerField(default=1)
+    faculty_count = models.PositiveIntegerField(default=1)
+    student_capacity = models.PositiveIntegerField(default=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['name']
+
+class Level(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+    
 class Course(models.Model):
     name = models.CharField(max_length=100)
-   
-    department=models.CharField(max_length=50)
+    department=models.ForeignKey(Department,on_delete=models.CASCADE)
     no_of_years = models.IntegerField()
     no_of_semesters = models.IntegerField()
-    lecture = models.IntegerField()
-    time_per_lecture = models.IntegerField()
-    unit_lecture =  models.CharField(max_length=50,choices=[('Hour','hour'),('Min','min')])
+    code = models.CharField(max_length=10,unique=True)
+    description = models.TextField()
+    student_capacity = models.PositiveIntegerField(default=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    level = models.ForeignKey(Level,on_delete=models.CASCADE)
     fees_per_year = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+    
+class Position(models.Model):
+    position_id = models.CharField(max_length=50,unique=True)
+    name = models.CharField(max_length=100)
+    level = models.CharField(max_length=50)
+    type = models.CharField(max_length=50)
+    department=models.ForeignKey(Department,on_delete=models.CASCADE)
+    responsibility = models.TextField()
+    requirment = models.TextField()
+    specialization = models.TextField()
+    salary = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    role = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name

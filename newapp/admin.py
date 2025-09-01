@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Student,result,subject,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin,StudentBalance
-
+from .models import Department,Level,Position
 @admin.register(StudentBalance)
 class StudentAddAdmin(admin.ModelAdmin):
     list_display = ('student', 'extra_amount')
@@ -80,6 +80,23 @@ class ChatRoomAdmin(admin.ModelAdmin):
 class Message_Student_faculty(admin.ModelAdmin):
     list_display=('chat_room','sender_id','content')
     search_fields=('chat_room','sender_id',)
+
+@admin.register(Department)
+class Department(admin.ModelAdmin):
+    list_display=('name','code')
+    search_fields=('name',)
+
+@admin.register(Level)
+class Level(admin.ModelAdmin):
+    list_display=('name',)
+    search_fields=('name',)
+
+@admin.register(Position)
+class Position(admin.ModelAdmin):
+    list_display=('name','department','type')
+    search_fields=('name',)
+
+
 
 
 

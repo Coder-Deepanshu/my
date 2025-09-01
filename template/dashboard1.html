@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty Dashboard</title>
@@ -663,40 +664,34 @@
         }
 
         /* Image Slider - Matching Admin Dashboard */
+        /* Slider Styles */
         .slider-container {
-            height: 470px;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
             overflow: hidden;
-            margin-bottom: 2.5rem;
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            height: 650px;
         }
 
         .slider {
-            position: relative;
-            height: 350px;
-            overflow: hidden;
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
         }
 
         .slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .slide.active {
-            opacity: 1;
+            min-width: 100%;
+            position: relative;
         }
 
         .slide img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
         .slide-content {
@@ -704,71 +699,170 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             color: white;
-            padding: 2rem;
+            padding: 25px;
         }
 
         .slide-title {
             font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 0.75rem;
+            margin-bottom: 8px;
         }
 
         .slide-text {
             font-size: 1rem;
             opacity: 0.9;
-            line-height: 1.6;
         }
 
         .slider-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
             display: flex;
-            justify-content: center;
-            padding: 1.25rem;
-            background: white;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            z-index: 10;
+            padding: 0 15px;
         }
 
         .slider-btn {
-            background: var(--primary);
-            color: white;
+            background: rgba(255, 255, 255, 0.8);
             border: none;
-            width: 44px;
-            height: 44px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
-            align-items: center;
             justify-content: center;
-            margin: 0 0.75rem;
+            align-items: center;
             cursor: pointer;
             transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
 
         .slider-btn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.1);
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        .slider-btn i {
+            font-size: 1.2rem;
+            color: #333;
         }
 
         .slider-dots {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
             display: flex;
-            align-items: center;
             justify-content: center;
-            margin-top: 1rem;
+            z-index: 10;
+            gap: 10px;
         }
 
         .slider-dot {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
-            background: var(--light-gray);
-            margin: 0 0.35rem;
             cursor: pointer;
-            transition: var(--transition);
+            transition: background 0.3s ease;
         }
 
         .slider-dot.active {
-            background: var(--primary);
-            transform: scale(1.3);
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.2);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .slider-container {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .slider-container {
+                height: 350px;
+            }
+            
+            .slide-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem;
+            }
+            
+            .slider-container {
+                height: 300px;
+            }
+            
+            .slide-content {
+                padding: 15px;
+            }
+            
+            .slide-title {
+                font-size: 1.1rem;
+            }
+            
+            .slide-text {
+                font-size: 0.9rem;
+            }
+            
+            .slider-btn {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .sidebar {
+                width: 240px;
+            }
+            
+            .menu-link {
+                padding: 0.8rem 1.25rem;
+            }
+            
+            .logo-text {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .slider-container {
+                height: 250px;
+            }
+            
+            .slide-title {
+                font-size: 1rem;
+            }
+            
+            .slide-text {
+                font-size: 0.8rem;
+            }
+            
+            .slider-dot {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .main-content {
+                padding: 1.25rem;
+            }
         }
 
         /* Recent Activity */
@@ -1026,7 +1120,7 @@
         <div class="sidebar-header">
             <div class="logo-container">
                 <div class="logo">
-                    <i class="fas fa-chalkboard-teacher logo-icon"></i>
+                    <i class="fas fa-graduation-cap me-2"></i>
                     <span>Edu<span>Track</span></span>
                 </div>
             </div>
@@ -1263,49 +1357,51 @@
             </div>
             
             <!-- Image Slider -->
-            <div class="slider-container">
-                <div class="slider">
-                    <div class="slide active">
-                        <img src="https://gmu.ac.ae/wp-content/uploads/2025/01/con-06-01-25-1.jpg" alt="University Campus">
-                        <div class="slide-content">
-                            <h3 class="slide-title">Faculty Development Workshop</h3>
-                            <p class="slide-text">Join us next week for professional development sessions</p>
-                        </div>
-                    </div>
-                    
-                    <div class="slide">
-                        <img src="https://idmpstudio.uic.edu/wp-content/uploads/sites/1060/2023/08/classroom-teaching.jpg" alt="Classroom">
-                        <div class="slide-content">
-                            <h3 class="slide-title">New Teaching Resources</h3>
-                            <p class="slide-text">Explore our updated digital learning materials</p>
-                        </div>
-                    </div>
-                    
-                    <div class="slide">
-                        <img src="https://s3-ap-south-1.amazonaws.com/ricedigitals3bucket/AUPortalContent/2021/05/31112658/Untitled-design-34.png" alt="Graduation">
-                        <div class="slide-content">
-                            <h3 class="slide-title">Student Success Stories</h3>
-                            <p class="slide-text">Celebrating our graduates' achievements</p>
-                        </div>
+            <!-- Slider Container -->
+        <div class="slider-container">
+            <div class="slider">
+                <div class="slide active">
+                    <img src="{% static '/images/university2.jpg' %}" alt="University Campus">
+                    <div class="slide-content">
+                        <h3 class="slide-title">Faculty Development Workshop</h3>
+                        <p class="slide-text">Join us next week for professional development sessions</p>
                     </div>
                 </div>
                 
-                <div class="slider-controls">
-                    <button class="slider-btn prev-slide">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="slider-btn next-slide">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+                <div class="slide">
+                    <img src="{% static '/images/teaching.jpg' %}" alt="Classroom">
+                    <div class="slide-content">
+                        <h3 class="slide-title">New Teaching Resources</h3>
+                        <p class="slide-text">Explore our updated digital learning materials</p>
+                    </div>
                 </div>
                 
-                <div class="slider-dots">
-                    <div class="slider-dot active"></div>
-                    <div class="slider-dot"></div>
-                    <div class="slider-dot"></div>
+                <div class="slide">
+                    <img src="{% static '/images/acheivments.jpg' %}" alt="Graduation">
+                    <div class="slide-content">
+                        <h3 class="slide-title">Student Success Stories</h3>
+                        <p class="slide-text">Celebrating our graduates' achievements</p>
+                    </div>
                 </div>
             </div>
             
+            <div class="slider-controls">
+                <button class="slider-btn prev-slide">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-btn next-slide">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="slider-dots">
+                <div class="slider-dot active"></div>
+                <div class="slider-dot"></div>
+                <div class="slider-dot"></div>
+            </div>
+        </div>
+        </div>
+            <div class="content">
             <!-- Faculty Cards -->
             <div class="faculty-cards">
                 <div class="faculty-card">
@@ -1438,41 +1534,91 @@
             }
         });
         
-        // Image Slider
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.slider-dot');
-        const prevBtn = document.querySelector('.prev-slide');
-        const nextBtn = document.querySelector('.next-slide');
-        let currentSlide = 0;
-        
-        function showSlide(n) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
+        document.addEventListener('DOMContentLoaded', function() {
+            // Slider functionality
+            const slider = document.querySelector('.slider');
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.querySelector('.prev-slide');
+            const nextBtn = document.querySelector('.next-slide');
+            const dots = document.querySelectorAll('.slider-dot');
             
-            currentSlide = (n + slides.length) % slides.length;
-            slides[currentSlide].classList.add('active');
-            dots[currentSlide].classList.add('active');
-        }
-        
-        function nextSlide() {
-            showSlide(currentSlide + 1);
-        }
-        
-        function prevSlide() {
-            showSlide(currentSlide - 1);
-        }
-        
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-        
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                showSlide(index);
+            let currentSlide = 0;
+            const slideCount = slides.length;
+            let autoPlayInterval;
+            
+            // Initialize slider
+            function initSlider() {
+                updateSlider();
+                startAutoPlay();
+            }
+            
+            // Update slider position and indicators
+            function updateSlider() {
+                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                // Update dots
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Go to next slide
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slideCount;
+                updateSlider();
+            }
+            
+            // Go to previous slide
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+                updateSlider();
+            }
+            
+            // Start auto-play
+            function startAutoPlay() {
+                autoPlayInterval = setInterval(nextSlide, 5000);
+            }
+            
+            // Stop auto-play
+            function stopAutoPlay() {
+                clearInterval(autoPlayInterval);
+            }
+            
+            // Event listeners for buttons
+            nextBtn.addEventListener('click', function() {
+                stopAutoPlay();
+                nextSlide();
+                startAutoPlay();
             });
+            
+            prevBtn.addEventListener('click', function() {
+                stopAutoPlay();
+                prevSlide();
+                startAutoPlay();
+            });
+            
+            // Event listeners for dots
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    stopAutoPlay();
+                    currentSlide = index;
+                    updateSlider();
+                    startAutoPlay();
+                });
+            });
+            
+            // Pause auto-play when hovering over slider
+            const sliderContainer = document.querySelector('.slider-container');
+            sliderContainer.addEventListener('mouseenter', stopAutoPlay);
+            sliderContainer.addEventListener('mouseleave', startAutoPlay);
+            
+            // Initialize the slider
+            initSlider();
         });
-        
-        // Auto slide change
-        setInterval(nextSlide, 5000);
         
         // User Dropdown
         const userDropdown = document.querySelector('.user-dropdown');

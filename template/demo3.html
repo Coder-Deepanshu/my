@@ -3,654 +3,783 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Attendance</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --present: #4caf50;
-            --absent: #f44336;
-            --half-day: #ff9800;
-            --leave: #2196f3;
-            --holiday: #9c27b0;
-            --sidebar-width: 260px;
-            --sidebar-bg: #2a3042;
-            --sidebar-text: #a6b0cf;
-            --sidebar-icon: #5a6378;
-            --sidebar-hover: rgba(255, 255, 255, 0.05);
-            --sidebar-active: rgba(67, 97, 238, 0.15);
-            --header-height: 70px;
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --text-color: #2b2d42;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #adb5bd;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --header-height: 80px;
             --transition: all 0.3s ease;
         }
 
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            background-color: #f5f7fb;
-            color: var(--dark);
-            padding-left: var(--sidebar-width);
-            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            height: 100vh;
-            position: fixed;
-            left: 0;
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        .main-header {
+            background-color: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
             top: 0;
-            transition: var(--transition);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            height: var(--header-height);
         }
 
-        .sidebar-header {
-            padding: 1.5rem 1.5rem 1rem;
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            height: var(--header-height);
-        }
-        
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 0;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
         }
 
-        .menu-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .menu-item {
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            margin-left: 40px;
+        }
+
+        .nav-item {
             position: relative;
-            margin: 0.15rem 0;
+            font-weight: 500;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 0;
+            transition: var(--transition);
         }
 
-        .menu-link {
+        .nav-item:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .header-actions {
             display: flex;
             align-items: center;
-            padding: 0.8rem 1.5rem;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            font-weight: 500;
+            gap: 20px;
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 25px;
+            font-size: 0.95rem;
+            width: 280px;
             transition: var(--transition);
-            border-left: 3px solid transparent;
-            font-size: 0.9rem;
-            margin: 0 0.5rem;
-            border-radius: 6px;
+            background-color: #f5f7fb;
         }
 
-        .menu-link:hover {
-            color: white;
-            background-color: var(--sidebar-hover);
-            transform: translateX(5px);
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            width: 320px;
+            background-color: white;
         }
 
-        .menu-link.active {
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+        }
+
+        .action-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+            background-color: #f5f7fb;
+        }
+
+        .action-icon:hover {
+            background-color: var(--primary-color);
             color: white;
-            background-color: var(--sidebar-active);
-            border-left-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--error-color);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 600;
         }
 
-        .menu-icon {
-            font-size: 1rem;
-            margin-right: 0.75rem;
-            width: 20px;
-            text-align: center;
-            color: var(--sidebar-icon);
-            transition: var(--transition);
-        }
-
-        .menu-link:hover .menu-icon,
-        .menu-link.active .menu-icon {
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .sidebar-footer {
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        .user-profile {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            background: rgba(0, 0, 0, 0.1);
+            gap: 12px;
+            margin-left: 10px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 25px;
+            transition: var(--transition);
+            background-color: #f5f7fb;
+        }
+
+        .user-profile:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .user-profile:hover .user-role {
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .user-avatar {
-            width: 38px;
-            height: 38px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .user-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.1rem;
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-role {
-            font-size: 0.7rem;
-            color: var(--sidebar-text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--sidebar-text);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: var(--transition);
-            width: 36px;
-            height: 36px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-        }
-
-        .logout-btn:hover {
             color: white;
-            background-color: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
         }
 
-        /* Main Content */
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
             transition: var(--transition);
         }
 
-        .header {
-            background: var(--primary);
+        /* Main Content */
+        .main-content {
+            padding: 40px 0;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 0 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        .date-display {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 15px 20px;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Admin Cards Container */
+        .admin-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 30px;
+            width: 100%;
+            padding: 0 30px;
+        }
+
+        /* Admin Card Styles */
+        .admin-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f5f7fb 0%, #e4e8f0 100%);
+            color: var(--text-color);
+            padding: 25px;
+            position: relative;
+            text-align: center;
+        }
+
+        .card-header .admin-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--secondary-color);
+        }
+
+        .card-header p {
+            font-size: 1rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .admin-detail {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 1rem;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f3f9;
+        }
+
+        .admin-detail:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .admin-detail i {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 0.9rem;
+        }
+
+        .admin-detail .detail-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: var(--text-color);
+        }
+
+        .admin-detail .detail-value {
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        .card-footer {
+            padding: 20px 25px;
+            background-color: var(--light-gray);
+            border-top: 1px solid var(--medium-gray);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
+        .admin-status {
             display: flex;
             align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 10px;
+        .status-active {
+            color: var(--success-color);
         }
 
-        .header-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
+        .status-inactive {
+            color: var(--error-color);
+        }
+
+        .status-pending {
+            color: var(--warning-color);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+
+        .active .status-indicator {
+            background-color: var(--success-color);
+        }
+
+        .inactive .status-indicator {
+            background-color: var(--error-color);
+        }
+
+        .pending .status-indicator {
+            background-color: var(--warning-color);
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: white;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .header-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-
-        .sidebar-toggle {
-            display: none;
-        }
-
-        .alert {
-            margin: 0;
-            border-radius: 0;
-            text-align: center;
-        }
-
-        .student-info {
-            padding: 20px;
-            background: var(--light-gray);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .info-card {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .info-card h3 {
-            font-size: 14px;
-            color: var(--gray);
-            margin-bottom: 5px;
-        }
-
-        .info-card p {
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        .filter-section {
-            padding: 20px;
-            background: var(--light-gray);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: flex-end;
-        }
-
-        .filter-group {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .filter-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: var(--dark);
-        }
-
-        .filter-group select, 
-        .filter-group input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .btn-filter {
-            background: var(--primary);
+        .action-btn:hover {
+            background: var(--primary-color);
             color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
         }
 
-        .btn-filter:hover {
-            background: var(--primary-dark);
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .admin-cards {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
         }
-
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-
-        .summary-card h3 {
-            font-size: 14px;
-            color: var(--gray);
-            margin-bottom: 10px;
-        }
-
-        .summary-card p {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .attendance-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .attendance-table th, 
-        .attendance-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .attendance-table th {
-            background: var(--light-gray);
-            font-weight: 600;
-            color: var(--dark);
-            position: sticky;
-            top: 0;
-        }
-
-        .attendance-table tr:hover {
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-
-        .no-records {
-            text-align: center;
-            padding: 30px;
-            color: var(--gray);
-        }
-
-        .status-present { color: var(--present); }
-        .status-absent { color: var(--absent); }
-        .status-half-day { color: var(--half-day); }
-        .status-leave { color: var(--leave); }
-        .status-holiday { color: var(--holiday); }
 
         @media (max-width: 992px) {
-            body {
-                padding-left: 0;
+            .nav-menu {
+                display: none;
             }
             
-            .sidebar {
-                transform: translateX(-100%);
+            .header-content {
+                padding: 0 20px;
             }
             
-            .sidebar.active {
-                transform: translateX(0);
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            .search-input {
+                width: 240px;
             }
             
-            .sidebar-toggle {
-                display: block;
+            .search-input:focus {
+                width: 280px;
             }
             
-            .container {
-                margin: 15px;
+            .admin-cards {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                padding: 0 20px;
+            }
+            
+            .page-header {
+                padding: 0 20px;
             }
         }
 
         @media (max-width: 768px) {
-            .filter-section {
+            .main-content {
+                padding: 30px 0;
+            }
+            
+            .page-header {
                 flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
             }
             
-            .filter-group {
-                width: 100%;
+            h1 {
+                font-size: 2rem;
             }
             
-            .summary-cards {
+            .search-bar {
+                display: none;
+            }
+            
+            .admin-cards {
                 grid-template-columns: 1fr;
+                gap: 25px;
             }
         }
-        .header-btn {
-  text-decoration: none;
-  color: inherit;}
+
+        @media (max-width: 576px) {
+            .user-info {
+                display: none;
+            }
+            
+            .date-display {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .header-content {
+                padding: 0 15px;
+            }
+            
+            .action-icon {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .admin-cards {
+                padding: 0 15px;
+            }
+        }
     </style>
 </head>
 <body>
-            {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-user-cog"></i>
                 </div>
-            {% endfor %}
-        {% endif %}
-
-        <div class="student-info">
-            <div class="info-card">
-                <h3>Student Name</h3>
-                <p>{{ student.name }}</p>
+                <div class="logo-text">AdminPortal</div>
             </div>
-            <div class="info-card">
-                <h3>College ID</h3>
-                <p>{{ student.college_id }}</p>
-            </div>
-            <div class="info-card">
-                <h3>Course</h3>
-                <p>{{ student.course }}</p>
-            </div>
-            <div class="info-card">
-                <h3>Year/Semester</h3>
-                <p>Year {{ student.year }} / Sem {{ student.semester }}</p>
-            </div>
-        </div>
-
-        <div class="summary-cards">
-            <div class="summary-card">
-                <h3>Total Lectures</h3>
-                <p id="total-lectures">0</p>
-            </div>
-            <div class="summary-card">
-                <h3>Present</h3>
-                <p id="present-count">0</p>
-            </div>
-            <div class="summary-card">
-                <h3>Absent</h3>
-                <p id="absent-count">0</p>
-            </div>
-            <div class="summary-card">
-                <h3>Attendance %</h3>
-                <p id="attendance-percent">0%</p>
-            </div>
-        </div>
-
-        <div class="filter-section">
-            <div class="filter-group">
-                <label for="course">Course:</label>
-                <select id="course" class="form-select">
-                    <option value="all">All Courses</option>
-                    <option value="{{ student.course }}" selected>{{ student.course }}</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="month">Month:</label>
-                <select id="month" class="form-select">
-                    <option value="all">All Months</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="year">Year:</label>
-                <select id="year" class="form-select">
-                    <option value="all">All Years</option>
-                    {% for year in years %}
-                        <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="status">Status:</label>
-                <select id="status" class="form-select">
-                    <option value="all">All Status</option>
-                    <option value="Present" class="Present">Present</option>
-                    <option value="Absent" class="Absent">Absent</option>
-                    <option value="Half Day" class="Half-Day">Half Day</option>
-                    <option value="Leave" class="Leave">Leave</option>
-                    <option value="Holiday" class="Holiday">Holiday</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <button id="filterBtn" class="btn-filter w-100">
-                    <i class="fas fa-filter"></i> Filter
-                </button>
-            </div>
-        </div>
-
-        <div style="overflow-x: auto; padding: 20px;">
-            <table class="attendance-table">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Day</th>
-                        <th>Lecture</th>
-                        <th>Course</th>
-                        <th>Status</th>
-                        <th>Marked By</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody id="attendanceData">
-                    <!-- Attendance data will be loaded here -->
-                </tbody>
-            </table>
-            <div id="noRecords" class="no-records" style="display: none;">
-                No attendance records found for selected filters
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            const studentId = "{{ student.id }}";
             
-            // Toggle sidebar
-            $('#sidebarToggle').click(function() {
-                $('.sidebar').toggleClass('active');
-            });
-
-            // Auto-dismiss alerts after 5 seconds
-            setTimeout(() => {
-                $('.alert').alert('close');
-            }, 5000);
-
-            // Load attendance data
-            function loadAttendanceData() {
-                const course = $('#course').val();
-                const month = $('#month').val();
-                const year = $('#year').val();
-                const status = $('#status').val();
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">Dashboard</a>
+                <a href="#" class="nav-item">Admins</a>
+                <a href="#" class="nav-item">Faculty</a>
+                <a href="#" class="nav-item">Students</a>
+                <a href="#" class="nav-item">Settings</a>
+            </nav>
+            
+            <div class="header-actions">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search...">
+                </div>
                 
-                $('#filterBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+                <div class="action-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
                 
-                $.get('/get_student_attendance/', {
-                    student_id: studentId,
-                    course: course,
-                    month: month,
-                    year: year,
-                    status: status
-                }, function(data) {
-                    const tbody = $('#attendanceData');
-                    tbody.empty();
-                    
-                    if (data.attendance.length === 0) {
-                        $('#noRecords').show();
-                    } else {
-                        $('#noRecords').hide();
-                        
-                        data.attendance.forEach(record => {
-                            const date = new Date(record.date);
-                            const day = date.toLocaleDateString('en-US', { weekday: 'long' });
-                            const formattedDate = date.toLocaleDateString('en-GB');
-                            const formattedTime = record.time || 'N/A';
-                            
-                            const row = `
-                                <tr>
-                                    <td>${formattedDate}</td>
-                                    <td>${day}</td>
-                                    <td>Lecture ${record.lecture_number}</td>
-                                    <td>${record.course_name}</td>
-                                    <td class="status-${record.status.toLowerCase().replace(' ', '-')}">
-                                        ${record.status}
-                                    </td>
-                                    <td>${record.faculty_name}</td>
-                                    <td>${formattedTime}</td>
-                                </tr>
-                            `;
-                            tbody.append(row);
-                        });
-                        
-                        // Update summary cards
-                        $('#total-lectures').text(data.summary.total_lectures);
-                        $('#present-count').text(data.summary.present);
-                        $('#absent-count').text(data.summary.absent);
-                        $('#attendance-percent').text(data.summary.attendance_percentage + '%');
-                    }
-                }).fail(function(xhr) {
-                    let errorMsg = 'Failed to load attendance data';
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        errorMsg = response.error || errorMsg;
-                    } catch (e) {}
-                    
-                    // Show error message
-                    const alertHtml = `
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            ${errorMsg}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="action-icon">
+                    <i class="fas fa-envelope"></i>
+                    <span class="notification-badge">7</span>
+                </div>
+                
+                <div class="user-profile">
+                    <div class="user-avatar">JS</div>
+                    <div class="user-info">
+                        <div class="user-name">John Smith</div>
+                        <div class="user-role">Super Admin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <div>
+                    <h1>Administrator Profiles</h1>
+                    <p class="subtitle">Manage and view all administrative staff members</p>
+                </div>
+                <div class="date-display">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="current-date">Loading date...</span>
+                </div>
+            </div>
+
+            <div class="admin-cards">
+                <!-- Admin Card 1 -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <div class="admin-image">
+                            <i class="fas fa-user-tie"></i>
                         </div>
-                    `;
-                    $('.header').after(alertHtml);
-                    
-                    // Auto-dismiss after 5 seconds
-                    setTimeout(() => {
-                        $('.alert').alert('close');
-                    }, 5000);
-                }).always(function() {
-                    $('#filterBtn').prop('disabled', false).html('<i class="fas fa-filter"></i> Filter');
-                });
-            }
-            
-            // Filter button click
-            $('#filterBtn').click(loadAttendanceData);
-            
-            // Handle Enter key in filter fields
-            $('.filter-group select').keypress(function(e) {
-                if (e.which === 13) {
-                    loadAttendanceData();
-                }
-            });
-            
-            // Initial load
-            loadAttendanceData();
-        });
-        // Back button functionality
-        $(document).on('click', '.menu-link.active', function(e) {
-            e.preventDefault();
-            window.history.back();
+                        <h3>Dr. Sarah Johnson</h3>
+                        <p>Dean of Academics</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="admin-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">s.johnson@university.edu</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-phone"></i>
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">+91 9876543210</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-id-badge"></i>
+                            <span class="detail-label">Admin ID:</span>
+                            <span class="detail-value">ADM-1001</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-calendar"></i>
+                            <span class="detail-label">Joined:</span>
+                            <span class="detail-value">Jan 15, 2018</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="admin-status active">
+                            <span class="status-indicator"></span>
+                            <span class="status-active">Active</span>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn" title="Message"><i class="fas fa-comment"></i></button>
+                            <button class="action-btn" title="More"><i class="fas fa-ellipsis-v"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Card 2 -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <div class="admin-image">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3>Dr. Michael Chen</h3>
+                        <p>Registrar</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="admin-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">m.chen@university.edu</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-phone"></i>
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">+91 8765432109</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-id-badge"></i>
+                            <span class="detail-label">Admin ID:</span>
+                            <span class="detail-value">ADM-1002</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-calendar"></i>
+                            <span class="detail-label">Joined:</span>
+                            <span class="detail-value">Mar 22, 2020</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="admin-status active">
+                            <span class="status-indicator"></span>
+                            <span class="status-active">Active</span>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn" title="Message"><i class="fas fa-comment"></i></button>
+                            <button class="action-btn" title="More"><i class="fas fa-ellipsis-v"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Card 3 -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <div class="admin-image">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h3>Dr. Priya Sharma</h3>
+                        <p>Head of Student Affairs</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="admin-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">p.sharma@university.edu</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-phone"></i>
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">+91 7654321098</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-id-badge"></i>
+                            <span class="detail-label">Admin ID:</span>
+                            <span class="detail-value">ADM-1003</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-calendar"></i>
+                            <span class="detail-label">Joined:</span>
+                            <span class="detail-value">Aug 10, 2019</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="admin-status active">
+                            <span class="status-indicator"></span>
+                            <span class="status-active">Active</span>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn" title="Message"><i class="fas fa-comment"></i></button>
+                            <button class="action-btn" title="More"><i class="fas fa-ellipsis-v"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Set current date
+        document.addEventListener('DOMContentLoaded', () => {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const currentDate = new Date().toLocaleDateString('en-US', options);
+            document.getElementById('current-date').textContent = currentDate;
         });
     </script>
 </body>

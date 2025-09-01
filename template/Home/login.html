@@ -626,6 +626,7 @@
                 <div class="modal-body">
                     <p>Enter your college ID to recover your account credentials.</p>
                     <form id="forgotPasswordForm" method="POST">
+                        {% csrf_token %}
                         <div class="mb-3">
                             <label for="collegeId" class="form-label">College ID</label>
                             <input type="text" class="form-control" id="collegeId" placeholder="Enter your college ID" required>

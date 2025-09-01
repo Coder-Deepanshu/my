@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Student Management System</title>
+     {% load static %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -1256,6 +1257,7 @@
             height: 300px;
         }
     </style>
+   
 </head>
 <body>
     <div class="bubbles">
@@ -1531,7 +1533,7 @@
                 <div class="slider-container">
                     <div class="slider">
                         <div class="slide active">
-                            <img src="https://www.honorsociety.org/sites/default/files/uni-campus-21122">
+                            <img src="{% static '/images/university2.jpg' %}" alt="University">
                             <div class="slide-content">
                                 <h3 class="slide-title">Welcome to New Academic Year</h3>
                                 <p class="slide-text">Orientation program for new students starts next Monday</p>
@@ -1539,7 +1541,7 @@
                         </div>
                         
                         <div class="slide">
-                            <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Library">
+                            <img src="{% static '/images/library.jpg' %}" alt="Library">
                             <div class="slide-content">
                                 <h3 class="slide-title">Library Renovation Complete</h3>
                                 <p class="slide-text">New study spaces and resources now available</p>
@@ -1547,7 +1549,7 @@
                         </div>
                         
                         <div class="slide">
-                            <img src="https://news.nd.edu/assets/517481/fullsize/commencement_2023_group_photo_1200.jpg" alt="Graduation">
+                            <img src="{% static '/images/group.jpg' %}" alt="Graduation">
                             <div class="slide-content">
                                 <h3 class="slide-title">Annual Convocation</h3>
                                 <p class="slide-text">Graduation ceremony scheduled for June 15th</p>
@@ -1880,7 +1882,7 @@
                         </div>
                         <h3 class="student-action-title">Department</h3>
                         <p class="student-action-desc">Create Department First for Faculty</p>
-                        <a href="#" class="student-action-btn">Open</a>
+                        <a href="{% url 'department_creation' %}" class="student-action-btn">Open</a>
                     </div>
                     
                     <div class="student-action-card">
@@ -1896,9 +1898,9 @@
                         <div class="student-action-icon">
                             <i class="fas fa-id-badge"></i>
                         </div>
-                        <h3 class="student-action-title">Positions</h3>
+                        <h3 class="student-action-title">Position</h3>
                         <p class="student-action-desc">Create and Positions of faculty</p>
-                        <button class="student-action-btn">Open</button>
+                        <a href="{% url 'position_creation' %}" class="student-action-btn">Open</a>
                     </div>
                     
                     <div class="student-action-card">
@@ -1943,7 +1945,7 @@
                         </div>
                         <h3 class="student-action-title">Course</h3>
                         <p class="student-action-desc">Create and enter Course with subjects</p>
-                        <a href="#" class="student-action-btn">Open</a>
+                        <a href="{% url 'course_creation' %}" class="student-action-btn">Open</a>
                     </div>
                     
                     <div class="student-action-card">
@@ -2235,7 +2237,7 @@
                 icon: 'fa-user-graduate',
                 items: [
                     {icon: 'fa-user', text: 'Single Student', url: '{% url "student_function" %}'},
-                    {icon: 'fa-users', text: 'All Students', url: '#'},
+                    {icon: 'fa-users', text: 'All Students', url: '{% url "students" %}'},
                     {icon: 'fa-calendar-check', text: 'Attendance', url: '#'},
                     {icon: 'fa-history', text: 'History', url: '#'}
                 ]
@@ -2244,7 +2246,7 @@
                 title: 'Faculty Management',
                 icon: 'fa-chalkboard-teacher',
                 items: [
-                    {icon: 'fa-user', text: 'Single Faculty', url: '#'},
+                    {icon: 'fa-user', text: 'Single Faculty', url: '{% url "faculty_functions" %}'},
                     {icon: 'fa-users', text: 'All Faculties', url: '#'},
                     {icon: 'fa-calendar-check', text: 'Attendance', url: '#'},
                     {icon: 'fa-envelope', text: 'Send Notes', url: '#'}
@@ -2254,6 +2256,7 @@
                 title: 'Results Management',
                 icon: 'fa-poll',
                 items: [
+                   
                     {icon: 'fa-user', text: 'Single Student', url: '#'},
                     {icon: 'fa-users', text: 'Multiple Students', url: '#'},
                     {icon: 'fa-check-circle', text: 'Passed Students', url: '#'},
@@ -2371,8 +2374,7 @@
                     pageTitle.textContent = 'Grade';
                 }else if (tabId === 'notification-tab') {
                     pageTitle.textContent = 'Notifications';
-                }
-                else if (tabId === 'adminSignupModal') {
+                }else if (tabId === 'adminSignupModal') {
                     pageTitle.textContent = 'Admin';
                 }
                 
@@ -2432,40 +2434,64 @@
         });
         
         // Image Slider
-        const slides = document.querySelectorAll('.slide');
-        const dots = document.querySelectorAll('.slider-dot');
-        const prevBtn = document.querySelector('.prev-slide');
-        const nextBtn = document.querySelector('.next-slide');
-        let currentSlide = 0;
-        
-        function showSlide(n) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
-            
-            currentSlide = (n + slides.length) % slides.length;
-            slides[currentSlide].classList.add('active');
-            dots[currentSlide].classList.add('active');
-        }
-        
-        function nextSlide() {
-            showSlide(currentSlide + 1);
-        }
-        
-        function prevSlide() {
-            showSlide(currentSlide - 1);
-        }
-        
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-        
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                showSlide(index);
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.slider-dot');
+            const prevBtn = document.querySelector('.prev-slide');
+            const nextBtn = document.querySelector('.next-slide');
+            let currentSlide = 0;
+            let slideInterval;
+
+            function showSlide(n) {
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === n);
+                });
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === n);
+                });
+                currentSlide = n;
+            }
+
+            function nextSlide() {
+                let n = (currentSlide + 1) % slides.length;
+                showSlide(n);
+            }
+
+            function prevSlide() {
+                let n = (currentSlide - 1 + slides.length) % slides.length;
+                showSlide(n);
+            }
+
+            // Dots click
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', () => {
+                    showSlide(i);
+                    resetInterval();
+                });
             });
+
+            // Prev/Next buttons
+            prevBtn.addEventListener('click', function() {
+                prevSlide();
+                resetInterval();
+            });
+            nextBtn.addEventListener('click', function() {
+                nextSlide();
+                resetInterval();
+            });
+
+            // Auto slide
+            function startInterval() {
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+            function resetInterval() {
+                clearInterval(slideInterval);
+                startInterval();
+            }
+
+            showSlide(0);
+            startInterval();
         });
-        
-        // Auto slide change
-        setInterval(nextSlide, 5000);
         
         // Charts
         // Line Chart
@@ -2560,96 +2586,5 @@
             }
         });
     </script>
-    <script>
-    // Revenue Pie Chart
-    new Chart(document.getElementById('revenuePie'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Product Sales', 'Services', 'Subscriptions', 'Advertising'],
-            datasets: [{
-                data: [45, 25, 20, 10],
-                backgroundColor: [
-                    '#4e73df',
-                    '#1cc88a',
-                    '#36b9cc',
-                    '#f6c23e'
-                ],
-                hoverBackgroundColor: [
-                    '#2e59d9',
-                    '#17a673',
-                    '#2c9faf',
-                    '#dda20a'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            cutout: '70%',
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 20,
-                        font: {
-                            size: 13
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Performance Bar Chart
-    new Chart(document.getElementById('performanceBar'), {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: '2023',
-                data: [21500, 18900, 24000, 27800, 22900, 31500],
-                backgroundColor: '#4e73df',
-                hoverBackgroundColor: '#2e59d9',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        drawBorder: false,
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toLocaleString();
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false,
-                        drawBorder: false
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return '$' + context.raw.toLocaleString();
-                        }
-                    }
-                }
-            }
-        }
-    });
-</script>
 </body>
 </html>

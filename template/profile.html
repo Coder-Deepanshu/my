@@ -4,375 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Profile | Academic Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4361ee;
             --primary-dark: #3a56d4;
-            --primary-light: #f0f2ff;
             --secondary: #3f37c9;
-            --accent: #4895ef;
-            --success: #4cc9f0;
-            --warning: #f8961e;
-            --danger: #f72585;
-            --dark: #212529;
+            --accent: #7209b7;
             --light: #f8f9fa;
+            --dark: #212529;
             --gray: #6c757d;
             --light-gray: #e9ecef;
-            --sidebar-width: 280px;
-            --header-height: 70px;
-            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            --border-radius: 12px;
-            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --box-shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.12);
-            --sidebar-bg: #2a3042;
-            --sidebar-text: #a6b0cf;
-            --sidebar-active: rgba(67, 97, 238, 0.2);
-            --sidebar-hover: #343b52;
-            --sidebar-icon: #6e84a3;
-            --card-bg: #ffffff;
-            --text-primary: #2d3748;
-            --text-secondary: #718096;
-            --border-color: #e2e8f0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --transition: all 0.3s ease;
         }
 
         body {
-            background-color: #f7fafc;
-            color: var(--text-primary);
-            display: flex;
-            min-height: 100vh;
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             overflow-x: hidden;
             line-height: 1.6;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            transition: var(--transition);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar-header {
-            padding: 1.5rem 1.5rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            height: var(--header-height);
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 0;
-        }
-
-        .menu-title {
-            padding: 0.75rem 1.5rem 0.5rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--sidebar-text);
-            font-weight: 600;
-            opacity: 0.7;
-            margin-top: 0.5rem;
-        }
-
-        .menu-list {
-            list-style: none;
-        }
-
-        .menu-item {
-            position: relative;
-            margin: 0.15rem 0;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1.5rem;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            border-left: 3px solid transparent;
-            font-size: 0.9rem;
-            margin: 0 0.5rem;
-            border-radius: 6px;
-        }
-
-        .menu-link:hover {
-            color: white;
-            background-color: var(--sidebar-hover);
-            transform: translateX(5px);
-        }
-
-        .menu-link.active {
-            color: white;
-            background-color: var(--sidebar-active);
-            border-left-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .menu-icon {
-            font-size: 1rem;
-            margin-right: 0.75rem;
-            width: 20px;
-            text-align: center;
-            color: var(--sidebar-icon);
-            transition: var(--transition);
-        }
-
-        .menu-link:hover .menu-icon,
-        .menu-link.active .menu-icon {
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .sidebar-footer {
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-        }
-
-        .sidebar-footer:hover .user-avatar {
-            transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .user-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .user-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.1rem;
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-role {
-            font-size: 0.7rem;
-            color: var(--sidebar-text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--sidebar-text);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: var(--transition);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .logout-btn:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: rotate(180deg);
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            transition: var(--transition);
-        }
-
         /* Header Styles */
         .header {
-            height: var(--header-height);
-            background: var(--card-bg);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            box-shadow: var(--box-shadow);
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
-            z-index: 90;
-            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            height: 70px;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .toggle-sidebar {
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            color: var(--gray);
-            cursor: pointer;
-            display: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .toggle-sidebar:hover {
-            background-color: var(--light-gray);
-            color: var(--dark);
-        }
-
-        .page-title {
-            font-size: 1.4rem;
+        .navbar-brand {
             font-weight: 700;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .page-title i {
             color: var(--primary);
-            font-size: 1.2rem;
+            font-size: 1.8rem;
         }
 
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .notification-btn {
-            position: relative;
-            background: none;
-            border: none;
-            color: var(--gray);
-            font-size: 1.25rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .notification-btn:hover {
-            background-color: var(--light-gray);
+        .nav-link {
             color: var(--dark);
-            transform: translateY(-2px);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--danger);
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.6rem;
-            font-weight: bold;
-            border: 2px solid white;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            position: relative;
-            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
-            border-radius: 50px;
-            transition: var(--transition);
-        }
-
-        .user-dropdown:hover {
-            background-color: var(--light-gray);
-        }
-
-        .user-dropdown-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--light-gray);
-            transition: var(--transition);
-        }
-
-        .user-dropdown:hover .user-dropdown-avatar {
-            transform: scale(1.1);
-            border-color: var(--primary-light);
-        }
-
-        .user-dropdown-name {
-            font-size: 0.9rem;
             font-weight: 500;
-            color: var(--text-primary);
+            margin: 0 10px;
             transition: var(--transition);
         }
 
-        .user-dropdown:hover .user-dropdown-name {
+        .nav-link:hover {
             color: var(--primary);
         }
 
-        /* Content Styles */
-        .content {
-            padding: 2rem;
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 60px 0 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
         }
 
         /* Profile Container */
@@ -380,16 +116,17 @@
             display: grid;
             grid-template-columns: 320px 1fr;
             gap: 1.5rem;
+            padding: 30px;
         }
 
         /* Sidebar */
         .profile-sidebar {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 1.5rem;
             height: fit-content;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--light-gray);
             position: relative;
             overflow: hidden;
         }
@@ -450,12 +187,12 @@
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
-            color: var(--text-primary);
+            color: var(--dark);
         }
 
         .student-id {
             text-align: center;
-            color: var(--text-secondary);
+            color: var(--gray);
             margin-bottom: 1.5rem;
             font-size: 0.85rem;
         }
@@ -467,7 +204,7 @@
         .info-item {
             margin-bottom: 1rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--light-gray);
         }
 
         .info-item:last-child {
@@ -478,7 +215,7 @@
 
         .info-label {
             font-size: 0.75rem;
-            color: var(--text-secondary);
+            color: var(--gray);
             text-transform: uppercase;
             font-weight: 600;
             margin-bottom: 0.25rem;
@@ -487,30 +224,30 @@
 
         .info-value {
             font-size: 0.95rem;
-            color: var(--text-primary);
+            color: var(--dark);
             font-weight: 500;
         }
 
         .info-value.status-active {
-            color: var(--success);
+            color: #0d6efd;
             font-weight: 600;
         }
 
         /* Main Content */
         .profile-main {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 1.75rem;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--light-gray);
         }
 
         .section-title {
             font-size: 1.2rem;
-            color: var(--text-primary);
+            color: var(--dark);
             margin-bottom: 1.5rem;
             padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--light-gray);
             display: flex;
             align-items: center;
             font-weight: 600;
@@ -531,15 +268,15 @@
 
         .detail-card {
             background: var(--light);
-            border-radius: var(--border-radius);
+            border-radius: 12px;
             padding: 1.25rem;
             transition: var(--transition);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--light-gray);
         }
 
         .detail-card:hover {
             transform: translateY(-3px);
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
         .detail-card h3 {
@@ -568,7 +305,7 @@
 
         .detail-label {
             width: 120px;
-            color: var(--text-secondary);
+            color: var(--gray);
             font-size: 0.85rem;
             flex-shrink: 0;
         }
@@ -620,86 +357,6 @@
             transition: width 1s ease-in-out;
         }
 
-        /* Documents Section */
-        .documents-section {
-            margin-top: 2rem;
-        }
-
-        .document-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.25rem;
-        }
-
-        .document-card {
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 1.25rem;
-            transition: var(--transition);
-            background: white;
-        }
-
-        .document-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: var(--box-shadow);
-        }
-
-        .document-icon {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 0.75rem;
-        }
-
-        .document-name {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            font-size: 0.95rem;
-        }
-
-        .document-date {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.75rem;
-        }
-
-        .document-actions {
-            margin-top: 0.75rem;
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .document-btn {
-            padding: 0.4rem 0.75rem;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
-        }
-
-        .btn-view {
-            background: var(--primary);
-            color: white;
-            border: none;
-        }
-
-        .btn-view:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .btn-download {
-            background: white;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-        }
-
-        .btn-download:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-        }
-
         /* Messages */
         .messages {
             position: fixed;
@@ -730,27 +387,15 @@
 
         /* Responsive Styles */
         @media (max-width: 1200px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .toggle-sidebar {
-                display: flex;
+            .profile-container {
+                grid-template-columns: 280px 1fr;
             }
         }
 
         @media (max-width: 992px) {
-            .content {
-                padding: 1.5rem;
-            }
-            
             .profile-container {
                 grid-template-columns: 1fr;
+                padding: 20px;
             }
             
             .personal-details {
@@ -759,8 +404,8 @@
         }
 
         @media (max-width: 768px) {
-            .header {
-                padding: 0 1.25rem;
+            .page-header h1 {
+                font-size: 1.8rem;
             }
             
             .detail-row {
@@ -774,395 +419,430 @@
         }
 
         @media (max-width: 576px) {
-            .content {
+            .profile-container {
+                padding: 15px;
+            }
+            
+            .profile-sidebar, .profile-main {
                 padding: 1.25rem;
             }
             
-            .document-list {
-                grid-template-columns: 1fr;
-            }
-            
-            .user-dropdown-name {
-                display: none;
+            .profile-picture-container {
+                width: 120px;
+                height: 120px;
             }
         }
     </style>
 </head>
 <body>
-        
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                <i class="fas fa-check-circle"></i> {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% if student %}
-        <div class="content">
-            <div class="profile-container">
-                <!-- Sidebar -->
-                <div class="profile-sidebar">
-                    <div class="profile-picture-container">
-                        {% if student.profile_picture %}
-                        <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="profile-picture">
-                        {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo" class="profile-picture">
-                        {% endif %}
-        
-                        <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
-                        {% csrf_token %}
-                        <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
-                        <i class="fas fa-camera"></i>
-                        </button>
-                        <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
-                        </form>
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Back</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="#" class="btn btn-outline-primary me-2">LogOut</a>
                     </div>
-                    <h2 class="student-name">{{ student.name }}</h2>
-                    <p class="student-id">ID: {{ student.college_id }}</p>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Student Profile</h1>
+            <p>View and manage your academic profile</p>
+        </div>
+    </section>
+        
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="fas fa-check-circle"></i> {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <div class="content-container">
+        {% if student %}
+        <div class="profile-container">
+            <!-- Sidebar -->
+            <div class="profile-sidebar">
+                <div class="profile-picture-container">
+                    {% if student.profile_picture %}
+                    <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="profile-picture">
+                    {% else %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo" class="profile-picture">
+                    {% endif %}
+    
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
+                    {% csrf_token %}
+                    <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
+                    <i class="fas fa-camera"></i>
+                    </button>
+                    <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                    </form>
+                </div>
+                <h2 class="student-name">{{ student.name }}</h2>
+                <p class="student-id">ID: {{ student.college_id }}</p>
+                
+                <div class="profile-info">
+                    <div class="info-item">
+                        <div class="info-label">Course</div>
+                        <div class="info-value">{{ student.course }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Batch</div>
+                        <div class="info-value">2023-2027</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Semester</div>
+                        <div class="info-value">{{ student.semester }} Semester</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Department</div>
+                        <div class="info-value">Computer Science</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Status</div>
+                        <div class="info-value status-active">Active</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="profile-main">
+                <div class="personal-info">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
                     
-                    <div class="profile-info">
-                        <div class="info-item">
-                            <div class="info-label">Course</div>
-                            <div class="info-value">{{ student.course }}</div>
+                    <div class="personal-details">
+                        <div class="detail-card">
+                            <h3><i class="fas fa-id-card"></i> Basic Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Full Name:</div>
+                                <div class="detail-value">{{ student.name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Date of Birth:</div>
+                                <div class="detail-value">{{ student.birthday }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Date of Joining:</div>
+                                <div class="detail-value">{{ student.date_of_joining }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Gender:</div>
+                                <div class="detail-value">{{ student.gender }}</div>
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Batch</div>
-                            <div class="info-value">2023-2027</div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-address-book"></i> Contact Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Email:</div>
+                                <div class="detail-value">{{ student.email }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Phone:</div>
+                                <div class="detail-value">+91 {{ student.phone }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Parent Contact:</div>
+                                <div class="detail-value">+91 {{ student.other_phone_no }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Address:</div>
+                                <div class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}</div>
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Semester</div>
-                            <div class="info-value">{{ student.semester }} Semester</div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-users"></i> Family Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Father's Name:</div>
+                                <div class="detail-value">Mr. {{ student.father_name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Mother's Name:</div>
+                                <div class="detail-value">Mrs. {{ student.mother_name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Father Occupation:</div>
+                                <div class="detail-value">{{ student.occupation }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Income:</div>
+                                <div class="detail-value">Rs. {{ student.income }}</div>
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Department</div>
-                            <div class="info-value">Computer Science</div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Category:</div>
+                                <div class="detail-value">{{ student.category }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Nationality:</div>
+                                <div class="detail-value">{{ student.nationality }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Religion:</div>
+                                <div class="detail-value">{{ student.religion }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Martial Status:</div>
+                                <div class="detail-value">{{ student.martial_status }}</div>
+                            </div>
                         </div>
-                        <div class="info-item">
-                            <div class="info-label">Status</div>
-                            <div class="info-value status-active">Active</div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-lock"></i> Login Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">User Name:</div>
+                                <div class="detail-value">{{ student.username }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">User ID:</div>
+                                <div class="detail-value">{{ student.user_id }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Password:</div>
+                                <div class="detail-value">••••••••</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-passport"></i> Government IDs</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Adhar Number:</div>
+                                <div class="detail-value">{{ student.adhar_no }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Pan ID:</div>
+                                <div class="detail-value">{{ student.pan_no }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Family ID Number:</div>
+                                <div class="detail-value">{{ student.family_id }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Family ID Mobile No:</div>
+                                <div class="detail-value">{{ student.family_id_phone_no }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Main Content -->
-                <div class="profile-main">
-                    <div class="personal-info">
-                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
-                        
-                        <div class="personal-details">
-                            <div class="detail-card">
-                                <h3><i class="fas fa-id-card"></i> Basic Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Full Name:</div>
-                                    <div class="detail-value">{{ student.name }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Date of Birth:</div>
-                                    <div class="detail-value">{{ student.birthday }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Date of Joining:</div>
-                                    <div class="detail-value">{{ student.date_of_joining }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Gender:</div>
-                                    <div class="detail-value">{{ student.gender }}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-address-book"></i> Contact Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Email:</div>
-                                    <div class="detail-value">{{ student.email }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Phone:</div>
-                                    <div class="detail-value">+91 {{ student.phone }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Parent Contact:</div>
-                                    <div class="detail-value">+91 {{ student.other_phone_no }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Address:</div>
-                                    <div class="detail-value">{{ student.address }}, {{ student.city }}, {{ student.state }} - {{ student.state_code }}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-users"></i> Family Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Father's Name:</div>
-                                    <div class="detail-value">Mr. {{ student.father_name }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Mother's Name:</div>
-                                    <div class="detail-value">Mrs. {{ student.mother_name }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Father Occupation:</div>
-                                    <div class="detail-value">{{ student.occupation }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Income:</div>
-                                    <div class="detail-value">Rs. {{ student.income }}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Category:</div>
-                                    <div class="detail-value">{{ student.category }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Nationality:</div>
-                                    <div class="detail-value">{{ student.nationality }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Religion:</div>
-                                    <div class="detail-value">{{ student.religion }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Martial Status:</div>
-                                    <div class="detail-value">{{ student.martial_status }}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-lock"></i> Login Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">User Name:</div>
-                                    <div class="detail-value">{{ student.username }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">User ID:</div>
-                                    <div class="detail-value">{{ student.user_id }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Password:</div>
-                                    <div class="detail-value">••••••••</div>
-                                </div>
-                            </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-passport"></i> Government IDs</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Adhar Number:</div>
-                                    <div class="detail-value">{{ student.adhar_no }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Pan ID:</div>
-                                    <div class="detail-value">{{ student.pan_no }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Family ID Number:</div>
-                                    <div class="detail-value">{{ student.family_id }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Family ID Mobile No:</div>
-                                    <div class="detail-value">{{ student.family_id_phone_no }}</div>
-                                </div>
-                            </div>
+                
+                <div class="academic-progress">
+                    <h2 class="section-title"><i class="fas fa-chart-line"></i> Academic Progress</h2>
+                    
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <div class="progress-title">Mathematics</div>
+                            <div class="progress-percent">85%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
                         </div>
                     </div>
                     
-                    <div class="academic-progress">
-                        <h2 class="section-title"><i class="fas fa-chart-line"></i> Academic Progress</h2>
-                        
-                        <div class="progress-item">
-                            <div class="progress-header">
-                                <div class="progress-title">Mathematics</div>
-                                <div class="progress-percent">85%</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 85%"></div>
-                            </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <div class="progress-title">Computer Programming</div>
+                            <div class="progress-percent">92%</div>
                         </div>
-                        
-                        <div class="progress-item">
-                            <div class="progress-header">
-                                <div class="progress-title">Computer Programming</div>
-                                <div class="progress-percent">92%</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 92%"></div>
-                            </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 92%"></div>
                         </div>
-                        
-                        <div class="progress-item">
-                            <div class="progress-header">
-                                <div class="progress-title">Data Structures</div>
-                                <div class="progress-percent">78%</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 78%"></div>
-                            </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <div class="progress-title">Data Structures</div>
+                            <div class="progress-percent">78%</div>
                         </div>
-                        
-                        <div class="progress-item">
-                            <div class="progress-header">
-                                <div class="progress-title">Database Systems</div>
-                                <div class="progress-percent">88%</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 88%"></div>
-                            </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 78%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <div class="progress-title">Database Systems</div>
+                            <div class="progress-percent">88%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 88%"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         {% elif faculty %}
-        <div class="content">
-            <div class="profile-container">
-                <!-- Sidebar -->
-                <div class="profile-sidebar">
-                    <div class="profile-picture-container">
-                        {% if faculty.profile_picture %}
-                        <img src="{{ faculty.profile_picture.url }}" alt="Faculty Photo" class="profile-picture">
-                        {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Faculty Photo" class="profile-picture">
-                        {% endif %}
-        
-                        <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
-                        {% csrf_token %}
-                        <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
-                        <i class="fas fa-camera"></i>
-                        </button>
-                        <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
-                        </form>
+        <div class="profile-container">
+            <!-- Sidebar -->
+            <div class="profile-sidebar">
+                <div class="profile-picture-container">
+                    {% if faculty.profile_picture %}
+                    <img src="{{ faculty.profile_picture.url }}" alt="Faculty Photo" class="profile-picture">
+                    {% else %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Faculty Photo" class="profile-picture">
+                    {% endif %}
+    
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
+                    {% csrf_token %}
+                    <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
+                    <i class="fas fa-camera"></i>
+                    </button>
+                    <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                    </form>
+                </div>
+                <h2 class="student-name">{{ faculty.name }}</h2>
+                <p class="student-id">ID: {{ faculty.college_id }}</p>
+                
+                <div class="profile-info">
+                    <div class="info-item">
+                        <div class="info-label">Position</div>
+                        <div class="info-value">{{ faculty.position }}</div>
                     </div>
-                    <h2 class="student-name">{{ faculty.name }}</h2>
-                    <p class="student-id">ID: {{ faculty.college_id }}</p>
-                    
-                    <div class="profile-info">
-                        <div class="info-item">
-                            <div class="info-label">Position</div>
-                            <div class="info-value">{{ faculty.position }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Date of Joining</div>
-                            <div class="info-value">{{ faculty.date_of_joining }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Department</div>
-                            <div class="info-value">{{ faculty.department }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Status</div>
-                            <div class="info-value status-active">Active</div>
-                        </div>
+                    <div class="info-item">
+                        <div class="info-label">Date of Joining</div>
+                        <div class="info-value">{{ faculty.date_of_joining }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Department</div>
+                        <div class="info-value">{{ faculty.department }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Status</div>
+                        <div class="info-value status-active">Active</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Main Content -->
-                <div class="profile-main">
-                    <div class="personal-info">
-                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+            <!-- Main Content -->
+            <div class="profile-main">
+                <div class="personal-info">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+                    
+                    <div class="personal-details">
+                        <div class="detail-card">
+                            <h3><i class="fas fa-id-card"></i> Basic Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Full Name:</div>
+                                <div class="detail-value">{{ faculty.name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Date of Birth:</div>
+                                <div class="detail-value">{{ faculty.birthday }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Date of Joining:</div>
+                                <div class="detail-value">{{ faculty.date_of_joining }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Gender:</div>
+                                <div class="detail-value">{{ faculty.gender }}</div>
+                            </div>
+                        </div>
                         
-                        <div class="personal-details">
-                            <div class="detail-card">
-                                <h3><i class="fas fa-id-card"></i> Basic Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Full Name:</div>
-                                    <div class="detail-value">{{ faculty.name }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Date of Birth:</div>
-                                    <div class="detail-value">{{ faculty.birthday }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Date of Joining:</div>
-                                    <div class="detail-value">{{ faculty.date_of_joining }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Gender:</div>
-                                    <div class="detail-value">{{ faculty.gender }}</div>
-                                </div>
+                        <div class="detail-card">
+                            <h3><i class="fas fa-address-book"></i> Contact Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Email:</div>
+                                <div class="detail-value">{{ faculty.email }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-address-book"></i> Contact Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Email:</div>
-                                    <div class="detail-value">{{ faculty.email }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Phone:</div>
-                                    <div class="detail-value">+91 {{ faculty.phone }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Parent Contact:</div>
-                                    <div class="detail-value">+91 {{ faculty.other_phone_no }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Address:</div>
-                                    <div class="detail-value">{{ faculty.address }}, {{ faculty.city }}, {{ faculty.state }} - {{ faculty.state_code }}</div>
-                                </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Phone:</div>
+                                <div class="detail-value">+91 {{ faculty.phone }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-users"></i> Family Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Father's Name:</div>
-                                    <div class="detail-value">Mr. {{ faculty.father_name }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Mother's Name:</div>
-                                    <div class="detail-value">Mrs. {{ faculty.mother_name }}</div>
-                                </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Parent Contact:</div>
+                                <div class="detail-value">+91 {{ faculty.other_phone_no }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Category:</div>
-                                    <div class="detail-value">{{ faculty.category }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Nationality:</div>
-                                    <div class="detail-value">{{ faculty.nationality }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Religion:</div>
-                                    <div class="detail-value">{{ faculty.religion }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Martial Status:</div>
-                                    <div class="detail-value">{{ faculty.martial_status }}</div>
-                                </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Address:</div>
+                                <div class="detail-value">{{ faculty.address }}, {{ faculty.city }}, {{ faculty.state }} - {{ faculty.state_code }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-lock"></i> Login Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">User Name:</div>
-                                    <div class="detail-value">{{ faculty.username }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">User ID:</div>
-                                    <div class="detail-value">{{ faculty.user_id }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Password:</div>
-                                    <div class="detail-value">••••••••</div>
-                                </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-users"></i> Family Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Father's Name:</div>
+                                <div class="detail-value">Mr. {{ faculty.father_name }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-passport"></i> Government IDs</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Adhar Number:</div>
-                                    <div class="detail-value">{{ faculty.adhar_no }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Pan ID:</div>
-                                    <div class="detail-value">{{ faculty.pan_no }}</div>
-                                </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Mother's Name:</div>
+                                <div class="detail-value">Mrs. {{ faculty.mother_name }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Category:</div>
+                                <div class="detail-value">{{ faculty.category }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Nationality:</div>
+                                <div class="detail-value">{{ faculty.nationality }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Religion:</div>
+                                <div class="detail-value">{{ faculty.religion }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Martial Status:</div>
+                                <div class="detail-value">{{ faculty.martial_status }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-lock"></i> Login Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">User Name:</div>
+                                <div class="detail-value">{{ faculty.username }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">User ID:</div>
+                                <div class="detail-value">{{ faculty.user_id }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Password:</div>
+                                <div class="detail-value">••••••••</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-passport"></i> Government IDs</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Adhar Number:</div>
+                                <div class="detail-value">{{ faculty.adhar_no }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Pan ID:</div>
+                                <div class="detail-value">{{ faculty.pan_no }}</div>
                             </div>
                         </div>
                     </div>
@@ -1170,152 +850,150 @@
             </div>
         </div>
         {% elif admin %}
-        <div class="content">
-            <div class="profile-container">
-                <!-- Sidebar -->
-                <div class="profile-sidebar">
-                    <div class="profile-picture-container">
-                        {% if admin.profile_picture %}
-                        <img src="{{ admin.profile_picture.url }}" alt="Admin Photo" class="profile-picture">
-                        {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Photo" class="profile-picture">
-                        {% endif %}
-        
-                        <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
-                        {% csrf_token %}
-                        <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
-                        <i class="fas fa-camera"></i>
-                        </button>
-                        <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
-                        </form>
+        <div class="profile-container">
+            <!-- Sidebar -->
+            <div class="profile-sidebar">
+                <div class="profile-picture-container">
+                    {% if admin.profile_picture %}
+                    <img src="{{ admin.profile_picture.url }}" alt="Admin Photo" class="profile-picture">
+                    {% else %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Photo" class="profile-picture">
+                    {% endif %}
+    
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'profile_upload' %}">
+                    {% csrf_token %}
+                    <button type="button" class="profile-upload-btn" title="Upload Profile Picture" onclick="document.getElementById('profile_picture_upload').click()">
+                    <i class="fas fa-camera"></i>
+                    </button>
+                    <input type="file" id="profile_picture_upload" name="profile_picture" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                    </form>
+                </div>
+                <h2 class="student-name">{{ admin.name }}</h2>
+                <p class="student-id">ID: {{ admin.college_id }}</p>
+                
+                <div class="profile-info">
+                    <div class="info-item">
+                        <div class="info-label">Position</div>
+                        <div class="info-value">{{ admin.position }}</div>
                     </div>
-                    <h2 class="student-name">{{ admin.name }}</h2>
-                    <p class="student-id">ID: {{ admin.college_id }}</p>
-                    
-                    <div class="profile-info">
-                        <div class="info-item">
-                            <div class="info-label">Position</div>
-                            <div class="info-value">{{ admin.position }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Date of Joining</div>
-                            <div class="info-value">{{ admin.date_of_joining }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Department</div>
-                            <div class="info-value">{{ admin.department }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Status</div>
-                            <div class="info-value status-active">Active</div>
-                        </div>
+                    <div class="info-item">
+                        <div class="info-label">Date of Joining</div>
+                        <div class="info-value">{{ admin.date_of_joining }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Department</div>
+                        <div class="info-value">{{ admin.department }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Status</div>
+                        <div class="info-value status-active">Active</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Main Content -->
-                <div class="profile-main">
-                    <div class="personal-info">
-                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+            <!-- Main Content -->
+            <div class="profile-main">
+                <div class="personal-info">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+                    
+                    <div class="personal-details">
+                        <div class="detail-card">
+                            <h3><i class="fas fa-id-card"></i> Basic Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Full Name:</div>
+                                <div class="detail-value">{{ admin.name }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Date of Birth:</div>
+                                <div class="detail-value">{{ admin.birthday }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Date of Joining:</div>
+                                <div class="detail-value">{{ admin.date_of_joining }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Gender:</div>
+                                <div class="detail-value">{{ admin.gender }}</div>
+                            </div>
+                        </div>
                         
-                        <div class="personal-details">
-                            <div class="detail-card">
-                                <h3><i class="fas fa-id-card"></i> Basic Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Full Name:</div>
-                                    <div class="detail-value">{{ admin.name }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Date of Birth:</div>
-                                    <div class="detail-value">{{ admin.birthday }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Date of Joining:</div>
-                                    <div class="detail-value">{{ admin.date_of_joining }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Gender:</div>
-                                    <div class="detail-value">{{ admin.gender }}</div>
-                                </div>
+                        <div class="detail-card">
+                            <h3><i class="fas fa-address-book"></i> Contact Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Email:</div>
+                                <div class="detail-value">{{ admin.email }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-address-book"></i> Contact Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Email:</div>
-                                    <div class="detail-value">{{ admin.email }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Phone:</div>
-                                    <div class="detail-value">+91 {{ admin.phone }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Parent Contact:</div>
-                                    <div class="detail-value">+91 {{ admin.other_phone_no }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Address:</div>
-                                    <div class="detail-value">{{ admin.address }}, {{ admin.city }}, {{ admin.state }} - {{ admin.state_code }}</div>
-                                </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Phone:</div>
+                                <div class="detail-value">+91 {{ admin.phone }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-users"></i> Family Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Father's Name:</div>
-                                    <div class="detail-value">Mr. {{ admin.father_name }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Mother's Name:</div>
-                                    <div class="detail-value">Mrs. {{ admin.mother_name }}</div>
-                                </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Parent Contact:</div>
+                                <div class="detail-value">+91 {{ admin.other_phone_no }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Category:</div>
-                                    <div class="detail-value">{{ admin.category }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Nationality:</div>
-                                    <div class="detail-value">{{ admin.nationality }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Religion:</div>
-                                    <div class="detail-value">{{ admin.religion }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Martial Status:</div>
-                                    <div class="detail-value">{{ admin.martial_status }}</div>
-                                </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Address:</div>
+                                <div class="detail-value">{{ admin.address }}, {{ admin.city }}, {{ admin.state }} - {{ admin.state_code }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-lock"></i> Login Details</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">User Name:</div>
-                                    <div class="detail-value">{{ admin.username }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">User ID:</div>
-                                    <div class="detail-value">{{ admin.user_id }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Password:</div>
-                                    <div class="detail-value">••••••••</div>
-                                </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-users"></i> Family Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Father's Name:</div>
+                                <div class="detail-value">Mr. {{ admin.father_name }}</div>
                             </div>
-                            
-                            <div class="detail-card">
-                                <h3><i class="fas fa-passport"></i> Government IDs</h3>
-                                <div class="detail-row">
-                                    <div class="detail-label">Adhar Number:</div>
-                                    <div class="detail-value">{{ admin.adhar_no }}</div>
-                                </div>
-                                <div class="detail-row">
-                                    <div class="detail-label">Pan ID:</div>
-                                    <div class="detail-value">{{ admin.pan_no }}</div>
-                                </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Mother's Name:</div>
+                                <div class="detail-value">Mrs. {{ admin.mother_name }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-dna"></i> Caste & Identity</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Category:</div>
+                                <div class="detail-value">{{ admin.category }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Nationality:</div>
+                                <div class="detail-value">{{ admin.nationality }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Religion:</div>
+                                <div class="detail-value">{{ admin.religion }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Martial Status:</div>
+                                <div class="detail-value">{{ admin.martial_status }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-lock"></i> Login Details</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">User Name:</div>
+                                <div class="detail-value">{{ admin.username }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">User ID:</div>
+                                <div class="detail-value">{{ admin.user_id }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Password:</div>
+                                <div class="detail-value">••••••••</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-passport"></i> Government IDs</h3>
+                            <div class="detail-row">
+                                <div class="detail-label">Adhar Number:</div>
+                                <div class="detail-value">{{ admin.adhar_no }}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">Pan ID:</div>
+                                <div class="detail-value">{{ admin.pan_no }}</div>
                             </div>
                         </div>
                     </div>
@@ -1323,19 +1001,10 @@
             </div>
         </div>
         {% endif %}
-    </main>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Toggle Sidebar
-        const toggleSidebar = document.querySelector('.toggle-sidebar');
-        const sidebar = document.querySelector('.sidebar');
-        const mainContent = document.querySelector('.main-content');
-        
-        toggleSidebar.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            mainContent.classList.toggle('sidebar-active');
-        });
-
         // Profile picture preview functionality
         document.getElementById('profile_picture_upload').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {

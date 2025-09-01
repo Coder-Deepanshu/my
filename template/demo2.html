@@ -3,52 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Fee Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>EduTrack - Image Slider</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --paid: #4caf50;
-            --pending: #ff9800;
-            --overdue: #f44336;
-            --sidebar-width: 260px;
             --sidebar-bg: #2a3042;
             --sidebar-text: #a6b0cf;
-            --sidebar-icon: #5a6378;
-            --sidebar-hover: rgba(255, 255, 255, 0.05);
-            --sidebar-active: rgba(67, 97, 238, 0.15);
-            --header-height: 70px;
-            --transition: all 0.3s ease;
+            --sidebar-active: rgba(67, 97, 238, 0.2);
+            --sidebar-hover: #343b52;
+            --sidebar-icon: #6e84a3;
+            --primary: #4361ee;
+            --accent: #4895ef;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         body {
-            background-color: #f5f7fb;
-            color: var(--dark);
-            padding-left: var(--sidebar-width);
-            transition: var(--transition);
+            background-color: #f7fafc;
+            color: #2d3748;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
         /* Sidebar Styles */
         .sidebar {
-            width: var(--sidebar-width);
+            width: 280px;
             background: var(--sidebar-bg);
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
             transition: var(--transition);
-            z-index: 1000;
+            z-index: 100;
             display: flex;
             flex-direction: column;
             border-right: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
         }
 
         .sidebar-header {
@@ -57,30 +56,55 @@
             align-items: center;
             justify-content: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            height: var(--header-height);
+            height: 80px;
+            background: rgba(0, 0, 0, 0.1);
         }
-        
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            color: var(--accent);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 5px rgba(67, 97, 238, 0.3));
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff 40%, var(--accent));
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         .sidebar-menu {
             flex: 1;
             overflow-y: auto;
-            padding: 1rem 0;
+            padding: 1.5rem 0;
         }
 
         .menu-title {
             padding: 0.75rem 1.5rem 0.5rem;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: var(--sidebar-text);
-            font-weight: 600;
+            font-weight: 700;
             opacity: 0.7;
             margin-top: 0.5rem;
         }
 
         .menu-list {
             list-style: none;
-            padding: 0;
-            margin: 0;
         }
 
         .menu-item {
@@ -91,15 +115,15 @@
         .menu-link {
             display: flex;
             align-items: center;
-            padding: 0.8rem 1.5rem;
+            padding: 0.9rem 1.5rem;
             color: var(--sidebar-text);
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
             border-left: 3px solid transparent;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin: 0 0.5rem;
-            border-radius: 6px;
+            border-radius: 8px;
         }
 
         .menu-link:hover {
@@ -113,12 +137,13 @@
             background-color: var(--sidebar-active);
             border-left-color: var(--primary);
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.15);
         }
 
         .menu-icon {
-            font-size: 1rem;
+            font-size: 1.1rem;
             margin-right: 0.75rem;
-            width: 20px;
+            width: 24px;
             text-align: center;
             color: var(--sidebar-icon);
             transition: var(--transition);
@@ -126,12 +151,12 @@
 
         .menu-link:hover .menu-icon,
         .menu-link.active .menu-icon {
-            color: white;
+            color: var(--accent);
             transform: scale(1.1);
         }
 
         .sidebar-footer {
-            padding: 1rem;
+            padding: 1.25rem;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
@@ -140,11 +165,18 @@
         }
 
         .user-avatar {
-            width: 38px;
-            height: 38px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-footer:hover .user-avatar {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .user-info {
@@ -153,7 +185,7 @@
         }
 
         .user-name {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 0.1rem;
             color: white;
@@ -163,7 +195,7 @@
         }
 
         .user-role {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--sidebar-text);
             white-space: nowrap;
             overflow: hidden;
@@ -175,10 +207,10 @@
             border: none;
             color: var(--sidebar-text);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             transition: var(--transition);
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -188,758 +220,537 @@
         .logout-btn:hover {
             color: white;
             background-color: rgba(255, 255, 255, 0.1);
+            transform: rotate(180deg);
         }
 
-        /* Main Content */
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
             transition: var(--transition);
         }
 
-        .header {
-            background: var(--primary);
+        .content-header {
+            margin-bottom: 2rem;
+        }
+
+        .content-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        /* Slider Styles */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            height: 450px;
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .slide-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             color: white;
-            padding: 15px 20px;
+            padding: 25px;
+        }
+
+        .slide-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .slide-text {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .slider-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            transform: translateY(-50%);
+            z-index: 10;
+            padding: 0 15px;
         }
 
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
+        .slider-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             display: flex;
+            justify-content: center;
             align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
         }
 
-        .header-actions {
+        .slider-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        .slider-btn i {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
             display: flex;
+            justify-content: center;
+            z-index: 10;
             gap: 10px;
         }
 
-        .header-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.3s ease;
         }
 
-        .header-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
+        .slider-dot.active {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.2);
         }
 
-        .sidebar-toggle {
-            display: none;
-        }
-
-        .alert {
-            margin: 0;
-            border-radius: 0;
-            text-align: center;
-        }
-
-        .student-info {
-            padding: 20px;
-            background: var(--light-gray);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .info-card {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .info-card h3 {
-            font-size: 14px;
-            color: var(--gray);
-            margin-bottom: 5px;
-        }
-
-        .info-card p {
-            font-size: 18px;
-            font-weight: 500;
-        }
-
-        /* Fee Summary Cards */
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            border-top: 4px solid var(--primary);
-        }
-
-        .summary-card h3 {
-            font-size: 14px;
-            color: var(--gray);
-            margin-bottom: 10px;
-        }
-
-        .summary-card p {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        /* Fee Year Cards */
-        .fee-years {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .year-card {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .year-card.paid {
-            border-top: 4px solid var(--paid);
-        }
-
-        .year-card.pending {
-            border-top: 4px solid var(--pending);
-        }
-
-        .year-card.overdue {
-            border-top: 4px solid var(--overdue);
-        }
-
-        .year-card h3 {
-            margin-top: 0;
-            color: var(--dark);
-            font-size: 18px;
-        }
-
-        .year-card .amount {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .year-card .status {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: bold;
-            text-transform: uppercase;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        .status.paid {
-            background-color: rgba(76, 175, 80, 0.2);
-            color: var(--paid);
-        }
-
-        .status.pending {
-            background-color: rgba(255, 152, 0, 0.2);
-            color: var(--pending);
-        }
-
-        .status.overdue {
-            background-color: rgba(244, 67, 54, 0.2);
-            color: var(--overdue);
-        }
-
-        .year-card .due-date {
-            font-size: 0.9em;
-            color: var(--gray);
-            margin-bottom: 15px;
-        }
-
-        .year-card .btn {
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        /* Payment History */
-        .payment-history {
-            padding: 20px;
-        }
-
-        .payment-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .payment-table th, 
-        .payment-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .payment-table th {
-            background: var(--light-gray);
-            font-weight: 600;
-            color: var(--dark);
-            position: sticky;
-            top: 0;
-        }
-
-        .payment-table tr:hover {
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-
-        .no-records {
-            text-align: center;
-            padding: 30px;
-            color: var(--gray);
-        }
-
-        @media (max-width: 992px) {
-            body {
-                padding-left: 0;
-            }
-            
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
             .sidebar {
                 transform: translateX(-100%);
+                width: 260px;
             }
             
             .sidebar.active {
                 transform: translateX(0);
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
             }
             
-            .sidebar-toggle {
-                display: block;
+            .main-content {
+                margin-left: 0;
             }
             
-            .container {
-                margin: 15px;
+            .slider-container {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .slider-container {
+                height: 350px;
+            }
+            
+            .slide-title {
+                font-size: 1.3rem;
             }
         }
 
         @media (max-width: 768px) {
-            .fee-years {
-                grid-template-columns: 1fr;
+            .main-content {
+                padding: 1.5rem;
+            }
+            
+            .slider-container {
+                height: 300px;
+            }
+            
+            .slide-content {
+                padding: 15px;
+            }
+            
+            .slide-title {
+                font-size: 1.1rem;
+            }
+            
+            .slide-text {
+                font-size: 0.9rem;
+            }
+            
+            .slider-btn {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .sidebar {
+                width: 240px;
+            }
+            
+            .menu-link {
+                padding: 0.8rem 1.25rem;
+            }
+            
+            .logo-text {
+                font-size: 22px;
             }
         }
-        /* Year Card Status Colors */
-.year-card.paid {
-    border-top: 4px solid var(--paid);
-    background-color: rgba(76, 175, 80, 0.05);
-}
 
-.year-card.pending {
-    border-top: 4px solid var(--pending);
-    background-color: rgba(255, 152, 0, 0.05);
-}
-
-.year-card.overdue {
-    border-top: 4px solid var(--overdue);
-    background-color: rgba(244, 67, 54, 0.05);
-}
-
-.year-card.no-fee {
-    border-top: 4px solid #9e9e9e;
-    background-color: rgba(158, 158, 158, 0.05);
-}
-
-/* Status Badge Colors */
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.8em;
-    font-weight: bold;
-    text-transform: uppercase;
-    display: inline-block;
-    margin-bottom: 10px;
-}
-
-.status-badge.paid {
-    background-color: rgba(76, 175, 80, 0.2);
-    color: var(--paid);
-}
-
-.status-badge.pending {
-    background-color: rgba(255, 152, 0, 0.2);
-    color: var(--pending);
-}
-
-.status-badge.overdue {
-    background-color: rgba(244, 67, 54, 0.2);
-    color: var(--overdue);
-}
-
-.status-badge.no-fee {
-    background-color: rgba(158, 158, 158, 0.2);
-    color: #9e9e9e;
-}
-.header-btn {
-  text-decoration: none;
-  color: inherit;}
+        @media (max-width: 576px) {
+            .slider-container {
+                height: 250px;
+            }
+            
+            .slide-title {
+                font-size: 1rem;
+            }
+            
+            .slide-text {
+                font-size: 0.8rem;
+            }
+            
+            .slider-dot {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .main-content {
+                padding: 1.25rem;
+            }
+        }
     </style>
 </head>
 <body>
-
-        <!-- Messages will appear here -->
-        {% if messages %}
-        <div id="messageContainer">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <div class="student-info">
-            <div class="info-card">
-                <h3>Student Name</h3>
-                <p>{{ student.name }}</p>
-            </div>
-            <div class="info-card">
-                <h3>College ID</h3>
-                <p>{{ student.college_id }}</p>
-            </div>
-            <div class="info-card">
-                <h3>Course</h3>
-                <p>{{ student.course }}</p>
-            </div>
-            <div class="info-card">
-                <h3>Current Year/Semester</h3>
-                <p>Year {{ student.year }} / Sem {{ student.semester }}</p>
-            </div>
-            <div class="info-card">
-                <h3>Course Full Fees</h3>
-                <p>₹{{ total_course_fees|floatformat:2|cut:"-" }}</p>
-            </div>
-        </div>
-
-        <!-- Add this fee note section -->
-<div class="fee-note" style="padding: 10px 20px; background-color: #fff8e1; border-left: 4px solid #ffc107; margin: 0 20px; border-radius: 4px;margin-top: 10px;">
-    {% if total_due < 0 %}
-    <i class="fas fa-info-circle" style="color: #4caf50;"></i> Your account has an advance of ₹{{ total_due|floatformat:2|cut:"-" }}
-    {% else %}
-    <i class="fas fa-info-circle" style="color: #f44336;"></i> Your due amount is ₹{{ total_due|floatformat:2 }}
-    {% endif %}
-</div>
-
-        <!-- Fee Summary Cards -->
-        <div class="summary-cards">
-            <div class="summary-card">
-                <h3>Total Course Fee</h3>
-                <p>₹{{ total_semester_fees|floatformat:2 }}</p>
-            </div>
-            <div class="summary-card">
-                <h3>Total Paid</h3>
-                <p>₹{{ total_paid|floatformat:2 }}</p>
-            </div>
-            <div class="summary-card">
-                <h3>Total Due</h3>
-                <p>₹{{ total_due|floatformat:2 }}</p>
-            </div>
-            <div class="summary-card">
-                <h3>Payment Status</h3>
-                <p>{{ payment_percentage|floatformat:0 }}% Paid</p>
-            </div>
-        </div>
-
-        <!-- Year-wise Fee Cards Section -->
-<h2 style="padding: 0 20px;">Year-wise Fee Status</h2>
-<div class="fee-years">
-    {% for year_data in year_wise_data %}
-    <div class="year-card 
-        {% if year_data.status == 'Paid' %}paid{% endif %}
-        {% if year_data.status == 'Pending' %}pending{% endif %}
-        {% if year_data.status == 'Overdue' %}overdue{% endif %}
-        {% if year_data.status == 'No Fee' %}no-fee{% endif %}">
-        
-        <h3>Year {{ year_data.year }}</h3>
-        <div class="amount">₹{{ year_data.amount|floatformat:2 }}</div>
-        
-        <!-- Status Badge with Dynamic Colors -->
-        <div class="status-badge 
-            {% if year_data.status == 'Paid' %}paid{% endif %}
-            {% if year_data.status == 'Pending' %}pending{% endif %}
-            {% if year_data.status == 'Overdue' %}overdue{% endif %}
-            {% if year_data.status == 'No Fee' %}no-fee{% endif %}">
-            {{ year_data.status }}
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="logo">
+                <i class="fas fa-graduation-cap logo-icon"></i>
+                <span class="logo-text">EduTrack</span>
+            </a>
         </div>
         
-        <div class="due-date">
-            {% if year_data.status == 'Paid' %}
-                Last payment: {{ year_data.payments.0.payment_date|date:"d/m/Y" }}
-            {% elif year_data.status == 'No Fee' %}
-                No Fee Call by College
-            {% else %}
-                Due Date: {{ year_data.due_date|date:"d/m/Y" }}
-            {% endif %}
+        <div class="sidebar-menu">
+            <h3 class="menu-title">Main</h3>
+            <ul class="menu-list">
+                <li class="menu-item active">
+                    <a href="#" class="menu-link active">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <h3 class="menu-title">Academics</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-user-graduate menu-icon"></i>
+                        <span class="menu-text">My Profile</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-calendar-check menu-icon"></i>
+                        <span class="menu-text">Attendance</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-book menu-icon"></i>
+                        <span class="menu-text">My Course</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-tasks menu-icon"></i>
+                        <span class="menu-text">Assignments</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-chart-line menu-icon"></i>
+                        <span class="menu-text">Grades</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-calendar-alt menu-icon"></i>
+                        <span class="menu-text">Schedule</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-sticky-note menu-icon"></i>
+                        <span class="menu-text">Notes</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <h3 class="menu-title">Services</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-comments menu-icon"></i>
+                        <span class="menu-text">Chat with Faculty</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-comments menu-icon"></i>
+                        <span class="menu-text">Chat with Admin</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-file-invoice-dollar menu-icon"></i>
+                        <span class="menu-text">Fees</span>
+                    </a>
+                </li>
+                
+                <li class="menu-item">
+                    <a href="#" class="menu-link">
+                        <i class="fas fa-id-card menu-icon"></i>
+                        <span class="menu-text">ID Card</span>
+                    </a>
+                </li>
+            </ul>
         </div>
         
-        {% if year_data.payments %}
-        <button class="btn btn-primary view-payments" data-year="{{ year_data.year }}">
-            <i class="fas fa-receipt"></i> View Payments
-        </button>
-        {% endif %}
+        <div class="sidebar-footer">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1160&q=80" alt="Student Photo" class="user-avatar">
+            <div class="user-info">
+                <div class="user-name">Alex Johnson</div>
+                <div class="user-role">Student</div>
+            </div>
+            <a href="#">
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1>Welcome to EduTrack</h1>
+            <p>Your academic dashboard with latest updates and announcements</p>
+        </div>
         
-        {% if year_data.status != 'Paid' and year_data.status != 'No Fee' %}
-        <button class="btn btn-outline-primary mt-2 pay-now" data-year="{{ year_data.year }}">
-            <i class="fas fa-credit-card"></i> Pay Now
-        </button>
-        {% endif %}
-    </div>
-    {% endfor %}
-</div>
-
-        <!-- Payment History Section - Updated with View/Print buttons -->
-    <div class="payment-history">
-        <h2>Payment History</h2>
-        {% if all_payments %}
-        <table class="payment-table">
-            <thead>
-                <tr>
-                    <th>Receipt No</th>
-                    <th>Date</th>
-                    <th>Academic Year</th>
-                    <th>Amount</th>
-                    <th>Payment Mode</th>
-                    <th>Transaction ID</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for payment in all_payments %}
-                <tr>
-                    <td>{{ payment.receipt_number }}</td>
-                    <td>{{ payment.payment_date|date:"d/m/Y" }}</td>
-                    <td>Year {{ payment.fee_structure.year }}</td>
-                    <td>₹{{ payment.amount_paid|floatformat:2 }}</td>
-                    <td>{{ payment.payment_method }}</td>
-                    <td>{{ payment.transaction_id|default:"-" }}</td>
-                    <td><span class="status {{ payment.status|lower }}">{{ payment.status }}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-primary view-receipt-btn" 
-                                data-receipt="{{ payment.receipt_number }}"
-                                data-student="{{ student.name }}"
-                                data-amount="{{ payment.amount_paid }}"
-                                data-date="{{ payment.payment_date|date:'d/m/Y' }}"
-                                data-status="{{ payment.status }}"
-                                data-method="{{ payment.payment_method }}"
-                                data-transaction="{{ payment.transaction_id|default:'N/A' }}"
-                                data-verified="{{ payment.verified_by|default:'Not specified' }}"
-                                data-remarks="{{ payment.remarks|default:'None' }}">
-                            <i class="fas fa-eye"></i> View
-                        </button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="no-records">
-            No payment records found
-        </div>
-        {% endif %}
-    </div>
-
-    <!-- Payment Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Make Payment for Year <span id="paymentYear"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="paymentForm">
-                        <div class="mb-3">
-                            <label for="amount" class="form-label">Amount (₹)</label>
-                            <input type="number" class="form-control" id="amount" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="paymentMethod" class="form-label">Payment Method</label>
-                            <select class="form-select" id="paymentMethod" required>
-                                <option value="">Select Method</option>
-                                <option value="Cash">Cash</option>
-                                <option value="Cheque">Cheque</option>
-                                <option value="Online">Online Transfer</option>
-                                <option value="Card">Credit/Debit Card</option>
-                            </select>
-                        </div>
-                        <div class="mb-3" id="transactionIdGroup">
-                            <label for="transactionId" class="form-label">Transaction ID</label>
-                            <input type="text" class="form-control" id="transactionId">
-                        </div>
-                        <div class="mb-3">
-                            <label for="remarks" class="form-label">Remarks (Optional)</label>
-                            <textarea class="form-control" id="remarks" rows="2"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit Payment</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Receipt Modal -->
-    <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Payment Receipt</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="receiptContent">
-                    <!-- Receipt content will be loaded here -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="printReceipt">Print</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Toggle sidebar
-            $('#sidebarToggle').click(function() {
-                $('.sidebar').toggleClass('active');
-            });
-
-            // Show/hide transaction ID field based on payment method
-            $('#paymentMethod').change(function() {
-                if ($(this).val() === 'Cash') {
-                    $('#transactionIdGroup').hide();
-                } else {
-                    $('#transactionIdGroup').show();
-                }
-            });
-
-            // Handle pay now button click
-            $('.pay-now').click(function() {
-                const year = $(this).data('year');
-                $('#paymentYear').text(year);
-                $('#paymentModal').modal('show');
-            });
-
-            // Handle view payments button click
-            $('.view-payments').click(function() {
-                const year = $(this).data('year');
-                // You could implement this to show payments for the specific year
-                alert(`Showing payments for Year ${year}`);
-            });
-
-            // Handle print receipt
-            $('#printReceipt').click(function() {
-                const printContent = $('#receiptContent').html();
-                const originalContent = $('body').html();
-                $('body').html(printContent);
-                window.print();
-                $('body').html(originalContent);
-            });
-
-            // Handle payment form submission
-            $('#paymentForm').submit(function(e) {
-                e.preventDefault();
-                // Here you would typically make an AJAX call to your backend
-                alert('Payment submitted! In a real app, this would process the payment.');
-                $('#paymentModal').modal('hide');
-            });
-        });
-    </script>
-    <!-- JavaScript Section - Updated with working receipt viewer -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Toggle sidebar
-            $('#sidebarToggle').click(function() {
-                $('.sidebar').toggleClass('active');
-            });
-
-            // View receipt button click handler
-            $('.view-receipt-btn').click(function() {
-                const $btn = $(this);
-                const receiptData = {
-                    receiptNo: $btn.data('receipt'),
-                    studentName: $btn.data('student'),
-                    amountPaid: $btn.data('amount'),
-                    paymentDate: $btn.data('date'),
-                    status: $btn.data('status'),
-                    paymentMethod: $btn.data('method'),
-                    transactionId: $btn.data('transaction'),
-                    verifiedBy: $btn.data('verified'),
-                    remarks: $btn.data('remarks')
-                };
-
-                showReceipt(receiptData);
-            });
-
-            function showReceipt(data) {
-                const receiptHtml = `
-                    <div style="text-align:left; padding: 15px;">
-                        <h3 style="text-align:center; margin-bottom:20px;">Payment Receipt</h3>
-                        <hr>
-                        <p style='text-align:center;'>GURU KIRPA UNIVERSITY</p>
-                        <p style='text-align:center;'>College Address, City, State - PIN</p>
-                        <p style='text-align:center;'>accounts@college.edu</p>
-                        <p><strong>Receipt No:</strong> ${data.receiptNo}</p>
-                        <p><strong>Student Name:</strong> ${data.studentName}</p>
-                        <p><strong>Amount Paid:</strong> ₹${data.amountPaid}</p>
-                        <p><strong>Payment Date:</strong> ${data.paymentDate}</p>
-                        <p><strong>Status:</strong> <span class="badge ${getStatusClass(data.status)}">${data.status}</span></p>
-                        <p><strong>Payment Method:</strong> ${data.paymentMethod}</p>
-                        <p><strong>Transaction ID:</strong> ${data.transactionId}</p>
-                        <p><strong>Verified By:</strong> ${data.verifiedBy}</p>
-                        <p><strong>Remarks:</strong> ${data.remarks}</p>
-                        <hr style="margin:20px 0;">
-                        <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-                            <div style="text-align: center; width: 45%;">
-                                <div style="border-top: 1px solid #000; width: 80%; margin: 0 auto; padding-top: 5px;">
-                                    Student Signature
-                                    ${data.studentName}
-                                </div>
-                            </div>
-                            <div style="text-align: center; width: 45%;">
-                                <div style="border-top: 1px solid #000; width: 80%; margin: 0 auto; padding-top: 5px;">
-                                    Authorized Signature
-                                    MR.${data.verifiedBy}
-                                </div>
-                            </div>
-                        </div>
+        <!-- Slider Container -->
+        <div class="slider-container">
+            <div class="slider">
+                <div class="slide active">
+                    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="University Campus">
+                    <div class="slide-content">
+                        <h3 class="slide-title">Faculty Development Workshop</h3>
+                        <p class="slide-text">Join us next week for professional development sessions</p>
                     </div>
-                `;
+                </div>
+                
+                <div class="slide">
+                    <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Classroom">
+                    <div class="slide-content">
+                        <h3 class="slide-title">New Teaching Resources</h3>
+                        <p class="slide-text">Explore our updated digital learning materials</p>
+                    </div>
+                </div>
+                
+                <div class="slide">
+                    <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Graduation">
+                    <div class="slide-content">
+                        <h3 class="slide-title">Student Success Stories</h3>
+                        <p class="slide-text">Celebrating our graduates' achievements</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slider-controls">
+                <button class="slider-btn prev-slide">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="slider-btn next-slide">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="slider-dots">
+                <div class="slider-dot active"></div>
+                <div class="slider-dot"></div>
+                <div class="slider-dot"></div>
+            </div>
+        </div>
+        
+        <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-top: 2rem;">
+            <h2 style="margin-bottom: 1rem;">Recent Announcements</h2>
+            <p style="color: #718096;">This is the main content area of your dashboard. The sidebar on the left provides quick access to all important sections of the EduTrack system.</p>
+        </div>
+    </main>
 
-                Swal.fire({
-                    title: 'Payment Receipt',
-                    html: `<div style="max-height: 70vh; overflow-y: auto;">${receiptHtml}</div>`,
-                    showCancelButton: true,
-                    confirmButtonText: 'Close',
-                    cancelButtonText: 'Print Receipt',
-                    width: '700px',
-                    customClass: {
-                        popup: 'receipt-popup'
-                    },
-                    didOpen: () => {
-                        // Add print functionality
-                        document.querySelector('.swal2-cancel').addEventListener('click', function() {
-                            printReceipt(receiptHtml);
-                        });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Slider functionality
+            const slider = document.querySelector('.slider');
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.querySelector('.prev-slide');
+            const nextBtn = document.querySelector('.next-slide');
+            const dots = document.querySelectorAll('.slider-dot');
+            
+            let currentSlide = 0;
+            const slideCount = slides.length;
+            let autoPlayInterval;
+            
+            // Initialize slider
+            function initSlider() {
+                updateSlider();
+                startAutoPlay();
+            }
+            
+            // Update slider position and indicators
+            function updateSlider() {
+                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                // Update dots
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
                     }
                 });
             }
-
-            function getStatusClass(status) {
-                switch(status.toLowerCase()) {
-                    case 'paid': return 'bg-success';
-                    case 'pending': return 'bg-warning';
-                    case 'overdue': return 'bg-danger';
-                    default: return 'bg-secondary';
-                }
+            
+            // Go to next slide
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slideCount;
+                updateSlider();
             }
-
-            function printReceipt(htmlContent) {
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Payment Receipt</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; padding: 20px; }
-                            .badge {
-                                display: inline-block;
-                                padding: 0.35em 0.65em;
-                                font-size: 0.75em;
-                                font-weight: 700;
-                                line-height: 1;
-                                color: #fff;
-                                text-align: center;
-                                white-space: nowrap;
-                                vertical-align: baseline;
-                                border-radius: 0.25rem;
-                            }
-                            .bg-success { background-color: #198754; }
-                            .bg-warning { background-color: #ffc107; }
-                            .bg-danger { background-color: #dc3545; }
-                            .bg-secondary { background-color: #6c757d; }
-                            hr { border-top: 1px solid #000; }
-                            @page { size: auto; margin: 10mm; }
-                        </style>
-                    </head>
-                    <body onload="window.print(); window.close();">
-                        ${htmlContent}
-                    </body>
-                    </html>
-                `);
-                printWindow.document.close();
+            
+            // Go to previous slide
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+                updateSlider();
             }
-
-            // Rest of your existing JavaScript remains the same
-            $('#paymentMethod').change(function() {
-                if ($(this).val() === 'Cash') {
-                    $('#transactionIdGroup').hide();
+            
+            // Start auto-play
+            function startAutoPlay() {
+                autoPlayInterval = setInterval(nextSlide, 5000);
+            }
+            
+            // Stop auto-play
+            function stopAutoPlay() {
+                clearInterval(autoPlayInterval);
+            }
+            
+            // Event listeners for buttons
+            nextBtn.addEventListener('click', function() {
+                stopAutoPlay();
+                nextSlide();
+                startAutoPlay();
+            });
+            
+            prevBtn.addEventListener('click', function() {
+                stopAutoPlay();
+                prevSlide();
+                startAutoPlay();
+            });
+            
+            // Event listeners for dots
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    stopAutoPlay();
+                    currentSlide = index;
+                    updateSlider();
+                    startAutoPlay();
+                });
+            });
+            
+            // Pause auto-play when hovering over slider
+            const sliderContainer = document.querySelector('.slider-container');
+            sliderContainer.addEventListener('mouseenter', stopAutoPlay);
+            sliderContainer.addEventListener('mouseleave', startAutoPlay);
+            
+            // Initialize the slider
+            initSlider();
+            
+            // Sidebar toggle functionality
+            const toggleSidebar = document.createElement('button');
+            toggleSidebar.innerHTML = '<i class="fas fa-bars"></i>';
+            toggleSidebar.style.position = 'fixed';
+            toggleSidebar.style.top = '15px';
+            toggleSidebar.style.left = '15px';
+            toggleSidebar.style.zIndex = '99';
+            toggleSidebar.style.background = 'var(--primary)';
+            toggleSidebar.style.color = 'white';
+            toggleSidebar.style.border = 'none';
+            toggleSidebar.style.borderRadius = '50%';
+            toggleSidebar.style.width = '40px';
+            toggleSidebar.style.height = '40px';
+            toggleSidebar.style.display = 'none';
+            toggleSidebar.style.cursor = 'pointer';
+            toggleSidebar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+            
+            document.body.appendChild(toggleSidebar);
+            
+            // Show toggle button on smaller screens
+            function checkWidth() {
+                if (window.innerWidth <= 1200) {
+                    toggleSidebar.style.display = 'flex';
+                    toggleSidebar.style.alignItems = 'center';
+                    toggleSidebar.style.justifyContent = 'center';
                 } else {
-                    $('#transactionIdGroup').show();
+                    toggleSidebar.style.display = 'none';
                 }
+            }
+            
+            // Initial check
+            checkWidth();
+            
+            // Listen for resize events
+            window.addEventListener('resize', checkWidth);
+            
+            // Toggle sidebar when button is clicked
+            toggleSidebar.addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.toggle('active');
             });
-
-            $('.pay-now').click(function() {
-                const year = $(this).data('year');
-                $('#paymentYear').text(year);
-                $('#paymentModal').modal('show');
-            });
-
-            $('.view-payments').click(function() {
-                const year = $(this).data('year');
-                alert(`Showing payments for Year ${year}`);
-            });
-
-            $('#printReceipt').click(function() {
-                const printContent = $('#receiptContent').html();
-                const originalContent = $('body').html();
-                $('body').html(printContent);
-                window.print();
-                $('body').html(originalContent);
-            });
-
-            $('#paymentForm').submit(function(e) {
-                e.preventDefault();
-                alert('Payment submitted! In a real app, this would process the payment.');
-                $('#paymentModal').modal('hide');
-            });
-        });
-        // Back button functionality
-        $(document).on('click', '.menu-link.active', function(e) {
-            e.preventDefault();
-            window.history.back();
         });
     </script>
 </body>

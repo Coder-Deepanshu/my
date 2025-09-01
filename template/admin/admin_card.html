@@ -472,34 +472,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    <div class="logo-text">AdminPanel</div>
-                </div>
-                
-                <div class="header-actions">
-                    <div class="search-bar">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" placeholder="Search...">
-                    </div>
-                        
-                    <div class="user-profile">
-                        <div class="user-avatar">DE</div>
-                        <div class="user-info">
-                            <div class="user-name">{{ user }}</div>
-                            <div class="user-role">Super Admin</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -515,10 +487,10 @@
                 {% for details in admin_details %}
                 <div class="admin-card">
                     <div class="card-header">
-                        {% if faculties.profile_picture %}
-                        <img src="{{ faculties.profile_picture.url }}" alt="Faculty Photo" class="admin-image">
+                        {% if details.profile_picture %}
+                        <img src="{{ details.profile_picture.url }}" alt="Admin Photo" class="admin-image">
                         {% else %}
-                        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Faculty Photo" class="admin-image">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Faculty Photo" class="admin-image">
                         {% endif %}
                         <h3>Dr.{{ details.name }}</h3>
                         <p>{{ details.position }}</p>

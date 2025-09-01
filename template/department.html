@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Department Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 70px;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 12px 30px;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 60px 0 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            background: var(--light);
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Form Styles */
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-control, .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Table Styles */
+        .table-container {
+            padding: 30px;
+        }
+
+        .department-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .department-table th, 
+        .department-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .department-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .department-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            background: var(--light);
+            color: var(--primary);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .content-container {
+                margin: 0 15px 40px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .department-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-container, .table-container {
+                padding: 20px;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <!-- Add proper styling for messages -->
+<style>
+.alert {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+</style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'department_creation' %}">Back</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="{% url 'logoutdoor' %}" class="btn btn-outline-primary me-2">LogOut</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>College Department Management</h1>
+            <p>Create and manage academic departments efficiently</p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <div class="content-container">
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-value">{{ total_department }}</div>
+                <div class="stat-label">Total Departments</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stat-value">{{ total_faculty }}</div>
+                <div class="stat-label">Faculty Members</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-value">{{ total_course }}</div>
+                <div class="stat-label">Programs Offered</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">{{ enrolled_students }}</div>
+                <div class="stat-label">Students Enrolled</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content-container">
+        <ul class="nav nav-tabs" id="departmentTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="createDepartment" aria-controls="create" aria-selected="true" >
+                    <i class="fas fa-plus-circle"></i> Create Department
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="manageDepartment">
+             <i class="fas fa-edit"></i> Manage Departments
+             </button>
+            </li>
+            <li class="nav-item" role="presentation">
+             <button class="nav-link" id="programs-tab" data-bs-toggle="tab" data-bs-target="#programs" type="button">
+             <i class="fas fa-graduation-cap"></i> Programs
+             </button>
+            </li>
+        </ul>
+         {% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+        
+        <div class="tab-content" id="departmentTabsContent">
+            <!-- Create Department Tab -->
+           <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+                <div class="form-container">
+                    <h3 class="mb-4"><i class="fas fa-plus-circle"></i> Create New Department</h3>
+                    <form id="departmentForm" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_name" value="departmentCreation">
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="deptName" class="form-label"><i class="fas fa-heading"></i> Department Name</label>
+                                
+                                <input type="text" class="form-control" id="deptName" name="name" placeholder="e.g., Computer Science, Mathematics" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="deptCode" class="form-label"><i class="fas fa-code"></i> Department Code</label>
+                                <input type="text" class="form-control" id="deptCode" name="code" placeholder="e.g., CS, MATH" required>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="type" class="form-label"><i class="fas fa-venus-mars"></i> Type</label>
+                                <select class="form-select" id="type" name="type" required>
+                                            <option value="" selected disabled>Select type</option>
+                                            <option value="Faculty">Faculty</option>
+                                            <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                       
+                        <div class="mb-3">
+                            <label for="deptDescription" class="form-label"><i class="fas fa-align-left"></i> Description</label>
+                            <textarea class="form-control" id="deptDescription" rows="4" name="description" placeholder="Describe the department's mission and focus areas" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="deptPrograms" class="form-label"><i class="fas fa-graduation-cap"></i> Number of Programs</label>
+                                <!-- Change programes_count field name -->
+                                <input type="number" class="form-control" id="deptPrograms" min="0" value="1" name="programe" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="deptFaculty" class="form-label"><i class="fas fa-chalkboard-teacher"></i> Faculty Count</label>
+                                <input type="number" class="form-control" id="deptFaculty" min="1" value="1"  name="facultyCount" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="deptStudents" class="form-label"><i class="fas fa-users"></i> Student Capacity</label>
+                                <input type="number" class="form-control" id="deptStudents" min="0" value="100" name="studentCapacity" required>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                            <button type="submit" class="btn btn-primary">Create Department</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Manage Departments Tab -->
+<div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+    <div class="table-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3><i class="fas fa-list"></i> All Departments</h3>
+            <div class="d-flex gap-2">
+                <input type="text" class="form-control" placeholder="Search departments..." style="max-width: 250px;">
+                <button class="btn btn-outline-primary">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+        
+        {% if details %}
+        <div class="table-responsive">
+            <table class="department-table">
+                <thead>
+                    <tr>
+                        <th>Department Name</th>
+                        <th>Code</th>
+                        <th>Type</th>
+                        <th>Faculty</th>
+                        <th>Student Capacity</th>
+                        <th>Programs</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in details %}
+                    <tr>
+                        <td>{{ detail.name }}</td>
+                        <td>{{ detail.code }}</td>
+                        {% if detail.type == 'Admin' %}
+                           <td><span class="badge bg-primary">{{ detail.type }}</span></td>
+                        {% else %}
+                           <td><span class="badge bg-info">{{ detail.type }}</span></td>
+                        {% endif %}
+                        <td>{{ detail.faculty_count }}</td>
+                        <td>{{ detail.student_capacity }}</td>
+                        <td>{{ detail.programs_count }}</td>
+                        <td class="action-buttons">
+                            <button class="btn-action btn-view"><i class="fas fa-eye"></i> View</button>
+                            <button class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="btn-action btn-delete"><i class="fas fa-trash"></i> Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No departments found. Please create a department first.
+        </div>
+        {% endif %}
+        
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+            
+            <!-- Programs Tab -->
+            <div class="tab-pane fade" id="programs" role="tabpanel" aria-labelledby="programs-tab">
+                <div class="form-container">
+                    <h3 class="mb-4"><i class="fas fa-graduation-cap"></i> Department Programs</h3>
+                    
+                    <div class="table-container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <a class="btn btn-primary" href="{% url 'course_creation' %}">
+                                <i class="fas fa-plus"></i> Add Program
+                            </a>
+                        </div>
+                        {% if programs %}
+                        <div class="table-responsive">
+                            <table class="department-table">
+                                <thead>
+                                    <tr>
+                                        <th>Program Name</th>
+                                        <th>Duration</th>
+                                        <th>Semester</th>
+                                        <th>Intake Capacity</th>
+                                        <th>Code</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for program in programs %}
+                                    <tr>
+                                        <td>{{ program.name }} - {{ program.level }}</td>
+                                        <td>{{ program.no_of_years }} Years</td>
+                                        <td>{{ program.no_of_semesters }} Semester</td>
+                                        <td>{{ program.student_capacity }}</td> 
+                                        <td>{{ program.code }}</td> 
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Function to reset the form
+    function resetDepartmentForm() {
+        document.getElementById('departmentForm').reset();
+    }
+    
+    // Function to check if there are success messages and reset form
+    function checkMessagesAndReset() {
+        const successMessages = document.querySelectorAll('.alert-success');
+        if (successMessages.length > 0) {
+            // If there are success messages, reset the form
+            resetDepartmentForm();
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check messages and reset form on page load
+        checkMessagesAndReset();
+        
+        // Edit button handlers
+        const editButtons = document.querySelectorAll('.btn-edit');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Edit functionality would open a modal with department data.');
+            });
+        });
+        
+        // Delete button handlers
+        const deleteButtons = document.querySelectorAll('.btn-delete');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this department?')) {
+                    alert('Department deleted successfully!');
+                }
+            });
+        });
+        
+        // View button handlers
+        const viewButtons = document.querySelectorAll('.btn-view');
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('View functionality would show department details.');
+            });
+        });
+        
+        // Department select change handler
+        const programDept = document.getElementById('programDept');
+        if (programDept) {
+            programDept.addEventListener('change', function() {
+                const deptName = this.options[this.selectedIndex].text;
+                document.querySelector('.table-container h4').textContent = `Programs in ${deptName} Department`;
+            });
+        }
+        
+        // Auto-hide messages after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.display = 'none';
+            });
+        }, 5000);
+    });
+</script>
+</body>
+</html>
