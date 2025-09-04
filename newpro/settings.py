@@ -164,4 +164,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ASGI_APPLICATION = 'newpro.routing.application'
 
 
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_URL = '/static/'
+
+# Django ko batane ke liye ke app-specific static files kahan hai
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "newapp", "static"),  # newapp ke andar jo static folder hai
+]
+
+# Jaha collectstatic sari files ek jagah rakhega
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
