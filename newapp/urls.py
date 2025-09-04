@@ -86,7 +86,7 @@ urlpatterns = [
 
     path('Faculty-Dashboard/Student-Attendance-Management',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
     path('Faculty-Dashboard/Faculty-Student-Chat',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
-    path('Admin-Dashboard/Student-Bulk-Management',lambda request: views.course_details(request,"student/student_filter.html"),name='studentBulk_management'),
+    path('Admin-Dashboard/Student-Bulk-Management',lambda request: views.course_details(request,"student/student_filter.html"),name='studentBulkManagement'),
     path('get-courses-details/', views.get_courses_details, name='getCourseDetails'),
     path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents')
 
