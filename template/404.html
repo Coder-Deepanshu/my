@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found | 404 Error</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 50px 40px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-image {
+            width: 220px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        .error-code {
+            font-size: 100px;
+            font-weight: 800;
+            color: #2e5bff;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+        
+        .error-message {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .error-description {
+            font-size: 17px;
+            margin-bottom: 20px;
+            color: #718096;
+            line-height: 1.6;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 40px 25px;
+            }
+            
+            .error-code {
+                font-size: 80px;
+            }
+            
+            .error-message {
+                font-size: 24px;
+            }
+            
+            .error-image {
+                width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SVG illustration of a person looking at a map -->
+        <svg class="error-image" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="250" cy="250" r="200" fill="#e6eeff" />
+            <circle cx="250" cy="250" r="180" fill="#f0f5ff" />
+            <circle cx="250" cy="150" r="30" fill="#2e5bff" />
+            <path d="M250 180 L250 320" stroke="#2e5bff" stroke-width="8" stroke-linecap="round" />
+            <path d="M320 250 L180 250" stroke="#2e5bff" stroke-width="8" stroke-linecap="round" />
+            <circle cx="350" cy="150" r="20" fill="#ff6b6b" />
+            <circle cx="150" cy="350" r="20" fill="#ff6b6b" />
+            <circle cx="350" cy="350" r="20" fill="#ff6b6b" />
+            <text x="250" y="420" font-family="Arial" font-size="24" fill="#4a5568" text-anchor="middle">404 - Page Not Found</text>
+        </svg>
+        
+        <div class="error-code">404</div>
+        <h1 class="error-message">Page Not Found</h1>
+        <p class="error-description">
+            The page you are looking for might have been removed, had its name changed,
+            or is temporarily unavailable.
+        </p>
+    </div>
+</body>
+</html>

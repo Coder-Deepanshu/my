@@ -38,6 +38,7 @@ class Course(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     level = models.ForeignKey(Level,on_delete=models.CASCADE)
     fees_per_year = models.IntegerField()
+    no_of_lecture = models.IntegerField(default=6)
 
     def __str__(self):
         return self.name

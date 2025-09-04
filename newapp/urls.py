@@ -25,11 +25,6 @@ urlpatterns = [
 
     # urls for student functions
     path("Admin-Dashboard/Student-Management/", views.student_functions, name="student_function"),
-    path('students/', views.student_filter_page,name='students'),
-    path('get_course_details/', views.get_course_details,name='get_course_details'),
-    path('filter_students/', views.filter_students,name='filter_students'),
-    path('student/<int:id>/delete/', views.delete_students, name='delete_student'),
-    path('bulk_update_students/', views.bulk_update_students, name='bulk_update_students'),
 
     # urls for faculty functions 
     path("Admin-Dashboard/Faculty-Management/", views.faculty_functions, name="faculty_functions"),
@@ -47,9 +42,7 @@ urlpatterns = [
     path('profile_upload/', views.profile_upload, name='profile_upload'),
     
     # for attendance management student-faculty
-    path('Faculty/Dashboard/Student-Attendance', views.student_filtering_page, name='student_filtering_page'),
-    path('get_details/', views.get_details, name='get_details'),
-    path('filtering_students/', views.filtering_students, name='filtering_students'),
+ 
     path('save_attendance/', views.save_attendance, name='save_attendance'),
     path('Student/Dashboard/Attendance/', views.student_attendance_view, name='student_attendance_view'),
     path('get_student_attendance/', views.get_student_attendance, name='get_student_attendance'),
@@ -75,18 +68,28 @@ urlpatterns = [
     path('toggle_follow/', views.toggle_follow, name='toggle_follow'),
     # for sending info about student
     path('faculty/students/', views.faculty_student_list, name='faculty_student_list'),
-    path('send_course_details/', views.send_course_details, name='send_course_details'),
-    path('faculty/students/', views.student_filter_details, name='student_list_partial'),
+
     # urls.py
     path('delete_chat/<int:room_id>/', views.delete_chat, name='delete_chat'),
 
     path('Admin-Dashboard/Department-Creation/',views.department_creation,name='department_creation'),
     path('Admin-Dashboard/Course-Creation/',views.course_creation,name='course_creation'),
     path('Admin-Dashboard/Staff-Positions-Creation/',views.position_creation,name='position_creation'),
-    path('positions/get_data/', views.get_position_data, name='get_position_data'),
-    path('positions/update/', views.update_position, name='update_position'),
-    path('positions/delete/', views.delete_position, name='delete_position'),
-    
+    path('get-position-data/', views.get_position_data, name='get_position_data'),
+    path('update-position/', views.update_position, name='update_position'),
+    path('delete-position/', views.delete_position, name='delete_position'),
+    path('export-positions/', views.export_positions, name='export_positions'),
+
+    path('edit_department/<int:id>/', views.edit_department, name='edit_department'),
+    path('delete_department/<int:id>/', views.delete_department, name='delete_department'),
+    path('view_department/<int:id>/', views.view_department, name='view_department'),  
+
+    path('Faculty-Dashboard/Student-Attendance-Management',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
+    path('Faculty-Dashboard/Faculty-Student-Chat',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
+    path('Admin-Dashboard/Student-Bulk-Management',lambda request: views.course_details(request,"student/student_filter.html"),name='studentBulk_management'),
+    path('get-courses-details/', views.get_courses_details, name='getCourseDetails'),
+    path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents')
+
 ]
 
 if settings.DEBUG:

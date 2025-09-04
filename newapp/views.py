@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q, Sum
-from .models import Student, Faculty, Course, Attendance,Admin # Import the new Attendance model
+from .models import Student, Faculty, Course, Attendance,Admin, FeeStructure, FeePayment,StudentBalance # Import the new Attendance model
 from django.http import JsonResponse
 import json # For handling JSON data from AJAX requests
-from django.shortcuts import render, redirect
+from django.db.models.functions import Coalesce
+from django.db.models import DecimalField
+from decimal import Decimal
+
 
 def home(request):
     return render(request,'Home/home.html')
@@ -435,107 +438,6 @@ def student_functions(request):
                 messages.error(request, f"Error: {str(e)}")
 
     return render(request, "student/student_page.html", context)
-
-#  for multiple student filtering
-from django.template.loader import render_to_string
-
-from django.http import JsonResponse
-from django.contrib import messages
-from django.shortcuts import render
-from .models import Course, Student
-
-def student_filter_page(request):
-    try:
-        # Get all courses from Course model (not from Student records)
-        courses = Course.objects.all().values_list('name', flat=True)
-        students = Student.objects.all()
-        return render(request, 'student/student_filter.html', {'courses': courses, 'students': students})
-    except Exception as e:
-        messages.error(request, f"Error loading courses: {str(e)}")
-        return render(request, 'student/student_filter.html', {'courses': []})
-
-def get_course_details(request):
-    try:
-        course_name = request.GET.get('course_name')
-        if not course_name:
-            return JsonResponse({'error': 'Course name is required'}, status=400)
-    
-        course = Course.objects.get(name=course_name)
-        return JsonResponse({
-            'years': list(range(1, course.no_of_years + 1)),
-            'semesters': list(range(1, course.no_of_semesters + 1))
-        })
-    except Course.DoesNotExist:
-        return JsonResponse({'error': 'Course not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-def filter_students(request):
-    filters = {
-        'course': request.GET.get('course', 'all'),
-        'year': request.GET.get('year', 'all'),
-        'semester': request.GET.get('semester', 'all'),
-        'college_id': request.GET.get('college_id', '')
-    }
-
-    students = Student.objects.all()
-    
-    if filters['course'] != 'all':
-        students = students.filter(course=filters['course'])
-    if filters['year'] != 'all':
-        students = students.filter(year=filters['year'])
-    if filters['semester'] != 'all':
-        students = students.filter(semester=filters['semester'])
-    if filters['college_id']:
-        students = students.filter(college_id__icontains=filters['college_id'])
-
-    html = render_to_string('student/student_result_partial.html', {'students': students})
-    return JsonResponse({'html': html})
-
-@csrf_exempt
-def bulk_update_students(request):
-    if request.method == 'POST':
-        student_ids = request.POST.getlist('student_ids[]')
-        
-        # Prepare update data - only include fields that have values
-        update_data = {}
-        fields_to_update = ['father_name',
-            'course', 'year', 'semester', 
-            'address', 'city', 'state', 'country'
-        ]
-        
-        for field in fields_to_update:
-            if request.POST.get(field):
-                if field in ['year', 'semester']:
-                    update_data[field] = int(request.POST.get(field))
-                else:
-                    update_data[field] = request.POST.get(field)
-        
-        if not update_data:
-            return JsonResponse({'error': 'No fields to update'}, status=400)
-            
-        try:
-            # Only update if we have both student IDs and data to update
-            if student_ids and update_data:
-                Student.objects.filter(id__in=student_ids).update(**update_data)
-                return JsonResponse({'success': True})
-            else:
-                return JsonResponse({'error': 'No students selected or no data to update'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-@csrf_exempt
-def delete_students(request):
-    if request.method == 'POST':
-        student_ids = request.POST.getlist('student_ids[]')
-        try:
-            Student.objects.filter(id__in=student_ids).delete()
-            return JsonResponse({'success': True})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
-
 # for  faculty management
 from django.db import models
 def faculty_functions(request):
@@ -766,48 +668,44 @@ def admin_functions(request):
 
     return render(request, "admin/admin_page.html", context)
 
-# 
-# # 
-# 
-# # 
-#            Attendance System Code
-# # 
-# 
-# # 
-# 
-# for attendance management student-faculty
-from django.utils import timezone
-def student_filtering_page(request):
+
+#  for multiple student filtering
+from django.template.loader import render_to_string
+
+def course_details(request,template):
     try:
-        courses = Course.objects.all().values_list('name', flat=True)
-        return render(request, 'faculty_filtering.html', {'courses': courses})
+        # Get all courses from Course model (not from Student records)
+        courses = Course.objects.all().values_list('code', flat=True)
+        students = Student.objects.all()
+        return render(request, template, {'courses': courses, 'students': students})
     except Exception as e:
         messages.error(request, f"Error loading courses: {str(e)}")
-        return render(request, 'faculty_filtering.html', {'courses': []})
+        return render(request, template, {'courses': [],'students': []})
 
-def get_details(request):
+def get_courses_details(request):
     try:
         course_name = request.GET.get('course_name')
         if not course_name or course_name == 'all':
             return JsonResponse({'error': 'Please select a valid course'}, status=400)
             
         # Get the course - make sure name matching is case-insensitive
-        course = Course.objects.filter(name__iexact=course_name).first()
+        course = Course.objects.filter(code__iexact=course_name).first()
         if not course:
             return JsonResponse({'error': f'Course "{course_name}" not found'}, status=404)
             
         return JsonResponse({
             'years': list(range(1, course.no_of_years + 1)),
             'semesters': list(range(1, course.no_of_semesters + 1)),
-            'lectures': list(range(1, course.lecture + 1))
+            'lectures': list(range(1, course.no_of_lecture + 1))
         })
     except Exception as e:
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
-# for filtering student details at faculty portal 
-def filtering_students(request):
-    if not request.session.get('faculty_college_id'):
-        messages.error(request, "Please login as faculty first")
+    
+def filtered_students(request, template):
+    if not request.session.get('faculty_college_id') or not request.session.get('admin_college_id'):
+        messages.error(request, "Please login First")
         return redirect('login')
+    
         
     filters = {
         'course': request.GET.get('course', 'all'),
@@ -827,9 +725,11 @@ def filtering_students(request):
     if filters['college_id']:
         students = students.filter(college_id__icontains=filters['college_id'])
 
-    html = render_to_string('student/student_table.html', {'students': students})
-    return JsonResponse({'html': html})
-# for saving attendance details
+    html = render_to_string(template, {'students': students})
+    return JsonResponse({'html': html})  # Fixed: removed the extra comma
+
+# for attendance management student-faculty
+from django.utils import timezone
 @csrf_exempt
 def save_attendance(request):
     if not request.session.get('faculty_college_id'):
@@ -846,7 +746,7 @@ def save_attendance(request):
                 return JsonResponse({'error': 'Missing required data'}, status=400)
                 
             faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-            course = Course.objects.get(name=course_name)
+            course = Course.objects.get(code=course_name)
             
             saved_count = 0
             duplicate_entries = []
@@ -1002,13 +902,6 @@ def get_student_attendance(request):
 
 
 # FOR FEES MANAGEMENT OF STUDENT
-from django.db.models import Sum, Q
-from django.db.models.functions import Coalesce
-from django.contrib import messages
-from django.db.models import DecimalField
-from decimal import Decimal
-from .models import Student, Course, FeeStructure, FeePayment,StudentBalance
-
 
 #  for student, for viewing fees
 def student_fees_view(request):
@@ -1020,7 +913,7 @@ def student_fees_view(request):
         
         # Get the Course object based on the student's course name
         try:
-            course = Course.objects.get(name=student.course)
+            course = Course.objects.get(code=student.course)
             no_of_years = course.no_of_years
         except Course.DoesNotExist:
             messages.error(request, "Course information not found")
@@ -1166,7 +1059,7 @@ def admin_fee_management(request):
     student_data = []
     for student in students:
         try:
-            course = Course.objects.get(name=student.course)
+            course = Course.objects.get(code=student.course)
             batch_year =  student.date_of_joining.year
             fee_structures = FeeStructure.objects.filter(course=course).filter(for_year=batch_year)
             
@@ -1225,7 +1118,7 @@ def get_course_details(request):
     if request.method == 'GET' and 'course_name' in request.GET:
         course_name = request.GET.get('course_name')
         try:
-            course = Course.objects.get(name=course_name)
+            course = Course.objects.get(code=course_name)
             
             # Get unique years and semesters from fee structures for this course
             years = FeeStructure.objects.filter(course=course).values_list('year', flat=True).distinct().order_by('year')
@@ -1258,7 +1151,7 @@ def student_fee_details(request, student_id):
         # Get the Course object
         try:
             batch_year = student.date_of_joining.year
-            course = Course.objects.get(name=student.course)
+            course = Course.objects.get(code=student.course)
             no_of_years = course.no_of_years
         except Course.DoesNotExist:
             messages.error(request, "Course information not found")
@@ -1792,7 +1685,7 @@ def faculty_student_list(request):
         return redirect('login')
     
     try:
-        course = Course.objects.all()
+   
         faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
         students = Student.objects.filter(followed_faculty=faculty)
      
@@ -1800,7 +1693,7 @@ def faculty_student_list(request):
         return render(request, 'chat/page2.html', {
             'faculty': faculty,
             'students': students,
-            'courses': course,
+       
             'role': 'faculty'
         })
     except Faculty.DoesNotExist:
@@ -2122,7 +2015,11 @@ def delete_chat(request, room_id):
         'message': 'Invalid request method'
     }, status=405)
 
+
+
 from .models import Department
+from django.shortcuts import get_object_or_404, redirect
+
 # department creation
 def department_creation(request):
     # Always get departments list for the template
@@ -2138,28 +2035,90 @@ def department_creation(request):
         
         if action == 'departmentCreation':
             try:
-                Department.objects.create(
-                    name=request.POST.get('name'),
-                    code=request.POST.get('code'),
-                    type=request.POST.get('type'),
-                    description=request.POST.get('description'),
-                    programs_count=request.POST.get('programe'),
-                    faculty_count=request.POST.get('facultyCount'),
-                    student_capacity=request.POST.get('studentCapacity'),
-                )
-                messages.success(request, "Department Created Successfully!")
+                # Check if department with same code already exists
+                code = request.POST.get('code')
+                if Department.objects.filter(code=code).exists():
+                    messages.error(request, f"Department with code '{code}' already exists!")
+                else:
+                    Department.objects.create(
+                        name=request.POST.get('name'),
+                        code=code,
+                        type=request.POST.get('type'),
+                        description=request.POST.get('description'),
+                        programs_count=request.POST.get('programe'),
+                        faculty_count=request.POST.get('facultyCount'),
+                        student_capacity=request.POST.get('studentCapacity'),
+                    )
+                    messages.success(request, "Department Created Successfully!")
+                    # Redirect to prevent form resubmission on refresh
+                    return redirect('department_creation')
             except Exception as e:
                 messages.error(request, f"Error adding department: {str(e)}")
-
+    
     # Always return the render with details
     return render(request, 'department.html', {
         'details': details,
-        'total_department':total_department,
-        'total_faculty':total_faculty,
-        'enrolled_students':enrolled_students,
-        'total_course':total_course,
-        'programs':programs
-         })
+        'total_department': total_department,
+        'total_faculty': total_faculty,
+        'enrolled_students': enrolled_students,
+        'total_course': total_course,
+        'programs': programs
+    })
+
+# Edit department view
+def edit_department(request, id):
+    department = get_object_or_404(Department, id=id)
+    
+    if request.method == 'POST':
+        try:
+            # Check if code is being changed to an existing one
+            new_code = request.POST.get('code')
+            if new_code != department.code and Department.objects.filter(code=new_code).exists():
+                messages.error(request, f"Department with code '{new_code}' already exists!")
+                return redirect('department_creation')
+                
+            department.name = request.POST.get('name')
+            department.code = new_code
+            department.type = request.POST.get('type')
+            department.description = request.POST.get('description')
+            department.programs_count = request.POST.get('programe')
+            department.faculty_count = request.POST.get('facultyCount')
+            department.student_capacity = request.POST.get('studentCapacity')
+            department.save()
+            
+            messages.success(request, "Department Updated Successfully!")
+        except Exception as e:
+            messages.error(request, f"Error updating department: {str(e)}")
+    
+    return redirect('department_creation')
+
+# Delete department view
+def delete_department(request, id):
+    department = get_object_or_404(Department, id=id)
+    
+    try:
+        department_name = department.name
+        department.delete()
+        messages.success(request, f"Department '{department_name}' Deleted Successfully!")
+    except Exception as e:
+        messages.error(request, f"Error deleting department: {str(e)}")
+    
+    return redirect('department_creation')
+
+# View department details
+def view_department(request, id):
+    department = get_object_or_404(Department, id=id)
+    return JsonResponse({
+        'name': department.name,
+        'code': department.code,
+        'type': department.type,
+        'description': department.description,
+        'programs_count': department.programs_count,
+        'faculty_count': department.faculty_count,
+        'student_capacity': department.student_capacity,
+        'created_at': department.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'updated_at': department.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+    })
 
 # course craetion
 from .models import Department, Course,Level
@@ -2217,7 +2176,7 @@ def course_creation(request):
     
 # Created Positions
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib import messages
@@ -2395,114 +2354,132 @@ def position_creation(request):
         })
 
 
-@csrf_exempt
-@require_POST
 def get_position_data(request):
-    """Get position data for editing"""
-    try:
-        data = json.loads(request.body)
-        position_id = data.get('position_id')
-        
-        position = get_object_or_404(Position, position_id=position_id)
-        
-        return JsonResponse({
-            'success': True,
-            'data': {
-                'position_id': position.position_id,
-                'name': position.name,
-                'type': position.type,
-                'department_id': position.department.id,
-                'level': position.level,
-                'salary': position.salary,
-                'specialization': position.specialization,
-                'requirment': position.requirment,
-                'responsibility': position.responsibility,
-            }
-        })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'message': f'Error retrieving position data: {str(e)}'
-        })
-
-
-@csrf_exempt
-@require_POST
-def update_position(request):
-    """Update position data"""
-    try:
-        data = json.loads(request.body)
-        position_id = data.get('position_id')
-        
-        position = get_object_or_404(Position, position_id=position_id)
-        
-        # Update position fields
-        position.name = data.get('name')
-        position.type = data.get('type')
-        position.level = data.get('level')
-        
-        # Handle salary conversion
+    if request.method == 'POST':
         try:
-            salary_value = data.get('salary')
-            if isinstance(salary_value, str):
-                # Clean salary string - remove any non-numeric characters
-                salary_str = ''.join(filter(str.isdigit, salary_value))
-                position.salary = int(salary_str) if salary_str else 0
-            else:
-                position.salary = int(salary_value) if salary_value else 0
-        except (ValueError, TypeError) as e:
+            data = json.loads(request.body)
+            position_id = data.get('position_id')
+            
+            position = get_object_or_404(Position, position_id=position_id)
+            
+            return JsonResponse({
+                'success': True,
+                'data': {
+                    'position_id': position.position_id,
+                    'name': position.name,
+                    'type': position.type,
+                    'level': position.level,
+                    'salary': position.salary,
+                    'department_id': position.department.id,
+                    'specialization': position.specialization,
+                    'responsibility': position.responsibility,
+                    'requirment': position.requirment,
+                    'role': position.role,
+                }
+            })
+        except Exception as e:
             return JsonResponse({
                 'success': False,
-                'message': f'Invalid salary format: {str(e)}'
+                'message': str(e)
             })
-        
-        position.specialization = data.get('specialization')
-        position.requirment = data.get('requirment')
-        position.responsibility = data.get('responsibility')
-        
-        # Update department if provided
-        department_id = data.get('department_id')
-        if department_id:
-            try:
-                department = Department.objects.get(id=department_id)
-                position.department = department
-            except Department.DoesNotExist:
-                return JsonResponse({
-                    'success': False,
-                    'message': 'Invalid department ID'
-                })
-        
-        position.save()
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Position updated successfully!'
-        })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'message': f'Error updating position: {str(e)}'
-        })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method'
+    })
 
+def update_position(request):
+    if request.method == 'POST':
+        try:
+            position_id = request.POST.get('position_id')
+            position = get_object_or_404(Position, position_id=position_id)
+            
+            # Update fields
+            position.name = request.POST.get('position_name')
+            position.type = request.POST.get('position_type')
+            position.level = request.POST.get('position_level')
+            
+            # Clean salary string
+            salary_str = request.POST.get('position_salary', '0')
+            salary_str = ''.join(filter(str.isdigit, salary_str))
+            position.salary = int(salary_str) if salary_str else 0
+            
+            department_id = request.POST.get('position_department')
+            if department_id:
+                position.department = get_object_or_404(Department, id=department_id)
+            
+            position.specialization = request.POST.get('position_specialization')
+            position.responsibility = request.POST.get('position_responsibility')
+            position.requirment = request.POST.get('position_requirement')
+            
+            position.save()
+            
+            messages.success(request, f"Position '{position.name}' updated successfully!")
+            return redirect('position_creation')
+            
+        except Exception as e:
+            messages.error(request, f"Error updating position: {str(e)}")
+            return redirect('position_creation')
+    
+    messages.error(request, "Invalid request method")
+    return redirect('position_creation')
 
-@csrf_exempt
-@require_POST
 def delete_position(request):
-    """Delete a position"""
-    try:
-        data = json.loads(request.body)
-        position_id = data.get('position_id')
-        
-        position = get_object_or_404(Position, position_id=position_id)
-        position_name = position.name
-        position.delete()
-        
-        return JsonResponse({
-            'success': True,
-            'message': f'Position "{position_name}" deleted successfully!'
-        })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'message': f'Error deleting position: {str(e)}'
-        })
+    if request.method == 'POST':
+        try:
+            position_id = request.POST.get('position_id')
+            position = get_object_or_404(Position, position_id=position_id)
+            position_name = position.name
+            position.delete()
+            
+            messages.success(request, f"Position '{position_name}' deleted successfully!")
+            return redirect('position_creation')
+            
+        except Exception as e:
+            messages.error(request, f"Error deleting position: {str(e)}")
+            return redirect('position_creation')
+    
+    messages.error(request, "Invalid request method")
+    return redirect('position_creation')
+import csv
+
+def export_positions(request):
+    # Create the HttpResponse object with the appropriate CSV header
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="positions.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Position ID', 'Name', 'Type', 'Department', 'Level', 'Salary', 'Role', 'Specialization'])
+
+    positions = Position.objects.all().select_related('department')
+    for position in positions:
+        writer.writerow([
+            position.position_id,
+            position.name,
+            position.type,
+            position.department.name,
+            position.level,
+            position.salary,
+            position.role,
+            position.specialization
+        ])
+
+    return response
+
+
+
+def student_list_name(request,template):
+    student = 'Deepanshu'
+    return render(request,template,{'student':student})
+
+# def a1(request):
+#     return render(request,'a1.html')
+
+# def a2(request):
+#     return render(request,'a2.html')
+
+# def a3(request):
+#     return render(request,'a3.html')
+
+# def a404(request):
+#     return render(request,'404.html')
