@@ -4,8 +4,9 @@ from django.utils import timezone # Import timezone for default date
 
 # for department
 class Department(models.Model):
+    department_id = models.CharField(max_length=200,unique=True)
     name = models.CharField(max_length=200)
-    code = models.CharField(max_length=20, unique=True)
+    code = models.CharField(max_length=20)
     type = models.CharField(max_length=10)
     description = models.TextField()
     programs_count = models.PositiveIntegerField(default=1)
@@ -504,3 +505,19 @@ class Message(models.Model):
 
     def __str__(self):
         return f"Message from {self.sender_id} in {self.chat_room.name}"
+
+
+
+
+
+
+# models.py
+from django.db import models
+
+class Students(models.Model):
+    roll_no = models.IntegerField()
+    name = models.CharField(max_length=100)
+    course = models.CharField(max_length=50)
+
+    def _str_(self):
+        return self.name

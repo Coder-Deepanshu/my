@@ -1,5 +1,8 @@
+
+<div class="admin-cards">
 {% for student in students %}
 <div class="admin-card">
+     <a href="{% url 'chat_home' %}?student_id={{ student.college_id }}" class="admin-card-link"></a>
     <div class="card-header">
         <div class="header-text">
             <h3>{{ student.name }}</h3>
@@ -8,7 +11,7 @@
         {% if student.profile_picture %}
         <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="admin-image">
         {% else %}
-        <img src="https://via.placeholder.com/80" alt="Student Photo" class="admin-image">
+        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="admin-image">
         {% endif %}
         <div class="online-status {% if student.online_status %}online{% else %}offline{% endif %}"></div>
     </div>
@@ -47,9 +50,17 @@
             </a>
         </div>
     </div>
+    </a>
 </div>
+
 {% empty %}
-<div class="no-students">
-    <p>No students found matching your filters</p>
 </div>
+ <div id="noRecordsMessage" class="alert alert-info mt-4" style="margin-top: 30px;background: #ec3a2a;color: rgb(255, 255, 255);max-width: 1500px;height:80px ;">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <h3>No Student found</h3>
+                            <p style="font-size: medium;" class="mb-0">Try adjusting your filters </p>
+                        </div>
+                    </div>
+
 {% endfor %}

@@ -23,49 +23,6 @@
             line-height: 1.6;
         }
 
-        /* Header Styles */
-        .header {
-            background: white;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            height: 70px;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .nav-link {
-            color: var(--dark);
-            font-weight: 500;
-            margin: 0 10px;
-            transition: var(--transition);
-        }
-
-        .nav-link:hover {
-            color: var(--primary);
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            padding: 12px 30px;
-            border-radius: 8px;
-            transition: var(--transition);
-            font-weight: 600;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
-        }
-
         /* Page Header */
         .page-header {
             padding: 60px 0 30px;

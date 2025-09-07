@@ -1,377 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>College Department Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/creation/department.css' %}">
     <style>
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --accent: #7209b7;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --transition: all 0.3s ease;
-        }
-
-        body {
-            background-color: #f5f7fb;
-            color: var(--dark);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* Header Styles */
-        .header {
-            background: white;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
             z-index: 1000;
-            height: 70px;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .nav-link {
-            color: var(--dark);
-            font-weight: 500;
-            margin: 0 10px;
-            transition: var(--transition);
-        }
-
-        .nav-link:hover {
-            color: var(--primary);
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            padding: 12px 30px;
-            border-radius: 8px;
-            transition: var(--transition);
-            font-weight: 600;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
-        }
-
-        /* Page Header */
-        .page-header {
-            padding: 60px 0 30px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
-            opacity: 0.1;
-        }
-
-        .page-header h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        /* Content Container */
-        .content-container {
-            max-width: 1400px;
-            margin: 0 auto 40px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        /* Tabs */
-        .nav-tabs {
-            background: var(--light);
-            padding: 0.75rem 1.5rem;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .nav-tabs .nav-link {
-            border: none;
-            font-weight: 600;
-            color: var(--gray);
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px 8px 0 0;
-        }
-
-        .nav-tabs .nav-link.active {
-            color: var(--primary);
-            background-color: white;
-            border-bottom: 3px solid var(--primary);
-        }
-
-        /* Form Styles */
-        .form-container {
-            padding: 30px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-        }
-
-        .form-label i {
-            margin-right: 10px;
-            color: var(--primary);
-        }
-
-        .form-control, .form-select {
-            padding: 12px 15px;
-            border: 2px solid var(--light-gray);
-            border-radius: 8px;
-            transition: var(--transition);
-            font-size: 1rem;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-        }
-
-        /* Table Styles */
-        .table-container {
-            padding: 30px;
-        }
-
-        .department-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .department-table th, 
-        .department-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .department-table th {
-            background: var(--light);
-            font-weight: 600;
-            color: var(--dark);
-            position: sticky;
-            top: 0;
-        }
-
-        .department-table tr:hover {
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
-        .btn-action {
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            border: none;
-            transition: var(--transition);
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-edit {
-            background-color: #ffc107;
-            color: #212529;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .btn-view {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        /* Stats Cards */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            transition: var(--transition);
-            border-left: 4px solid var(--primary);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.5);
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            background: var(--light);
-            color: var(--primary);
         }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--dark);
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
         }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--gray);
-            font-weight: 600;
+        
+        .modal h3 {
+            margin-top: 0;
         }
-
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            .content-container {
-                margin: 0 15px 40px;
-            }
-            
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        
+        .modal form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-
-        @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            .department-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
+        
+        .modal form label {
+            font-weight: bold;
         }
-
-        @media (max-width: 576px) {
-            .form-container, .table-container {
-                padding: 20px;
-            }
-            
-            .nav-tabs .nav-link {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
+        
+        .modal form input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .modal form button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .modal form button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .modal form button[type="button"] {
+            background-color: #6c757d;
+            color: white;
         }
     </style>
-    <!-- Add proper styling for messages -->
-<style>
-.alert {
-    padding: 12px 15px;
-    border-radius: 8px;
-    margin: 15px 0;
-    display: flex;
-    align-items: center;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.alert i {
-    margin-right: 10px;
-    font-size: 18px;
-}
-</style>
 </head>
 <body>
-    <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-light py-3">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'department_creation' %}">Back</a>
-                        </li>
-                    </ul>
-                    <div class="ms-lg-3 mt-3 mt-lg-0">
-                        <a href="{% url 'logoutdoor' %}" class="btn btn-outline-primary me-2">LogOut</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
+    {% include "header.html" %}
 
     <!-- Page Header -->
     <section class="page-header">
@@ -519,37 +219,40 @@
             </div>
         </div>
         
-        {% if details %}
+        {% if page_obj %}
         <div class="table-responsive">
-            <table class="department-table">
+            <table class="department-table" id="student-table">
                 <thead>
                     <tr>
-                        <th>Department Name</th>
-                        <th>Code</th>
-                        <th>Type</th>
-                        <th>Faculty</th>
-                        <th>Student Capacity</th>
-                        <th>Programs</th>
-                        <th>Actions</th>
+                       <th>Department ID</th>
+                       <th>Name</th>
+                       <th>Type</th>
+                       <th>Code</th>
+                       <th>Faculty</th>
+                       <th>Student</th>
+                       <th>Programe</th>
+                       <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-    {% for detail in details %}
-    <tr data-id="{{ detail.id }}" data-description="{{ detail.description }}">
+    {% for detail in page_obj %}
+    <tr>
+        <td>{{ detail.department_id }}</td>
         <td>{{ detail.name }}</td>
-        <td>{{ detail.code }}</td>
+        
         {% if detail.type == 'Admin' %}
            <td><span class="badge bg-primary">{{ detail.type }}</span></td>
         {% else %}
            <td><span class="badge bg-info">{{ detail.type }}</span></td>
         {% endif %}
+        <td>{{ detail.code }}</td>
         <td>{{ detail.faculty_count }}</td>
         <td>{{ detail.student_capacity }}</td>
         <td>{{ detail.programs_count }}</td>
         <td class="action-buttons">
             <button class="btn-action btn-view"><i class="fas fa-eye"></i> View</button>
-            <button class="btn-action btn-edit"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn-action btn-delete"><i class="fas fa-trash"></i> Delete</button>
+            <button class="btn-action btn-edit" onclick="openEditModal('{{ detail.department_id }}','{{ detail.name|escapejs }}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-action btn-delete" onclick="openDeleteModal('{{ detail.department_id }}')"><i class="fas fa-trash" ></i> Delete</button>
         </td>
     </tr>
     {% endfor %}
@@ -562,19 +265,15 @@
         </div>
         {% endif %}
         
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
-                </li>
-            </ul>
-        </nav>
+        <div class="pagination" id="pagination">
+           <button id="prev-btn"
+           data-page="{% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
+           {% if not page_obj.has_previous %}disabled{% endif %}>Previous</button>
+           <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+           <button id="next-btn"
+            data-page="{% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}"
+            {% if not page_obj.has_next %}disabled{% endif %}>Next</button>
+        </div>
     </div>
 </div>
             
@@ -622,6 +321,41 @@
         </div>
     </div>
 
+
+<!-- Delete Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h3>Delete Department</h3>
+      <p>Are you sure you want to delete this department?</p>
+      <form method="post" id="deleteForm" action="">
+        {% csrf_token %}
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-danger">Yes, Delete</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+    <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h3>Edit Department</h3>
+      <form method="post" id="editForm" action="">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="edit_name" class="form-label">Name:</label>
+          <input type="text" class="form-control" id="edit_name" name="name">
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Update</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     // Function to reset the form
@@ -637,99 +371,11 @@ function checkMessagesAndReset() {
         resetDepartmentForm();
     }
 }
-
-// Function to open edit modal with department data
-function openEditModal(department) {
-    // Set form values
-    document.getElementById('edit_dept_id').value = department.id;
-    document.getElementById('edit_deptName').value = department.name;
-    document.getElementById('edit_deptCode').value = department.code;
-    document.getElementById('edit_type').value = department.type;
-    document.getElementById('edit_deptDescription').value = department.description;
-    document.getElementById('edit_deptPrograms').value = department.programs_count;
-    document.getElementById('edit_deptFaculty').value = department.faculty_count;
-    document.getElementById('edit_deptStudents').value = department.student_capacity;
-    
-    // Update form action URL
-    const form = document.getElementById('editDepartmentForm');
-    form.action = form.action.replace('/0', '/' + department.id);
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('editDepartmentModal'));
-    modal.show();
-}
-
-// Function to open delete confirmation modal
-function openDeleteModal(department) {
-    document.getElementById('delete_dept_name').textContent = department.name + ' (' + department.code + ')';
-    
-    // Set delete URL
-    const deleteUrl = "/delete_department/" + department.id + "/";
-    document.getElementById('delete_dept_btn').href = deleteUrl;
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('deleteDepartmentModal'));
-    modal.show();
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     // Check messages and reset form on page load
     checkMessagesAndReset();
-    
-    // Store department data for JavaScript access
-    const departmentData = [];
-    const detailsElements = document.querySelectorAll('.department-table tbody tr');
-    
-    detailsElements.forEach((row, index) => {
-        const cells = row.querySelectorAll('td');
-        departmentData.push({
-            id: row.dataset.id || index,
-            name: cells[0].textContent,
-            code: cells[1].textContent,
-            type: cells[2].querySelector('.badge').textContent,
-            faculty_count: cells[3].textContent,
-            student_capacity: cells[4].textContent,
-            programs_count: cells[5].textContent,
-            description: row.dataset.description || ''
-        });
-    });
-    
-    // Edit button handlers
-    const editButtons = document.querySelectorAll('.btn-edit');
-    editButtons.forEach((button, index) => {
-        button.addEventListener('click', function() {
-            if (departmentData[index]) {
-                openEditModal(departmentData[index]);
-            }
-        });
-    });
-    
-    // Delete button handlers
-    const deleteButtons = document.querySelectorAll('.btn-delete');
-    deleteButtons.forEach((button, index) => {
-        button.addEventListener('click', function() {
-            if (departmentData[index]) {
-                openDeleteModal(departmentData[index]);
-            }
-        });
-    });
-    
-    // View button handlers
-    const viewButtons = document.querySelectorAll('.btn-view');
-    viewButtons.forEach((button, index) => {
-        button.addEventListener('click', function() {
-            if (departmentData[index]) {
-                alert('Department Details:\nName: ' + departmentData[index].name + 
-                      '\nCode: ' + departmentData[index].code + 
-                      '\nType: ' + departmentData[index].type +
-                      '\nPrograms: ' + departmentData[index].programs_count +
-                      '\nFaculty: ' + departmentData[index].faculty_count +
-                      '\nStudent Capacity: ' + departmentData[index].student_capacity);
-            }
-        });
-    });
-    
-    // Auto-hide messages after 5 seconds
+
+    // Auto hide messages after 5 seconds
     setTimeout(function() {
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(function(alert) {
@@ -737,6 +383,85 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, 5000);
 });
+document.addEventListener("DOMContentLoaded", function() {
+  function loadPage(page) {
+    fetch(`?page=${page}`, {
+      headers: { "x-requested-with": "XMLHttpRequest" }
+    })
+    .then(response => response.json())
+    .then(data => {
+      let tableBody = document.querySelector("#student-table tbody");
+      tableBody.innerHTML = '';
+
+      data.details.forEach(detail => {
+        let badgeClass = detail.type === 'Admin' ? 'bg-primary' : 'bg-info';
+        
+        tableBody.innerHTML += `
+          <tr>
+            <td>${detail.department_id}</td>
+            <td>${detail.name}</td>
+            <td><span class="badge ${badgeClass}">${detail.type}</span></td>
+            <td>${detail.code}</td>
+            <td>${detail.faculty_count}</td>
+            <td>${detail.student_capacity}</td>
+            <td>${detail.programs_count}</td>
+            <td class="action-buttons">
+              <button class="btn-action btn-view"><i class="fas fa-eye"></i> View</button>
+              <button class="btn-action btn-edit" onclick="openEditModal('${detail.department_id}', '${detail.name.replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i> Edit</button>
+              <button class="btn-action btn-delete" onclick="openDeleteModal('${detail.department_id}')"><i class="fas fa-trash"></i> Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      // Update buttons
+      document.getElementById("prev-btn").dataset.page = data.page_number - 1;
+      document.getElementById("next-btn").dataset.page = data.page_number + 1;
+
+      document.getElementById("prev-btn").disabled = !data.has_prev;
+      document.getElementById("next-btn").disabled = !data.has_next;
+
+      document.querySelector("#pagination span").innerText = 
+        `Page ${data.page_number} of ${data.total_pages}`;
+    });
+  }
+
+  document.getElementById("prev-btn").addEventListener("click", function() {
+    if (!this.disabled) {
+      loadPage(this.dataset.page);
+    }
+  });
+  
+  document.getElementById("next-btn").addEventListener("click", function() {
+    if (!this.disabled) {
+      loadPage(this.dataset.page);
+    }
+  });
+});
+
+// Modal functions
+function openModal(id) {
+  document.getElementById(id).style.display = "flex";
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+function openEditModal(department_id, name) {
+  let form = document.getElementById("editForm");
+  // Update the form action to match your URL pattern
+  form.action = `/department/edit/${department_id}/`;
+  document.getElementById("edit_name").value = name;
+  openModal("editModal");
+}
+
+function openDeleteModal(department_id) {
+  let form = document.getElementById("deleteForm");
+  // Update the form action to match your URL pattern
+  form.action = `/department/delete/${department_id}/`;
+  openModal("deleteModal");
+}
 </script>
 </body>
 </html>

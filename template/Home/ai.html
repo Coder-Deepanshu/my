@@ -1,0 +1,861 @@
+<style>
+    body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e4e8f0 100%);
+            color: var(--dark);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* AI Section Styling */
+        .ai-section {
+            background: linear-gradient(135deg, var(--ai-purple) 0%, var(--ai-blue) 100%);
+            border-radius: var(--card-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        .ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ai-title {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ai-title i {
+            font-size: 32px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+            transform: translateY(-2px);
+        }
+
+        .ai-description {
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            opacity: 0.9;
+            max-width: 800px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ai-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ai-feature {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ai-feature:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-feature i {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: white;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ai-feature h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .ai-feature p {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        /* Chat Sections */
+        .chat-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chat-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .chat-header i {
+            font-size: 24px;
+            margin-right: 12px;
+            color: var(--primary);
+        }
+
+        .chat-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message.bot {
+            align-items: flex-start;
+        }
+
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+
+        .user .message-content {
+            background: var(--primary);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+
+        .bot .message-content {
+            background: #f0f2f5;
+            color: var(--dark);
+            border-top-left-radius: 5px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .chat-input button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chat-input button:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* Charts Section */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--dark);
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--card-radius);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .chart-card h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1100px) {
+            .chat-section,
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ai-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .ai-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-card {
+                height: 350px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .ai-section {
+                padding: 20px;
+            }
+            
+            .ai-title {
+                font-size: 24px;
+            }
+            
+            .chart-card,
+            .chat-card {
+                padding: 20px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-section,
+        .chat-card,
+        .chart-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Scrollbar Styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+  
+</style>
+{% if role == 'admin' %}
+    <div class="dashboard-container" style="margin-top: 30px;">
+        <!-- AI Prediction Section -->
+        <div class="ai-section">
+            <div class="ai-header">
+                <h2 class="ai-title">
+                    <i class="fas fa-robot"></i> AI-Powered Insights
+                </h2>
+                <button class="btn btn-outline">
+                    <i class="fas fa-wand-magic-sparkles"></i> Explore AI Tools
+                </button>
+            </div>
+            <p class="ai-description">
+                Our advanced AI models analyze student performance data to predict outcomes, 
+                identify at-risk students, and provide personalized recommendations to improve 
+                learning outcomes. Get instant answers to your academic questions.
+            </p>
+            <div class="ai-features">
+                <div class="ai-feature">
+                    <i class="fas fa-brain"></i>
+                    <h4>Performance Predictor</h4>
+                    <p>Predict student grades based on current performance patterns</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>Early Warning System</h4>
+                    <p>Identify students who may need additional support</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-lightbulb"></i>
+                    <h4>Smart Recommendations</h4>
+                    <p>Personalized suggestions for each student</p>
+                </div>
+            </div>
+        </div>
+        <div class="chat-section">
+            <!-- Personal Assistant Chat -->
+            <div class="chat-card">
+                <div class="chat-header">
+                    <i class="fas fa-user-graduate"></i>
+                    <h3>Personal Academic Assistant</h3>
+                </div>
+                <div class="chat-messages" id="personalChat">
+                    <div class="message bot">
+                        <div class="message-content">
+                            Hello! I'm your personal academic assistant. How can I help you today? You can ask me about exam schedules, pending fees, assignments, and more.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="personalInput" placeholder="Ask about your exams, fees, assignments...">
+                    <button id="personalSend"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
+            <!-- University Info Chat -->
+            <div class="chat-card">
+                <div class="chat-header">
+                    <i class="fas fa-university"></i>
+                    <h3>University Information Hub</h3>
+                </div>
+                <div class="chat-messages" id="universityChat">
+                    <div class="message bot">
+                        <div class="message-content">
+                            Welcome to the University Information Hub! I can answer questions about rules, regulations, campus facilities, and how to use the EduTrack system.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="universityInput" placeholder="Ask about rules, regulations, EduTrack...">
+                    <button id="universitySend"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <h3 class="section-title">
+            <i class="fas fa-chart-bar"></i>
+            Performance Analytics
+        </h3>
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h4>Assignment Scores Distribution</h4>
+                <div class="chart-container">
+                    <canvas id="assignmentChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h4>Attendance Trend</h4>
+                <div class="chart-container">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% elif role == 'faculty' %}
+<div class="dashboard-container" style="margin-top: 30px;">
+        <!-- AI Prediction Section -->
+        <div class="ai-section">
+            <div class="ai-header">
+                <h2 class="ai-title">
+                    <i class="fas fa-robot"></i> AI-Powered Insights
+                </h2>
+                <button class="btn btn-outline">
+                    <i class="fas fa-wand-magic-sparkles"></i> Explore AI Tools
+                </button>
+            </div>
+            <p class="ai-description">
+                Our advanced AI models analyze student performance data to predict outcomes, 
+                identify at-risk students, and provide personalized recommendations to improve 
+                learning outcomes. Get instant answers to your academic questions.
+            </p>
+            <div class="ai-features">
+                <div class="ai-feature">
+                    <i class="fas fa-brain"></i>
+                    <h4>Performance Predictor</h4>
+                    <p>Predict student grades based on current performance patterns</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>Early Warning System</h4>
+                    <p>Identify students who may need additional support</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-lightbulb"></i>
+                    <h4>Smart Recommendations</h4>
+                    <p>Personalized suggestions for each student</p>
+                </div>
+            </div>
+        </div>
+        <div class="chat-section">
+            <!-- Personal Assistant Chat -->
+            <div class="chat-card">
+                <div class="chat-header">
+                    <i class="fas fa-user-graduate"></i>
+                    <h3>Personal Academic Assistant</h3>
+                </div>
+                <div class="chat-messages" id="personalChat">
+                    <div class="message bot">
+                        <div class="message-content">
+                            Hello! I'm your personal academic assistant. How can I help you today? You can ask me about exam schedules, pending fees, assignments, and more.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="personalInput" placeholder="Ask about your exams, fees, assignments...">
+                    <button id="personalSend"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
+            <!-- University Info Chat -->
+            <div class="chat-card">
+                <div class="chat-header">
+                    <i class="fas fa-university"></i>
+                    <h3>University Information Hub</h3>
+                </div>
+                <div class="chat-messages" id="universityChat">
+                    <div class="message bot">
+                        <div class="message-content">
+                            Welcome to the University Information Hub! I can answer questions about rules, regulations, campus facilities, and how to use the EduTrack system.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="universityInput" placeholder="Ask about rules, regulations, EduTrack...">
+                    <button id="universitySend"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <h3 class="section-title">
+            <i class="fas fa-chart-bar"></i>
+            Performance Analytics
+        </h3>
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h4>Assignment Scores Distribution</h4>
+                <div class="chart-container">
+                    <canvas id="assignmentChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h4>Attendance Trend</h4>
+                <div class="chart-container">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% elif role == 'student' %}
+<div class="dashboard-container">
+        <!-- AI Prediction Section -->
+        <div class="ai-section">
+            <div class="ai-header">
+                <h2 class="ai-title">
+                    <i class="fas fa-robot"></i> AI-Powered Insights
+                </h2>
+                <button class="btn btn-outline">
+                    <i class="fas fa-wand-magic-sparkles"></i> Explore AI Tools
+                </button>
+            </div>
+            <p class="ai-description">
+                Our advanced AI models analyze student performance data to predict outcomes, 
+                identify at-risk students, and provide personalized recommendations to improve 
+                learning outcomes. Get instant answers to your academic questions.
+            </p>
+            <div class="ai-features">
+                <div class="ai-feature">
+                    <i class="fas fa-brain"></i>
+                    <h4>Performance Predictor</h4>
+                    <p>Predict student grades based on current performance patterns</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>Early Warning System</h4>
+                    <p>Identify students who may need additional support</p>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-lightbulb"></i>
+                    <h4>Smart Recommendations</h4>
+                    <p>Personalized suggestions for each student</p>
+                </div>
+            </div>
+        </div>
+        <div class="chat-section">
+            <!-- Personal Assistant Chat -->
+            <div class="chat-card">
+                <div class="chat-header">
+                    <i class="fas fa-user-graduate"></i>
+                    <h3>Personal Academic Assistant</h3>
+                </div>
+                <div class="chat-messages" id="personalChat">
+                    <div class="message bot">
+                        <div class="message-content">
+                            Hello! I'm your personal academic assistant. How can I help you today? You can ask me about exam schedules, pending fees, assignments, and more.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="personalInput" placeholder="Ask about your exams, fees, assignments...">
+                    <button id="personalSend"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
+            <!-- University Info Chat -->
+            <div class="chat-card">
+                <div class="chat-header">
+                    <i class="fas fa-university"></i>
+                    <h3>University Information Hub</h3>
+                </div>
+                <div class="chat-messages" id="universityChat">
+                    <div class="message bot">
+                        <div class="message-content">
+                            Welcome to the University Information Hub! I can answer questions about rules, regulations, campus facilities, and how to use the EduTrack system.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="universityInput" placeholder="Ask about rules, regulations, EduTrack...">
+                    <button id="universitySend"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <h3 class="section-title">
+            <i class="fas fa-chart-bar"></i>
+            Performance Analytics
+        </h3>
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h4>Assignment Scores Distribution</h4>
+                <div class="chart-container">
+                    <canvas id="assignmentChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h4>Attendance Trend</h4>
+                <div class="chart-container">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+            
+<script>
+     // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Assignment Scores Chart
+            const assignmentCtx = document.getElementById('assignmentChart').getContext('2d');
+            const assignmentChart = new Chart(assignmentCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Math', 'Science', 'History', 'English', 'Art', 'Physics'],
+                    datasets: [{
+                        label: 'Average Score',
+                        data: [85, 78, 92, 88, 75, 82],
+                        backgroundColor: [
+                            'rgba(67, 97, 238, 0.7)',
+                            'rgba(72, 149, 239, 0.7)',
+                            'rgba(56, 163, 165, 0.7)',
+                            'rgba(76, 201, 240, 0.7)',
+                            'rgba(248, 150, 30, 0.7)',
+                            'rgba(230, 57, 70, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(72, 149, 239, 1)',
+                            'rgba(56, 163, 165, 1)',
+                            'rgba(76, 201, 240, 1)',
+                            'rgba(248, 150, 30, 1)',
+                            'rgba(230, 57, 70, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Attendance Trend Chart
+            const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+            const attendanceChart = new Chart(attendanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Attendance Rate',
+                        data: [95, 92, 88, 96, 90, 94],
+                        fill: false,
+                        backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(67, 97, 238, 1)',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Chat functionality
+        const personalChat = document.getElementById('personalChat');
+        const personalInput = document.getElementById('personalInput');
+        const personalSend = document.getElementById('personalSend');
+        
+        const universityChat = document.getElementById('universityChat');
+        const universityInput = document.getElementById('universityInput');
+        const universitySend = document.getElementById('universitySend');
+
+        // Sample responses for personal assistant
+        const personalResponses = {
+            'exam': 'Your next exam is on June 15th for Mathematics. You have 12 days to prepare.',
+            'fee': 'You have ₹2,500 pending fees for this semester. The deadline is June 30th.',
+            'assignment': 'You have 3 pending assignments: Science (due tomorrow), History (due in 3 days), and English (due next week).',
+            'schedule': 'Your class schedule: Mon-Wed-Fri: 9-11 AM, Tue-Thu: 10-12 PM. Lab sessions on Wednesday 2-4 PM.',
+            'grade': 'Your current average grade is 87%. You are performing well in History (92%) but could improve in Physics (78%).',
+            'default': 'I can help with information about your exams, fees, assignments, schedule, and grades. What would you like to know?'
+        };
+
+        // Sample responses for university information
+        const universityResponses = {
+            'rule': 'The university rules require 75% minimum attendance to appear for exams. Late assignments are subject to a 5% penalty per day.',
+            'regulation': 'Campus regulations prohibit smoking in all buildings. Library materials can be borrowed for 2 weeks with possible renewal.',
+            'edutrack': 'To use EduTrack, login with your student ID. You can view grades, assignments, attendance, and fees in the dashboard.',
+            'facility': 'The campus facilities include a 24/7 library, computer labs, sports complex, and cafeteria open from 8 AM to 8 PM.',
+            'admission': 'Admission inquiries should be directed to the registrar office. Required documents include academic transcripts, ID proof, and 2 passport photos.',
+            'default': 'I can provide information about university rules, regulations, facilities, admissions, and how to use EduTrack. What do you need to know?'
+        };
+
+        // Function to add message to chat
+        function addMessage(chatElement, message, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = message;
+            
+            messageDiv.appendChild(contentDiv);
+            chatElement.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatElement.scrollTop = chatElement.scrollHeight;
+        }
+
+        // Function to get response based on input
+        function getResponse(input, responses) {
+            input = input.toLowerCase();
+            
+            if (input.includes('exam') || input.includes('test')) {
+                return responses['exam'];
+            } else if (input.includes('fee') || input.includes('payment')) {
+                return responses['fee'];
+            } else if (input.includes('assignment') || input.includes('homework')) {
+                return responses['assignment'];
+            } else if (input.includes('schedule') || input.includes('timetable')) {
+                return responses['schedule'];
+            } else if (input.includes('grade') || input.includes('mark')) {
+                return responses['grade'];
+            } else if (input.includes('rule') || input.includes('policy')) {
+                return responses['rule'];
+            } else if (input.includes('regulation') || input.includes('policy')) {
+                return responses['regulation'];
+            } else if (input.includes('edutrack') || input.includes('system')) {
+                return responses['edutrack'];
+            } else if (input.includes('facility') || input.includes('campus')) {
+                return responses['facility'];
+            } else if (input.includes('admission') || input.includes('enroll')) {
+                return responses['admission'];
+            } else {
+                return responses['default'];
+            }
+        }
+
+        // Personal chat event listener
+        personalSend.addEventListener('click', function() {
+            const message = personalInput.value.trim();
+            if (message) {
+                addMessage(personalChat, message, true);
+                personalInput.value = '';
+                
+                // Simulate AI response after a short delay
+                setTimeout(function() {
+                    const response = getResponse(message, personalResponses);
+                    addMessage(personalChat, response, false);
+                }, 800);
+            }
+        });
+
+        personalInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                personalSend.click();
+            }
+        });
+
+        // University chat event listener
+        universitySend.addEventListener('click', function() {
+            const message = universityInput.value.trim();
+            if (message) {
+                addMessage(universityChat, message, true);
+                universityInput.value = '';
+                
+                // Simulate AI response after a short delay
+                setTimeout(function() {
+                    const response = getResponse(message, universityResponses);
+                    addMessage(universityChat, response, false);
+                }, 800);
+            }
+        });
+
+        universityInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                universitySend.click();
+            }
+        });
+</script>

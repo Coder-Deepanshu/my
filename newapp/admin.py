@@ -97,6 +97,12 @@ class Position(admin.ModelAdmin):
     search_fields=('name',)
 
 
+from .models import Students
+@admin.register(Students)
+class Students(admin.ModelAdmin):
+    list_display=('name','roll_no','course')
+    search_fields=('name',)
+
 
 
 

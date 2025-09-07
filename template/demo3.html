@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,12 +20,10 @@
             --warning-color: #ff9800;
             --error-color: #f44336;
             --border-radius: 12px;
-            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            --header-height: 80px;
+            --box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
         }
 
-        /* Global Styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -35,374 +34,289 @@
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
             color: var(--text-color);
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            background-color: #f5f7fb;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
         }
 
         .container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 20px;
         }
 
         /* Header Styles */
-        .main-header {
-            background-color: white;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            height: var(--header-height);
-        }
-
-        .header-content {
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 18px 30px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            height: 100%;
-            padding: 0 30px;
-        }
-
-        .logo {
-            display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 22px;
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 30px;
-            margin-left: 40px;
-        }
-
-        .nav-item {
-            position: relative;
-            font-weight: 500;
-            color: var(--text-color);
-            text-decoration: none;
-            padding: 8px 0;
-            transition: var(--transition);
-        }
-
-        .nav-item:hover {
-            color: var(--primary-color);
-        }
-
-        .nav-item.active {
-            color: var(--primary-color);
-        }
-
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
             width: 100%;
-            height: 3px;
-            background-color: var(--primary-color);
-            border-radius: 3px 3px 0 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
         }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .search-bar {
-            position: relative;
-        }
-
-        .search-input {
-            padding: 12px 15px 12px 45px;
-            border: 1px solid var(--medium-gray);
-            border-radius: 25px;
-            font-size: 0.95rem;
-            width: 280px;
-            transition: var(--transition);
-            background-color: #f5f7fb;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-            width: 320px;
-            background-color: white;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--dark-gray);
-        }
-
-        .action-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-color);
-            position: relative;
-            transition: var(--transition);
-            cursor: pointer;
-            background-color: #f5f7fb;
-        }
-
-        .action-icon:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 20px;
-            height: 20px;
-            background-color: var(--error-color);
-            color: white;
-            border-radius: 50%;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-left: 10px;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 25px;
-            transition: var(--transition);
-            background-color: #f5f7fb;
-        }
-
-        .user-profile:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .user-profile:hover .user-role {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-
-        .user-info {
+        .header-title {
             display: flex;
             flex-direction: column;
         }
 
-        .user-name {
-            font-weight: 600;
-            font-size: 0.95rem;
+        .header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
         }
 
-        .user-role {
-            font-size: 0.8rem;
-            color: var(--dark-gray);
+        .header .subtitle {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-btn {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: var(--transition);
         }
 
-        /* Main Content */
-        .main-content {
-            padding: 40px 0;
+        .header-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
         }
 
-        .page-header {
+        .logout-btn {
+            background-color: var(--error-color);
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
-            padding: 0 30px;
+            box-shadow: var(--box-shadow);
+            border-left: 4px solid;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+        .alert-success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border-color: #0f5132;
         }
 
-        .subtitle {
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #721c24;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #856404;
+        }
+
+        .alert i {
+            margin-right: 10px;
             font-size: 1.1rem;
-            color: var(--dark-gray);
-            font-weight: 500;
         }
 
-        .date-display {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 12px 20px;
+        /* Filter Section */
+        .filter-section {
+            padding: 25px;
+            background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            font-weight: 500;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            margin-bottom: 30px;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .filter-group select, 
+        .filter-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-size: 1rem;
+            background-color: var(--light-gray);
+        }
+
+        .filter-group select:focus, 
+        .filter-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background-color: white;
+            outline: none;
+        }
+
+        .btn-filter {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 8px;
         }
 
-        /* Admin Cards Container */
-        .admin-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 30px;
-            width: 100%;
-            padding: 0 30px;
+        .btn-filter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
         }
 
-        /* Admin Card Styles */
+        /* ID Card Style Header */
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            position: relative;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        .card-header .admin-image {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+            background-color: var(--medium-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            order: 2;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-text {
+            flex-grow: 1;
+        }
+
+        .card-header h3 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .card-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Admin Card styles */
         .admin-card {
             background-color: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             overflow: hidden;
             transition: var(--transition);
+            height: 340px;
+            text-decoration: none;
+            display: block;
+            color: inherit;
+            cursor: pointer;
             position: relative;
         }
 
         .admin-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        }
-
-        .admin-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #f5f7fb 0%, #e4e8f0 100%);
-            color: var(--text-color);
-            padding: 25px;
-            position: relative;
-            text-align: center;
-        }
-
-        .card-header .admin-image {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid white;
-            object-fit: cover;
-            margin: 0 auto 15px;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-color);
-            font-size: 2.5rem;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header h3 {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-            color: var(--secondary-color);
-        }
-
-        .card-header p {
-            font-size: 1rem;
-            color: var(--primary-color);
-            font-weight: 500;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
         }
 
         .card-body {
-            padding: 25px;
+            padding: 20px;
         }
 
         .admin-detail {
             display: flex;
             align-items: center;
-            margin-bottom: 16px;
-            font-size: 1rem;
-            padding: 10px 0;
-            border-bottom: 1px solid #f1f3f9;
-        }
-
-        .admin-detail:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
         }
 
         .admin-detail i {
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 0.9rem;
+            width: 22px;
+            color: var(--primary-color);
+            margin-right: 12px;
+            text-align: center;
+            font-size: 1rem;
         }
 
         .admin-detail .detail-label {
             font-weight: 600;
-            min-width: 100px;
+            min-width: 85px;
             color: var(--text-color);
+            font-size: 0.85rem;
         }
 
         .admin-detail .detail-value {
             color: var(--dark-gray);
-            font-weight: 500;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .card-footer {
-            padding: 20px 25px;
+            padding: 15px 20px;
             background-color: var(--light-gray);
             border-top: 1px solid var(--medium-gray);
             display: flex;
@@ -413,7 +327,7 @@
         .admin-status {
             display: flex;
             align-items: center;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
         }
 
@@ -430,357 +344,496 @@
         }
 
         .status-indicator {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
-            }
         }
 
         .active .status-indicator {
             background-color: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
         }
 
         .inactive .status-indicator {
             background-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.3);
         }
 
         .pending .status-indicator {
             background-color: var(--warning-color);
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.3);
         }
 
         .admin-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .action-btn {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: white;
+            background: var(--primary-color);
+            color: white;
             border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: var(--transition);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
         }
 
         .action-btn:hover {
-            background: var(--primary-color);
+            background: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        /* Admin Cards Container */
+        .admin-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+
+        /* Loading Spinner */
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.25em;
+            color: var(--primary-color);
+        }
+
+        /* No students message */
+        .no-students {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            grid-column: 1 / -1;
+        }
+
+        .no-students p {
+            font-size: 1.1rem;
+            color: var(--dark-gray);
+            margin: 0;
+        }
+
+        /* Online Status */
+        .online-status {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 14px;
+            height: 14px;
+            border: 2px solid white;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .online-status.online {
+            background-color: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+
+        .online-status.offline {
+            background-color: var(--dark-gray);
+        }
+
+        /* Follow Button */
+        .follow-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(255, 255, 255, 0.2);
             color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 2;
+        }
+
+        .follow-btn i {
+            font-size: 0.7rem;
+        }
+
+        .follow-btn.following {
+            background-color: var(--success-color);
+        }
+
+        /* Admin Card Link */
+        .admin-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .admin-card-link:hover {
+            transform: translateY(-5px);
         }
 
         /* Responsive Design */
-        @media (max-width: 1200px) {
-            .admin-cards {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            }
-        }
-
         @media (max-width: 992px) {
-            .nav-menu {
-                display: none;
-            }
-            
-            .header-content {
-                padding: 0 20px;
-            }
-            
-            .search-input {
-                width: 240px;
-            }
-            
-            .search-input:focus {
-                width: 280px;
-            }
-            
             .admin-cards {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                padding: 0 20px;
-            }
-            
-            .page-header {
-                padding: 0 20px;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                padding: 30px 0;
-            }
-            
-            .page-header {
+            .header {
+                padding: 15px 20px;
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 20px;
+                gap: 15px;
             }
             
-            h1 {
-                font-size: 2rem;
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
             }
             
-            .search-bar {
-                display: none;
+            .card-header {
+                flex-direction: column;
+                height: auto;
+                text-align: center;
+                padding: 20px 15px 15px;
             }
             
-            .admin-cards {
-                grid-template-columns: 1fr;
-                gap: 25px;
+            .card-header .admin-image {
+                order: 1;
+                margin-bottom: 15px;
+                width: 70px;
+                height: 70px;
+            }
+            
+            .header-text {
+                order: 2;
+            }
+            
+            .admin-card {
+                height: auto;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+            
+            .btn-filter {
+                margin-top: 0;
+                width: 100%;
             }
         }
 
         @media (max-width: 576px) {
-            .user-info {
-                display: none;
+            .container {
+                padding: 15px;
             }
             
-            .date-display {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .header-content {
-                padding: 0 15px;
-            }
-            
-            .action-icon {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .user-avatar {
-                width: 40px;
-                height: 40px;
+            .header h1 {
+                font-size: 1.6rem;
             }
             
             .admin-cards {
-                padding: 0 15px;
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-section {
+                padding: 20px 15px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-user-cog"></i>
-                </div>
-                <div class="logo-text">AdminPortal</div>
-            </div>
-            
-            <nav class="nav-menu">
-                <a href="#" class="nav-item active">Dashboard</a>
-                <a href="#" class="nav-item">Admins</a>
-                <a href="#" class="nav-item">Faculty</a>
-                <a href="#" class="nav-item">Students</a>
-                <a href="#" class="nav-item">Settings</a>
-            </nav>
-            
-            <div class="header-actions">
-                <div class="search-bar">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="search-input" placeholder="Search...">
-                </div>
-                
-                <div class="action-icon">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </div>
-                
-                <div class="action-icon">
-                    <i class="fas fa-envelope"></i>
-                    <span class="notification-badge">7</span>
-                </div>
-                
-                <div class="user-profile">
-                    <div class="user-avatar">JS</div>
-                    <div class="user-info">
-                        <div class="user-name">John Smith</div>
-                        <div class="user-role">Super Admin</div>
-                    </div>
-                </div>
-            </div>
+    <header class="header">
+        <div class="header-title">
+            <h1>Student Chat Management</h1>
+            <p class="subtitle">Students who follow you</p>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button class="header-btn logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <div class="page-header">
-                <div>
-                    <h1>Administrator Profiles</h1>
-                    <p class="subtitle">Manage and view all administrative staff members</p>
+    <div class="container">
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                    {{ message }}
                 </div>
-                <div class="date-display">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span id="current-date">Loading date...</span>
-                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <label for="course"><i class="fas fa-book"></i> Course:</label>
+                <select id="course" class="form-select">
+                    <option value="all">All Courses</option>
+                    {% for course in courses %}
+                        <option value="{{ course }}">{{ course }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
-            <div class="admin-cards">
-                <!-- Admin Card 1 -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <div class="admin-image">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <h3>Dr. Sarah Johnson</h3>
-                        <p>Dean of Academics</p>
-                    </div>
-                    <div class="card-body">
-                        <div class="admin-detail">
-                            <i class="fas fa-envelope"></i>
-                            <span class="detail-label">Email:</span>
-                            <span class="detail-value">s.johnson@university.edu</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-phone"></i>
-                            <span class="detail-label">Phone:</span>
-                            <span class="detail-value">+91 9876543210</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-id-badge"></i>
-                            <span class="detail-label">Admin ID:</span>
-                            <span class="detail-value">ADM-1001</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-calendar"></i>
-                            <span class="detail-label">Joined:</span>
-                            <span class="detail-value">Jan 15, 2018</span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="admin-status active">
-                            <span class="status-indicator"></span>
-                            <span class="status-active">Active</span>
-                        </div>
-                        <div class="admin-actions">
-                            <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn" title="Message"><i class="fas fa-comment"></i></button>
-                            <button class="action-btn" title="More"><i class="fas fa-ellipsis-v"></i></button>
-                        </div>
-                    </div>
-                </div>
+            <div class="filter-group">
+                <label for="year"><i class="fas fa-calendar-alt"></i> Year:</label>
+                <select id="year" class="form-select" disabled>
+                    <option value="all">All Years</option>
+                </select>
+            </div>
 
-                <!-- Admin Card 2 -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <div class="admin-image">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <h3>Dr. Michael Chen</h3>
-                        <p>Registrar</p>
-                    </div>
-                    <div class="card-body">
-                        <div class="admin-detail">
-                            <i class="fas fa-envelope"></i>
-                            <span class="detail-label">Email:</span>
-                            <span class="detail-value">m.chen@university.edu</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-phone"></i>
-                            <span class="detail-label">Phone:</span>
-                            <span class="detail-value">+91 8765432109</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-id-badge"></i>
-                            <span class="detail-label">Admin ID:</span>
-                            <span class="detail-value">ADM-1002</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-calendar"></i>
-                            <span class="detail-label">Joined:</span>
-                            <span class="detail-value">Mar 22, 2020</span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="admin-status active">
-                            <span class="status-indicator"></span>
-                            <span class="status-active">Active</span>
-                        </div>
-                        <div class="admin-actions">
-                            <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn" title="Message"><i class="fas fa-comment"></i></button>
-                            <button class="action-btn" title="More"><i class="fas fa-ellipsis-v"></i></button>
-                        </div>
-                    </div>
-                </div>
+            <div class="filter-group">
+                <label for="semester"><i class="fas fa-calendar"></i> Semester:</label>
+                <select id="semester" class="form-select" disabled>
+                    <option value="all">All Semesters</option>
+                </select>
+            </div>
 
-                <!-- Admin Card 3 -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <div class="admin-image">
-                            <i class="fas fa-user-md"></i>
+            <div class="filter-group">
+                <label for="college_id"><i class="fas fa-id-card"></i> College ID:</label>
+                <input type="text" id="college_id" class="form-control" placeholder="Enter College ID">
+            </div>
+
+            <div class="filter-group">
+                <button id="filterBtn" class="btn-filter">
+                    <i class="fas fa-filter"></i> Filter Students
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div id="results">
+                <!-- Initial student cards -->
+                <div class="admin-cards" id="initial-cards">
+                    {% for student in students %}
+                    <a href="{% url 'chat_home' %}?student_id={{ student.college_id }}" class="admin-card-link">
+                        <div class="admin-card">
+                            <div class="card-header">
+                                <div class="header-text">
+                                    <h3>{{ student.name }}</h3>
+                                    <p>{{ student.course }} - Semester {{ student.semester }}</p>
+                                </div>
+                                {% if student.profile_picture %}
+                                <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="admin-image">
+                                {% else %}
+                                <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="admin-image">
+                                {% endif %}
+                                <div class="online-status {% if student.online_status %}online{% else %}offline{% endif %}"></div>
+                            </div>
+                            <div class="card-body">
+                                <div class="admin-detail">
+                                    <i class="fas fa-envelope"></i>
+                                    <span class="detail-label">Email:</span>
+                                    <span class="detail-value">{{ student.email }}</span>
+                                </div>
+                                <div class="admin-detail">
+                                    <i class="fas fa-phone"></i>
+                                    <span class="detail-label">Phone:</span>
+                                    <span class="detail-value">+91 {{ student.phone }}</span>
+                                </div>
+                                <div class="admin-detail">
+                                    <i class="fas fa-id-badge"></i>
+                                    <span class="detail-label">Student ID:</span>
+                                    <span class="detail-value">{{ student.college_id }}</span>
+                                </div>
+                                <div class="admin-detail">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    <span class="detail-label">Course:</span>
+                                    <span class="detail-value">{{ student.course }}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="admin-status {% if student.online_status %}active{% else %}inactive{% endif %}">
+                                    <span class="status-indicator"></span>
+                                    <span class="status-value">
+                                        {% if student.online_status %}Online{% else %}Offline{% endif %}
+                                    </span>
+                                </div>
+                                <div class="admin-actions">
+                                    <a href="{% url 'chat_home' %}?student_id={{ student.college_id }}" class="action-btn" title="Message">
+                                        <i class="fas fa-comment-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <h3>Dr. Priya Sharma</h3>
-                        <p>Head of Student Affairs</p>
-                    </div>
-                    <div class="card-body">
-                        <div class="admin-detail">
-                            <i class="fas fa-envelope"></i>
-                            <span class="detail-label">Email:</span>
-                            <span class="detail-value">p.sharma@university.edu</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-phone"></i>
-                            <span class="detail-label">Phone:</span>
-                            <span class="detail-value">+91 7654321098</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-id-badge"></i>
-                            <span class="detail-label">Admin ID:</span>
-                            <span class="detail-value">ADM-1003</span>
-                        </div>
-                        <div class="admin-detail">
-                            <i class="fas fa-calendar"></i>
-                            <span class="detail-label">Joined:</span>
-                            <span class="detail-value">Aug 10, 2019</span>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="admin-status active">
-                            <span class="status-indicator"></span>
-                            <span class="status-active">Active</span>
-                        </div>
-                        <div class="admin-actions">
-                            <button class="action-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn" title="Message"><i class="fas fa-comment"></i></button>
-                            <button class="action-btn" title="More"><i class="fas fa-ellipsis-v"></i></button>
-                        </div>
-                    </div>
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Set current date
-        document.addEventListener('DOMContentLoaded', () => {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const currentDate = new Date().toLocaleDateString('en-US', options);
-            document.getElementById('current-date').textContent = currentDate;
+    $(document).ready(function() {
+        // CSRF token handling
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            }
         });
+
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(() => {
+            $('.alert').fadeOut(500, function() {
+                $(this).remove();
+            });
+        }, 5000);
+
+        // Course change handler
+        $('#course').change(function() {
+            const course = $(this).val();
+            
+            if (course !== 'all') {
+                $.get('{% url "getCourseDetails" %}', {course_name: course}, function(data) {
+                    if (data.error) {
+                        showMessage(data.error, 'danger');
+                        return;
+                    }
+                    
+                    // Update year and semester dropdowns
+                    $('#year').empty().append('<option value="all">All Years</option>');
+                    $('#semester').empty().append('<option value="all">All Semesters</option>');
+                    
+                    // Populate years
+                    if (data.years && data.years.length > 0) {
+                        data.years.forEach(year => {
+                            $('#year').append(`<option value="${year}">Year ${year}</option>`);
+                        });
+                    }
+                    
+                    // Populate semesters
+                    if (data.semesters && data.semesters.length > 0) {
+                        data.semesters.forEach(sem => {
+                            $('#semester').append(`<option value="${sem}">Semester ${sem}</option>`);
+                        });
+                    }
+
+                    $('#year, #semester').prop('disabled', false);
+                }).fail(function(xhr) {
+                    console.error('AJAX error:', xhr);
+                    let errorMsg = 'Failed to load course details';
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMsg = response.error || errorMsg;
+                    } catch (e) {
+                        errorMsg = 'Server error occurred';
+                    }
+                    showMessage(errorMsg, 'danger');
+                });
+            } else {
+                $('#year, #semester').prop('disabled', true);
+            }
+        });
+
+        // Filter students function
+        function filterStudents() {
+            const filters = {
+                course: $('#course').val(),
+                year: $('#year').val(),
+                semester: $('#semester').val(),
+                college_id: $('#college_id').val()
+            };
+
+            $('#loading').show();
+            $('#initial-cards').hide();
+            
+            $.get('{% url "filteredFollowedStudents" %}', filters, function(data) {
+                $('#results').html(data.html);
+            }).fail(function(xhr) {
+                console.error('Filter error:', xhr);
+                showMessage('Failed to load student data. Please try again.', 'danger');
+                $('#initial-cards').show();
+            }).always(function() {
+                $('#loading').hide();
+            });
+        }
+
+        // Show message function
+        function showMessage(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 
+                              type === 'warning' ? 'alert-warning' : 'alert-danger';
+            const alertHtml = `
+                <div class="alert ${alertClass}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            // Remove existing alerts
+            $('.alert').remove();
+            
+            // Add new alert
+            $('.container').prepend(alertHtml);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                $('.alert').fadeOut(500, function() {
+                    $(this).remove();
+                });
+            }, 5000);
+        }
+
+        $('#filterBtn').click(filterStudents);
+        
+        $('#college_id').keypress(function(e) {
+            if (e.which === 13) {
+                filterStudents();
+            }
+        });
+    });
     </script>
 </body>
 </html>

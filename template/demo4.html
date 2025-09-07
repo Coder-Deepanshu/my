@@ -1,0 +1,89 @@
+<h2>Student List (AJAX Pagination)</h2>
+<table border="1" id="student-table">
+  <tr>
+    <th>Department ID</th>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Code</th>
+    <th>Faculty</th>
+    <th>Student</th>
+    <th>Programe</th>
+  </tr>
+  {% for detail in page_obj %}
+    <tr>
+      <td>{{ detail.department_id }}</td>
+      <td>{{ detail.name }}</td>
+      <td>{{ detail.type }}</td>
+      <td>{{ detail.code }}</td>
+      <td>{{ detail.faculty_count }}</td>
+      <td>{{ detail.student_capacity }}</td>
+      <td>{{ detail.programs_count }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+<div id="pagination">
+  <button id="prev-btn"
+    data-page="{% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
+    {% if not page_obj.has_previous %}disabled{% endif %}>Previous</button>
+  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  <button id="next-btn"
+    data-page="{% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}"
+    {% if not page_obj.has_next %}disabled{% endif %}>Next</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  function loadPage(page) {
+    fetch(`?page=${page}`, {
+      headers: { "x-requested-with": "XMLHttpRequest" }
+    })
+    .then(response => response.json())
+    .then(data => {
+      let table = document.getElementById("student-table");
+      table.innerHTML = `
+        <tr>
+          <th>Department ID</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Code</th>
+          <th>Faculty</th>
+          <th>Student</th>
+          <th>Programe</th>
+        </tr>
+      `;
+
+      data.details.forEach(detail => {
+        table.innerHTML += `
+          <tr>
+            <td>${ detail.department_id }</td>
+            <td>${ detail.name }</td>
+            <td>${ detail.type }</td>
+            <td>${ detail.code }</td>
+            <td>${ detail.faculty_count }</td>
+            <td>${ detail.student_capacity }</td>
+            <td>${ detail.programs_count }</td>
+          </tr>
+        `;
+      });
+
+      // Update buttons
+      document.getElementById("prev-btn").dataset.page = data.page_number - 1;
+      document.getElementById("next-btn").dataset.page = data.page_number + 1;
+
+      document.getElementById("prev-btn").disabled = !data.has_prev;
+      document.getElementById("next-btn").disabled = !data.has_next;
+
+      document.querySelector("#pagination span").innerText = 
+        `Page ${data.page_number} of ${data.total_pages}`;
+    });
+  }
+
+  document.getElementById("prev-btn").addEventListener("click", function() {
+    loadPage(this.dataset.page);
+  });
+  document.getElementById("next-btn").addEventListener("click", function() {
+    loadPage(this.dataset.page);
+  });
+});
+</script>

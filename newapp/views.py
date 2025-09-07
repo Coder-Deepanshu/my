@@ -39,7 +39,7 @@ def login_view(request):
         password = request.POST.get('password')
         user_id=request.POST.get('userId')
         role = request.POST.get('role')
-        
+       
         if not username or not password or not role or not user_id:
             messages.error(request, "Please fill all the fields")
             return redirect('login')
@@ -50,6 +50,7 @@ def login_view(request):
                 admin_detail = Admin.objects.get(email=username)
                 user_id = admin_detail.college_id
                 admin_phone = admin_detail.phone
+
                 if (password==admin_phone and user_id == user_id):
                     request.session['username1'] =  admin_detail.name
                     request.session['admin_college_id']= user_id
@@ -58,12 +59,6 @@ def login_view(request):
                 else:
                     messages.error(request, "Invalid admin credentials")
                     return redirect('login')
-                
-            elif username =='Deepanshu' and user_id =='AD20250' and password == '12345' :
-                    request.session['username1'] =  username
-                    request.session['admin_college_id']= user_id
-                    request.session['role'] = role
-                    return redirect('dashboard')
 
             else:
                 messages.error(request, "Invalid admin credentials")
@@ -122,6 +117,7 @@ def login_view(request):
                 return redirect('login')
     
     return render(request, 'Home/login.html')
+
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -207,18 +203,19 @@ def admin_card(request):
 # profile details   
 def profile_details(request):
     role = request.session.get('role')
+
     if role == 'faculty':
         faculty_id=request.session.get('faculty_college_id')
         details=Faculty.objects.get(college_id=faculty_id)
-        return render(request,'profile.html',{'faculty':details})
+        return render(request,'profile.html',{'faculty':details,'role':role})
     elif role == 'student':
         student_id=request.session.get('student_college_id')
         details=Student.objects.get(college_id=student_id)
-        return render(request,'profile.html',{'student':details})
+        return render(request,'profile.html',{'student':details,'role':role})
     elif role == 'admin':
         admin_id=request.session.get('admin_college_id')
         details=Admin.objects.get(college_id=admin_id)
-        return render(request,'profile.html',{'admin':details})
+        return render(request,'profile.html',{'admin':details,'role':role})
 
 # for uploading picture 
 def profile_upload(request):
@@ -262,6 +259,7 @@ def profile_upload(request):
 def id_card(request):
     role=request.session.get('role')
     context = {}
+    context['role'] = role
     
     try:
         # Check user type and add appropriate details to context
@@ -286,30 +284,33 @@ def id_card(request):
 # for admin dashboard
 def dashboard_view(request):
     # Check if the user is logged in
+    role = request.session.get('role')
     username = request.session.get('username1')
     college_id = request.session.get('admin_college_id')
     if username:
-        return render(request, 'dashboard.html', {'username': username,'college_id':college_id})
+        return render(request, 'dashboard.html', {'username': username,'college_id':college_id,'role':role})
     else:
         return redirect('login') 
 
 # for faculty dashboard
 def dashboard1(request):
     # Check if the user is logged in
+    role = request.session.get('role')
     username = request.session.get('username2')  # Retrieve username from session
     if username:
-        return render(request, 'dashboard1.html', {'username': username})
+        return render(request, 'dashboard1.html', {'username': username,'role':role})
     else:
         return redirect('login')  # Redirect to login if not logged in
 
 # for student dashboard
 def dashboard2(request):
     # Check if the user is logged in
+    role = request.session.get('role')
     username = request.session.get('username3')
     college_id = request.session.get('student_college_id')
     detail = Student.objects.get(college_id = college_id)  # Retrieve username from session
     if username:
-        return render(request, 'dashboard2.html', {'username': username,'detail':detail})
+        return render(request, 'dashboard2.html', {'username': username,'detail':detail,'role':role})
     else:
         return redirect('login') 
 
@@ -322,6 +323,8 @@ def logout_view(request):
 # for single students operations 
 def student_functions(request):
     context = {}
+    role = request.session.get('role')
+    context['role'] = role
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -442,6 +445,8 @@ def student_functions(request):
 from django.db import models
 def faculty_functions(request):
     context = {}
+    role = request.session.get('role')
+    context['role'] = role
     if request.method == "POST":
         action = request.POST.get("action")
 
@@ -555,6 +560,8 @@ from django.contrib.auth.models import User
 # for functions related to admin
 def admin_functions(request):
     context = {}
+    role = request.session.get('role')
+    context['role'] = role
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -673,14 +680,23 @@ def admin_functions(request):
 from django.template.loader import render_to_string
 
 def course_details(request,template):
+    role = request.session.get('role')
     try:
         # Get all courses from Course model (not from Student records)
-        courses = Course.objects.all().values_list('code', flat=True)
-        students = Student.objects.all()
-        return render(request, template, {'courses': courses, 'students': students})
+        if template !='chat/page2.html':
+            courses = Course.objects.all().values_list('code', flat=True)
+            students = Student.objects.all()
+            return render(request, template, {'courses': courses, 'students': students,'role':role})
+        else:
+            courses = Course.objects.all().values_list('code', flat=True)
+            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
+            students = Student.objects.filter(followed_faculty=faculty)
+            return render(request, 'chat/page2.html', {'faculty': faculty,'students': students,'role': 'faculty','courses': courses,'role':role                                     
+        })
+
     except Exception as e:
         messages.error(request, f"Error loading courses: {str(e)}")
-        return render(request, template, {'courses': [],'students': []})
+        return render(request, template, {'courses': [],'students': [],'faculty':[],'role':[]})
 
 def get_courses_details(request):
     try:
@@ -705,25 +721,41 @@ def filtered_students(request, template):
     if not request.session.get('faculty_college_id') or not request.session.get('admin_college_id'):
         messages.error(request, "Please login First")
         return redirect('login')
-    
-        
-    filters = {
-        'course': request.GET.get('course', 'all'),
-        'year': request.GET.get('year', 'all'),
-        'semester': request.GET.get('semester', 'all'),
-        'college_id': request.GET.get('college_id', '')
-    }
+    try:
+        if template != 'chat/student_list_partial.html':
+            filters = {
+            'course': request.GET.get('course', 'all'),
+            'year': request.GET.get('year', 'all'),
+            'semester': request.GET.get('semester', 'all'),
+            'college_id': request.GET.get('college_id', '')}
+            students = Student.objects.all()
+            if filters['course'] != 'all':
+                students = students.filter(course=filters['course'])
+            if filters['year'] != 'all':
+                students = students.filter(year=filters['year'])
+            if filters['semester'] != 'all':
+                students = students.filter(semester=filters['semester'])
+            if filters['college_id']:
+                students = students.filter(college_id__icontains=filters['college_id'])
+        else:
+            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
+            students = Student.objects.filter(followed_faculty=faculty)
+            filters = {
+            'course': request.GET.get('course', 'all'),
+            'year': request.GET.get('year', 'all'),
+            'semester': request.GET.get('semester', 'all'),
+            'college_id': request.GET.get('college_id', '')}
+            if filters['course'] != 'all':
+                students = students.filter(course=filters['course'])
+            if filters['year'] != 'all':
+                students = students.filter(year=filters['year'])
+            if filters['semester'] != 'all':
+                students = students.filter(semester=filters['semester'])
+            if filters['college_id']:
+                students = students.filter(college_id__icontains=filters['college_id'])
+    except Exception as e:
+        return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
 
-    students = Student.objects.all()
-    
-    if filters['course'] != 'all':
-        students = students.filter(course=filters['course'])
-    if filters['year'] != 'all':
-        students = students.filter(year=filters['year'])
-    if filters['semester'] != 'all':
-        students = students.filter(semester=filters['semester'])
-    if filters['college_id']:
-        students = students.filter(college_id__icontains=filters['college_id'])
 
     html = render_to_string(template, {'students': students})
     return JsonResponse({'html': html})  # Fixed: removed the extra comma
@@ -818,6 +850,7 @@ def save_attendance(request):
 
 from datetime import datetime
 def student_attendance_view(request):
+    role = request.session.get('role')
     if not request.session.get('student_college_id'):
         messages.error(request, "Please login as student first")
         return redirect('login')
@@ -834,7 +867,8 @@ def student_attendance_view(request):
         return render(request, 'student/student_attendance_view.html', {
             'student': student,
             'years': years,
-            'current_year': current_year
+            'current_year': current_year,
+            'role':role
         })
         
     except Student.DoesNotExist:
@@ -905,6 +939,7 @@ def get_student_attendance(request):
 
 #  for student, for viewing fees
 def student_fees_view(request):
+    role =  request.session.get('role')
     if 'username3' not in request.session:
         return redirect('login')
     
@@ -1009,6 +1044,7 @@ def student_fees_view(request):
             'payment_percentage': float((total_payment / total_semester_fee * 100)) if total_semester_fee > Decimal('0.00') else 0,
             'year_wise_data': year_wise_data,
             'all_payments': all_payments,
+            'role':role
         }
         
         return render(request, 'student/student_fees_view.html', context)
@@ -1022,6 +1058,7 @@ def student_fees_view(request):
     
 # for admin dashboard for voewing students fees
 def admin_fee_management(request):
+    role = request.session.get('role')
     if 'username1' not in request.session:
         return redirect('login')
     
@@ -1109,6 +1146,7 @@ def admin_fee_management(request):
         'selected_year': year_filter,
         'selected_semester': semester_filter,
         'selected_college_id': college_id_filter,
+        'role':role
     }
     
     return render(request, 'admin/admin_fee_management.html', context)
@@ -2016,31 +2054,71 @@ def delete_chat(request, room_id):
     }, status=405)
 
 
-
-from .models import Department
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
+from django.core.paginator import Paginator
+from .models import Department, Faculty, Student, Course
+from .form import DepartmentForm
 
-# department creation
 def department_creation(request):
     # Always get departments list for the template
-    details = Department.objects.all()
+    role = request.session.get('role')
+    details = Department.objects.all().order_by("department_id")
+    paginator = Paginator(details, 5) 
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     total_department = Department.objects.count()
     total_faculty = Faculty.objects.count()
     enrolled_students = Student.objects.count()
     total_course = Course.objects.count()
     programs = Course.objects.all()
     
+    # Handle AJAX requests first
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        data = []
+        for department in page_obj:
+            data.append({
+                "department_id": department.department_id,
+                "name": department.name,
+                "code": department.code,
+                "type": department.type,
+                "faculty_count": department.faculty_count,
+                "programs_count": department.programs_count,
+                "student_capacity": department.student_capacity
+                
+            })
+        return JsonResponse({
+            "details": data,
+            "has_next": page_obj.has_next(),
+            "has_prev": page_obj.has_previous(),
+            "page_number": page_obj.number,
+            "total_pages": paginator.num_pages
+        })
+    
     if request.method == 'POST':
         action = request.POST.get('form_name')
         
         if action == 'departmentCreation':
             try:
-                # Check if department with same code already exists
+                max_id = Department.objects.aggregate(max_id=models.Max('department_id'))['max_id']
+                
+                if max_id is None:
+                    department_id = 'DEP-0'  # Initial ID
+                else:
+                    try:
+                        # Extract numeric part and increment
+                        numeric_part = int(max_id[4:])  # Remove 'ST' prefix
+                        department_id = f'DEP-{numeric_part + 1}'
+                    except (ValueError, IndexError):
+                        department_id = 'DEP-0'  # Fallback if format is wrong
+
                 code = request.POST.get('code')
                 if Department.objects.filter(code=code).exists():
                     messages.error(request, f"Department with code '{code}' already exists!")
                 else:
                     Department.objects.create(
+                        department_id = department_id,
                         name=request.POST.get('name'),
                         code=code,
                         type=request.POST.get('type'),
@@ -2057,73 +2135,45 @@ def department_creation(request):
     
     # Always return the render with details
     return render(request, 'department.html', {
-        'details': details,
+        "page_obj": page_obj,
         'total_department': total_department,
         'total_faculty': total_faculty,
         'enrolled_students': enrolled_students,
         'total_course': total_course,
-        'programs': programs
+        'programs': programs,
+        'role':role
     })
 
-# Edit department view
-def edit_department(request, id):
-    department = get_object_or_404(Department, id=id)
-    
-    if request.method == 'POST':
-        try:
-            # Check if code is being changed to an existing one
-            new_code = request.POST.get('code')
-            if new_code != department.code and Department.objects.filter(code=new_code).exists():
-                messages.error(request, f"Department with code '{new_code}' already exists!")
-                return redirect('department_creation')
-                
-            department.name = request.POST.get('name')
-            department.code = new_code
-            department.type = request.POST.get('type')
-            department.description = request.POST.get('description')
-            department.programs_count = request.POST.get('programe')
-            department.faculty_count = request.POST.get('facultyCount')
-            department.student_capacity = request.POST.get('studentCapacity')
-            department.save()
-            
-            messages.success(request, "Department Updated Successfully!")
-        except Exception as e:
-            messages.error(request, f"Error updating department: {str(e)}")
-    
-    return redirect('department_creation')
+from django.shortcuts import get_object_or_404
 
-# Delete department view
-def delete_department(request, id):
-    department = get_object_or_404(Department, id=id)
-    
-    try:
-        department_name = department.name
-        department.delete()
-        messages.success(request, f"Department '{department_name}' Deleted Successfully!")
-    except Exception as e:
-        messages.error(request, f"Error deleting department: {str(e)}")
-    
-    return redirect('department_creation')
 
-# View department details
-def view_department(request, id):
-    department = get_object_or_404(Department, id=id)
-    return JsonResponse({
-        'name': department.name,
-        'code': department.code,
-        'type': department.type,
-        'description': department.description,
-        'programs_count': department.programs_count,
-        'faculty_count': department.faculty_count,
-        'student_capacity': department.student_capacity,
-        'created_at': department.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-        'updated_at': department.updated_at.strftime('%Y-%m-%d %H:%M:%S')
-    })
+class DepartmentUpdateView(UpdateView):
+    model = Department
+    form_class = DepartmentForm
+    template_name = "department.html"
+    success_url = reverse_lazy("department_creation")
+    
+    # Override get_object to use department_id instead of pk
+    def get_object(self, queryset=None):
+        department_id = self.kwargs.get('pk')
+        return get_object_or_404(Department, department_id=department_id)
+
+class DepartmentDeleteView(DeleteView):
+    model = Department
+    template_name = "department.html"
+    success_url = reverse_lazy("department_creation")
+    
+    # Override get_object to use department_id instead of pk
+    def get_object(self, queryset=None):
+        department_id = self.kwargs.get('pk')
+        return get_object_or_404(Department, department_id=department_id)
+
 
 # course craetion
 from .models import Department, Course,Level
 
 def course_creation(request):
+    role = request.session.get()
     details = Course.objects.all()
     try:
         # Get lists for both GET and POST requests
@@ -2162,7 +2212,8 @@ def course_creation(request):
         return render(request, 'course_creation.html', {
             'department_list': department_list,
             'level_list': level_list,
-            'details':details
+            'details':details,
+            'role':role
             
         })
             
@@ -2171,19 +2222,21 @@ def course_creation(request):
         return render(request, 'course_creation.html', {
             'department_list': [],
             'level_list': [],
-            'details':[]
+            'details':[],
+            'role':[]
         })
     
 # Created Positions
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from django.contrib import messages
 import json
 from .models import Position, Department
 
+
+
 def position_creation(request):
+    role = request.session.get('role')
     details = Position.objects.all().select_related('department')
     try:
         # Get lists for both GET and POST requests
@@ -2342,7 +2395,8 @@ def position_creation(request):
         return render(request, 'position.html', {
             'faculty_department_list': faculty_department_list,
             'admin_department_list': admin_department_list,
-            'details': details
+            'details': details,
+            'role':role
         })
             
     except Exception as e:
@@ -2350,7 +2404,8 @@ def position_creation(request):
         return render(request, 'position.html', {
             'faculty_department_list': [],
             'admin_department_list': [],
-            'details': []
+            'details': [],
+            'role':[]
         })
 
 
@@ -2472,14 +2527,71 @@ def student_list_name(request,template):
     student = 'Deepanshu'
     return render(request,template,{'student':student})
 
-# def a1(request):
-#     return render(request,'a1.html')
 
-# def a2(request):
-#     return render(request,'a2.html')
 
-# def a3(request):
-#     return render(request,'a3.html')
 
-# def a404(request):
-#     return render(request,'404.html')
+
+
+# views.py
+# views.py
+# from django.core.paginator import Paginator
+# from django.http import JsonResponse
+# from django.shortcuts import render
+from .models import Students
+
+# def student_list(request):
+#     students = Students.objects.all().order_by("roll_no")[:10]
+#     paginator = Paginator(students, 5)  # 5 students per page
+    
+#     page_number = request.GET.get("page")
+#     page_obj = paginator.get_page(page_number)
+
+#     # Agar AJAX request hai → JSON return karo
+#     if request.headers.get("x-requested-with") == "XMLHttpRequest":
+#         data = []
+#         for student in page_obj:
+#             data.append({
+#                 "roll_no": student.roll_no,
+#                 "name": student.name,
+#                 "course": student.course
+#             })
+#         return JsonResponse({
+#             "students": data,
+#             "has_next": page_obj.has_next(),
+#             "has_prev": page_obj.has_previous(),
+#             "page_number": page_obj.number,
+#             "total_pages": paginator.num_pages
+#         })
+
+#     return render(request, "student_list.html", {"page_obj": page_obj})
+
+
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from .models import Students
+from .form import StudentForm
+
+class StudentListView(ListView):
+    model = Students
+    template_name = "student_list.html"
+    context_object_name = "students"
+
+class StudentCreateView(CreateView):
+    model = Students
+    form_class = StudentForm
+    template_name = "add_student.html"
+    success_url = reverse_lazy("student_list")
+
+class StudentUpdateView(UpdateView):
+    model = Students
+    form_class = StudentForm
+    template_name = "edit_student.html"
+    success_url = reverse_lazy("student_list")
+
+class StudentDeleteView(DeleteView):
+    model = Students
+    template_name = "delete_student.html"
+    success_url = reverse_lazy("student_list")
+
+
+

@@ -1,1016 +1,1144 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Fee Details - College Management System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --accent: #7209b7;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --transition: all 0.3s ease;
-            --paid: #4CAF50;
-            --pending: #f44336;
-            --partial: #FF9800;
+            /* Primary Colors */
+            --primary: #3a56d4;
+            --primary-dark: #2f4ac0;
+            --primary-light: #f5f7ff;
+            --primary-extra-light: #eef1ff;
+            
+            /* Secondary Colors */
+            --secondary: #4a6bff;
+            --accent: #5c7cff;
+            --success: #4cc9f0;
+            --warning: #ff9f1c;
+            --danger: #ff477e;
+            
+            /* Neutral Colors */
+            --dark: #2d3748;
+            --darker: #1a202c;
+            --light: #f8fafc;
+            --lighter: #ffffff;
+            --gray: #718096;
+            --light-gray: #e2e8f0;
+            --dark-gray: #4a5568;
+            
+            /* Status Colors */
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --info: #4299e1;
+            
+            /* Sidebar Colors */
+            --sidebar-bg: #2d3748;
+            --sidebar-text: #cbd5e0;
+            --sidebar-active: rgba(74, 107, 255, 0.2);
+            --sidebar-hover: #4a5568;
+            --sidebar-icon: #a0aec0;
+            
+            /* Other Variables */
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --box-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+
+            --ai-purple: #8a2be2;
+            --ai-blue: #4361ee;
+            --ai-teal: #38a3a5;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --card-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         }
 
         body {
             background-color: #f5f7fb;
             color: var(--dark);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            min-height: 100vh;
             overflow-x: hidden;
             line-height: 1.6;
         }
 
-        /* Header Styles */
-        .header {
-            background: white;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            position: sticky;
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            left: 0;
             top: 0;
-            z-index: 1000;
-            height: 70px;
+            transition: var(--transition);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.8rem;
+        .sidebar-header {
+            padding: 1.5rem 1.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            height: var(--header-height);
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
         }
 
-        .nav-link {
-            color: var(--dark);
+        .sidebar-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background-color: var(--sidebar-hover);
+            border-radius: 3px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background-color: var(--sidebar-bg);
+        }
+
+        .menu-title {
+            padding: 0.75rem 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--sidebar-text);
+            font-weight: 600;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-item {
+            position: relative;
+            margin: 0.15rem 0;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
             font-weight: 500;
-            margin: 0 10px;
             transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+            margin: 0 0.5rem;
+            border-radius: 6px;
         }
 
-        .nav-link:hover {
-            color: var(--primary);
+        .menu-link:hover {
+            color: white;
+            background-color: var(--sidebar-hover);
+            transform: translateX(5px);
         }
 
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            padding: 12px 30px;
-            border-radius: 8px;
-            transition: var(--transition);
+        .menu-link.active {
+            color: white;
+            background-color: var(--sidebar-active);
+            border-left-color: var(--primary);
             font-weight: 600;
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        .menu-icon {
+            font-size: 1rem;
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            color: var(--sidebar-icon);
+            transition: var(--transition);
         }
 
-        /* Page Header */
-        .page-header {
-            padding: 60px 0 30px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+        .menu-link:hover .menu-icon,
+        .menu-link.active .menu-icon {
             color: white;
+            transform: scale(1.1);
+        }
+
+        .menu-text {
+            flex: 1;
+            transition: var(--transition);
+        }
+
+        .menu-link:hover .menu-text {
+            transform: translateX(3px);
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .sidebar-footer:hover .user-avatar {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.1rem;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--sidebar-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .logout-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: rotate(180deg);
+        }
+
+        /* Logo Styles */
+        .logo-container {
+            padding: 0 20px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             text-align: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(-15deg);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        /* Submenu Page Styles */
+        .submenu-page {
+            position: fixed;
+            left: var(--sidebar-width);
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            z-index: 99;
+            transform: translateX(-100%);
+            transition: var(--transition);
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            padding-top: var(--header-height);
+        }
+        
+        .submenu-page.active {
+            transform: translateX(0);
+        }
+        
+        .submenu-header {
+            padding: 1.5rem 1.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .submenu-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .close-submenu {
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .close-submenu:hover {
+            color: white;
+            transform: rotate(90deg);
+        }
+        
+        .submenu-content {
+            padding: 1rem 0;
+        }
+        
+        .submenu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.9rem;
+            margin: 0.15rem 0.5rem;
+            border-radius: 6px;
+        }
+        
+        .submenu-link:hover {
+            color: white;
+            background-color: var(--sidebar-hover);
+            transform: translateX(5px);
+        }
+        
+        .submenu-link i {
+            font-size: 0.9rem;
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            color: var(--sidebar-icon);
+            transition: var(--transition);
+        }
+        
+        .submenu-link:hover i {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: var(--transition);
+        }
+
+        /* Adjust main content when submenu is open */
+        .submenu-page.active ~ .main-content {
+            margin-left: calc(var(--sidebar-width) + 280px);
+        }
+
+        /* Header Styles */
+        .header {
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--gray);
+            cursor: pointer;
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-sidebar:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.25rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .notification-btn:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .user-dropdown:hover {
+            background-color: var(--light-gray);
+        }
+
+        .user-dropdown-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .user-dropdown:hover .user-dropdown-avatar {
+            transform: scale(1.1);
+            border-color: var(--primary-light);
+        }
+
+        .user-dropdown-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+
+        .user-dropdown:hover .user-dropdown-name {
+            color: var(--primary);
+        }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            min-width: 220px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow-lg);
+            padding: 0.5rem 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .user-dropdown:hover .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.25rem;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding-left: 1.5rem;
+        }
+
+        .dropdown-item i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--light-gray);
+            margin: 0.5rem 0;
+        }
+
+        /* Content Styles */
+        .content {
+            padding: 2rem;
+        }
+
+        /* Header-1 Styles */
+        .header-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .page-title h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .page-title p {
+            margin: 0.5rem 0 0;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 0.6rem 1.25rem;
+            border-radius: 50px;
+            box-shadow: var(--box-shadow);
+            width: 300px;
+            transition: var(--transition);
+        }
+
+        .search-bar:focus-within {
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex-grow: 1;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.95rem;
+            background: transparent;
+        }
+
+        .search-bar i {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
             position: relative;
             overflow: hidden;
-            margin-bottom: 30px;
         }
 
-        .page-header::before {
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .stat-card::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
-            opacity: 0.1;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            opacity: 0;
+            transition: var(--transition);
         }
 
-        .page-header h1 {
-            font-size: 2.2rem;
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 1.25rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-info h3 {
+            margin: 0;
+            font-size: 1.6rem;
             font-weight: 700;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        /* Content Container */
-        .content-container {
-            max-width: 1400px;
-            margin: 0 auto 40px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        /* Form Styles */
-        .form-container {
-            padding: 30px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            margin-bottom: 10px;
             color: var(--dark);
+        }
+
+        .stat-info p {
+            margin: 0.25rem 0 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Quick Actions */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
+            gap: 0.75rem;
+            color: var(--dark);
         }
 
-        .form-label i {
-            margin-right: 10px;
+        .section-title i {
             color: var(--primary);
+            font-size: 1.1rem;
         }
 
-        .form-control, .form-select {
-            padding: 12px 15px;
-            border: 2px solid var(--light-gray);
-            border-radius: 8px;
-            transition: var(--transition);
-            font-size: 1rem;
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
         }
 
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-        }
-
-        /* Table Styles */
-        .table-container {
-            padding: 30px;
-        }
-
-        .student-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .student-table th, 
-        .student-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .student-table th {
-            background: var(--light);
-            font-weight: 600;
-            color: var(--dark);
-            position: sticky;
-            top: 0;
-        }
-
-        .student-table tr:hover {
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
-        .btn-action {
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
+        .action-btn {
+            background: white;
             border: none;
-            transition: var(--transition);
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .btn-view {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-weight: 500;
-            border-radius: 8px;
-            text-decoration: none;
-            display: inline-block;
-            transition: var(--transition);
-        }
-
-        .btn-view:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* Alert Styles */
-        .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin: 15px 0;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem 1rem;
             display: flex;
+            flex-direction: column;
             align-items: center;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        /* Filter Section */
-        .filter-section {
-            padding: 20px;
-            background: var(--light-gray);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: flex-end;
-        }
-
-        .filter-group {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .filter-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: var(--dark);
-        }
-
-        .filter-group select, 
-        .filter-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--light-gray);
-            border-radius: 8px;
-            transition: var(--transition);
-            font-size: 1rem;
-        }
-
-        .filter-group select:focus, 
-        .filter-group input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-        }
-
-        .btn-filter {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--dark);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-filter:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+        .action-btn:hover {
+            background:#6078e5;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-lg);
         }
 
-        .avatar {
+        .action-btn i {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .action-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover .action-text {
+            transform: translateY(2px);
+        }
+        /* Recent Activity */
+        .recent-activity {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 20px;
+            padding: 1.75rem;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            padding: 1.1rem 0;
+            border-bottom: 1px solid var(--light-gray);
+            align-items: flex-start;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 30px;
-            color: var(--gray);
-        }
-
-        .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .paid {
-            background-color: rgba(76, 175, 80, 0.1);
-            color: var(--paid);
-        }
-
-        .pending {
-            background-color: rgba(244, 67, 54, 0.1);
-            color: var(--pending);
-        }
-
-        .partial {
-            background-color: rgba(255, 152, 0, 0.1);
-            color: var(--partial);
-        }
-
-        .progress {
-            height: 8px;
-            border-radius: 4px;
-            background-color: #e9ecef;
-        }
-
-        .progress-bar {
-            border-radius: 4px;
-        }
-
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.25rem;
+            flex-shrink: 0;
+            font-size: 1rem;
             transition: var(--transition);
         }
 
-        .summary-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        .activity-item:hover .activity-icon {
+            background: var(--primary);
+            color: white;
+            transform: rotate(15deg);
         }
 
-        .summary-card h3 {
-            font-size: 14px;
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            color: var(--dark);
+        }
+
+        .activity-desc {
+            font-size: 0.85rem;
             color: var(--gray);
-            margin-bottom: 10px;
         }
 
-        .summary-card p {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        /* Payment Modal Styles */
-        .modal-content {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            background: var(--primary);
-            color: white;
-            border-bottom: none;
-            padding: 20px;
-        }
-
-        .modal-body {
-            padding: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: right;
+            margin-left: 1rem;
+            min-width: 80px;
             font-weight: 500;
-            margin-bottom: 8px;
-            display: block;
         }
 
-        .form-control {
-            border-radius: 5px;
-            padding: 10px 15px;
-            border: 2px solid var(--light-gray);
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-        }
-
-        .btn-pay {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            width: 100%;
-            transition: var(--transition);
-        }
-
-        .btn-pay:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .receipt {
-            border: 1px dashed #ddd;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            background: #f9f9f9;
-        }
-
-        .receipt h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .receipt-details {
+        /* Charts Section */
+        .charts-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
         }
-
-        .receipt-detail {
-            margin-bottom: 8px;
-        }
-
-        .receipt-detail strong {
-            display: block;
-            font-size: 13px;
-            color: var(--gray);
-        }
-
-        .receipt-detail span {
-            font-size: 14px;
-        }
-
-        /* Content Section Styles */
-        .content-section {
-            padding: 25px;
-        }
-
-        /* Card Styles */
+        
         .card {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-bottom: 25px;
-            overflow: hidden;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-lg);
         }
 
         .card-header {
-            padding: 15px 20px;
-            font-weight: 600;
-        }
-
-        .card-header h5 {
-            margin: 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
         }
 
-        /* Table Styles */
-        .table {
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        .table th {
-            background-color: #f8f9fa;
+        .card-title {
+            font-size: 1.1rem;
             font-weight: 600;
-            color: #495057;
-            border-top: 1px solid #dee2e6;
+            color: var(--dark);
         }
 
-        .table td, .table th {
-            padding: 12px 15px;
-            vertical-align: middle;
-            border-top: 1px solid #dee2e6;
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
         }
 
-        .table tr:first-child th:first-child {
-            border-top-left-radius: 8px;
+        .card-icon.primary {
+            background: var(--primary);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
 
-        .table tr:first-child th:last-child {
-            border-top-right-radius: 8px;
+        .card-icon.success {
+            background: var(--success);
+            box-shadow: 0 4px 15px rgba(76, 201, 240, 0.3);
         }
 
-        .table tr:last-child td:first-child {
-            border-bottom-left-radius: 8px;
+        .card-icon.warning {
+            background: var(--warning);
+            box-shadow: 0 4px 15px rgba(248, 150, 30, 0.3);
         }
 
-        .table tr:last-child td:last-child {
-            border-bottom-right-radius: 8px;
+        .card-icon.danger {
+            background: var(--danger);
+            box-shadow: 0 4px 15px rgba(247, 37, 133, 0.3);
         }
 
-        /* Button Styles */
-        .btn {
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 6px;
-            transition: all 0.3s;
+        .card-body {
+            padding: 0.5rem 0;
         }
 
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.875rem;
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        /* Bubbles Background */
+        .bubbles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(106, 163, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+            10% { opacity: 0.5; }
+            100% { transform: translateY(-1000px) translateX(100px) scale(1.5); opacity: 0; }
         }
 
         /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .submenu-page {
+                left: 0;
+                z-index: 101;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active + .submenu-page {
+                left: var(--sidebar-width);
+            }
+            
+            .submenu-page.active ~ .main-content {
+                margin-left: 0;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .toggle-sidebar {
+                display: flex;
+            }
+        }
+
         @media (max-width: 992px) {
-            .content-container {
-                margin: 0 15px 40px;
+            .content {
+                padding: 1.5rem;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-1 {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-bar {
+                width: 100%;
             }
         }
 
         @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 1.8rem;
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
             }
             
-            .filter-section {
-                flex-direction: column;
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
             }
             
-            .filter-group {
-                width: 100%;
-            }
-            
-            .student-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .summary-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .receipt-details {
-                grid-template-columns: 1fr;
+            .header {
+                padding: 0 1.25rem;
             }
         }
 
         @media (max-width: 576px) {
-            .form-container, .table-container {
-                padding: 20px;
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-dropdown-name {
+                display: none;
+            }
+            
+            .content {
+                padding: 1.25rem;
+            }
+            
+            .slide-content {
+                padding: 1.5rem;
+            }
+            
+            .slide-title {
+                font-size: 1.3rem;
             }
         }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-light py-3">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <i class="fas fa-money-bill-wave me-2"></i>Edutrack
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'admin_fee_management' %}">Back</a>
-                        </li>
-                    </ul>
-                    <div class="ms-lg-3 mt-3 mt-lg-0">
-                        <a href="{% url 'logoutdoor' %}" class="btn btn-outline-primary me-2">LogOut</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
 
-    <!-- Page Header -->
-    <section class="page-header">
-        <div class="container">
-            <h1>Fee Details for {{ student.name }}</h1>
-            <p>View and manage student fee payments</p>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <div class="content-container">
-        <!-- Messages will appear here -->
-{% if messages %}
-    <div class="container mt-4">
-        {% for message in messages %}
-        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
-            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-        <div class="content-section">
-            <!-- Student Summary -->
-            <div class="summary-cards">
-                <div class="summary-card">
-                    <h3>Total Course Fee</h3>
-                    <p>₹{{ total_course_fee }}</p>
-                </div>
-                <div class="summary-card">
-                    <h3>Total Paid</h3>
-                    <p>₹{{ total_paid }}</p>
-                </div>
-                <div class="summary-card">
-                    <h3>Total Due</h3>
-                    <p>₹{{ total_due }}</p>
-                </div>
-                <div class="summary-card">
-                    <h3>Payment Completion</h3>
-                    <p>{{ payment_percentage|floatformat:2 }}%</p>
-                </div>
-            </div>
-            
-            <!-- Year-wise Fee Breakdown -->
-            <div class="results-section">
-                {% for year_data in year_wise_data %}
-                <div class="card mb-4">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Year {{ year_data.year }}</h5>
-                        <div>
-                            <span class="me-3">Total: ₹{{ year_data.amount }}</span>
-                            <span class="me-3">Paid: ₹{{ year_data.paid }}</span>
-                            <span class="me-3">Due: ₹{{ year_data.due }}</span>
-                            <span class="status {% if year_data.status == 'Paid' %}paid{% elif year_data.status == 'Pending' %}pending{% else %}partial{% endif %}">
-                                {{ year_data.status }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h6 class="mb-3">Fee Installments</h6>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Semester</th>
-                                        <th>Amount</th>
-                                        <th>Due Date</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for detail in year_data.fee_details %}
-                                    <tr>
-                                        <td>Semester {{ detail.fee.semester }}</td>
-                                        <td>₹{{ detail.fee.amount }}</td>
-                                        <td>{{ detail.fee.due_date|date:"d M Y" }}</td>
-                                        <td>
-                                            {% if detail.is_paid %}
-                                                <span class="status paid">Paid</span>
-                                            {% else %}
-                                                <span class="status pending">Pending</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if detail.is_paid %}
-                                                <button class="btn btn-sm btn-outline-primary" disabled>
-                                                    <i class="fas fa-check"></i> Paid
-                                                </button>
-                                            {% else %}
-                                                <button class="btn btn-sm btn-primary" 
-                                                    onclick="openPaymentModal('{{ student.college_id }}', '{{ student.name }}', '{{ detail.fee.id }}', '{{ detail.fee.amount }}')">
-                                                    <i class="fas fa-money-bill-wave"></i> Pay Now
-                                                </button>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        {% if year_data.payments %}
-                        <h6 class="mt-4 mb-3">Payment History</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Amount</th>
-                                        <th>Method</th>
-                                        <th>Receipt No.</th>
-                                        <th>Transaction ID</th>
-                                        <th>Verified By</th>
-                                        <th>Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for payment in year_data.payments %}
-                                    <tr>
-                                        <td>{{ payment.payment_date|date:"d M Y" }}</td>
-                                        <td>₹{{ payment.amount_paid }}</td>
-                                        <td>{{ payment.payment_method }}</td>
-                                        <td>{{ payment.receipt_number }}</td>
-                                        <td>{{ payment.transaction_id|default:"-" }}</td>
-                                        <td>{{ payment.verified_by|default:"-" }}</td>
-                                        <td>{{ payment.remarks|default:"-" }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- All Payments -->
-            <div class="results-section">
-                <h3 class="mb-4">All Payments</h3>
-                
-                {% if all_payments %}
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Year</th>
-                                <th>Semester</th>
-                                <th>Amount</th>
-                                <th>Method</th>
-                                <th>Receipt No.</th>
-                                <th>Transaction ID</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for payment in all_payments %}
-                            <tr>
-                                <td>{{ payment.payment_date|date:"d M Y" }}</td>
-                                <td>Year {{ payment.fee_structure.year }}</td>
-                                <td>Semester {{ payment.fee_structure.semester }}</td>
-                                <td>₹{{ payment.amount_paid }}</td>
-                                <td>{{ payment.payment_method }}</td>
-                                <td>{{ payment.receipt_number }}</td>
-                                <td>{{ payment.transaction_id|default:"-" }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <div class="alert alert-info">
-                    No payment records found for this student.
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Payment Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-money-bill-wave me-2"></i>Process Fee Payment</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="paymentForm">
-                        <input type="hidden" id="student_id">
-                        <input type="hidden" id="fee_structure_id">
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="amount"><i class="fas fa-rupee-sign me-1"></i>Amount (₹)</label>
-                                    <input type="number" class="form-control" id="amount" min="0" step="0.01" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="payment_method"><i class="fas fa-credit-card me-1"></i>Payment Method</label>
-                                    <select class="form-control" id="payment_method" required>
-                                        <option value="">Select Method</option>
-                                        <option value="Cash">Cash</option>
-                                        <option value="Cheque">Cheque</option>
-                                        <option value="Online">Online Transfer</option>
-                                        <option value="Card">Credit/Debit Card</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="transaction_id"><i class="fas fa-receipt me-1"></i>Transaction/Reference ID</label>
-                                    <input type="text" class="form-control" id="transaction_id">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="remarks"><i class="fas fa-sticky-note me-1"></i>Remarks</label>
-                                    <input type="text" class="form-control" id="remarks" placeholder="Optional">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <button type="submit" class="btn-pay">
-                                <i class="fas fa-money-bill-wave"></i> Process Payment
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <div id="receipt" class="receipt" style="display: none;">
-                        <h4><i class="fas fa-receipt"></i> Payment Receipt</h4>
-                        <div class="receipt-details">
-                            <div class="receipt-detail">
-                                <strong>Receipt Number</strong>
-                                <span id="receipt-number"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Date</strong>
-                                <span id="receipt-date"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Student ID</strong>
-                                <span id="receipt-student-id"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Student Name</strong>
-                                <span id="receipt-student-name"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Amount Paid</strong>
-                                <span id="receipt-amount"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Payment Method</strong>
-                                <span id="receipt-method"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Transaction ID</strong>
-                                <span id="receipt-transaction"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Verified By</strong>
-                                <span id="receipt-verified-by"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Auto-dismiss alerts after 5 seconds
-            setTimeout(() => {
-                $('.alert').alert('close');
-            }, 5000);
-
-            // Initialize payment modal
-            const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-            
-            // Function to open payment modal
-            window.openPaymentModal = function(studentId, studentName, feeStructureId, amountDue) {
-                $('#student_id').val(studentId);
-                $('#fee_structure_id').val(feeStructureId);
-                $('#student_name').val(studentName);
-                $('#fee_amount').val('₹' + amountDue);
-                $('#amount').val(amountDue);
-                $('#paymentForm').show();
-                $('#receipt').hide();
-                paymentModal.show();
-            };
-            
-            // Payment form submission
-            $('#paymentForm').submit(function(e) {
-                e.preventDefault();
-                
-                const paymentData = {
-                    student_id: $('#student_id').val(),
-                    fee_structure_id: $('#fee_structure_id').val(),
-                    amount: $('#amount').val(),
-                    payment_method: $('#payment_method').val(),
-                    transaction_id: $('#transaction_id').val(),
-                    remarks: $('#remarks').val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                };
-                
-                // Disable submit button
-                $('.btn-pay').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-                
-                // Send payment data to server
-                $.ajax({
-                    url: '{% url "process_fee_payment" %}',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(paymentData),
-                    success: function(response) {
-                        if (response.success) {
-                            // Show receipt
-                            $('#receipt-number').text(response.receipt_number);
-                            $('#receipt-date').text(response.payment_date);
-                            $('#receipt-student-id').text(paymentData.student_id);
-                            $('#receipt-student-name').text($('#student_name').val());
-                            $('#receipt-amount').text('₹' + paymentData.amount);
-                            $('#receipt-method').text(paymentData.payment_method);
-                            $('#receipt-transaction').text(paymentData.transaction_id || 'N/A');
-                            $('#receipt-verified-by').text('{{ request.session.username1 }}');
-                            
-                            $('#paymentForm').hide();
-                            $('#receipt').show();
-                            
-                            // Reload page after 5 seconds
-                            setTimeout(() => {
-                                location.reload();
-                            }, 5000);
-                        } else {
-                            alert(response.error || 'Payment failed');
-                            $('.btn-pay').prop('disabled', false).html('<i class="fas fa-money-bill-wave"></i> Process Payment');
-                        }
-                    },
-                    error: function(xhr) {
-                        let errorMsg = 'Payment failed';
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            errorMsg = response.error || errorMsg;
-                        } catch (e) {}
-                        alert(errorMsg);
-                        $('.btn-pay').prop('disabled', false).html('<i class="fas fa-money-bill-wave"></i> Process Payment');
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
-    function showExtraPayments() {
-        const modal = new bootstrap.Modal(document.getElementById('extraPaymentsModal'));
-        modal.show();
-    }
-    
-    function showAdvancePayments() {
-        const modal = new bootstrap.Modal(document.getElementById('advancePaymentsModal'));
-        modal.show();
-    }
-    
-    function adjustExtraPayment(studentId, paymentId) {
-        if (!confirm('Are you sure you want to adjust this extra payment?')) {
-            return;
+        /* Add these new styles for the students page */
+        .student-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
-        
-        $.ajax({
-            url: '{% url "adjust_extra_payments" %}',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                student_id: studentId,
-                payment_id: paymentId,
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            }),
-            success: function(response) {
-                if (response.success) {
-                    alert(response.message);
-                    location.reload();
-                } else {
-                    alert(response.error || 'Adjustment failed');
-                }
-            },
-            error: function(xhr) {
-                alert('Error adjusting payment');
-            }
-        });
-    }
-</script>
-</body>
-</html>
+
+        .student-action-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .student-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .student-action-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .student-action-card:hover .student-action-icon {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .student-action-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+
+        .student-action-desc {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .student-action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .student-action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .dashboard-charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        .chart-card {
+            flex: 1 1 45%;
+            min-width: 300px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        .chart-header {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }

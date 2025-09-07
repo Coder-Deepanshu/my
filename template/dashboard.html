@@ -59,14 +59,14 @@
                     </a>
                 </li>
 
-                {% if college_id == 'AD20250' %}
+               
                 <li class="menu-item">
                     <a href="#" class="menu-link" data-tab="admin-tab">
                         <i class="fas fa-chalkboard-teacher menu-icon"></i>
                         <span class="menu-text">Admin</span>
                     </a>
                 </li>
-                {% endif %}
+          
                 
                 <li class="menu-item">
                     <a href="#" class="menu-link" data-tab="result-tab">
@@ -130,7 +130,7 @@
         </div>
         
         <div class="sidebar-footer">
-            <img src="https://tse4.mm.bing.net/th/id/OIP.4-vvnJtnPtgaKBmpg8t13AHaHa?pid=0" alt="User" class="user-avatar">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
             <div class="user-info">
                 <div class="user-name">{{ username }}</div>
                 <div class="user-role">Administrator</div>
@@ -162,17 +162,17 @@
                 </button>
                 
                 <div class="user-dropdown">
-                    <img src="https://tse4.mm.bing.net/th/id/OIP.4-vvnJtnPtgaKBmpg8t13AHaHa?pid=0" alt="User" class="user-dropdown-avatar">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-dropdown-avatar">
                     <span class="user-dropdown-name">{{ username }}</span>
                     <div class="user-dropdown-menu">
-                        {% if college_id == 'AD20250' %}
+                      
                         <a href="{% url 'profile_details' %}" class="dropdown-item">
                             <i class="fas fa-user mr-2" style="color: var(--primary);"></i> Profile
                         </a>
                         <a href="{% url 'id_card' %}" class="dropdown-item">
                             <i class="fas fa-cog mr-2" style="color: var(--primary);"></i> ID Card
                         </a>
-                        {% endif %}
+                       
                         <a href="#" class="dropdown-item">
                             <i class="fas fa-cog mr-2" style="color: var(--primary);"></i> Attendance
                         </a>
@@ -278,51 +278,10 @@
                         <span class="action-text">Settings</span>
                     </a>
                 </div>
-                
-            <!-- Slider Container -->
-            <div class="slider-container">
-            <div class="slider">
-                <div class="slide active">
-                    <img src="{% static '/images/university2.jpg' %}" alt="University Campus">
-                    <div class="slide-content">
-                        <h3 class="slide-title">Faculty Development Workshop</h3>
-                        <p class="slide-text">Join us next week for professional development sessions</p>
-                    </div>
-                </div>
-                
-                <div class="slide">
-                    <img src="{% static '/images/teaching.jpg' %}" alt="Classroom">
-                    <div class="slide-content">
-                        <h3 class="slide-title">New Teaching Resources</h3>
-                        <p class="slide-text">Explore our updated digital learning materials</p>
-                    </div>
-                </div>
-                
-                <div class="slide">
-                    <img src="{% static '/images/acheivments.jpg' %}" alt="Graduation">
-                    <div class="slide-content">
-                        <h3 class="slide-title">Student Success Stories</h3>
-                        <p class="slide-text">Celebrating our graduates' achievements</p>
-                    </div>
-                </div>
-            </div>
+                {% include "Home/sidebar.html" %}
             
-            <div class="slider-controls">
-                <button class="slider-btn prev-slide">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="slider-btn next-slide">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-            
-            <div class="slider-dots">
-                <div class="slider-dot active"></div>
-                <div class="slider-dot"></div>
-                <div class="slider-dot"></div>
-            </div>
-            </div>
-            
+                {% include "Home/ai.html" %} 
+
                 <!-- Recent Activity -->
                 <div class="recent-activity" >
                     <h3 class="section-title">
@@ -685,7 +644,7 @@
                         </div>
                         <h3 class="student-action-title">Fees</h3>
                         <p class="student-action-desc">Create and define fees per course</p>
-                        <a href="#" class="student-action-btn">Open</a>
+                        <a href="{% url 'studentFeeStructureManagement' %}" class="student-action-btn">Open</a>
                     </div>
                     
                     <div class="student-action-card">
@@ -1163,93 +1122,6 @@
                 submenuPage.classList.remove('active');
             }
         });
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Slider functionality
-            const slider = document.querySelector('.slider');
-            const slides = document.querySelectorAll('.slide');
-            const prevBtn = document.querySelector('.prev-slide');
-            const nextBtn = document.querySelector('.next-slide');
-            const dots = document.querySelectorAll('.slider-dot');
-            
-            let currentSlide = 0;
-            const slideCount = slides.length;
-            let autoPlayInterval;
-            
-            // Initialize slider
-            function initSlider() {
-                updateSlider();
-                startAutoPlay();
-            }
-            
-            // Update slider position and indicators
-            function updateSlider() {
-                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-                
-                // Update dots
-                dots.forEach((dot, index) => {
-                    if (index === currentSlide) {
-                        dot.classList.add('active');
-                    } else {
-                        dot.classList.remove('active');
-                    }
-                });
-            }
-            
-            // Go to next slide
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % slideCount;
-                updateSlider();
-            }
-            
-            // Go to previous slide
-            function prevSlide() {
-                currentSlide = (currentSlide - 1 + slideCount) % slideCount;
-                updateSlider();
-            }
-            
-            // Start auto-play
-            function startAutoPlay() {
-                autoPlayInterval = setInterval(nextSlide, 5000);
-            }
-            
-            // Stop auto-play
-            function stopAutoPlay() {
-                clearInterval(autoPlayInterval);
-            }
-            
-            // Event listeners for buttons
-            nextBtn.addEventListener('click', function() {
-                stopAutoPlay();
-                nextSlide();
-                startAutoPlay();
-            });
-            
-            prevBtn.addEventListener('click', function() {
-                stopAutoPlay();
-                prevSlide();
-                startAutoPlay();
-            });
-            
-            // Event listeners for dots
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', function() {
-                    stopAutoPlay();
-                    currentSlide = index;
-                    updateSlider();
-                    startAutoPlay();
-                });
-            });
-            
-            // Pause auto-play when hovering over slider
-            const sliderContainer = document.querySelector('.slider-container');
-            sliderContainer.addEventListener('mouseenter', stopAutoPlay);
-            sliderContainer.addEventListener('mouseleave', startAutoPlay);
-            
-            // Initialize the slider
-            initSlider();
-        });
-        
     </script>
 </body>
 </html>

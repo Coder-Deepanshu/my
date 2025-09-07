@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="{% static '/css/dashboard/facultyDashboard.css'  %}">
 </head>
 <body>
@@ -121,7 +126,7 @@
         </div>
         
         <div class="sidebar-footer">
-            <img src="https://ui-avatars.com/api/?name={{ username }}&background=4361ee&color=fff" alt="User" class="user-avatar">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
             <div class="user-info">
                 <div class="user-name">{{ username }}</div>
                 <div class="user-role">Faculty Member</div>
@@ -155,7 +160,7 @@
                 </button>
                 
                 <div class="user-dropdown">
-                    <img src="https://ui-avatars.com/api/?name={{ username }}&background=4361ee&color=fff" alt="User" class="user-dropdown-avatar">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-dropdown-avatar">
                     <span class="user-dropdown-name">{{ username }}</span>
                     <div class="user-dropdown-menu">
                         <a href="#" class="dropdown-item">
@@ -261,53 +266,11 @@
                     <span class="action-text">Upload Materials</span>
                 </a>
             </div>
-            
-            <!-- Image Slider -->
-            <!-- Slider Container -->
-        <div class="slider-container">
-            <div class="slider">
-                <div class="slide active">
-                    <img src="{% static '/images/university2.jpg' %}" alt="University Campus">
-                    <div class="slide-content">
-                        <h3 class="slide-title">Faculty Development Workshop</h3>
-                        <p class="slide-text">Join us next week for professional development sessions</p>
-                    </div>
-                </div>
-                
-                <div class="slide">
-                    <img src="{% static '/images/teaching.jpg' %}" alt="Classroom">
-                    <div class="slide-content">
-                        <h3 class="slide-title">New Teaching Resources</h3>
-                        <p class="slide-text">Explore our updated digital learning materials</p>
-                    </div>
-                </div>
-                
-                <div class="slide">
-                    <img src="{% static '/images/acheivments.jpg' %}" alt="Graduation">
-                    <div class="slide-content">
-                        <h3 class="slide-title">Student Success Stories</h3>
-                        <p class="slide-text">Celebrating our graduates' achievements</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="slider-controls">
-                <button class="slider-btn prev-slide">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="slider-btn next-slide">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-            
-            <div class="slider-dots">
-                <div class="slider-dot active"></div>
-                <div class="slider-dot"></div>
-                <div class="slider-dot"></div>
-            </div>
-        </div>
-        </div>
-            <div class="content">
+
+            {% include "Home/sidebar.html" %}
+
+            {% include "Home/ai.html" %}
+           
             <!-- Faculty Cards -->
             <div class="faculty-cards">
                 <div class="faculty-card">
@@ -349,7 +312,6 @@
                     </div>
                 </div>
             </div>
-            
             <!-- Recent Activity -->
             <div class="recent-activity">
                 <h3 class="section-title">
@@ -438,106 +400,6 @@
                     item.classList.toggle('active');
                 });
             }
-        });
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            // Slider functionality
-            const slider = document.querySelector('.slider');
-            const slides = document.querySelectorAll('.slide');
-            const prevBtn = document.querySelector('.prev-slide');
-            const nextBtn = document.querySelector('.next-slide');
-            const dots = document.querySelectorAll('.slider-dot');
-            
-            let currentSlide = 0;
-            const slideCount = slides.length;
-            let autoPlayInterval;
-            
-            // Initialize slider
-            function initSlider() {
-                updateSlider();
-                startAutoPlay();
-            }
-            
-            // Update slider position and indicators
-            function updateSlider() {
-                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
-                
-                // Update dots
-                dots.forEach((dot, index) => {
-                    if (index === currentSlide) {
-                        dot.classList.add('active');
-                    } else {
-                        dot.classList.remove('active');
-                    }
-                });
-            }
-            
-            // Go to next slide
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % slideCount;
-                updateSlider();
-            }
-            
-            // Go to previous slide
-            function prevSlide() {
-                currentSlide = (currentSlide - 1 + slideCount) % slideCount;
-                updateSlider();
-            }
-            
-            // Start auto-play
-            function startAutoPlay() {
-                autoPlayInterval = setInterval(nextSlide, 5000);
-            }
-            
-            // Stop auto-play
-            function stopAutoPlay() {
-                clearInterval(autoPlayInterval);
-            }
-            
-            // Event listeners for buttons
-            nextBtn.addEventListener('click', function() {
-                stopAutoPlay();
-                nextSlide();
-                startAutoPlay();
-            });
-            
-            prevBtn.addEventListener('click', function() {
-                stopAutoPlay();
-                prevSlide();
-                startAutoPlay();
-            });
-            
-            // Event listeners for dots
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', function() {
-                    stopAutoPlay();
-                    currentSlide = index;
-                    updateSlider();
-                    startAutoPlay();
-                });
-            });
-            
-            // Pause auto-play when hovering over slider
-            const sliderContainer = document.querySelector('.slider-container');
-            sliderContainer.addEventListener('mouseenter', stopAutoPlay);
-            sliderContainer.addEventListener('mouseleave', startAutoPlay);
-            
-            // Initialize the slider
-            initSlider();
-        });
-        
-        // User Dropdown
-        const userDropdown = document.querySelector('.user-dropdown');
-        
-        userDropdown.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-        
-        document.addEventListener('click', () => {
-            const dropdownMenu = document.querySelector('.user-dropdown-menu');
-            dropdownMenu.style.opacity = '0';
-            dropdownMenu.style.visibility = 'hidden';
-            dropdownMenu.style.transform = 'translateY(10px)';
         });
     </script>
 </body>

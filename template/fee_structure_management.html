@@ -6,6 +6,7 @@
     <title>Fee Structure Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -26,49 +27,6 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             overflow-x: hidden;
             line-height: 1.6;
-        }
-
-        /* Header Styles */
-        .header {
-            background: white;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            height: 70px;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .nav-link {
-            color: var(--dark);
-            font-weight: 500;
-            margin: 0 10px;
-            transition: var(--transition);
-        }
-
-        .nav-link:hover {
-            color: var(--primary);
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            padding: 12px 30px;
-            border-radius: 8px;
-            transition: var(--transition);
-            font-weight: 600;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
         }
 
         /* Page Header */
@@ -216,6 +174,11 @@
             color: white;
         }
 
+        .btn-edit {
+            background-color: #28a745;
+            color: white;
+        }
+
         .btn-create {
             background-color: var(--primary);
             color: white;
@@ -256,6 +219,33 @@
             font-size: 18px;
         }
 
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 15px 20px;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--light-gray);
+            padding: 15px 25px;
+        }
+
         /* Responsive Styles */
         @media (max-width: 992px) {
             .content-container {
@@ -291,34 +281,7 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-light py-3">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Back</a>
-                        </li>
-                    </ul>
-                    <div class="ms-lg-3 mt-3 mt-lg-0">
-                        <a href="#" class="btn btn-outline-primary me-2">LogOut</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
+   {% include "header.html" %}
 
     <!-- Page Header -->
     <section class="page-header">
@@ -353,44 +316,33 @@
                                 <label for="course" class="form-label"><i class="fas fa-book"></i> Course</label>
                                 <select class="form-select" id="course" required>
                                     <option value="" selected disabled>Select Course</option>
-                                    <option value="B.Tech">B.Tech</option>
-                                    <option value="MBA">MBA</option>
-                                    <option value="BBA">BBA</option>
-                                    <option value="MCA">MCA</option>
+                                    {% for course in courses %}
+                                    <option value="{{ course }}">{{ course }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label for="year" class="form-label"><i class="fas fa-calendar-alt"></i> Year</label>
-                                <select class="form-select" id="year" required>
+                                <select class="form-select" id="year" required disabled>
                                     <option value="" selected disabled>Select Year</option>
-                                    <option value="1">1st Year</option>
-                                    <option value="2">2nd Year</option>
-                                    <option value="3">3rd Year</option>
-                                    <option value="4">4th Year</option>
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label for="semester" class="form-label"><i class="fas fa-calendar"></i> Semester</label>
-                                <select class="form-select" id="semester" required>
+                                <select class="form-select" id="semester" required disabled>
                                     <option value="" selected disabled>Select Semester</option>
-                                    <option value="1">Semester 1</option>
-                                    <option value="2">Semester 2</option>
-                                    <option value="3">Semester 3</option>
-                                    <option value="4">Semester 4</option>
-                                    <option value="5">Semester 5</option>
-                                    <option value="6">Semester 6</option>
-                                    <option value="7">Semester 7</option>
-                                    <option value="8">Semester 8</option>
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label for="batch" class="form-label"><i class="fas fa-users"></i> Batch</label>
-                                <input type="text" class="form-control" id="batch" placeholder="e.g. 2023-24" required>
+                                <select class="form-select" id="batch" required disabled>
+                                    <option value="" selected disabled>Select Batch</option>
+                                </select>
                             </div>
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
-                            <button type="submit" class="btn btn-primary">Create Fee Structure</button>
+                            <button type="reset" class="btn btn-secondary me-md-2" id="resetFormBtn">Reset</button>
+                            <button type="button" class="btn btn-primary" id="openFeeModalBtn" disabled>Add Fee Details</button>
                         </div>
                     </form>
                 </div>
@@ -415,10 +367,9 @@
                             <label for="filterCourse" class="form-label">Course</label>
                             <select class="form-select" id="filterCourse">
                                 <option value="" selected>All Courses</option>
-                                <option value="B.Tech">B.Tech</option>
-                                <option value="MBA">MBA</option>
-                                <option value="BBA">BBA</option>
-                                <option value="MCA">MCA</option>
+                                {% for course in courses %}
+                                <option value="{{ course }}">{{ course }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -459,6 +410,8 @@
                                     <th>Year</th>
                                     <th>Semester</th>
                                     <th>Batch</th>
+                                    <th>Fee Amount</th>
+                                    <th>Due Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -469,7 +422,12 @@
                                     <td>1st Year</td>
                                     <td>Semester 1</td>
                                     <td>2023-24</td>
+                                    <td>₹45,000</td>
+                                    <td>2023-08-15</td>
                                     <td class="action-buttons">
+                                        <button class="btn-action btn-edit">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
                                         <button class="btn-action btn-delete">
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
@@ -480,18 +438,12 @@
                                     <td>1st Year</td>
                                     <td>Semester 1</td>
                                     <td>2023-24</td>
+                                    <td>₹75,000</td>
+                                    <td>2023-08-20</td>
                                     <td class="action-buttons">
-                                        <button class="btn-action btn-delete">
-                                            <i class="fas fa-trash"></i> Delete
+                                        <button class="btn-action btn-edit">
+                                            <i class="fas fa-edit"></i> Edit
                                         </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>B.Tech</td>
-                                    <td>2nd Year</td>
-                                    <td>Semester 3</td>
-                                    <td>2022-23</td>
-                                    <td class="action-buttons">
                                         <button class="btn-action btn-delete">
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
@@ -527,9 +479,259 @@
         </div>
     </div>
 
+    <!-- Fee Details Modal -->
+    <div class="modal fade" id="feeDetailsModal" tabindex="-1" aria-labelledby="feeDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="feeDetailsModalLabel">Add Fee Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="selectedCourseInfo">Please review the selected course details before adding fee information.</span>
+                    </div>
+                    
+                    <form id="feeDetailsForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="feeDueDate" class="form-label"><i class="fas fa-calendar-day"></i> Fee Due Date</label>
+                                <input type="date" class="form-control" id="feeDueDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="feeType" class="form-label"><i class="fas fa-money-bill-wave"></i> Fee Type</label>
+                                <select class="form-select" id="feeType" required>
+                                    <option value="" selected disabled>Select Fee Type</option>
+                                    <option value="Tuition">Tuition Fee</option>
+                                    <option value="Examination">Examination Fee</option>
+                                    <option value="Library">Library Fee</option>
+                                    <option value="Hostel">Hostel Fee</option>
+                                    <option value="Other">Other Fee</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feeAmount" class="form-label"><i class="fas fa-rupee-sign"></i> Fee Amount</label>
+                            <input type="number" class="form-control" id="feeAmount" placeholder="Enter fee amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feeDescription" class="form-label"><i class="fas fa-file-alt"></i> Description (Optional)</label>
+                            <textarea class="form-control" id="feeDescription" rows="3" placeholder="Add any additional information about this fee"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitFeeBtn">Submit Fee Structure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const courseSelect = document.getElementById('course');
+            const yearSelect = document.getElementById('year');
+            const semesterSelect = document.getElementById('semester');
+            const batchSelect = document.getElementById('batch');
+            const openFeeModalBtn = document.getElementById('openFeeModalBtn');
+            const resetFormBtn = document.getElementById('resetFormBtn');
+            const feeDetailsModal = new bootstrap.Modal(document.getElementById('feeDetailsModal'));
+            const selectedCourseInfo = document.getElementById('selectedCourseInfo');
+            const submitFeeBtn = document.getElementById('submitFeeBtn');
+            
+            // Data for dynamic dropdowns
+            const yearOptions = {
+                'B.Tech': ['1st Year', '2nd Year', '3rd Year', '4th Year'],
+                'MBA': ['1st Year', '2nd Year'],
+                'BBA': ['1st Year', '2nd Year', '3rd Year'],
+                'MCA': ['1st Year', '2nd Year']
+            };
+            
+            const semesterOptions = {
+                '1st Year': ['Semester 1', 'Semester 2'],
+                '2nd Year': ['Semester 3', 'Semester 4'],
+                '3rd Year': ['Semester 5', 'Semester 6'],
+                '4th Year': ['Semester 7', 'Semester 8']
+            };
+            
+            const batchOptions = {
+                'Semester 1': ['2023-24', '2022-23', '2021-22'],
+                'Semester 2': ['2023-24', '2022-23', '2021-22'],
+                'Semester 3': ['2023-24', '2022-23', '2021-22'],
+                'Semester 4': ['2023-24', '2022-23', '2021-22'],
+                'Semester 5': ['2023-24', '2022-23', '2021-22'],
+                'Semester 6': ['2023-24', '2022-23', '2021-22'],
+                'Semester 7': ['2023-24', '2022-23', '2021-22'],
+                'Semester 8': ['2023-24', '2022-23', '2021-22']
+            };
+            
+            // Event Listeners
+            courseSelect.addEventListener('change', updateYearOptions);
+            yearSelect.addEventListener('change', updateSemesterOptions);
+            semesterSelect.addEventListener('change', updateBatchOptions);
+            openFeeModalBtn.addEventListener('click', openFeeModal);
+            resetFormBtn.addEventListener('click', resetForm);
+            submitFeeBtn.addEventListener('click', submitFeeStructure);
+            
+            // Functions
+            function updateYearOptions() {
+                const selectedCourse = courseSelect.value;
+                
+                // Reset dependent dropdowns
+                yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>';
+                semesterSelect.innerHTML = '<option value="" selected disabled>Select Semester</option>';
+                batchSelect.innerHTML = '<option value="" selected disabled>Select Batch</option>';
+                
+                // Disable dependent dropdowns
+                yearSelect.disabled = true;
+                semesterSelect.disabled = true;
+                batchSelect.disabled = true;
+                openFeeModalBtn.disabled = true;
+                
+                if (selectedCourse) {
+                    // Enable year dropdown and populate options
+                    yearSelect.disabled = false;
+                    
+                    yearOptions[selectedCourse].forEach(year => {
+                        const option = document.createElement('option');
+                        option.value = year.split(' ')[0]; // Get the numeric part
+                        option.textContent = year;
+                        yearSelect.appendChild(option);
+                    });
+                }
+            }
+            
+            function updateSemesterOptions() {
+                const selectedYear = yearSelect.options[yearSelect.selectedIndex].textContent;
+                
+                // Reset dependent dropdowns
+                semesterSelect.innerHTML = '<option value="" selected disabled>Select Semester</option>';
+                batchSelect.innerHTML = '<option value="" selected disabled>Select Batch</option>';
+                
+                // Disable dependent dropdowns
+                semesterSelect.disabled = true;
+                batchSelect.disabled = true;
+                openFeeModalBtn.disabled = true;
+                
+                if (selectedYear) {
+                    // Enable semester dropdown and populate options
+                    semesterSelect.disabled = false;
+                    
+                    semesterOptions[selectedYear].forEach(semester => {
+                        const option = document.createElement('option');
+                        option.value = semester.split(' ')[1]; // Get the numeric part
+                        option.textContent = semester;
+                        semesterSelect.appendChild(option);
+                    });
+                }
+            }
+            
+            function updateBatchOptions() {
+                const selectedSemester = semesterSelect.options[semesterSelect.selectedIndex].textContent;
+                
+                // Reset batch dropdown
+                batchSelect.innerHTML = '<option value="" selected disabled>Select Batch</option>';
+                
+                // Disable batch dropdown
+                batchSelect.disabled = true;
+                openFeeModalBtn.disabled = true;
+                
+                if (selectedSemester) {
+                    // Enable batch dropdown and populate options
+                    batchSelect.disabled = false;
+                    
+                    batchOptions[selectedSemester].forEach(batch => {
+                        const option = document.createElement('option');
+                        option.value = batch;
+                        option.textContent = batch;
+                        batchSelect.appendChild(option);
+                    });
+                }
+            }
+            
+            batchSelect.addEventListener('change', function() {
+                if (batchSelect.value) {
+                    openFeeModalBtn.disabled = false;
+                } else {
+                    openFeeModalBtn.disabled = true;
+                }
+            });
+            
+            function openFeeModal() {
+                const course = courseSelect.options[courseSelect.selectedIndex].textContent;
+                const year = yearSelect.options[yearSelect.selectedIndex].textContent;
+                const semester = semesterSelect.options[semesterSelect.selectedIndex].textContent;
+                const batch = batchSelect.value;
+                
+                selectedCourseInfo.textContent = `Course: ${course}, ${year}, ${semester}, Batch: ${batch}`;
+                feeDetailsModal.show();
+            }
+            
+            function resetForm() {
+                courseSelect.value = '';
+                yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>';
+                semesterSelect.innerHTML = '<option value="" selected disabled>Select Semester</option>';
+                batchSelect.innerHTML = '<option value="" selected disabled>Select Batch</option>';
+                
+                yearSelect.disabled = true;
+                semesterSelect.disabled = true;
+                batchSelect.disabled = true;
+                openFeeModalBtn.disabled = true;
+            }
+            
+            function submitFeeStructure() {
+                const dueDate = document.getElementById('feeDueDate').value;
+                const feeType = document.getElementById('feeType').value;
+                const amount = document.getElementById('feeAmount').value;
+                
+                if (!dueDate || !feeType || !amount) {
+                    alert('Please fill all required fee details');
+                    return;
+                }
+                
+                // In a real application, you would send this data to a server
+                // For this example, we'll just show a success message
+                
+                const course = courseSelect.options[courseSelect.selectedIndex].textContent;
+                const year = yearSelect.options[yearSelect.selectedIndex].textContent;
+                const semester = semesterSelect.options[semesterSelect.selectedIndex].textContent;
+                const batch = batchSelect.value;
+                
+                // Add to the table (for demo purposes)
+                const tableBody = document.getElementById('feeStructuresTableBody');
+                const newRow = document.createElement('tr');
+                
+                newRow.innerHTML = `
+                    <td>${course}</td>
+                    <td>${year}</td>
+                    <td>${semester}</td>
+                    <td>${batch}</td>
+                    <td>₹${amount}</td>
+                    <td>${dueDate}</td>
+                    <td class="action-buttons">
+                        <button class="btn-action btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-action btn-delete">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(newRow);
+                
+                // Close modal and reset form
+                feeDetailsModal.hide();
+                resetForm();
+                
+                // Show success message
+                alert(`Fee structure created successfully for ${course}, ${year}, ${semester}, Batch: ${batch}`);
+            }
+            
             // Search functionality
             const searchInput = document.getElementById('searchInput');
             const feeTableBody = document.getElementById('feeStructuresTableBody');
@@ -615,81 +817,6 @@
                     noRecordsMessage.style.display = 'flex';
                 }
             }
-            
-            // Form submission for creating new fee structure
-            const createForm = document.getElementById('createFeeStructureForm');
-            if (createForm) {
-                createForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const course = document.getElementById('course').value;
-                    const year = document.getElementById('year').value;
-                    const semester = document.getElementById('semester').value;
-                    const batch = document.getElementById('batch').value;
-                    
-                    // Format year display
-                    const yearDisplay = year === '1' ? '1st Year' : 
-                                      year === '2' ? '2nd Year' : 
-                                      year === '3' ? '3rd Year' : 
-                                      `${year}th Year`;
-                    
-                    // Format semester display
-                    const semesterDisplay = `Semester ${semester}`;
-                    
-                    // Add new row to the table
-                    const newRow = document.createElement('tr');
-                    newRow.innerHTML = `
-                        <td>${course}</td>
-                        <td>${yearDisplay}</td>
-                        <td>${semesterDisplay}</td>
-                        <td>${batch}</td>
-                        <td class="action-buttons">
-                            <button class="btn-action btn-delete">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </td>
-                    `;
-                    
-                    feeTableBody.appendChild(newRow);
-                    
-                    // Reset form
-                    createForm.reset();
-                    
-                    // Show success message (you can implement a proper alert system)
-                    alert('Fee structure created successfully!');
-                    
-                    // Switch to the manage tab
-                    const manageTab = document.getElementById('manage-tab');
-                    if (manageTab) {
-                        const tabInstance = new bootstrap.Tab(manageTab);
-                        tabInstance.show();
-                    }
-                });
-            }
-            
-            // Delete button functionality
-            feeTableBody.addEventListener('click', function(e) {
-                if (e.target.closest('.btn-delete')) {
-                    const row = e.target.closest('tr');
-                    const courseName = row.cells[0].textContent;
-                    const batchName = row.cells[3].textContent;
-                    
-                    if (confirm(`Are you sure you want to delete the fee structure for ${courseName} (${batchName})?`)) {
-                        row.remove();
-                        
-                        // Check if there are any visible rows left
-                        const visibleRows = feeTableBody.querySelectorAll('tr:not([style*="display: none"])');
-                        const noRecordsMessage = document.getElementById('noRecordsMessage');
-                        
-                        if (visibleRows.length === 0) {
-                            noRecordsMessage.style.display = 'flex';
-                        }
-                        
-                        // Show success message
-                        alert('Fee structure deleted successfully!');
-                    }
-                }
-            });
         });
     </script>
 </body>
