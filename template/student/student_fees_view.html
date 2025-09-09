@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -147,7 +148,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             text-align: center;
             transition: var(--transition);
-          
+
             border-top: 4px solid var(--primary);
         }
 
@@ -345,7 +346,7 @@
             margin-bottom: 20px;
         }
 
-        .payment-table th, 
+        .payment-table th,
         .payment-table td {
             padding: 15px;
             text-align: left;
@@ -451,15 +452,15 @@
             .page-header h1 {
                 font-size: 2rem;
             }
-            
+
             .fee-years {
                 grid-template-columns: 1fr;
             }
-            
+
             .summary-cards {
                 grid-template-columns: 1fr;
             }
-            
+
             .payment-table {
                 display: block;
                 overflow-x: auto;
@@ -470,17 +471,18 @@
             .page-header h1 {
                 font-size: 1.8rem;
             }
-            
+
             .navbar-brand {
                 font-size: 1.5rem;
             }
-            
+
             .enroll-content {
                 padding: 20px;
             }
         }
     </style>
 </head>
+
 <body>
     {% include "header.html" %}
 
@@ -502,13 +504,15 @@
 
             <!-- Messages will appear here -->
             <div id="messageContainer"></div>
-            
+
             <!-- Alert Messages -->
             {% if messages %}
             <div id="alertContainer">
                 {% for message in messages %}
-                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
-                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                <div
+                    class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                    <i
+                        class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
                     {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -540,13 +544,15 @@
             </div>
 
             <!-- Fee Note Section -->
-            <div class="fee-note" style="padding: 10px 20px; background-color: #fff8e1; border-left: 4px solid #ffc107; margin: 0 20px; border-radius: 4px;margin-top: 10px;">
-    {% if total_due < 0 %}
-    <i class="fas fa-info-circle" style="color: #4caf50;"></i> Your account has an advance of ₹{{ total_due|floatformat:2|cut:"-" }}
-    {% else %}
-    <i class="fas fa-info-circle" style="color: #f44336;"></i> Your due amount is ₹{{ total_due|floatformat:2 }}
-    {% endif %}
-</div>
+            <div class="fee-note"
+                style="padding: 10px 20px; background-color: #fff8e1; border-left: 4px solid #ffc107; margin: 0 20px; border-radius: 4px;margin-top: 10px;">
+                {% if total_due < 0 %} <i class="fas fa-info-circle" style="color: #4caf50;"></i> Your account has an
+                    advance of ₹{{ total_due|floatformat:2|cut:"-" }}
+                    {% else %}
+                    <i class="fas fa-info-circle" style="color: #f44336;"></i> Your due amount is ₹{{
+                    total_due|floatformat:2 }}
+                    {% endif %}
+            </div>
 
             <!-- Fee Summary Cards -->
             <div class="summary-cards">
@@ -577,10 +583,10 @@
                     {% if year_data.status == 'Pending' %}pending{% endif %}
                     {% if year_data.status == 'Overdue' %}overdue{% endif %}
                     {% if year_data.status == 'No Fee' %}no-fee{% endif %}">
-                    
+
                     <h3><i class="fas fa-calendar"></i> Year {{ year_data.year }}</h3>
                     <div class="amount">₹{{ year_data.amount|floatformat:2 }}</div>
-                    
+
                     <!-- Status Badge with Dynamic Colors -->
                     <div class="status-badge 
                         {% if year_data.status == 'Paid' %}paid{% endif %}
@@ -589,24 +595,24 @@
                         {% if year_data.status == 'No Fee' %}no-fee{% endif %}">
                         {{ year_data.status }}
                     </div>
-                    
+
                     <div class="due-date">
                         <i class="fas fa-calendar-day"></i>
                         {% if year_data.status == 'Paid' %}
-                            Last payment: {{ year_data.payments.0.payment_date|date:"d/m/Y" }}
+                        Last payment: {{ year_data.payments.0.payment_date|date:"d/m/Y" }}
                         {% elif year_data.status == 'No Fee' %}
-                            No Fee Call by College
+                        No Fee Call by College
                         {% else %}
-                            Due Date: {{ year_data.due_date|date:"d/m/Y" }}
+                        Due Date: {{ year_data.due_date|date:"d/m/Y" }}
                         {% endif %}
                     </div>
-                    
+
                     {% if year_data.payments %}
                     <button class="btn btn-primary view-payments" data-year="{{ year_data.year }}">
                         <i class="fas fa-receipt"></i> View Payments
                     </button>
                     {% endif %}
-                    
+
                     {% if year_data.status != 'Paid' and year_data.status != 'No Fee' %}
                     <button class="btn btn-outline-primary mt-2 pay-now" data-year="{{ year_data.year }}">
                         <i class="fas fa-credit-card"></i> Pay Now
@@ -645,16 +651,14 @@
                                 <td>{{ payment.transaction_id|default:"-" }}</td>
                                 <td><span class="status {{ payment.status|lower }}">{{ payment.status }}</span></td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary view-receipt-btn" 
-                                            data-receipt="{{ payment.receipt_number }}"
-                                            data-student="{{ student.name }}"
-                                            data-amount="{{ payment.amount_paid }}"
-                                            data-date="{{ payment.payment_date|date:'d/m/Y' }}"
-                                            data-status="{{ payment.status }}"
-                                            data-method="{{ payment.payment_method }}"
-                                            data-transaction="{{ payment.transaction_id|default:'N/A' }}"
-                                            data-verified="{{ payment.verified_by|default:'Not specified' }}"
-                                            data-remarks="{{ payment.remarks|default:'None' }}">
+                                    <button class="btn btn-sm btn-primary view-receipt-btn"
+                                        data-receipt="{{ payment.receipt_number }}" data-student="{{ student.name }}"
+                                        data-amount="{{ payment.amount_paid }}"
+                                        data-date="{{ payment.payment_date|date:'d/m/Y' }}"
+                                        data-status="{{ payment.status }}" data-method="{{ payment.payment_method }}"
+                                        data-transaction="{{ payment.transaction_id|default:'N/A' }}"
+                                        data-verified="{{ payment.verified_by|default:'Not specified' }}"
+                                        data-remarks="{{ payment.remarks|default:'None' }}">
                                         <i class="fas fa-eye"></i> View
                                     </button>
                                 </td>
@@ -684,11 +688,13 @@
                 <div class="modal-body">
                     <form id="paymentForm">
                         <div class="mb-3">
-                            <label for="amount" class="form-label"><i class="fas fa-money-bill-wave"></i> Amount (₹)</label>
+                            <label for="amount" class="form-label"><i class="fas fa-money-bill-wave"></i> Amount
+                                (₹)</label>
                             <input type="number" class="form-control" id="amount" required>
                         </div>
                         <div class="mb-3">
-                            <label for="paymentMethod" class="form-label"><i class="fas fa-credit-card"></i> Payment Method</label>
+                            <label for="paymentMethod" class="form-label"><i class="fas fa-credit-card"></i> Payment
+                                Method</label>
                             <select class="form-select" id="paymentMethod" required>
                                 <option value="">Select Method</option>
                                 <option value="Cash">Cash</option>
@@ -698,11 +704,13 @@
                             </select>
                         </div>
                         <div class="mb-3" id="transactionIdGroup">
-                            <label for="transactionId" class="form-label"><i class="fas fa-receipt"></i> Transaction ID</label>
+                            <label for="transactionId" class="form-label"><i class="fas fa-receipt"></i> Transaction
+                                ID</label>
                             <input type="text" class="form-control" id="transactionId">
                         </div>
                         <div class="mb-3">
-                            <label for="remarks" class="form-label"><i class="fas fa-sticky-note"></i> Remarks (Optional)</label>
+                            <label for="remarks" class="form-label"><i class="fas fa-sticky-note"></i> Remarks
+                                (Optional)</label>
                             <textarea class="form-control" id="remarks" rows="2"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">
@@ -717,9 +725,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // View receipt button click handler
-            $('.view-receipt-btn').click(function() {
+            $('.view-receipt-btn').click(function () {
                 const $btn = $(this);
                 const receiptData = {
                     receiptNo: $btn.data('receipt'),
@@ -783,7 +791,7 @@
                     },
                     didOpen: () => {
                         // Add print functionality
-                        document.querySelector('.swal2-cancel').addEventListener('click', function() {
+                        document.querySelector('.swal2-cancel').addEventListener('click', function () {
                             printReceipt(receiptHtml);
                         });
                     }
@@ -791,7 +799,7 @@
             }
 
             function getStatusClass(status) {
-                switch(status.toLowerCase()) {
+                switch (status.toLowerCase()) {
                     case 'paid': return 'bg-success';
                     case 'pending': return 'bg-warning';
                     case 'overdue': return 'bg-danger';
@@ -837,7 +845,7 @@
             }
 
             // Show/hide transaction ID field based on payment method
-            $('#paymentMethod').change(function() {
+            $('#paymentMethod').change(function () {
                 if ($(this).val() === 'Cash') {
                     $('#transactionIdGroup').hide();
                 } else {
@@ -846,20 +854,20 @@
             });
 
             // Handle pay now button click
-            $('.pay-now').click(function() {
+            $('.pay-now').click(function () {
                 const year = $(this).data('year');
                 $('#paymentYear').text(year);
                 $('#paymentModal').modal('show');
             });
 
             // Handle view payments button click
-            $('.view-payments').click(function() {
+            $('.view-payments').click(function () {
                 const year = $(this).data('year');
                 alert(`Showing payments for Year ${year}`);
             });
 
             // Handle payment form submission
-            $('#paymentForm').submit(function(e) {
+            $('#paymentForm').submit(function (e) {
                 e.preventDefault();
                 alert('Payment submitted! In a real app, this would process the payment.');
                 $('#paymentModal').modal('hide');
@@ -872,4 +880,5 @@
         });
     </script>
 </body>
+
 </html>

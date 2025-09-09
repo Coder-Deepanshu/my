@@ -14,38 +14,37 @@
         </thead>
         <tbody>
             {% if students %}
-                {% for student in students %}
-                <tr>
-                    <td>
-                        <img src="{% if student.profile_picture %}{{ student.profile_picture.url }}{% else %}https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180{% endif %}" 
-                             class="avatar" alt="{{ student.name }}" style="height: 100px; width: 100px;">
-                    </td>
-                    <td>{{ student.college_id }}</td>
-                    <td>{{ student.name }}</td>
-                    <td>{{ student.father_name }}</td>
-                    <td>{{ student.course }}</td>
-                    <td>{{ student.year }}</td>
-                    <td>{{ student.semester }}</td>
-                    <td>
-                        <select class="form-select attendance-status" data-student-id="{{ student.id }}">
-                            <option value="">Select Status</option>
-                            <option value="present">Present</option>
-                            <option value="absent">Absent</option>
-                            <option value="half_day">Half Day</option>
-                            <option value="leave">Leave</option>
-                            <option value="holiday">Holiday</option>
-                        </select>
-                    </td>
-                </tr>
-                {% endfor %}
+            {% for student in students %}
+            <tr>
+                <td>
+                    <img src="{% if student.profile_picture %}{{ student.profile_picture.url }}{% else %}https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180{% endif %}"
+                        class="avatar" alt="{{ student.name }}" style="height: 100px; width: 100px;">
+                </td>
+                <td>{{ student.college_id }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.father_name }}</td>
+                <td>{{ student.course }}</td>
+                <td>{{ student.year }}</td>
+                <td>{{ student.semester }}</td>
+                <td>
+                    <select class="form-select attendance-status" data-student-id="{{ student.id }}">
+                        <option value="">Select Status</option>
+                        <option value="present">Present</option>
+                        <option value="absent">Absent</option>
+                        <option value="half_day">Half Day</option>
+                        <option value="leave">Leave</option>
+                        <option value="holiday">Holiday</option>
+                    </select>
+                </td>
+            </tr>
+            {% endfor %}
             {% else %}
-                <tr>
-                    <td colspan="8" class="no-results">
-                        No students found matching your criteria
-                    </td>
-                </tr>
+            <tr>
+                <td colspan="8" class="no-results">
+                    No students found matching your criteria
+                </td>
+            </tr>
             {% endif %}
         </tbody>
     </table>
 </div>
-

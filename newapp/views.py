@@ -192,13 +192,15 @@ def forget_password(request):
     }, status=400)
 
 def admin_adding_page(request):
+    role = request.session.get('role')
     username = request.session.get('User_name')
-    return render(request,'admin/admin_page.html',{'username':username})
+    return render(request,'admin/admin_page.html',{'username':username,'role':role})
 
 def admin_card(request):
+    role = request.session.get('role')
     username = request.session.get('User_name')
     admin_details = Admin.objects.all()
-    return render(request,'admin/admin_card.html',{'username':username,'admin_details':admin_details})
+    return render(request,'admin/admin_card.html',{'username':username,'admin_details':admin_details,'role':role})
 
 # profile details   
 def profile_details(request):
@@ -288,7 +290,7 @@ def dashboard_view(request):
     username = request.session.get('username1')
     college_id = request.session.get('admin_college_id')
     if username:
-        return render(request, 'dashboard.html', {'username': username,'college_id':college_id,'role':role})
+        return render(request, 'dashboard/dashboard.html', {'username': username,'college_id':college_id,'role':role})
     else:
         return redirect('login') 
 
@@ -298,7 +300,7 @@ def dashboard1(request):
     role = request.session.get('role')
     username = request.session.get('username2')  # Retrieve username from session
     if username:
-        return render(request, 'dashboard1.html', {'username': username,'role':role})
+        return render(request, 'dashboard/dashboard1.html', {'username': username,'role':role})
     else:
         return redirect('login')  # Redirect to login if not logged in
 
@@ -310,7 +312,7 @@ def dashboard2(request):
     college_id = request.session.get('student_college_id')
     detail = Student.objects.get(college_id = college_id)  # Retrieve username from session
     if username:
-        return render(request, 'dashboard2.html', {'username': username,'detail':detail,'role':role})
+        return render(request, 'dashboard/dashboard2.html', {'username': username,'detail':detail,'role':role})
     else:
         return redirect('login') 
 
@@ -847,6 +849,7 @@ def save_attendance(request):
             return JsonResponse({'error': str(e)}, status=500)
             
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
 
 from datetime import datetime
 def student_attendance_view(request):
@@ -878,6 +881,9 @@ def student_attendance_view(request):
         messages.error(request, f"An error occurred: {str(e)}")
         return redirect('dashboard2')
     
+
+
+from django.core.paginator import Paginator
 # for student attendance (for student viewing attendance)
 def get_student_attendance(request):
     try:
@@ -900,7 +906,11 @@ def get_student_attendance(request):
             attendance = attendance.filter(status=status)
             
         attendance = attendance.order_by('-date', 'lecture_number')
-        
+
+        # pagination
+        paginator = Paginator(attendance,5)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
         # Calculate summary
         total_lectures = attendance.count()
         present = attendance.filter(status='Present').count()
@@ -911,7 +921,7 @@ def get_student_attendance(request):
             attendance_percentage = round((present / total_lectures) * 100, 2)
             
         attendance_list = []
-        for record in attendance:
+        for record in page_obj:
             attendance_list.append({
                 'date': record.date,
                 'lecture_number': record.lecture_number,
@@ -2072,8 +2082,7 @@ def department_creation(request):
     total_faculty = Faculty.objects.count()
     enrolled_students = Student.objects.count()
     total_course = Course.objects.count()
-    programs = Course.objects.all()
-    
+    programs = Course.objects.all().order_by('code')
     # Handle AJAX requests first
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         data = []
@@ -2145,8 +2154,6 @@ def department_creation(request):
     })
 
 from django.shortcuts import get_object_or_404
-
-
 class DepartmentUpdateView(UpdateView):
     model = Department
     form_class = DepartmentForm
@@ -2173,8 +2180,31 @@ class DepartmentDeleteView(DeleteView):
 from .models import Department, Course,Level
 
 def course_creation(request):
-    role = request.session.get()
-    details = Course.objects.all()
+    role = request.session.get('role')
+    details = Course.objects.all().order_by('created_at')
+    paginator = Paginator(details,5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        data = []
+        for course in page_obj:
+            data.append({
+                "name": course.name,
+                "department": course.department.name,
+                "code": course.code,
+                "no_of_years": course.no_of_years,
+                "no_of_semesters": course.no_of_semesters,
+                "student_capacity": course.student_capacity,
+                "level":course.level.name, 
+                
+            })
+        return JsonResponse({
+            "details": data,
+            "has_next": page_obj.has_next(),
+            "has_prev": page_obj.has_previous(),
+            "page_number": page_obj.number,
+            "total_pages": paginator.num_pages
+        })
     try:
         # Get lists for both GET and POST requests
         department_list = Department.objects.filter(type='Faculty')
@@ -2191,6 +2221,7 @@ def course_creation(request):
                     
                     # Create course with foreign key IDs
                     Course.objects.create(
+                        image = request.POST.get('cousreImage'),
                         name=request.POST.get('courseName'),
                         department_id=request.POST.get('courseDepartment'),  # Use _id field
                         no_of_years=duration,
@@ -2199,41 +2230,29 @@ def course_creation(request):
                         description=request.POST.get('courseDescription'),
                         student_capacity=capacity,
                         level_id=request.POST.get('courseLevel'),  # Use _id field
-                        fees_per_year=fees
+                        fees_per_year=fees,
+                        no_of_lecture = request.POST.get('courseLecture')
                     )
                     messages.success(request, "Course Created Successfully!")
-                    
+                    return redirect("course_creation")
                 except ValueError:
                     messages.error(request, "Invalid number format in form data")
                 except Exception as e:
                     messages.error(request, f"Error adding course: {str(e)}")
-        
-        # Return with context for both GET and POST
-        return render(request, 'course_creation.html', {
-            'department_list': department_list,
-            'level_list': level_list,
-            'details':details,
-            'role':role
-            
-        })
             
     except Exception as e:
         messages.error(request, f"Error loading page: {str(e)}")
-        return render(request, 'course_creation.html', {
-            'department_list': [],
-            'level_list': [],
-            'details':[],
-            'role':[]
+    return render(request, 'course_creation.html', {
+            'department_list': department_list,
+            'level_list': level_list,
+            'details':details,
+            'role':role,
+            "page_obj": page_obj, 
+            "course":details
         })
-    
+
 # Created Positions
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse,HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
 from .models import Position, Department
-
-
 
 def position_creation(request):
     role = request.session.get('role')
@@ -2409,189 +2428,52 @@ def position_creation(request):
         })
 
 
-def get_position_data(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            position_id = data.get('position_id')
-            
-            position = get_object_or_404(Position, position_id=position_id)
-            
-            return JsonResponse({
-                'success': True,
-                'data': {
-                    'position_id': position.position_id,
-                    'name': position.name,
-                    'type': position.type,
-                    'level': position.level,
-                    'salary': position.salary,
-                    'department_id': position.department.id,
-                    'specialization': position.specialization,
-                    'responsibility': position.responsibility,
-                    'requirment': position.requirment,
-                    'role': position.role,
-                }
-            })
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'message': str(e)
-            })
-    
-    return JsonResponse({
-        'success': False,
-        'message': 'Invalid request method'
-    })
-
-def update_position(request):
-    if request.method == 'POST':
-        try:
-            position_id = request.POST.get('position_id')
-            position = get_object_or_404(Position, position_id=position_id)
-            
-            # Update fields
-            position.name = request.POST.get('position_name')
-            position.type = request.POST.get('position_type')
-            position.level = request.POST.get('position_level')
-            
-            # Clean salary string
-            salary_str = request.POST.get('position_salary', '0')
-            salary_str = ''.join(filter(str.isdigit, salary_str))
-            position.salary = int(salary_str) if salary_str else 0
-            
-            department_id = request.POST.get('position_department')
-            if department_id:
-                position.department = get_object_or_404(Department, id=department_id)
-            
-            position.specialization = request.POST.get('position_specialization')
-            position.responsibility = request.POST.get('position_responsibility')
-            position.requirment = request.POST.get('position_requirement')
-            
-            position.save()
-            
-            messages.success(request, f"Position '{position.name}' updated successfully!")
-            return redirect('position_creation')
-            
-        except Exception as e:
-            messages.error(request, f"Error updating position: {str(e)}")
-            return redirect('position_creation')
-    
-    messages.error(request, "Invalid request method")
-    return redirect('position_creation')
-
-def delete_position(request):
-    if request.method == 'POST':
-        try:
-            position_id = request.POST.get('position_id')
-            position = get_object_or_404(Position, position_id=position_id)
-            position_name = position.name
-            position.delete()
-            
-            messages.success(request, f"Position '{position_name}' deleted successfully!")
-            return redirect('position_creation')
-            
-        except Exception as e:
-            messages.error(request, f"Error deleting position: {str(e)}")
-            return redirect('position_creation')
-    
-    messages.error(request, "Invalid request method")
-    return redirect('position_creation')
-import csv
-
-def export_positions(request):
-    # Create the HttpResponse object with the appropriate CSV header
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="positions.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow(['Position ID', 'Name', 'Type', 'Department', 'Level', 'Salary', 'Role', 'Specialization'])
-
-    positions = Position.objects.all().select_related('department')
-    for position in positions:
-        writer.writerow([
-            position.position_id,
-            position.name,
-            position.type,
-            position.department.name,
-            position.level,
-            position.salary,
-            position.role,
-            position.specialization
-        ])
-
-    return response
-
-
-
-def student_list_name(request,template):
-    student = 'Deepanshu'
-    return render(request,template,{'student':student})
 
 
 
 
 
 
-# views.py
-# views.py
-# from django.core.paginator import Paginator
-# from django.http import JsonResponse
-# from django.shortcuts import render
+
+from django.shortcuts import render
+from django.core.paginator import Paginator
+from django.db.models import Q
 from .models import Students
 
-# def student_list(request):
-#     students = Students.objects.all().order_by("roll_no")[:10]
-#     paginator = Paginator(students, 5)  # 5 students per page
-    
-#     page_number = request.GET.get("page")
-#     page_obj = paginator.get_page(page_number)
+def student_list(request):
+    # Get filters/search inputs from URL params
+    course = request.GET.get("course")
+    roll_no = request.GET.get("roll_no")
+    query = request.GET.get("q")   # generic search
 
-#     # Agar AJAX request hai → JSON return karo
-#     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-#         data = []
-#         for student in page_obj:
-#             data.append({
-#                 "roll_no": student.roll_no,
-#                 "name": student.name,
-#                 "course": student.course
-#             })
-#         return JsonResponse({
-#             "students": data,
-#             "has_next": page_obj.has_next(),
-#             "has_prev": page_obj.has_previous(),
-#             "page_number": page_obj.number,
-#             "total_pages": paginator.num_pages
-#         })
+    students = Students.objects.all().order_by("roll_no")
 
-#     return render(request, "student_list.html", {"page_obj": page_obj})
+    # Apply course filter
+    if course:
+        students = students.filter(course__iexact=course)
 
+    # Apply roll no filter
+    if roll_no:
+        students = students.filter(roll_no=roll_no)
 
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from .models import Students
-from .form import StudentForm
+    # Apply advanced search (partial match)
+    if query:
+        students = students.filter(
+            Q(name__icontains=query) |
+            Q(course__icontains=query) |
+            Q(roll_no__icontains=query)
+        )
 
-class StudentListView(ListView):
-    model = Students
-    template_name = "student_list.html"
-    context_object_name = "students"
+    # Pagination (5 students per page)
+    paginator = Paginator(students, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
-class StudentCreateView(CreateView):
-    model = Students
-    form_class = StudentForm
-    template_name = "add_student.html"
-    success_url = reverse_lazy("student_list")
-
-class StudentUpdateView(UpdateView):
-    model = Students
-    form_class = StudentForm
-    template_name = "edit_student.html"
-    success_url = reverse_lazy("student_list")
-
-class StudentDeleteView(DeleteView):
-    model = Students
-    template_name = "delete_student.html"
-    success_url = reverse_lazy("student_list")
-
-
-
+    # Send context to template
+    context = {
+        "page_obj": page_obj,
+        "course": course,
+        "roll_no": roll_no,
+        "query": query,
+    }
+    return render(request, "student_list.html", context)

@@ -1,8 +1,8 @@
 
 <div class="admin-cards">
 {% for student in students %}
+ <a href="{% url 'chat_home' %}?student_id={{ student.college_id }}" class="admin-card-link">
 <div class="admin-card">
-     <a href="{% url 'chat_home' %}?student_id={{ student.college_id }}" class="admin-card-link"></a>
     <div class="card-header">
         <div class="header-text">
             <h3>{{ student.name }}</h3>
@@ -50,9 +50,9 @@
             </a>
         </div>
     </div>
-    </a>
+   
 </div>
-
+ </a>
 {% empty %}
 </div>
  <div id="noRecordsMessage" class="alert alert-info mt-4" style="margin-top: 30px;background: #ec3a2a;color: rgb(255, 255, 255);max-width: 1500px;height:80px ;">

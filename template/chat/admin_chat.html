@@ -8,7 +8,7 @@
             <button class="tab-button active" onclick="openTab('students')">Students</button>
             <button class="tab-button" onclick="openTab('faculties')">Faculty</button>
         </div>
-        
+
         <div id="studentsTab" class="tab-content">
             <div class="chat-header">
                 <h3>Students</h3>
@@ -19,7 +19,8 @@
             </div>
             <div class="user-list" id="studentList">
                 {% for student in students %}
-                <div class="user-item" data-user-id="{{ student.college_id }}" onclick="startChat('{{ student.college_id }}', 'student')">
+                <div class="user-item" data-user-id="{{ student.college_id }}"
+                    onclick="startChat('{{ student.college_id }}', 'student')">
                     <div class="user-avatar">
                         {% if student.profile_picture %}
                         <img src="{{ student.profile_picture.url }}" alt="{{ student.name }}">
@@ -36,7 +37,7 @@
                 {% endfor %}
             </div>
         </div>
-        
+
         <div id="facultiesTab" class="tab-content" style="display:none;">
             <div class="chat-header">
                 <h3>Faculty</h3>
@@ -47,7 +48,8 @@
             </div>
             <div class="user-list" id="facultyList">
                 {% for faculty in faculties %}
-                <div class="user-item" data-user-id="{{ faculty.college_id }}" onclick="startChat('{{ faculty.college_id }}', 'faculty')">
+                <div class="user-item" data-user-id="{{ faculty.college_id }}"
+                    onclick="startChat('{{ faculty.college_id }}', 'faculty')">
                     <div class="user-avatar">
                         {% if faculty.profile_picture %}
                         <img src="{{ faculty.profile_picture.url }}" alt="{{ faculty.name }}">
@@ -65,7 +67,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="chat-main">
         <div class="chat-header">
             <div class="chat-partner-info" id="chatPartnerInfo">
@@ -79,14 +81,14 @@
                 <div class="partner-status" id="partnerStatus"></div>
             </div>
         </div>
-        
+
         <div class="chat-messages" id="chatMessages">
             <div class="no-chat-selected">
                 <i class="fas fa-comments"></i>
                 <p>Select a user to start chatting</p>
             </div>
         </div>
-        
+
         <div class="chat-input" id="chatInput" style="display: none;">
             <textarea id="messageInput" placeholder="Type your message here..."></textarea>
             <button id="sendButton" onclick="sendMessage()">
@@ -101,53 +103,53 @@
     let currentPartnerId = null;
     let currentPartnerType = null;
     let currentUserId = "AD20250"; // Admin ID
-    
+
     function openTab(tabName) {
         const tabContents = document.getElementsByClassName('tab-content');
         for (let i = 0; i < tabContents.length; i++) {
             tabContents[i].style.display = 'none';
         }
-        
+
         const tabButtons = document.getElementsByClassName('tab-button');
         for (let i = 0; i < tabButtons.length; i++) {
             tabButtons[i].classList.remove('active');
         }
-        
+
         document.getElementById(tabName + 'Tab').style.display = 'block';
         event.currentTarget.classList.add('active');
     }
-    
+
     function startChat(partnerId, partnerType) {
         currentPartnerId = partnerId;
         currentPartnerType = partnerType;
-        
+
         // Fetch partner details
         const endpoint = partnerType === 'student' ? '/get_student_details/' : '/get_faculty_details/';
-        
+
         fetch(`${endpoint}?${partnerType}_id=${partnerId}`)
             .then(response => response.json())
             .then(data => {
-                if(data.status === 'success') {
+                if (data.status === 'success') {
                     const partner = data[partnerType];
-                    
+
                     // Update UI with partner info
                     document.getElementById('partnerName').textContent = partner.name;
-                    
-                    if(partnerType === 'student') {
-                        document.getElementById('partnerDetails').textContent = 
+
+                    if (partnerType === 'student') {
+                        document.getElementById('partnerDetails').textContent =
                             `${partner.course} - Sem ${partner.semester} (${partner.college_id})`;
                     } else {
-                        document.getElementById('partnerDetails').textContent = 
+                        document.getElementById('partnerDetails').textContent =
                             `${partner.department} - ${partner.position}`;
                     }
-                    
-                    if(partner.profile_picture) {
+
+                    if (partner.profile_picture) {
                         document.getElementById('partnerAvatar').src = partner.profile_picture;
                     }
-                    
+
                     // Show chat input
                     document.getElementById('chatInput').style.display = 'block';
-                    
+
                     // Create or get chat room
                     fetch('/create_chat_room/', {
                         method: 'POST',
@@ -160,55 +162,55 @@
                             participant2: partnerId
                         })
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if(data.status === 'success') {
-                            currentRoomId = data.room_id;
-                            loadMessages(data.room_id);
-                            
-                            // Start polling for new messages
-                            setInterval(() => {
-                                loadMessages(currentRoomId);
-                            }, 3000);
-                        }
-                    });
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                currentRoomId = data.room_id;
+                                loadMessages(data.room_id);
+
+                                // Start polling for new messages
+                                setInterval(() => {
+                                    loadMessages(currentRoomId);
+                                }, 3000);
+                            }
+                        });
                 }
             });
     }
-    
+
     function loadMessages(roomId) {
         fetch(`/get_messages/${roomId}/`)
             .then(response => response.json())
             .then(data => {
-                if(data.status === 'success') {
+                if (data.status === 'success') {
                     const messagesContainer = document.getElementById('chatMessages');
                     messagesContainer.innerHTML = '';
-                    
+
                     data.messages.forEach(message => {
                         const messageDiv = document.createElement('div');
                         messageDiv.className = `message ${message.sender === currentUserId ? 'sent' : 'received'}`;
-                        
+
                         messageDiv.innerHTML = `
                             <div class="message-content">
                                 <p>${message.content}</p>
                                 <span class="message-time">${message.timestamp}</span>
                             </div>
                         `;
-                        
+
                         messagesContainer.appendChild(messageDiv);
                     });
-                    
+
                     // Scroll to bottom
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }
             });
     }
-    
+
     function sendMessage() {
         const messageInput = document.getElementById('messageInput');
         const message = messageInput.value.trim();
-        
-        if(message && currentRoomId) {
+
+        if (message && currentRoomId) {
             fetch('/send_message/', {
                 method: 'POST',
                 headers: {
@@ -221,48 +223,48 @@
                     content: message
                 })
             })
-            .then(response => response.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    messageInput.value = '';
-                    loadMessages(currentRoomId);
-                }
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        messageInput.value = '';
+                        loadMessages(currentRoomId);
+                    }
+                });
         }
     }
-    
+
     // Search functionality
-    document.getElementById('studentSearch').addEventListener('input', function() {
+    document.getElementById('studentSearch').addEventListener('input', function () {
         const searchTerm = this.value.toLowerCase();
         const studentItems = document.querySelectorAll('#studentList .user-item');
-        
+
         studentItems.forEach(item => {
             const studentName = item.querySelector('h4').textContent.toLowerCase();
-            if(studentName.includes(searchTerm)) {
+            if (studentName.includes(searchTerm)) {
                 item.style.display = 'flex';
             } else {
                 item.style.display = 'none';
             }
         });
     });
-    
-    document.getElementById('facultySearch').addEventListener('input', function() {
+
+    document.getElementById('facultySearch').addEventListener('input', function () {
         const searchTerm = this.value.toLowerCase();
         const facultyItems = document.querySelectorAll('#facultyList .user-item');
-        
+
         facultyItems.forEach(item => {
             const facultyName = item.querySelector('h4').textContent.toLowerCase();
-            if(facultyName.includes(searchTerm)) {
+            if (facultyName.includes(searchTerm)) {
                 item.style.display = 'flex';
             } else {
                 item.style.display = 'none';
             }
         });
     });
-    
+
     // Allow pressing Enter to send message
-    document.getElementById('messageInput').addEventListener('keypress', function(e) {
-        if(e.key === 'Enter' && !e.shiftKey) {
+    document.getElementById('messageInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
         }

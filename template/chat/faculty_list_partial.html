@@ -1,88 +1,85 @@
 {% for faculties in faculty_detail %}
 <a href="{% url 'chat_home' %}?faculty_id={{ faculties.college_id }}" class="admin-card-link">
-<div class="admin-card">
-    <div class="card-header">
-        <div class="header-text">
-            <h3>Dr.{{ faculties.name }}</h3>
-            <p>{{ faculties.position }} of {{ faculties.department }}</p>
-        </div>
-        {% if faculties.profile_picture %}
-        <img src="{{ faculties.profile_picture.url }}" alt="Faculty Photo" class="admin-image">
-        {% else %}
-        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Faculty Photo" class="admin-image">
-        {% endif %}
-        <button class="follow-btn {% if faculties.college_id in followed_faculty %}following{% endif %}" data-faculty-id="{{ faculties.college_id }}">
-            <i class="fas {% if faculties.college_id in followed_faculty %}fa-user-check{% else %}fa-user-plus{% endif %}"></i> 
-            {% if faculties.college_id in followed_faculty %}Following{% else %}Follow{% endif %}
-        </button>
-        <div class="online-status"></div>
-    </div>
-    <div class="card-body">
-        <div class="admin-detail">
-            <i class="fas fa-envelope"></i>
-            <span class="detail-label">Email:</span>
-            <span class="detail-value">{{ faculties.email }}</span>
-        </div>
-        <div class="admin-detail">
-            <i class="fas fa-phone"></i>
-            <span class="detail-label">Phone:</span>
-            <span class="detail-value">+91 {{ faculties.phone }}</span>
-        </div>
-        <div class="admin-detail">
-            <i class="fas fa-id-badge"></i>
-            <span class="detail-label">Faculty ID:</span>
-            <span class="detail-value">{{ faculties.college_id }}</span>
-        </div>
-        <div class="admin-detail">
-            <i class="fas fa-building"></i>
-            <span class="detail-label">Department:</span>
-            <span class="detail-value">{{ faculties.department }}</span>
-        </div>
-    </div>
-    <div class="card-footer">
-        <div class="admin-status active">
-            <span class="status-indicator"></span>
-            <span class="status-active">Active</span>
-        </div>
-        <div class="admin-actions">
-            <button class="action-btn" title="Message">
-                <i class="fas fa-comment-alt"></i>
+    <div class="admin-card">
+        <div class="card-header">
+            <div class="header-text">
+                <h3>Dr.{{ faculties.name }}</h3>
+                <p>{{ faculties.position }} of {{ faculties.department }}</p>
+            </div>
+            {% if faculties.profile_picture %}
+            <img src="{{ faculties.profile_picture.url }}" alt="Faculty Photo" class="admin-image">
+            {% else %}
+            <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180"
+                alt="Faculty Photo" class="admin-image">
+            {% endif %}
+            <button class="follow-btn {% if faculties.college_id in followed_faculty %}following{% endif %}"
+                data-faculty-id="{{ faculties.college_id }}">
+                <i
+                    class="fas {% if faculties.college_id in followed_faculty %}fa-user-check{% else %}fa-user-plus{% endif %}"></i>
+                {% if faculties.college_id in followed_faculty %}Following{% else %}Follow{% endif %}
             </button>
+            <div class="online-status"></div>
+        </div>
+        <div class="card-body">
+            <div class="admin-detail">
+                <i class="fas fa-envelope"></i>
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">{{ faculties.email }}</span>
+            </div>
+            <div class="admin-detail">
+                <i class="fas fa-phone"></i>
+                <span class="detail-label">Phone:</span>
+                <span class="detail-value">+91 {{ faculties.phone }}</span>
+            </div>
+            <div class="admin-detail">
+                <i class="fas fa-id-badge"></i>
+                <span class="detail-label">Faculty ID:</span>
+                <span class="detail-value">{{ faculties.college_id }}</span>
+            </div>
+            <div class="admin-detail">
+                <i class="fas fa-building"></i>
+                <span class="detail-label">Department:</span>
+                <span class="detail-value">{{ faculties.department }}</span>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="admin-status active">
+                <span class="status-indicator"></span>
+                <span class="status-active">Active</span>
+            </div>
+            <div class="admin-actions">
+                <button class="action-btn" title="Message">
+                    <i class="fas fa-comment-alt"></i>
+                </button>
+            </div>
         </div>
     </div>
-</div>
 </a>
 <script>
-        // Handle card clicks
-        document.querySelectorAll('.admin-card-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Check if this is a follow button click
-                if (e.target.closest('.follow-btn')) {
-                    return;
-                }
-                
-                const card = this.querySelector('.admin-card');
-                const followBtn = card.querySelector('.follow-btn');
-                const isFollowing = followBtn.classList.contains('following');
-                
-                if (!isFollowing) {
-                    e.preventDefault();
-                    showToast('error', 'You must follow this faculty before you can chat with them');
-                    followBtn.style.transform = 'scale(1.1)';
-                    followBtn.style.boxShadow = '0 0 10px rgba(255, 235, 59, 0.7)';
-                    setTimeout(() => {
-                        followBtn.style.transform = 'scale(1)';
-                        followBtn.style.boxShadow = 'none';
-                    }, 300);
-                }
-            });
+    // Handle card clicks
+    document.querySelectorAll('.admin-card-link').forEach(link => {
+        link.addEventListener('click', function (e) {
+            // Check if this is a follow button click
+            if (e.target.closest('.follow-btn')) {
+                return;
+            }
+
+            const card = this.querySelector('.admin-card');
+            const followBtn = card.querySelector('.follow-btn');
+            const isFollowing = followBtn.classList.contains('following');
+
+            if (!isFollowing) {
+                e.preventDefault();
+                showToast('error', 'You must follow this faculty before you can chat with them');
+                followBtn.style.transform = 'scale(1.1)';
+                followBtn.style.boxShadow = '0 0 10px rgba(255, 235, 59, 0.7)';
+                setTimeout(() => {
+                    followBtn.style.transform = 'scale(1)';
+                    followBtn.style.boxShadow = 'none';
+                }, 300);
+            }
         });
+    });
 
 </script>
 {% endfor %}
-
-
-
-
-
-  

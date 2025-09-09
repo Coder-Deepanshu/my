@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Add jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="{% static '/css/dashboard/facultyDashboard.css'  %}">
 </head>
+
 <body>
     <div class="bubbles">
         <div class="bubble"></div>
@@ -25,7 +28,7 @@
         <div class="bubble"></div>
         <div class="bubble"></div>
     </div>
-    
+
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -36,7 +39,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="sidebar-menu">
             <h3 class="menu-title">Main</h3>
             <ul class="menu-list">
@@ -47,7 +50,7 @@
                     </a>
                 </li>
             </ul>
-            
+
             <h3 class="menu-title">Management</h3>
             <ul class="menu-list">
                 <li class="menu-item">
@@ -56,49 +59,49 @@
                         <span class="menu-text">Profile</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="{% url 'facultyStudent_chat' %}" class="menu-link">
                         <i class="fas fa-comments menu-icon"></i>
                         <span class="menu-text">Student Chat</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-headset menu-icon"></i>
                         <span class="menu-text">Admin Chat</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="{% url 'studentAttendance_management' %}" class="menu-link">
                         <i class="fas fa-calendar-check menu-icon"></i>
                         <span class="menu-text">Attendance</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-calendar-alt menu-icon"></i>
                         <span class="menu-text">Time Table</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-chalkboard-teacher menu-icon"></i>
                         <span class="menu-text">Lectures</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-tasks menu-icon"></i>
                         <span class="menu-text">Assignments</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-money-bill-wave menu-icon"></i>
@@ -106,7 +109,7 @@
                     </a>
                 </li>
             </ul>
-            
+
             <h3 class="menu-title">Resources</h3>
             <ul class="menu-list">
                 <li class="menu-item">
@@ -115,7 +118,7 @@
                         <span class="menu-text">ID Card</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-book menu-icon"></i>
@@ -124,7 +127,7 @@
                 </li>
             </ul>
         </div>
-        
+
         <div class="sidebar-footer">
             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
             <div class="user-info">
@@ -138,7 +141,7 @@
             </a>
         </div>
     </aside>
-    
+
     <!-- Main Content -->
     <main class="main-content">
         <!-- Header -->
@@ -152,15 +155,16 @@
                     Faculty Dashboard
                 </h1>
             </div>
-            
+
             <div class="header-right">
                 <button class="notification-btn">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge">5</span>
                 </button>
-                
+
                 <div class="user-dropdown">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-dropdown-avatar">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User"
+                        class="user-dropdown-avatar">
                     <span class="user-dropdown-name">{{ username }}</span>
                     <div class="user-dropdown-menu">
                         <a href="#" class="dropdown-item">
@@ -177,7 +181,7 @@
                 </div>
             </div>
         </header>
-        
+
         <!-- Content -->
         <div class="content">
             <div class="header-1">
@@ -185,13 +189,13 @@
                     <h1>Welcome back, Professor {{ username }}!</h1>
                     <p>Here's what's happening with your classes today</p>
                 </div>
-                
+
                 <div class="search-bar">
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Search...">
                 </div>
             </div>
-            
+
             <!-- Stats Cards -->
             <div class="stats-container">
                 <div class="stat-card">
@@ -203,7 +207,7 @@
                         <p>Today's Classes</p>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon" style="background: var(--success);">
                         <i class="fas fa-tasks"></i>
@@ -213,7 +217,7 @@
                         <p>Pending Evaluations</p>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon" style="background: var(--warning);">
                         <i class="fas fa-comments"></i>
@@ -223,7 +227,7 @@
                         <p>Unread Messages</p>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon" style="background: var(--danger);">
                         <i class="fas fa-chart-line"></i>
@@ -234,33 +238,33 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Quick Actions -->
             <h3 class="section-title">
                 <i class="fas fa-bolt"></i> Quick Actions
             </h3>
-            
+
             <div class="quick-actions">
                 <a href="#" class="action-btn">
                     <i class="fas fa-clipboard-list"></i>
                     <span class="action-text">Take Attendance</span>
                 </a>
-                
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-check-circle"></i>
                     <span class="action-text">Grade Assignments</span>
                 </a>
-                
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-calendar-alt"></i>
                     <span class="action-text">View Schedule</span>
                 </a>
-                
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-inbox"></i>
                     <span class="action-text">Check Messages</span>
                 </a>
-                
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-upload"></i>
                     <span class="action-text">Upload Materials</span>
@@ -270,7 +274,7 @@
             {% include "Home/sidebar.html" %}
 
             {% include "Home/ai.html" %}
-           
+
             <!-- Faculty Cards -->
             <div class="faculty-cards">
                 <div class="faculty-card">
@@ -281,11 +285,14 @@
                         <h3 class="faculty-card-title">Attendance Management</h3>
                     </div>
                     <div class="faculty-card-body">
-                        <p>Mark and manage student attendance for your current classes. View historical attendance records and generate reports.</p>
-                        <a href="#" class="btn" style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"><i class="fas fa-clipboard-list" ></i> Manage Attendance</a>
+                        <p>Mark and manage student attendance for your current classes. View historical attendance
+                            records and generate reports.</p>
+                        <a href="#" class="btn"
+                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"><i
+                                class="fas fa-clipboard-list"></i> Manage Attendance</a>
                     </div>
                 </div>
-                
+
                 <div class="faculty-card">
                     <div class="faculty-card-header">
                         <div class="faculty-card-icon">
@@ -294,11 +301,14 @@
                         <h3 class="faculty-card-title">Today's Lectures</h3>
                     </div>
                     <div class="faculty-card-body">
-                        <p>You have 2 lectures scheduled today. Next lecture is Advanced Algorithms at 11:00 AM in Room C-304.</p>
-                        <a href="#" class="btn" style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"><i class="fas fa-calendar-alt"></i> View Schedule</a>
+                        <p>You have 2 lectures scheduled today. Next lecture is Advanced Algorithms at 11:00 AM in Room
+                            C-304.</p>
+                        <a href="#" class="btn"
+                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"><i
+                                class="fas fa-calendar-alt"></i> View Schedule</a>
                     </div>
                 </div>
-                
+
                 <div class="faculty-card">
                     <div class="faculty-card-header">
                         <div class="faculty-card-icon">
@@ -307,8 +317,11 @@
                         <h3 class="faculty-card-title">Assignment Evaluation</h3>
                     </div>
                     <div class="faculty-card-body">
-                        <p>12 assignments await your evaluation. 3 submissions are overdue for grading from last week.</p>
-                        <a href="#" class="btn" style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"s><i class="fas fa-check-circle"></i> Grade Assignments</a>
+                        <p>12 assignments await your evaluation. 3 submissions are overdue for grading from last week.
+                        </p>
+                        <a href="#" class="btn"
+                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"
+                            s><i class="fas fa-check-circle"></i> Grade Assignments</a>
                     </div>
                 </div>
             </div>
@@ -317,7 +330,7 @@
                 <h3 class="section-title">
                     <i class="fas fa-history"></i> Recent Activity
                 </h3>
-                
+
                 <ul class="activity-list">
                     <li class="activity-item">
                         <div class="activity-icon">
@@ -329,7 +342,7 @@
                         </div>
                         <div class="activity-time">10 mins ago</div>
                     </li>
-                    
+
                     <li class="activity-item">
                         <div class="activity-icon">
                             <i class="fas fa-comment"></i>
@@ -340,7 +353,7 @@
                         </div>
                         <div class="activity-time">45 mins ago</div>
                     </li>
-                    
+
                     <li class="activity-item">
                         <div class="activity-icon">
                             <i class="fas fa-upload"></i>
@@ -351,7 +364,7 @@
                         </div>
                         <div class="activity-time">2 hours ago</div>
                     </li>
-                    
+
                     <li class="activity-item">
                         <div class="activity-icon">
                             <i class="fas fa-check-circle"></i>
@@ -362,7 +375,7 @@
                         </div>
                         <div class="activity-time">5 hours ago</div>
                     </li>
-                    
+
                     <li class="activity-item">
                         <div class="activity-icon">
                             <i class="fas fa-bell"></i>
@@ -377,23 +390,23 @@
             </div>
         </div>
     </main>
-    
+
     <script>
         // Toggle Sidebar
         const toggleSidebar = document.querySelector('.toggle-sidebar');
         const sidebar = document.querySelector('.sidebar');
-        
+
         toggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('active');
         });
-        
+
         // Menu Dropdowns
         const menuItems = document.querySelectorAll('.menu-item');
-        
+
         menuItems.forEach(item => {
             const link = item.querySelector('.menu-link');
             const submenu = item.querySelector('.submenu');
-            
+
             if (submenu) {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -403,4 +416,5 @@
         });
     </script>
 </body>
+
 </html>

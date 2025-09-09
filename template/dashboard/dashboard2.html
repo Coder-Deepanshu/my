@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Add jQuery -->
@@ -13,6 +15,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/dashboard/studentDashboard.css' %}">
 </head>
+
 <body>
     <div class="bubbles">
         <div class="bubble"></div>
@@ -25,7 +28,7 @@
         <div class="bubble"></div>
         <div class="bubble"></div>
     </div>
-    
+
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -34,7 +37,7 @@
                 EduTrack
             </h1>
         </div>
-        
+
         <div class="sidebar-menu">
             <h3 class="menu-title">Main</h3>
             <ul class="menu-list">
@@ -45,7 +48,7 @@
                     </a>
                 </li>
             </ul>
-            
+
             <h3 class="menu-title">Academics</h3>
             <ul class="menu-list">
                 <li class="menu-item">
@@ -54,35 +57,35 @@
                         <span class="menu-text">My Profile</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="{% url 'student_attendance_view' %}" class="menu-link">
                         <i class="fas fa-calendar-check menu-icon"></i>
                         <span class="menu-text">Attendance</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-book menu-icon"></i>
                         <span class="menu-text">My Course</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-tasks menu-icon"></i>
                         <span class="menu-text">Assignments</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-chart-line menu-icon"></i>
                         <span class="menu-text">Grades</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="#" class="menu-link">
                         <i class="fas fa-calendar-alt menu-icon"></i>
@@ -97,7 +100,7 @@
                     </a>
                 </li>
             </ul>
-            
+
             <h3 class="menu-title">Services</h3>
             <ul class="menu-list">
                 <li class="menu-item">
@@ -113,14 +116,14 @@
                         <span class="menu-text">Chat with Admin</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="{% url 'student_fees_view' %}" class="menu-link">
                         <i class="fas fa-file-invoice-dollar menu-icon"></i>
                         <span class="menu-text">Fees</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="{% url 'id_card' %}" class="menu-link">
                         <i class="fas fa-id-card menu-icon"></i>
@@ -129,13 +132,13 @@
                 </li>
             </ul>
         </div>
-        
+
         <div class="sidebar-footer">
-                        {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="user-avatar">
-                        {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo" class="user-avatar">
-                        {% endif %}
+            {% if detail.profile_picture %}
+            <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="user-avatar">
+            {% else %}
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo" class="user-avatar">
+            {% endif %}
             <div class="user-info">
                 <div class="user-name">{{ username }}</div>
                 <div class="user-role">Student</div>
@@ -147,7 +150,7 @@
             </a>
         </div>
     </aside>
-    
+
     <!-- Main Content -->
     <main class="main-content">
         <!-- Header -->
@@ -161,19 +164,20 @@
                     Dashboard
                 </h1>
             </div>
-            
+
             <div class="header-right">
                 <button class="notification-btn">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge">3</span>
                 </button>
-                
+
                 <div class="user-dropdown">
-                        {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="user-avatar">
-                        {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo" class="user-avatar">
-                        {% endif %}
+                    {% if detail.profile_picture %}
+                    <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="user-avatar">
+                    {% else %}
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo"
+                        class="user-avatar">
+                    {% endif %}
                     <span class="user-dropdown-name">{{ username }}</span>
                     <div class="user-dropdown-menu">
                         <a href="#" class="dropdown-item">
@@ -190,7 +194,7 @@
                 </div>
             </div>
         </header>
-        
+
         <!-- Content -->
         <div class="content">
             <div class="header-1">
@@ -198,7 +202,7 @@
                     <h1>Welcome back, {{ username }}!</h1>
                     <p>Here's what's happening with your academics today</p>
                 </div>
-                
+
                 <div class="search-bar">
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Search...">
@@ -206,13 +210,13 @@
             </div>
 
             {% if messages %}
-                {% for message in messages %}
-                <div class="error-message">
-                    <i class="fas fa-exclamation-circle"></i> {{ message }}
-                </div>
-                {% endfor %}
+            {% for message in messages %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ message }}
+            </div>
+            {% endfor %}
             {% endif %}
-            
+
             <!-- Stats Cards -->
             <div class="stats-container">
                 <div class="stat-card">
@@ -224,7 +228,7 @@
                         <p>Unseen Messages</p>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon" style="background: var(--success);">
                         <i class="fas fa-tasks"></i>
@@ -234,7 +238,7 @@
                         <p>Pending Assignments</p>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon" style="background: var(--warning);">
                         <i class="fas fa-calendar-check"></i>
@@ -244,7 +248,7 @@
                         <p>Attendance Percentage</p>
                     </div>
                 </div>
-                
+
                 <div class="stat-card">
                     <div class="stat-icon" style="background: var(--danger);">
                         <i class="fas fa-clock"></i>
@@ -255,154 +259,162 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Image Slider -->
-        <div class="slider-section">
-            <div class="section-header">
-                <h3 class="section-title">Featured Courses</h3>
-                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            <div class="slider-section">
+                <div class="section-header">
+                    <h3 class="section-title">Featured Courses</h3>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="image-slider">
+                    <div class="slider-container">
+                        <div class="slide active"
+                            style="background-image: url('https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');">
+                            <div class="slide-content">
+                                <h3>Advanced Web Development</h3>
+                                <p>Master modern web development frameworks and build responsive, interactive websites.
+                                </p>
+                                <a href="#" class="btn btn-sm btn-primary mt-2">Enroll Now</a>
+                            </div>
+                        </div>
+                        <div class="slide"
+                            style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');">
+                            <div class="slide-content">
+                                <h3>Data Science Fundamentals</h3>
+                                <p>Learn the core concepts of data science, statistics, and machine learning algorithms.
+                                </p>
+                                <a href="#" class="btn btn-sm btn-primary mt-2">Enroll Now</a>
+                            </div>
+                        </div>
+                        <div class="slide"
+                            style="background-image: url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80');">
+                            <div class="slide-content">
+                                <h3>Mobile App Development</h3>
+                                <p>Create cross-platform mobile applications using modern development frameworks.</p>
+                                <a href="#" class="btn btn-sm btn-primary mt-2">Enroll Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slider-nav">
+                        <div class="slider-dot active"></div>
+                        <div class="slider-dot"></div>
+                        <div class="slider-dot"></div>
+                    </div>
+                    <div class="slider-arrows">
+                        <div class="slider-arrow prev"><i class="fas fa-chevron-left"></i></div>
+                        <div class="slider-arrow next"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
             </div>
-            <div class="image-slider">
-                <div class="slider-container">
-                    <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');">
-                        <div class="slide-content">
-                            <h3>Advanced Web Development</h3>
-                            <p>Master modern web development frameworks and build responsive, interactive websites.</p>
-                            <a href="#" class="btn btn-sm btn-primary mt-2">Enroll Now</a>
-                        </div>
-                    </div>
-                    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');">
-                        <div class="slide-content">
-                            <h3>Data Science Fundamentals</h3>
-                            <p>Learn the core concepts of data science, statistics, and machine learning algorithms.</p>
-                            <a href="#" class="btn btn-sm btn-primary mt-2">Enroll Now</a>
-                        </div>
-                    </div>
-                    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80');">
-                        <div class="slide-content">
-                            <h3>Mobile App Development</h3>
-                            <p>Create cross-platform mobile applications using modern development frameworks.</p>
-                            <a href="#" class="btn btn-sm btn-primary mt-2">Enroll Now</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="slider-nav">
-                    <div class="slider-dot active"></div>
-                    <div class="slider-dot"></div>
-                    <div class="slider-dot"></div>
-                </div>
-                <div class="slider-arrows">
-                    <div class="slider-arrow prev"><i class="fas fa-chevron-left"></i></div>
-                    <div class="slider-arrow next"><i class="fas fa-chevron-right"></i></div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Courses Grid -->
-        <div class="slider-section">
-            <div class="section-header">
-                <h3 class="section-title">My Courses</h3>
-                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+            <!-- Courses Grid -->
+            <div class="slider-section">
+                <div class="section-header">
+                    <h3 class="section-title">My Courses</h3>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="courses-grid">
+                    <div class="course-card">
+                        <div class="course-image"
+                            style="background-image: url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');">
+                            <div class="course-badge">In Progress</div>
+                        </div>
+                        <div class="course-content">
+                            <h4 class="course-title">Web Programming</h4>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock me-1"></i> 12 Weeks</span>
+                                <span><i class="fas fa-tasks me-1"></i> 8 Modules</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 65%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Progress</span>
+                                <span>65%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <div class="course-image"
+                            style="background-image: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');">
+                            <div class="course-badge">Completed</div>
+                        </div>
+                        <div class="course-content">
+                            <h4 class="course-title">Python Fundamentals</h4>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock me-1"></i> 8 Weeks</span>
+                                <span><i class="fas fa-tasks me-1"></i> 6 Modules</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 100%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Progress</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <div class="course-image"
+                            style="background-image: url('https://images.unsplash.com/photo-1546054454-aa26e2b734c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1780&q=80');">
+                            <div class="course-badge">Not Started</div>
+                        </div>
+                        <div class="course-content">
+                            <h4 class="course-title">UX/UI Design</h4>
+                            <div class="course-info">
+                                <span><i class="fas fa-clock me-1"></i> 10 Weeks</span>
+                                <span><i class="fas fa-tasks me-1"></i> 7 Modules</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 0%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Progress</span>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="courses-grid">
-                <div class="course-card">
-                    <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');">
-                        <div class="course-badge">In Progress</div>
-                    </div>
-                    <div class="course-content">
-                        <h4 class="course-title">Web Programming</h4>
-                        <div class="course-info">
-                            <span><i class="fas fa-clock me-1"></i> 12 Weeks</span>
-                            <span><i class="fas fa-tasks me-1"></i> 8 Modules</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 65%;"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span>Progress</span>
-                            <span>65%</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="course-card">
-                    <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');">
-                        <div class="course-badge">Completed</div>
-                    </div>
-                    <div class="course-content">
-                        <h4 class="course-title">Python Fundamentals</h4>
-                        <div class="course-info">
-                            <span><i class="fas fa-clock me-1"></i> 8 Weeks</span>
-                            <span><i class="fas fa-tasks me-1"></i> 6 Modules</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 100%;"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span>Progress</span>
-                            <span>100%</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="course-card">
-                    <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1546054454-aa26e2b734c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1780&q=80');">
-                        <div class="course-badge">Not Started</div>
-                    </div>
-                    <div class="course-content">
-                        <h4 class="course-title">UX/UI Design</h4>
-                        <div class="course-info">
-                            <span><i class="fas fa-clock me-1"></i> 10 Weeks</span>
-                            <span><i class="fas fa-tasks me-1"></i> 7 Modules</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: 0%;"></div>
-                        </div>
-                        <div class="progress-text">
-                            <span>Progress</span>
-                            <span>0%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Quick Actions -->
+            <!-- Quick Actions -->
             <h3 class="section-title">
                 <i class="fas fa-bolt"></i> Quick Actions
             </h3>
-            
+
             <div class="quick-actions">
-                
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-clipboard-list"></i>
                     <span class="action-text">Assignments Details</span>
                 </a>
-                
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-robot"></i>
                     <span class="action-text">AI Chat</span>
                 </a>
-                
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-chart-pie"></i>
                     <span class="action-text">View Grades</span>
                 </a>
-                
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-inbox"></i>
                     <span class="action-text">Check Messages</span>
-                    </a>
-                
+                </a>
+
                 <a href="#" class="action-btn">
                     <i class="fas fa-receipt"></i>
                     <span class="action-text">View Fee Details</span>
                 </a>
             </div>
-            {% include "Home/ai.html" %}         
+            {% include "Home/ai.html" %}
             <!-- Student Cards -->
             <h3 class="section-title">
                 <i class="fas fa-graduation-cap"></i> Academic Resources
             </h3>
-            
+
             <div class="student-cards">
                 <div class="student-card">
                     <div class="student-card-header">
@@ -412,13 +424,15 @@
                         <h3 class="student-card-title">Course Materials</h3>
                     </div>
                     <div class="student-card-body">
-                        <p>Access all your course materials, lecture notes, and supplementary resources in one place. Download or view online anytime.</p>
-                        <a href="#" class="btn" style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;">
+                        <p>Access all your course materials, lecture notes, and supplementary resources in one place.
+                            Download or view online anytime.</p>
+                        <a href="#" class="btn"
+                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;">
                             <i class="fas fa-download"></i> Access Materials
                         </a>
                     </div>
                 </div>
-                
+
                 <div class="student-card">
                     <div class="student-card-header">
                         <div class="student-card-icon">
@@ -427,13 +441,15 @@
                         <h3 class="student-card-title">Virtual Classes</h3>
                     </div>
                     <div class="student-card-body">
-                        <p>Join live virtual classes, access recorded lectures, and interact with instructors through our integrated learning platform.</p>
-                        <a href="#" class="btn" style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;">
+                        <p>Join live virtual classes, access recorded lectures, and interact with instructors through
+                            our integrated learning platform.</p>
+                        <a href="#" class="btn"
+                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;">
                             <i class="fas fa-video"></i> Join Classes
                         </a>
                     </div>
                 </div>
-                
+
                 <div class="student-card">
                     <div class="student-card-header">
                         <div class="student-card-icon">
@@ -442,19 +458,21 @@
                         <h3 class="student-card-title">Academic Support</h3>
                     </div>
                     <div class="student-card-body">
-                        <p>Get help from tutors, schedule office hours with professors, and access academic support services to enhance your learning.</p>
-                        <a href="#" class="btn" style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;">
+                        <p>Get help from tutors, schedule office hours with professors, and access academic support
+                            services to enhance your learning.</p>
+                        <a href="#" class="btn"
+                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;">
                             <i class="fas fa-hands-helping"></i> Get Support
                         </a>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Recent Activity -->
             <h3 class="section-title">
                 <i class="fas fa-history"></i> Recent Activity
             </h3>
-            
+
             <div class="recent-activity">
                 <ul class="activity-list">
                     <li class="activity-item">
@@ -463,11 +481,12 @@
                         </div>
                         <div class="activity-content">
                             <h4 class="activity-title">New Material Uploaded</h4>
-                            <p class="activity-desc">Lecture slides for Mathematics - Week 5 have been uploaded by Dr. Smith</p>
+                            <p class="activity-desc">Lecture slides for Mathematics - Week 5 have been uploaded by Dr.
+                                Smith</p>
                         </div>
                         <div class="activity-time">2 hours ago</div>
                     </li>
-                    
+
                     <li class="activity-item">
                         <div class="activity-icon">
                             <i class="fas fa-tasks"></i>
@@ -478,7 +497,7 @@
                         </div>
                         <div class="activity-time">1 day ago</div>
                     </li>
-                    
+
                     <li class="activity-item">
                         <div class="activity-icon">
                             <i class="fas fa-comment"></i>
@@ -489,14 +508,15 @@
                         </div>
                         <div class="activity-time">2 days ago</div>
                     </li>
-                    
+
                     <li class="activity-item">
                         <div class="activity-icon">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
                         <div class="activity-content">
                             <h4 class="activity-title">Class Cancelled</h4>
-                            <p class="activity-desc">History class on Friday has been cancelled. Check for reschedule.</p>
+                            <p class="activity-desc">History class on Friday has been cancelled. Check for reschedule.
+                            </p>
                         </div>
                         <div class="activity-time">3 days ago</div>
                     </li>
@@ -504,19 +524,19 @@
             </div>
         </div>
     </main>
-    
+
     <script>
         // Toggle Sidebar
         const toggleSidebar = document.querySelector('.toggle-sidebar');
         const sidebar = document.querySelector('.sidebar');
         const mainContent = document.querySelector('.main-content');
-        
+
         toggleSidebar.addEventListener('click', () => {
             sidebar.classList.toggle('active');
             mainContent.classList.toggle('sidebar-active');
         });
         // Image Slider Functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             let currentSlide = 0;
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.slider-dot');
@@ -529,39 +549,40 @@
                 // Remove active class from all slides and dots
                 slides.forEach(slide => slide.classList.remove('active'));
                 dots.forEach(dot => dot.classList.remove('active'));
-                
+
                 // Add active class to current slide and dot
                 slides[index].classList.add('active');
                 dots[index].classList.add('active');
-                
+
                 currentSlide = index;
             }
 
             // Next slide
-            nextArrow.addEventListener('click', function() {
+            nextArrow.addEventListener('click', function () {
                 let nextSlide = (currentSlide + 1) % totalSlides;
                 showSlide(nextSlide);
             });
 
             // Previous slide
-            prevArrow.addEventListener('click', function() {
+            prevArrow.addEventListener('click', function () {
                 let prevSlide = (currentSlide - 1 + totalSlides) % totalSlides;
                 showSlide(prevSlide);
             });
 
             // Click on dot
             dots.forEach((dot, index) => {
-                dot.addEventListener('click', function() {
+                dot.addEventListener('click', function () {
                     showSlide(index);
                 });
             });
 
             // Auto slide
-            setInterval(function() {
+            setInterval(function () {
                 let nextSlide = (currentSlide + 1) % totalSlides;
                 showSlide(nextSlide);
             }, 5000);
         });
     </script>
 </body>
+
 </html>

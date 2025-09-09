@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -108,7 +109,8 @@
             color: var(--primary);
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             padding: 12px 15px;
             border: 2px solid var(--light-gray);
             border-radius: 8px;
@@ -116,7 +118,8 @@
             font-size: 1rem;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
         }
@@ -132,7 +135,7 @@
             margin-bottom: 20px;
         }
 
-        .fee-table th, 
+        .fee-table th,
         .fee-table td {
             padding: 15px;
             text-align: left;
@@ -257,11 +260,11 @@
             .page-header h1 {
                 font-size: 1.8rem;
             }
-            
+
             .action-buttons {
                 flex-direction: column;
             }
-            
+
             .fee-table {
                 display: block;
                 overflow-x: auto;
@@ -269,10 +272,12 @@
         }
 
         @media (max-width: 576px) {
-            .form-container, .table-container {
+
+            .form-container,
+            .table-container {
                 padding: 20px;
             }
-            
+
             .nav-tabs .nav-link {
                 padding: 0.5rem 1rem;
                 font-size: 0.9rem;
@@ -280,8 +285,9 @@
         }
     </style>
 </head>
+
 <body>
-   {% include "header.html" %}
+    {% include "header.html" %}
 
     <!-- Page Header -->
     <section class="page-header">
@@ -294,17 +300,19 @@
     <div class="content-container">
         <ul class="nav nav-tabs" id="feeTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="tab" aria-controls="create" aria-selected="true">
+                <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create"
+                    type="button" role="tab" aria-controls="create" aria-selected="true">
                     <i class="fas fa-plus-circle"></i> Create Fee Structure
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab" aria-controls="manage" aria-selected="false">
+                <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button"
+                    role="tab" aria-controls="manage" aria-selected="false">
                     <i class="fas fa-list"></i> Manage Fee Structures
                 </button>
             </li>
         </ul>
-        
+
         <div class="tab-content" id="feeTabsContent">
             <!-- Create Fee Structure Tab -->
             <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
@@ -328,7 +336,8 @@
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label for="semester" class="form-label"><i class="fas fa-calendar"></i> Semester</label>
+                                <label for="semester" class="form-label"><i class="fas fa-calendar"></i>
+                                    Semester</label>
                                 <select class="form-select" id="semester" required disabled>
                                     <option value="" selected disabled>Select Semester</option>
                                 </select>
@@ -342,25 +351,27 @@
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="reset" class="btn btn-secondary me-md-2" id="resetFormBtn">Reset</button>
-                            <button type="button" class="btn btn-primary" id="openFeeModalBtn" disabled>Add Fee Details</button>
+                            <button type="button" class="btn btn-primary" id="openFeeModalBtn" disabled>Add Fee
+                                Details</button>
                         </div>
                     </form>
                 </div>
             </div>
-            
+
             <!-- Manage Fee Structures Tab -->
             <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
                 <div class="table-container">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3><i class="fas fa-list"></i> All Fee Structures</h3>
                         <div class="d-flex gap-2">
-                            <input type="text" class="form-control" id="searchInput" placeholder="Search fee structures..." style="max-width: 250px;">
+                            <input type="text" class="form-control" id="searchInput"
+                                placeholder="Search fee structures..." style="max-width: 250px;">
                             <button class="btn btn-outline-primary">
                                 <i class="fas fa-download"></i> Export
                             </button>
                         </div>
                     </div>
-                    
+
                     <!-- Filter Section -->
                     <div class="row mb-4">
                         <div class="col-md-3">
@@ -401,7 +412,7 @@
                             <input type="text" class="form-control" id="filterBatch" placeholder="e.g. 2023-24">
                         </div>
                     </div>
-                    
+
                     <div class="table-responsive">
                         <table class="fee-table">
                             <thead>
@@ -452,7 +463,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div id="noRecordsMessage" class="alert alert-info mt-4" style="display: none;">
                         <i class="fas fa-info-circle"></i>
                         <div>
@@ -460,7 +471,7 @@
                             <p class="mb-0">Try adjusting your filters or create a new fee structure</p>
                         </div>
                     </div>
-                    
+
                     <nav aria-label="Page navigation">
                         <ul class="pagination justify-content-center">
                             <li class="page-item disabled">
@@ -480,27 +491,32 @@
     </div>
 
     <!-- Fee Details Modal -->
-    <div class="modal fade" id="feeDetailsModal" tabindex="-1" aria-labelledby="feeDetailsModalLabel" aria-hidden="true">
+    <div class="modal fade" id="feeDetailsModal" tabindex="-1" aria-labelledby="feeDetailsModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="feeDetailsModalLabel">Add Fee Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle"></i>
-                        <span id="selectedCourseInfo">Please review the selected course details before adding fee information.</span>
+                        <span id="selectedCourseInfo">Please review the selected course details before adding fee
+                            information.</span>
                     </div>
-                    
+
                     <form id="feeDetailsForm">
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="feeDueDate" class="form-label"><i class="fas fa-calendar-day"></i> Fee Due Date</label>
+                                <label for="feeDueDate" class="form-label"><i class="fas fa-calendar-day"></i> Fee Due
+                                    Date</label>
                                 <input type="date" class="form-control" id="feeDueDate" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="feeType" class="form-label"><i class="fas fa-money-bill-wave"></i> Fee Type</label>
+                                <label for="feeType" class="form-label"><i class="fas fa-money-bill-wave"></i> Fee
+                                    Type</label>
                                 <select class="form-select" id="feeType" required>
                                     <option value="" selected disabled>Select Fee Type</option>
                                     <option value="Tuition">Tuition Fee</option>
@@ -512,12 +528,16 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="feeAmount" class="form-label"><i class="fas fa-rupee-sign"></i> Fee Amount</label>
-                            <input type="number" class="form-control" id="feeAmount" placeholder="Enter fee amount" required>
+                            <label for="feeAmount" class="form-label"><i class="fas fa-rupee-sign"></i> Fee
+                                Amount</label>
+                            <input type="number" class="form-control" id="feeAmount" placeholder="Enter fee amount"
+                                required>
                         </div>
                         <div class="mb-3">
-                            <label for="feeDescription" class="form-label"><i class="fas fa-file-alt"></i> Description (Optional)</label>
-                            <textarea class="form-control" id="feeDescription" rows="3" placeholder="Add any additional information about this fee"></textarea>
+                            <label for="feeDescription" class="form-label"><i class="fas fa-file-alt"></i> Description
+                                (Optional)</label>
+                            <textarea class="form-control" id="feeDescription" rows="3"
+                                placeholder="Add any additional information about this fee"></textarea>
                         </div>
                     </form>
                 </div>
@@ -531,7 +551,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // DOM Elements
             const courseSelect = document.getElementById('course');
             const yearSelect = document.getElementById('year');
@@ -542,7 +562,7 @@
             const feeDetailsModal = new bootstrap.Modal(document.getElementById('feeDetailsModal'));
             const selectedCourseInfo = document.getElementById('selectedCourseInfo');
             const submitFeeBtn = document.getElementById('submitFeeBtn');
-            
+
             // Data for dynamic dropdowns
             const yearOptions = {
                 'B.Tech': ['1st Year', '2nd Year', '3rd Year', '4th Year'],
@@ -550,14 +570,14 @@
                 'BBA': ['1st Year', '2nd Year', '3rd Year'],
                 'MCA': ['1st Year', '2nd Year']
             };
-            
+
             const semesterOptions = {
                 '1st Year': ['Semester 1', 'Semester 2'],
                 '2nd Year': ['Semester 3', 'Semester 4'],
                 '3rd Year': ['Semester 5', 'Semester 6'],
                 '4th Year': ['Semester 7', 'Semester 8']
             };
-            
+
             const batchOptions = {
                 'Semester 1': ['2023-24', '2022-23', '2021-22'],
                 'Semester 2': ['2023-24', '2022-23', '2021-22'],
@@ -568,7 +588,7 @@
                 'Semester 7': ['2023-24', '2022-23', '2021-22'],
                 'Semester 8': ['2023-24', '2022-23', '2021-22']
             };
-            
+
             // Event Listeners
             courseSelect.addEventListener('change', updateYearOptions);
             yearSelect.addEventListener('change', updateSemesterOptions);
@@ -576,26 +596,26 @@
             openFeeModalBtn.addEventListener('click', openFeeModal);
             resetFormBtn.addEventListener('click', resetForm);
             submitFeeBtn.addEventListener('click', submitFeeStructure);
-            
+
             // Functions
             function updateYearOptions() {
                 const selectedCourse = courseSelect.value;
-                
+
                 // Reset dependent dropdowns
                 yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>';
                 semesterSelect.innerHTML = '<option value="" selected disabled>Select Semester</option>';
                 batchSelect.innerHTML = '<option value="" selected disabled>Select Batch</option>';
-                
+
                 // Disable dependent dropdowns
                 yearSelect.disabled = true;
                 semesterSelect.disabled = true;
                 batchSelect.disabled = true;
                 openFeeModalBtn.disabled = true;
-                
+
                 if (selectedCourse) {
                     // Enable year dropdown and populate options
                     yearSelect.disabled = false;
-                    
+
                     yearOptions[selectedCourse].forEach(year => {
                         const option = document.createElement('option');
                         option.value = year.split(' ')[0]; // Get the numeric part
@@ -604,23 +624,23 @@
                     });
                 }
             }
-            
+
             function updateSemesterOptions() {
                 const selectedYear = yearSelect.options[yearSelect.selectedIndex].textContent;
-                
+
                 // Reset dependent dropdowns
                 semesterSelect.innerHTML = '<option value="" selected disabled>Select Semester</option>';
                 batchSelect.innerHTML = '<option value="" selected disabled>Select Batch</option>';
-                
+
                 // Disable dependent dropdowns
                 semesterSelect.disabled = true;
                 batchSelect.disabled = true;
                 openFeeModalBtn.disabled = true;
-                
+
                 if (selectedYear) {
                     // Enable semester dropdown and populate options
                     semesterSelect.disabled = false;
-                    
+
                     semesterOptions[selectedYear].forEach(semester => {
                         const option = document.createElement('option');
                         option.value = semester.split(' ')[1]; // Get the numeric part
@@ -629,21 +649,21 @@
                     });
                 }
             }
-            
+
             function updateBatchOptions() {
                 const selectedSemester = semesterSelect.options[semesterSelect.selectedIndex].textContent;
-                
+
                 // Reset batch dropdown
                 batchSelect.innerHTML = '<option value="" selected disabled>Select Batch</option>';
-                
+
                 // Disable batch dropdown
                 batchSelect.disabled = true;
                 openFeeModalBtn.disabled = true;
-                
+
                 if (selectedSemester) {
                     // Enable batch dropdown and populate options
                     batchSelect.disabled = false;
-                    
+
                     batchOptions[selectedSemester].forEach(batch => {
                         const option = document.createElement('option');
                         option.value = batch;
@@ -652,59 +672,59 @@
                     });
                 }
             }
-            
-            batchSelect.addEventListener('change', function() {
+
+            batchSelect.addEventListener('change', function () {
                 if (batchSelect.value) {
                     openFeeModalBtn.disabled = false;
                 } else {
                     openFeeModalBtn.disabled = true;
                 }
             });
-            
+
             function openFeeModal() {
                 const course = courseSelect.options[courseSelect.selectedIndex].textContent;
                 const year = yearSelect.options[yearSelect.selectedIndex].textContent;
                 const semester = semesterSelect.options[semesterSelect.selectedIndex].textContent;
                 const batch = batchSelect.value;
-                
+
                 selectedCourseInfo.textContent = `Course: ${course}, ${year}, ${semester}, Batch: ${batch}`;
                 feeDetailsModal.show();
             }
-            
+
             function resetForm() {
                 courseSelect.value = '';
                 yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>';
                 semesterSelect.innerHTML = '<option value="" selected disabled>Select Semester</option>';
                 batchSelect.innerHTML = '<option value="" selected disabled>Select Batch</option>';
-                
+
                 yearSelect.disabled = true;
                 semesterSelect.disabled = true;
                 batchSelect.disabled = true;
                 openFeeModalBtn.disabled = true;
             }
-            
+
             function submitFeeStructure() {
                 const dueDate = document.getElementById('feeDueDate').value;
                 const feeType = document.getElementById('feeType').value;
                 const amount = document.getElementById('feeAmount').value;
-                
+
                 if (!dueDate || !feeType || !amount) {
                     alert('Please fill all required fee details');
                     return;
                 }
-                
+
                 // In a real application, you would send this data to a server
                 // For this example, we'll just show a success message
-                
+
                 const course = courseSelect.options[courseSelect.selectedIndex].textContent;
                 const year = yearSelect.options[yearSelect.selectedIndex].textContent;
                 const semester = semesterSelect.options[semesterSelect.selectedIndex].textContent;
                 const batch = batchSelect.value;
-                
+
                 // Add to the table (for demo purposes)
                 const tableBody = document.getElementById('feeStructuresTableBody');
                 const newRow = document.createElement('tr');
-                
+
                 newRow.innerHTML = `
                     <td>${course}</td>
                     <td>${year}</td>
@@ -721,27 +741,27 @@
                         </button>
                     </td>
                 `;
-                
+
                 tableBody.appendChild(newRow);
-                
+
                 // Close modal and reset form
                 feeDetailsModal.hide();
                 resetForm();
-                
+
                 // Show success message
                 alert(`Fee structure created successfully for ${course}, ${year}, ${semester}, Batch: ${batch}`);
             }
-            
+
             // Search functionality
             const searchInput = document.getElementById('searchInput');
             const feeTableBody = document.getElementById('feeStructuresTableBody');
-            
+
             if (searchInput && feeTableBody) {
-                searchInput.addEventListener('keyup', function() {
+                searchInput.addEventListener('keyup', function () {
                     const searchText = this.value.toLowerCase();
                     const rows = feeTableBody.getElementsByTagName('tr');
                     let hasVisibleRows = false;
-                    
+
                     for (let i = 0; i < rows.length; i++) {
                         const rowText = rows[i].textContent.toLowerCase();
                         if (rowText.includes(searchText)) {
@@ -751,7 +771,7 @@
                             rows[i].style.display = 'none';
                         }
                     }
-                    
+
                     // Show/hide no records message
                     const noRecordsMessage = document.getElementById('noRecordsMessage');
                     if (hasVisibleRows) {
@@ -761,46 +781,46 @@
                     }
                 });
             }
-            
+
             // Filter functionality
             const filterCourse = document.getElementById('filterCourse');
             const filterYear = document.getElementById('filterYear');
             const filterSemester = document.getElementById('filterSemester');
             const filterBatch = document.getElementById('filterBatch');
-            
+
             const filterElements = [filterCourse, filterYear, filterSemester, filterBatch];
-            
+
             filterElements.forEach(element => {
                 if (element) {
                     element.addEventListener('change', filterFeeStructures);
                 }
             });
-            
+
             if (filterBatch) {
                 filterBatch.addEventListener('keyup', filterFeeStructures);
             }
-            
+
             function filterFeeStructures() {
                 const courseValue = filterCourse.value.toLowerCase();
                 const yearValue = filterYear.value;
                 const semesterValue = filterSemester.value;
                 const batchValue = filterBatch.value.toLowerCase();
-                
+
                 const rows = feeTableBody.getElementsByTagName('tr');
                 let hasVisibleRows = false;
-                
+
                 for (let i = 0; i < rows.length; i++) {
                     const cells = rows[i].getElementsByTagName('td');
                     const courseText = cells[0].textContent.toLowerCase();
                     const yearText = cells[1].textContent.toLowerCase();
                     const semesterText = cells[2].textContent.toLowerCase();
                     const batchText = cells[3].textContent.toLowerCase();
-                    
+
                     const courseMatch = courseValue === '' || courseText.includes(courseValue);
                     const yearMatch = yearValue === '' || yearText.includes(yearValue);
                     const semesterMatch = semesterValue === '' || semesterText.includes(semesterValue);
                     const batchMatch = batchValue === '' || batchText.includes(batchValue);
-                    
+
                     if (courseMatch && yearMatch && semesterMatch && batchMatch) {
                         rows[i].style.display = '';
                         hasVisibleRows = true;
@@ -808,7 +828,7 @@
                         rows[i].style.display = 'none';
                     }
                 }
-                
+
                 // Show/hide no records message
                 const noRecordsMessage = document.getElementById('noRecordsMessage');
                 if (hasVisibleRows) {
@@ -820,4 +840,5 @@
         });
     </script>
 </body>
+
 </html>

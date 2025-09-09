@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token }}">
@@ -139,7 +140,8 @@
             color: var(--text-color);
         }
 
-        .form-select, .form-control {
+        .form-select,
+        .form-control {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--medium-gray);
@@ -150,7 +152,8 @@
             transition: border-color 0.2s;
         }
 
-        .form-select:focus, .form-control:focus {
+        .form-select:focus,
+        .form-control:focus {
             outline: none;
             border-color: var(--primary-color);
         }
@@ -607,103 +610,113 @@
                 align-items: flex-start;
                 gap: 15px;
             }
-            
+
             .header-actions {
                 width: 100%;
                 justify-content: flex-end;
             }
-            
+
             .card-header {
                 flex-direction: column;
                 height: auto;
                 text-align: center;
                 padding: 15px 15px 10px;
             }
-            
+
             .card-header .admin-image {
                 order: 1;
                 margin-bottom: 10px;
             }
-            
+
             .header-text {
                 order: 2;
             }
-            
+
             .admin-card {
                 height: auto;
             }
-            
+
             .filter-row {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             .filter-group {
                 min-width: 100%;
             }
-            
+
             .btn-filter {
                 margin-top: 0;
                 width: 100%;
             }
-            
+
             .chat-container {
                 width: 100%;
                 right: 0;
                 height: 70vh;
             }
         }
+
         .admin-card-link {
-  text-decoration: none;
-  color: inherit;
+            text-decoration: none;
+            color: inherit;
 
-}
-.toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 15px 20px;
-    border-radius: var(--border-radius);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    box-shadow: var(--box-shadow);
-    z-index: 9999;
-    opacity: 0;
-    transition: opacity 0.3s;
-    max-width: 350px;
-}
+        }
 
-.toast.success {
-    background-color: var(--success-color);
-    color: white;
-}
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--box-shadow);
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            max-width: 350px;
+        }
 
-.toast.error {
-    background-color: var(--error-color);
-    color: white;
-}
+        .toast.success {
+            background-color: var(--success-color);
+            color: white;
+        }
 
-.toast-icon {
-    font-size: 1.5rem;
-}
+        .toast.error {
+            background-color: var(--error-color);
+            color: white;
+        }
 
-.toast-message {
-    font-size: 0.9rem;
-}
+        .toast-icon {
+            font-size: 1.5rem;
+        }
 
-.toast.show {
-    opacity: 1;
-}.fa-spinner {
-    animation: spin 1s linear infinite;
-}
+        .toast-message {
+            font-size: 0.9rem;
+        }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+        .toast.show {
+            opacity: 1;
+        }
+
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <!-- Header with Buttons -->
@@ -731,7 +744,7 @@
                     <select id="course" class="form-select">
                         <option value="all">All Department</option>
                         {% for departments in department %}
-                          <option value="{{ departments.department }}">{{ departments.department }}</option>
+                        <option value="{{ departments.department }}">{{ departments.department }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -760,227 +773,231 @@
         <!-- Faculty Cards -->
         <div class="admin-cards">
             <!-- Faculty Card 1 -->
-             
-             {% for faculties in faculty %}
-             <a href="{% url 'chat_home' %}?faculty_id={{ faculties.college_id }}" class="admin-card-link">
-            <div class="admin-card">
-                <div class="card-header">
-                    <div class="header-text">
-                        <h3>Dr.{{ faculties.name }}</h3>
-                        <p>{{ faculties.position }} of {{ faculties.department }}</p>
-                    </div>
-                    {% if faculties.profile_picture %}
-                <img src="{{ faculties.profile_picture.url }}" alt="Faculty Photo" class="admin-image">
-                {% else %}
-                <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Faculty Photo" class="admin-image">
-                {% endif %}
-                    <button class="follow-btn {% if faculties.college_id in followed_faculty %}following{% endif %}" data-faculty-id="{{ faculties.college_id }}">
-                    <i class="fas {% if faculties.college_id in followed_faculty %}fa-user-check{% else %}fa-user-plus{% endif %}"></i> 
-                    {% if faculties.college_id in followed_faculty %}Following{% else %}Follow{% endif %}
-                    </button>
-                    <div class="online-status"></div>
-                </div>
-                <div class="card-body">
-                    <div class="admin-detail">
-                        <i class="fas fa-envelope"></i>
-                        <span class="detail-label">Email:</span>
-                        <span class="detail-value">{{ faculties.email }}</span>
-                    </div>
-                    <div class="admin-detail">
-                        <i class="fas fa-phone"></i>
-                        <span class="detail-label">Phone:</span>
-                        <span class="detail-value">+91 {{ faculties.phone }}</span>
-                    </div>
-                    <div class="admin-detail">
-                        <i class="fas fa-id-badge"></i>
-                        <span class="detail-label">Faculty ID:</span>
-                        <span class="detail-value">{{ faculties.college_id }}</span>
-                    </div>
-                    <div class="admin-detail">
-                        <i class="fas fa-building"></i>
-                        <span class="detail-label">Department:</span>
-                        <span class="detail-value">{{ faculties.department }}</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="admin-status active">
-                        <span class="status-indicator"></span>
-                        <span class="status-active">Active</span>
-                    </div>
-                    <div class="admin-actions">
-                        <button class="action-btn" title="Message">
-                            <i class="fas fa-comment-alt"></i>
+
+            {% for faculties in faculty %}
+            <a href="{% url 'chat_home' %}?faculty_id={{ faculties.college_id }}" class="admin-card-link">
+                <div class="admin-card">
+                    <div class="card-header">
+                        <div class="header-text">
+                            <h3>Dr.{{ faculties.name }}</h3>
+                            <p>{{ faculties.position }} of {{ faculties.department }}</p>
+                        </div>
+                        {% if faculties.profile_picture %}
+                        <img src="{{ faculties.profile_picture.url }}" alt="Faculty Photo" class="admin-image">
+                        {% else %}
+                        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180"
+                            alt="Faculty Photo" class="admin-image">
+                        {% endif %}
+                        <button class="follow-btn {% if faculties.college_id in followed_faculty %}following{% endif %}"
+                            data-faculty-id="{{ faculties.college_id }}">
+                            <i
+                                class="fas {% if faculties.college_id in followed_faculty %}fa-user-check{% else %}fa-user-plus{% endif %}"></i>
+                            {% if faculties.college_id in followed_faculty %}Following{% else %}Follow{% endif %}
                         </button>
+                        <div class="online-status"></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="admin-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">{{ faculties.email }}</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-phone"></i>
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">+91 {{ faculties.phone }}</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-id-badge"></i>
+                            <span class="detail-label">Faculty ID:</span>
+                            <span class="detail-value">{{ faculties.college_id }}</span>
+                        </div>
+                        <div class="admin-detail">
+                            <i class="fas fa-building"></i>
+                            <span class="detail-label">Department:</span>
+                            <span class="detail-value">{{ faculties.department }}</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="admin-status active">
+                            <span class="status-indicator"></span>
+                            <span class="status-active">Active</span>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="action-btn" title="Message">
+                                <i class="fas fa-comment-alt"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div></a>
+            </a>
             {% endfor %}
-          
+
         </div>
     </div>
     </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize variables
-        const chatContainer = document.getElementById('chatContainer');
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const emojiBtn = document.getElementById('emojiBtn');
-        const emojiPicker = document.getElementById('emojiPicker');
-        const closeChatBtn = document.getElementById('closeChatBtn');
-        const chatFacultyName = document.getElementById('chatFacultyName');
-        const chatFacultyImg = document.getElementById('chatFacultyImg');
-        const chatFacultyStatus = document.getElementById('chatFacultyStatus');
-        
-        // Set initial message time
-        if (document.getElementById('initialMessageTime')) {
-            document.getElementById('initialMessageTime').textContent = getCurrentTime();
-        }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize variables
+            const chatContainer = document.getElementById('chatContainer');
+            const chatMessages = document.getElementById('chatMessages');
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const emojiBtn = document.getElementById('emojiBtn');
+            const emojiPicker = document.getElementById('emojiPicker');
+            const closeChatBtn = document.getElementById('closeChatBtn');
+            const chatFacultyName = document.getElementById('chatFacultyName');
+            const chatFacultyImg = document.getElementById('chatFacultyImg');
+            const chatFacultyStatus = document.getElementById('chatFacultyStatus');
 
-        // Filter button functionality
-        document.getElementById('filterBtn').addEventListener('click', function() {
-            document.getElementById('loading').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-            }, 1000);
-            filterFaculty();
-        });
-        
-        // Filter when department dropdown changes
-        document.getElementById('course').addEventListener('change', filterFaculty);
-        
-        // Filter when name input changes (with debounce)
-        let filterTimeout;
-        document.getElementById('name').addEventListener('input', function() {
-            clearTimeout(filterTimeout);
-            filterTimeout = setTimeout(filterFaculty, 500);
-        });
-        
-        // Action button click (message icon)
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const card = this.closest('.admin-card');
-                card.click();
+            // Set initial message time
+            if (document.getElementById('initialMessageTime')) {
+                document.getElementById('initialMessageTime').textContent = getCurrentTime();
+            }
+
+            // Filter button functionality
+            document.getElementById('filterBtn').addEventListener('click', function () {
+                document.getElementById('loading').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                }, 1000);
+                filterFaculty();
             });
-        });
-        
-        // Follow button functionality
-        $(document).on('click', '.follow-btn', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const btn = $(this);
-            const facultyId = btn.data('faculty-id');
-            
-            // Show loading state
-            btn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-            btn.prop('disabled', true);
-            
-            $.ajax({
-                url: '/toggle_follow/',
-                method: 'POST',
-                data: {
-                    'faculty_id': facultyId,
-                    'csrfmiddlewaretoken': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.status === 'success') {
-                        btn.toggleClass('following');
-                        
-                        if (response.is_following) {
+
+            // Filter when department dropdown changes
+            document.getElementById('course').addEventListener('change', filterFaculty);
+
+            // Filter when name input changes (with debounce)
+            let filterTimeout;
+            document.getElementById('name').addEventListener('input', function () {
+                clearTimeout(filterTimeout);
+                filterTimeout = setTimeout(filterFaculty, 500);
+            });
+
+            // Action button click (message icon)
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const card = this.closest('.admin-card');
+                    card.click();
+                });
+            });
+
+            // Follow button functionality
+            $(document).on('click', '.follow-btn', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const btn = $(this);
+                const facultyId = btn.data('faculty-id');
+
+                // Show loading state
+                btn.html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+                btn.prop('disabled', true);
+
+                $.ajax({
+                    url: '/toggle_follow/',
+                    method: 'POST',
+                    data: {
+                        'faculty_id': facultyId,
+                        'csrfmiddlewaretoken': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            btn.toggleClass('following');
+
+                            if (response.is_following) {
+                                btn.html('<i class="fas fa-user-check"></i> Following');
+                                btn.css('background-color', 'var(--success-color)');
+                            } else {
+                                btn.html('<i class="fas fa-user-plus"></i> Follow');
+                                btn.css('background-color', 'rgba(255, 255, 255, 0.2)');
+                            }
+                            showToast('success', response.message);
+                        } else {
+                            showToast('error', response.message);
+                            if (response.redirect) {
+                                window.location.href = response.redirect;
+                            }
+                        }
+                    },
+                    error: function (xhr) {
+                        let errorMsg = 'An error occurred';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        }
+                        showToast('error', errorMsg);
+
+                        // Reset button to previous state
+                        const wasFollowing = btn.hasClass('following');
+                        if (wasFollowing) {
                             btn.html('<i class="fas fa-user-check"></i> Following');
-                            btn.css('background-color', 'var(--success-color)');
                         } else {
                             btn.html('<i class="fas fa-user-plus"></i> Follow');
-                            btn.css('background-color', 'rgba(255, 255, 255, 0.2)');
                         }
-                        showToast('success', response.message);
-                    } else {
-                        showToast('error', response.message);
-                        if (response.redirect) {
-                            window.location.href = response.redirect;
-                        }
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false);
                     }
-                },
-                error: function(xhr) {
-                    let errorMsg = 'An error occurred';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMsg = xhr.responseJSON.message;
+                });
+            });
+
+            // Handle card clicks
+            document.querySelectorAll('.admin-card-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    // Check if this is a follow button click
+                    if (e.target.closest('.follow-btn')) {
+                        return;
                     }
-                    showToast('error', errorMsg);
-                    
-                    // Reset button to previous state
-                    const wasFollowing = btn.hasClass('following');
-                    if (wasFollowing) {
-                        btn.html('<i class="fas fa-user-check"></i> Following');
-                    } else {
-                        btn.html('<i class="fas fa-user-plus"></i> Follow');
+
+                    const card = this.querySelector('.admin-card');
+                    const followBtn = card.querySelector('.follow-btn');
+                    const isFollowing = followBtn.classList.contains('following');
+
+                    if (!isFollowing) {
+                        e.preventDefault();
+                        showToast('error', 'You must follow this faculty before you can chat with them');
+                        followBtn.style.transform = 'scale(1.1)';
+                        followBtn.style.boxShadow = '0 0 10px rgba(255, 235, 59, 0.7)';
+                        setTimeout(() => {
+                            followBtn.style.transform = 'scale(1)';
+                            followBtn.style.boxShadow = 'none';
+                        }, 300);
                     }
-                },
-                complete: function() {
-                    btn.prop('disabled', false);
+                });
+            });
+
+            // Close emoji picker when clicking outside
+            document.addEventListener('click', (e) => {
+                if (emojiPicker && !emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
+                    emojiPicker.classList.remove('active');
                 }
             });
-        });
-        
-        // Handle card clicks
-        document.querySelectorAll('.admin-card-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Check if this is a follow button click
-                if (e.target.closest('.follow-btn')) {
-                    return;
-                }
-                
-                const card = this.querySelector('.admin-card');
-                const followBtn = card.querySelector('.follow-btn');
-                const isFollowing = followBtn.classList.contains('following');
-                
-                if (!isFollowing) {
-                    e.preventDefault();
-                    showToast('error', 'You must follow this faculty before you can chat with them');
-                    followBtn.style.transform = 'scale(1.1)';
-                    followBtn.style.boxShadow = '0 0 10px rgba(255, 235, 59, 0.7)';
-                    setTimeout(() => {
-                        followBtn.style.transform = 'scale(1)';
-                        followBtn.style.boxShadow = 'none';
-                    }, 300);
-                }
+
+            // Logout button functionality
+            document.querySelector('.logout-btn')?.addEventListener('click', function () {
+                alert('Logout functionality would go here');
             });
-        });
-        
-        // Close emoji picker when clicking outside
-        document.addEventListener('click', (e) => {
-            if (emojiPicker && !emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
-                emojiPicker.classList.remove('active');
+
+            // Dashboard button functionality
+            document.querySelector('.header-btn:not(.logout-btn)')?.addEventListener('click', function () {
+                alert('Dashboard navigation would go here');
+            });
+
+            // Helper functions
+            function getCurrentTime() {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                return `${hours}:${minutes} ${ampm}`;
             }
-        });
-        
-        // Logout button functionality
-        document.querySelector('.logout-btn')?.addEventListener('click', function() {
-            alert('Logout functionality would go here');
-        });
-        
-        // Dashboard button functionality
-        document.querySelector('.header-btn:not(.logout-btn)')?.addEventListener('click', function() {
-            alert('Dashboard navigation would go here');
-        });
-        
-        // Helper functions
-        function getCurrentTime() {
-            const now = new Date();
-            let hours = now.getHours();
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            return `${hours}:${minutes} ${ampm}`;
-        }
-        
-        function showToast(type, message) {
-            const toast = $(`
+
+            function showToast(type, message) {
+                const toast = $(`
                 <div class="toast ${type}">
                     <div class="toast-icon">
                         ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>'}
@@ -988,55 +1005,56 @@
                     <div class="toast-message">${message}</div>
                 </div>
             `);
-            
-            $('body').append(toast);
-            toast.fadeIn();
-            
-            setTimeout(() => {
-                toast.fadeOut(() => toast.remove());
-            }, 5000);
-        }
-        
-        function showLoading(show) {
-            const loading = $('#loading');
-            const cards = $('.admin-cards');
-            
-            if (show) {
-                loading.show();
-                cards.css('opacity', '0.5');
-                cards.css('pointer-events', 'none');
-            } else {
-                loading.hide();
-                cards.css('opacity', '1');
-                cards.css('pointer-events', 'auto');
-            }
-        }
-        
-        function filterFaculty() {
-            const filters = {
-                department: $('#course').val(),
-                name: $('#name').val(),
-            };
 
-            showLoading(true);
-            
-            $.ajax({
-                url: '/faculty_filtering/',
-                data: filters,
-                success: function(data) {
-                    $('.admin-cards').html(data.html);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                    showToast('error', 'Failed to load faculty data. Please try again.');
-                },
-                complete: function() {
-                    showLoading(false);
+                $('body').append(toast);
+                toast.fadeIn();
+
+                setTimeout(() => {
+                    toast.fadeOut(() => toast.remove());
+                }, 5000);
+            }
+
+            function showLoading(show) {
+                const loading = $('#loading');
+                const cards = $('.admin-cards');
+
+                if (show) {
+                    loading.show();
+                    cards.css('opacity', '0.5');
+                    cards.css('pointer-events', 'none');
+                } else {
+                    loading.hide();
+                    cards.css('opacity', '1');
+                    cards.css('pointer-events', 'auto');
                 }
-            });
-        }
-    });
-    
-</script>
+            }
+
+            function filterFaculty() {
+                const filters = {
+                    department: $('#course').val(),
+                    name: $('#name').val(),
+                };
+
+                showLoading(true);
+
+                $.ajax({
+                    url: '/faculty_filtering/',
+                    data: filters,
+                    success: function (data) {
+                        $('.admin-cards').html(data.html);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        showToast('error', 'Failed to load faculty data. Please try again.');
+                    },
+                    complete: function () {
+                        showLoading(false);
+                    }
+                });
+            }
+        });
+
+    </script>
 </body>
+
 </html>

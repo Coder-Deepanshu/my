@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,7 +122,7 @@
             color: var(--primary);
         }
 
-        .filter-group select, 
+        .filter-group select,
         .filter-group input {
             width: 100%;
             padding: 12px 15px;
@@ -131,7 +132,7 @@
             font-size: 1rem;
         }
 
-        .filter-group select:focus, 
+        .filter-group select:focus,
         .filter-group input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
@@ -164,7 +165,7 @@
             margin-bottom: 20px;
         }
 
-        .student-table th, 
+        .student-table th,
         .student-table td {
             padding: 15px;
             text-align: left;
@@ -335,7 +336,7 @@
             .filter-section {
                 flex-direction: column;
             }
-            
+
             .filter-group {
                 width: 100%;
             }
@@ -345,15 +346,15 @@
             .page-header h1 {
                 font-size: 2rem;
             }
-            
+
             .action-buttons {
                 flex-direction: column;
             }
-            
+
             .bulk-actions {
                 flex-wrap: wrap;
             }
-            
+
             .student-table {
                 display: block;
                 overflow-x: auto;
@@ -364,17 +365,18 @@
             .page-header h1 {
                 font-size: 1.8rem;
             }
-            
+
             .navbar-brand {
                 font-size: 1.5rem;
             }
-            
+
             .enroll-content {
                 padding: 20px;
             }
         }
     </style>
 </head>
+
 <body>
     {% include "header.html" %}
     <!-- Page Header -->
@@ -400,7 +402,8 @@
             <div id="alertContainer">
                 {% for message in messages %}
                 <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                    <i
+                        class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
                     {{ message }}
                 </div>
                 {% endfor %}
@@ -428,7 +431,7 @@
                 <div class="filter-group">
                     <label for="semester"><i class="fas fa-calendar-check"></i> Semester:</label>
                     <select id="semester" class="form-select">
-                        <option value="semester" selected disabled >All Semesters</option>  
+                        <option value="semester" selected disabled>All Semesters</option>
                     </select>
                 </div>
 
@@ -466,7 +469,7 @@
                     </div>
                     <p>Loading student data...</p>
                 </div>
-                
+
                 <div id="results">
                     <div class="table-responsive">
                         <table class="student-table">
@@ -484,15 +487,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              {% for student in students %}
+                                {% for student in students %}
                                 <tr>
                                     <td><input type="checkbox" class="student-checkbox" data-id="1"></td>
                                     <td>
-                                      {% if student.profile_picture %}
-                                      <img src="{{ student.profile_picture.url }}" class="avatar" alt="Student">
-                                      {% else %}
-                                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar" alt="Student">
-                                      {% endif %}
+                                        {% if student.profile_picture %}
+                                        <img src="{{ student.profile_picture.url }}" class="avatar" alt="Student">
+                                        {% else %}
+                                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                                            class="avatar" alt="Student">
+                                        {% endif %}
                                     </td>
                                     <td>{{ student.college_id }}</td>
                                     <td>{{ student.name }}</td>
@@ -502,13 +506,13 @@
                                     <td>{{ student.phone }}, {{ student.other_phone_no }}</td>
                                     <td class="action-buttons">
                                         <button class="btn-action btn-view" data-id="1">
-                                            <i class="fas fa-eye"></i> 
+                                            <i class="fas fa-eye"></i>
                                         </button>
                                         <button class="btn-action btn-edit" data-id="1">
-                                            <i class="fas fa-edit"></i> 
+                                            <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="btn-action btn-delete" data-id="1">
-                                            <i class="fas fa-trash"></i> 
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -516,7 +520,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="pagination">
                         <button><i class="fas fa-angle-double-left"></i></button>
                         <button class="active">1</button>
@@ -535,16 +539,19 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Student Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4 text-center">
-                                      {% if student.profile_picture %}
-                                      <img src="{{ student.profile_picture.url }}" class="img-fluid rounded-circle mb-3" alt="Student">
-                                      {% else %}
-                                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="img-fluid rounded-circle mb-3" alt="Student">
-                                      {% endif %}
+                            {% if student.profile_picture %}
+                            <img src="{{ student.profile_picture.url }}" class="img-fluid rounded-circle mb-3"
+                                alt="Student">
+                            {% else %}
+                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                                class="img-fluid rounded-circle mb-3" alt="Student">
+                            {% endif %}
                             <h4 id="viewName">{{ detail.name }}</h4>
                             <p class="text-muted" id="viewCourse">{{ detail.course }} - {{ detail.level }}</p>
                         </div>
@@ -559,15 +566,18 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <strong>Father's Name:</strong> <span id="viewFather">{{ detail.father_name }}</span>
+                                    <strong>Father's Name:</strong> <span id="viewFather">{{ detail.father_name
+                                        }}</span>
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>Mother's Name:</strong> <span id="viewMother">{{ detail.mother_name }}</span>
+                                    <strong>Mother's Name:</strong> <span id="viewMother">{{ detail.mother_name
+                                        }}</span>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <strong>Year/Semester:</strong> <span id="viewYearSem">{{ detail.year }} Year / {{ detail.semester }} Semester</span>
+                                    <strong>Year/Semester:</strong> <span id="viewYearSem">{{ detail.year }} Year / {{
+                                        detail.semester }} Semester</span>
                                 </div>
                                 <div class="col-md-6">
                                     <strong>Date of Birth:</strong> <span id="viewDob">{{ detail.birthday }}</span>
@@ -575,8 +585,9 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-12">
-                                    <strong>Address:</strong> 
-                                    <span id="viewAddress">{{ detail.address }}, {{ detail.city }}, {{ detail.state }}, India - {{ detail.pin_code }}</span>
+                                    <strong>Address:</strong>
+                                    <span id="viewAddress">{{ detail.address }}, {{ detail.city }}, {{ detail.state }},
+                                        India - {{ detail.pin_code }}</span>
                                 </div>
                             </div>
                             <div class="row">
@@ -708,10 +719,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
 
             // View student details
-            $('.btn-view').click(function() {
+            $('.btn-view').click(function () {
                 const studentId = $(this).data('id');
                 // In a real application, you would fetch student data from the server
                 // Here we're just showing static data for demonstration
@@ -719,7 +730,7 @@
             });
 
             // Edit student
-            $('.btn-edit').click(function() {
+            $('.btn-edit').click(function () {
                 const studentId = $(this).data('id');
                 // In a real application, you would fetch student data from the server
                 // Here we're just showing static data for demonstration
@@ -727,17 +738,17 @@
             });
 
             // Delete student
-            $('.btn-delete').click(function() {
+            $('.btn-delete').click(function () {
                 const studentId = $(this).data('id');
                 const studentName = $(this).closest('tr').find('td:eq(3)').text();
-                
+
                 $('#deleteStudentsList').html(`<p><strong>${studentName}</strong> (ID: ${studentId})</p>`);
                 $('#deleteConfirmModal').data('id', studentId);
                 $('#deleteConfirmModal').modal('show');
             });
 
             // Confirm delete
-            $('#confirmDeleteBtn').click(function() {
+            $('#confirmDeleteBtn').click(function () {
                 const studentId = $('#deleteConfirmModal').data('id');
                 // In a real application, you would send a delete request to the server
                 showMessage(`Student with ID ${studentId} has been deleted successfully.`, 'success');
@@ -745,79 +756,79 @@
             });
 
             // Select all checkbox
-            $('#selectAll').change(function() {
+            $('#selectAll').change(function () {
                 $('.student-checkbox').prop('checked', this.checked);
             });
 
             // Edit selected students
-            $('#editSelected').click(function() {
+            $('#editSelected').click(function () {
                 const selectedIds = [];
-                $('.student-checkbox:checked').each(function() {
+                $('.student-checkbox:checked').each(function () {
                     selectedIds.push($(this).data('id'));
                 });
-                
+
                 if (selectedIds.length === 0) {
                     showMessage('Please select at least one student to edit.', 'warning');
                     return;
                 }
-                
+
                 // In a real application, you would open a bulk edit modal or page
                 showMessage(`Editing ${selectedIds.length} selected students.`, 'info');
             });
 
             // Delete selected students
-            $('#deleteSelected').click(function() {
+            $('#deleteSelected').click(function () {
                 const selectedIds = [];
                 const selectedNames = [];
-                
-                $('.student-checkbox:checked').each(function() {
+
+                $('.student-checkbox:checked').each(function () {
                     const id = $(this).data('id');
                     const name = $(this).closest('tr').find('td:eq(3)').text();
                     selectedIds.push(id);
                     selectedNames.push(name);
                 });
-                
+
                 if (selectedIds.length === 0) {
                     showMessage('Please select at least one student to delete.', 'warning');
                     return;
                 }
-                
+
                 let deleteListHtml = '<ul>';
                 selectedNames.forEach(name => {
                     deleteListHtml += `<li>${name}</li>`;
                 });
                 deleteListHtml += '</ul>';
-                
+
                 $('#deleteStudentsList').html(deleteListHtml);
                 $('#deleteConfirmModal').data('ids', selectedIds);
                 $('#deleteConfirmModal').modal('show');
             });
 
             // Export selected students
-            $('#exportSelected').click(function() {
+            $('#exportSelected').click(function () {
                 const selectedIds = [];
-                $('.student-checkbox:checked').each(function() {
+                $('.student-checkbox:checked').each(function () {
                     selectedIds.push($(this).data('id'));
                 });
-                
+
                 if (selectedIds.length === 0) {
                     showMessage('Please select at least one student to export.', 'warning');
                     return;
                 }
-                
+
                 // In a real application, you would make a request to export data
                 showMessage(`Exporting ${selectedIds.length} selected students.`, 'info');
             });
 
             // Filter students
-            $('#filterBtn').click(function() {
+            $('#filterBtn').click(function () {
                 const course = $('#course').val();
                 const year = $('#year').val();
                 const semester = $('#semester').val();
                 const collegeId = $('#college_id').val();
-                
+
                 $('#loading').show();
-                
+
                 // In a real application, you would send a request to the server
                 // Here we're just simulating a delay
                 setTimeout(() => {
@@ -828,19 +839,19 @@
 
             // Show message function
             function showMessage(message, type) {
-                const alertClass = type === 'success' ? 'alert-success' : 
-                                  type === 'warning' ? 'alert-warning' : 
-                                  type === 'info' ? 'alert-info' : 'alert-danger';
-                
+                const alertClass = type === 'success' ? 'alert-success' :
+                    type === 'warning' ? 'alert-warning' :
+                        type === 'info' ? 'alert-info' : 'alert-danger';
+
                 const alertHtml = `
                     <div class="alert ${alertClass} alert-dismissible fade show">
                         ${message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
-                
+
                 $('#messageContainer').html(alertHtml);
-                
+
                 // Auto dismiss after 5 seconds
                 setTimeout(() => {
                     $('.alert').alert('close');
@@ -849,4 +860,5 @@
         });
     </script>
 </body>
+
 </html>

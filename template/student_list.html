@@ -1,0 +1,54 @@
+<h2>Student List</h2>
+
+<!-- Filters and Search -->
+<form method="get">
+  <label>Course:</label>
+  <select name="course">
+    <option value="">All</option>
+    <option value="BCA" {% if course=="BCA" %}selected{% endif %}>BCA</option>
+    <option value="BBA" {% if course=="BBA" %}selected{% endif %}>BBA</option>
+    <option value="MBA" {% if course=="MBA" %}selected{% endif %}>MBA</option>
+  </select>
+
+  <label>Roll No:</label>
+  <input type="number" name="roll_no" value="{{ roll_no }}">
+
+  <label>Search:</label>
+  <input type="text" name="q" placeholder="Name / Roll / Course" value="{{ query }}">
+
+  <button type="submit">Apply</button>
+</form>
+
+<!-- Student Table -->
+<table border="1" style="margin-top:10px;">
+  <tr>
+    <th>Roll No</th>
+    <th>Name</th>
+    <th>Course</th>
+  </tr>
+  {% for s in page_obj %}
+  <tr>
+    <td>{{ s.roll_no }}</td>
+    <td>{{ s.name }}</td>
+    <td>{{ s.course }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="3">No results found</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<!-- Pagination -->
+<div style="margin-top:10px;">
+  {% if page_obj.has_previous %}
+  <a
+    href="?page={{ page_obj.previous_page_number }}&course={{ course }}&roll_no={{ roll_no }}&q={{ query }}">Previous</a>
+  {% endif %}
+
+  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+  {% if page_obj.has_next %}
+  <a href="?page={{ page_obj.next_page_number }}&course={{ course }}&roll_no={{ roll_no }}&q={{ query }}">Next</a>
+  {% endif %}
+</div>

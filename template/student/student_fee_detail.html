@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,6 +31,7 @@
             overflow-x: hidden;
             line-height: 1.6;
         }
+
         /* Page Header */
         .page-header {
             padding: 60px 0 30px;
@@ -88,7 +90,8 @@
             color: var(--primary);
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             padding: 12px 15px;
             border: 2px solid var(--light-gray);
             border-radius: 8px;
@@ -96,7 +99,8 @@
             font-size: 1rem;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
         }
@@ -112,7 +116,7 @@
             margin-bottom: 20px;
         }
 
-        .student-table th, 
+        .student-table th,
         .student-table td {
             padding: 15px;
             text-align: left;
@@ -220,7 +224,7 @@
             color: var(--dark);
         }
 
-        .filter-group select, 
+        .filter-group select,
         .filter-group input {
             width: 100%;
             padding: 12px 15px;
@@ -230,7 +234,7 @@
             font-size: 1rem;
         }
 
-        .filter-group select:focus, 
+        .filter-group select:focus,
         .filter-group input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
@@ -460,7 +464,8 @@
             border-top: 1px solid #dee2e6;
         }
 
-        .table td, .table th {
+        .table td,
+        .table th {
             padding: 12px 15px;
             vertical-align: middle;
             border-top: 1px solid #dee2e6;
@@ -506,38 +511,41 @@
             .page-header h1 {
                 font-size: 1.8rem;
             }
-            
+
             .filter-section {
                 flex-direction: column;
             }
-            
+
             .filter-group {
                 width: 100%;
             }
-            
+
             .student-table {
                 display: block;
                 overflow-x: auto;
             }
-            
+
             .summary-cards {
                 grid-template-columns: 1fr;
             }
-            
+
             .receipt-details {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 576px) {
-            .form-container, .table-container {
+
+            .form-container,
+            .table-container {
                 padding: 20px;
             }
         }
     </style>
 </head>
+
 <body>
-   {% include "header.html" %}
+    {% include "header.html" %}
 
     <!-- Page Header -->
     <section class="page-header">
@@ -550,16 +558,17 @@
     <!-- Main Content -->
     <div class="content-container">
         <!-- Messages will appear here -->
-{% if messages %}
-    <div class="container mt-4">
-        {% for message in messages %}
-        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
-            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-            {{ message }}
+        {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                <i
+                    class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% endif %}
+        {% endif %}
 
         <div class="content-section">
             <!-- Student Summary -->
@@ -581,7 +590,7 @@
                     <p>{{ payment_percentage|floatformat:2 }}%</p>
                 </div>
             </div>
-            
+
             <!-- Year-wise Fee Breakdown -->
             <div class="results-section">
                 {% for year_data in year_wise_data %}
@@ -592,14 +601,15 @@
                             <span class="me-3">Total: ₹{{ year_data.amount }}</span>
                             <span class="me-3">Paid: ₹{{ year_data.paid }}</span>
                             <span class="me-3">Due: ₹{{ year_data.due }}</span>
-                            <span class="status {% if year_data.status == 'Paid' %}paid{% elif year_data.status == 'Pending' %}pending{% else %}partial{% endif %}">
+                            <span
+                                class="status {% if year_data.status == 'Paid' %}paid{% elif year_data.status == 'Pending' %}pending{% else %}partial{% endif %}">
                                 {{ year_data.status }}
                             </span>
                         </div>
                     </div>
                     <div class="card-body">
                         <h6 class="mb-3">Fee Installments</h6>
-                        
+
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
@@ -619,21 +629,21 @@
                                         <td>{{ detail.fee.due_date|date:"d M Y" }}</td>
                                         <td>
                                             {% if detail.is_paid %}
-                                                <span class="status paid">Paid</span>
+                                            <span class="status paid">Paid</span>
                                             {% else %}
-                                                <span class="status pending">Pending</span>
+                                            <span class="status pending">Pending</span>
                                             {% endif %}
                                         </td>
                                         <td>
                                             {% if detail.is_paid %}
-                                                <button class="btn btn-sm btn-outline-primary" disabled>
-                                                    <i class="fas fa-check"></i> Paid
-                                                </button>
+                                            <button class="btn btn-sm btn-outline-primary" disabled>
+                                                <i class="fas fa-check"></i> Paid
+                                            </button>
                                             {% else %}
-                                                <button class="btn btn-sm btn-primary" 
-                                                    onclick="openPaymentModal('{{ student.college_id }}', '{{ student.name }}', '{{ detail.fee.id }}', '{{ detail.fee.amount }}')">
-                                                    <i class="fas fa-money-bill-wave"></i> Pay Now
-                                                </button>
+                                            <button class="btn btn-sm btn-primary"
+                                                onclick="openPaymentModal('{{ student.college_id }}', '{{ student.name }}', '{{ detail.fee.id }}', '{{ detail.fee.amount }}')">
+                                                <i class="fas fa-money-bill-wave"></i> Pay Now
+                                            </button>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -641,7 +651,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         {% if year_data.payments %}
                         <h6 class="mt-4 mb-3">Payment History</h6>
                         <div class="table-responsive">
@@ -681,7 +691,7 @@
             <!-- All Payments -->
             <div class="results-section">
                 <h3 class="mb-4">All Payments</h3>
-                
+
                 {% if all_payments %}
                 <div class="table-responsive">
                     <table class="table table-bordered">
@@ -726,13 +736,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="fas fa-money-bill-wave me-2"></i>Process Fee Payment</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="paymentForm">
                         <input type="hidden" id="student_id">
                         <input type="hidden" id="fee_structure_id">
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -742,7 +753,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="payment_method"><i class="fas fa-credit-card me-1"></i>Payment Method</label>
+                                    <label for="payment_method"><i class="fas fa-credit-card me-1"></i>Payment
+                                        Method</label>
                                     <select class="form-control" id="payment_method" required>
                                         <option value="">Select Method</option>
                                         <option value="Cash">Cash</option>
@@ -753,11 +765,12 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="transaction_id"><i class="fas fa-receipt me-1"></i>Transaction/Reference ID</label>
+                                    <label for="transaction_id"><i class="fas fa-receipt me-1"></i>Transaction/Reference
+                                        ID</label>
                                     <input type="text" class="form-control" id="transaction_id">
                                 </div>
                             </div>
@@ -768,14 +781,14 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <button type="submit" class="btn-pay">
                                 <i class="fas fa-money-bill-wave"></i> Process Payment
                             </button>
                         </div>
                     </form>
-                    
+
                     <div id="receipt" class="receipt" style="display: none;">
                         <h4><i class="fas fa-receipt"></i> Payment Receipt</h4>
                         <div class="receipt-details">
@@ -821,7 +834,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Auto-dismiss alerts after 5 seconds
             setTimeout(() => {
                 $('.alert').alert('close');
@@ -829,9 +842,9 @@
 
             // Initialize payment modal
             const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-            
+
             // Function to open payment modal
-            window.openPaymentModal = function(studentId, studentName, feeStructureId, amountDue) {
+            window.openPaymentModal = function (studentId, studentName, feeStructureId, amountDue) {
                 $('#student_id').val(studentId);
                 $('#fee_structure_id').val(feeStructureId);
                 $('#student_name').val(studentName);
@@ -841,11 +854,11 @@
                 $('#receipt').hide();
                 paymentModal.show();
             };
-            
+
             // Payment form submission
-            $('#paymentForm').submit(function(e) {
+            $('#paymentForm').submit(function (e) {
                 e.preventDefault();
-                
+
                 const paymentData = {
                     student_id: $('#student_id').val(),
                     fee_structure_id: $('#fee_structure_id').val(),
@@ -855,17 +868,17 @@
                     remarks: $('#remarks').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                 };
-                
+
                 // Disable submit button
                 $('.btn-pay').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-                
+
                 // Send payment data to server
                 $.ajax({
                     url: '{% url "process_fee_payment" %}',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(paymentData),
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             // Show receipt
                             $('#receipt-number').text(response.receipt_number);
@@ -876,10 +889,10 @@
                             $('#receipt-method').text(paymentData.payment_method);
                             $('#receipt-transaction').text(paymentData.transaction_id || 'N/A');
                             $('#receipt-verified-by').text('{{ request.session.username1 }}');
-                            
+
                             $('#paymentForm').hide();
                             $('#receipt').show();
-                            
+
                             // Reload page after 5 seconds
                             setTimeout(() => {
                                 location.reload();
@@ -889,12 +902,12 @@
                             $('.btn-pay').prop('disabled', false).html('<i class="fas fa-money-bill-wave"></i> Process Payment');
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         let errorMsg = 'Payment failed';
                         try {
                             const response = JSON.parse(xhr.responseText);
                             errorMsg = response.error || errorMsg;
-                        } catch (e) {}
+                        } catch (e) { }
                         alert(errorMsg);
                         $('.btn-pay').prop('disabled', false).html('<i class="fas fa-money-bill-wave"></i> Process Payment');
                     }
@@ -903,43 +916,44 @@
         });
     </script>
     <script>
-    function showExtraPayments() {
-        const modal = new bootstrap.Modal(document.getElementById('extraPaymentsModal'));
-        modal.show();
-    }
-    
-    function showAdvancePayments() {
-        const modal = new bootstrap.Modal(document.getElementById('advancePaymentsModal'));
-        modal.show();
-    }
-    
-    function adjustExtraPayment(studentId, paymentId) {
-        if (!confirm('Are you sure you want to adjust this extra payment?')) {
-            return;
+        function showExtraPayments() {
+            const modal = new bootstrap.Modal(document.getElementById('extraPaymentsModal'));
+            modal.show();
         }
-        
-        $.ajax({
-            url: '{% url "adjust_extra_payments" %}',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                student_id: studentId,
-                payment_id: paymentId,
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            }),
-            success: function(response) {
-                if (response.success) {
-                    alert(response.message);
-                    location.reload();
-                } else {
-                    alert(response.error || 'Adjustment failed');
-                }
-            },
-            error: function(xhr) {
-                alert('Error adjusting payment');
+
+        function showAdvancePayments() {
+            const modal = new bootstrap.Modal(document.getElementById('advancePaymentsModal'));
+            modal.show();
+        }
+
+        function adjustExtraPayment(studentId, paymentId) {
+            if (!confirm('Are you sure you want to adjust this extra payment?')) {
+                return;
             }
-        });
-    }
-</script>
+
+            $.ajax({
+                url: '{% url "adjust_extra_payments" %}',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    student_id: studentId,
+                    payment_id: paymentId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }),
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.error || 'Adjustment failed');
+                    }
+                },
+                error: function (xhr) {
+                    alert('Error adjusting payment');
+                }
+            });
+        }
+    </script>
 </body>
+
 </html>

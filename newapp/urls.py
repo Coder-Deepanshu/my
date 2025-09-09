@@ -3,7 +3,6 @@ from django.urls import path
 from newapp import views
 from django.conf import settings
 from django.conf.urls.static import static
-from newapp.views import StudentListView
 from .views import (
    
     DepartmentUpdateView, DepartmentDeleteView
@@ -73,21 +72,14 @@ urlpatterns = [
     path('toggle_follow/', views.toggle_follow, name='toggle_follow'),
     # for sending info about student
     path('faculty/students/', views.faculty_student_list, name='faculty_student_list'),
-
-    # urls.py
     path('delete_chat/<int:room_id>/', views.delete_chat, name='delete_chat'),
 
+# for creating department , positions , courses
     path('Admin-Dashboard/Department-Creation/',views.department_creation,name='department_creation'),
     path('Admin-Dashboard/Course-Creation/',views.course_creation,name='course_creation'),
     path('Admin-Dashboard/Staff-Positions-Creation/',views.position_creation,name='position_creation'),
 
-    path('get-position-data/', views.get_position_data, name='get_position_data'),
-    path('update-position/', views.update_position, name='update_position'),
-    path('delete-position/', views.delete_position, name='delete_position'),
-    path('export-positions/', views.export_positions, name='export_positions'),
-
-
-
+    
     path('Faculty-Dashboard/Student-Attendance-Management',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
     path('Faculty-Dashboard/Faculty-Student-Chat',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
     path('Admin-Dashboard/Student-Bulk-Management',lambda request: views.course_details(request,"student/student_filter.html"),name='studentBulkManagement'),
@@ -96,14 +88,9 @@ urlpatterns = [
     path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents'),
     path('Faculty-Dashboard/Filtered-Student-Chat-Management', lambda request: views.filtered_students(request, "chat/student_list_partial.html"), name='filteredFollowedStudents'),
 
-    path("student-list/", StudentListView.as_view(), name="student_list"),
-    path("add/", views.StudentCreateView.as_view(), name="add_student"),
-    path("edit/<int:pk>/", views.StudentUpdateView.as_view(), name="edit_student"),
-    path("delete/<int:pk>/", views.StudentDeleteView.as_view(), name="delete_student"),
-
-
-   path('department/edit/<str:pk>/', views.DepartmentUpdateView.as_view(), name='department_edit'),
+    path('department/edit/<str:pk>/', views.DepartmentUpdateView.as_view(), name='department_edit'),
     path('department/delete/<str:pk>/', views.DepartmentDeleteView.as_view(), name='department_delete'),
+    path('student_list/', views.student_list, name='student_list'),
 
 
 ]

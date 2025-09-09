@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,7 +90,8 @@
             color: var(--primary);
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             padding: 12px 15px;
             border: 2px solid var(--light-gray);
             border-radius: 8px;
@@ -97,7 +99,8 @@
             font-size: 1rem;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
         }
@@ -113,7 +116,7 @@
             margin-bottom: 20px;
         }
 
-        .student-table th, 
+        .student-table th,
         .student-table td {
             padding: 15px;
             text-align: left;
@@ -221,7 +224,7 @@
             color: var(--dark);
         }
 
-        .filter-group select, 
+        .filter-group select,
         .filter-group input {
             width: 100%;
             padding: 12px 15px;
@@ -231,7 +234,7 @@
             font-size: 1rem;
         }
 
-        .filter-group select:focus, 
+        .filter-group select:focus,
         .filter-group input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
@@ -433,38 +436,41 @@
             .page-header h1 {
                 font-size: 1.8rem;
             }
-            
+
             .filter-section {
                 flex-direction: column;
             }
-            
+
             .filter-group {
                 width: 100%;
             }
-            
+
             .student-table {
                 display: block;
                 overflow-x: auto;
             }
-            
+
             .summary-cards {
                 grid-template-columns: 1fr;
             }
-            
+
             .receipt-details {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 576px) {
-            .form-container, .table-container {
+
+            .form-container,
+            .table-container {
                 padding: 20px;
             }
         }
     </style>
 </head>
+
 <body>
-   {% include "header.html" %}
+    {% include "header.html" %}
 
     <!-- Page Header -->
     <section class="page-header">
@@ -477,16 +483,17 @@
     <!-- Main Content -->
     <div class="content-container">
         <!-- Messages will appear here -->
-         {% if messages %}
-    <div class="container mt-4">
-        {% for message in messages %}
-        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
-            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-            {{ message }}
+        {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                <i
+                    class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% endif %}
+        {% endif %}
 
         <div class="filter-section">
             <div class="filter-group">
@@ -494,7 +501,8 @@
                 <select id="course" name="course" class="form-select">
                     <option value="">All Courses</option>
                     {% for course in courses %}
-                        <option value="{{ course.name }}" {% if selected_course == course.name %}selected{% endif %}>{{ course.name }}</option>
+                    <option value="{{ course.name }}" {% if selected_course==course.name %}selected{% endif %}>{{
+                        course.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -504,28 +512,31 @@
                 <select id="year" name="year" class="form-select" {% if not selected_course %}disabled{% endif %}>
                     <option value="">All Years</option>
                     {% if years %}
-                        {% for year in years %}
-                            <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>Year {{ year }}</option>
-                        {% endfor %}
+                    {% for year in years %}
+                    <option value="{{ year }}" {% if selected_year==year %}selected{% endif %}>Year {{ year }}</option>
+                    {% endfor %}
                     {% endif %}
                 </select>
             </div>
 
             <div class="filter-group">
                 <label for="semester"><i class="fas fa-calendar"></i> Semester:</label>
-                <select id="semester" name="semester" class="form-select" {% if not selected_course %}disabled{% endif %}>
+                <select id="semester" name="semester" class="form-select" {% if not selected_course %}disabled{% endif
+                    %}>
                     <option value="">All Semesters</option>
                     {% if semesters %}
-                        {% for semester in semesters %}
-                            <option value="{{ semester }}" {% if selected_semester == semester %}selected{% endif %}>Semester {{ semester }}</option>
-                        {% endfor %}
+                    {% for semester in semesters %}
+                    <option value="{{ semester }}" {% if selected_semester==semester %}selected{% endif %}>Semester {{
+                        semester }}</option>
+                    {% endfor %}
                     {% endif %}
                 </select>
             </div>
 
             <div class="filter-group">
                 <label for="college_id"><i class="fas fa-id-card"></i> College ID:</label>
-                <input type="text" id="college_id" name="college_id" class="form-control" placeholder="Enter College ID" value="{{ selected_college_id|default:'' }}">
+                <input type="text" id="college_id" name="college_id" class="form-control" placeholder="Enter College ID"
+                    value="{{ selected_college_id|default:'' }}">
             </div>
 
             <div class="filter-group">
@@ -537,63 +548,66 @@
 
         <div class="results-section">
             {% if student_data %}
-                <div class="table-responsive">
-                    <table class="student-table">
-                        <thead>
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Name</th>
-                                <th>Course</th>
-                                <th>Year/Sem</th>
-                                <th>Total Fee</th>
-                                <th>Paid</th>
-                                <th>Due</th>
-                                <th>Payment %</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for data in student_data %}
-                                <tr>
-                                    <td>{{ data.student.college_id }}</td>
-                                    <td>{{ data.student.name }}</td>
-                                    <td>{{ data.student.course }}</td>
-                                    <td>{{ data.student.year }}/{{ data.student.semester }}</td>
-                                    <td>₹{{ data.total_course_fee }}</td>
-                                    <td>₹{{ data.total_paid }}</td>
-                                    <td>₹{{ data.total_due }}</td>
-                                    <td>
-                                        <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: '{{ data.payment_percentage }}' " aria-valuenow="{{ data.payment_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                        <small>{{ data.payment_percentage|floatformat:2 }}%</small>
-                                    </td>
-                                    <td>
-                                        {% if data.total_due == 0 %}
-                                            <span class="status paid">Paid</span>
-                                        {% elif data.total_paid == 0 %}
-                                            <span class="status pending">Pending</span>
-                                        {% else %}
-                                            <span class="status partial">Partial</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'student_fee_details' data.student.college_id %}" class="btn-view">
-                                        <i class="fas fa-eye"></i> View
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Course</th>
+                            <th>Year/Sem</th>
+                            <th>Total Fee</th>
+                            <th>Paid</th>
+                            <th>Due</th>
+                            <th>Payment %</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in student_data %}
+                        <tr>
+                            <td>{{ data.student.college_id }}</td>
+                            <td>{{ data.student.name }}</td>
+                            <td>{{ data.student.course }}</td>
+                            <td>{{ data.student.year }}/{{ data.student.semester }}</td>
+                            <td>₹{{ data.total_course_fee }}</td>
+                            <td>₹{{ data.total_paid }}</td>
+                            <td>₹{{ data.total_due }}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                        style="width: '{{ data.payment_percentage }}' "
+                                        aria-valuenow="{{ data.payment_percentage }}" aria-valuemin="0"
+                                        aria-valuemax="100"></div>
+                                </div>
+                                <small>{{ data.payment_percentage|floatformat:2 }}%</small>
+                            </td>
+                            <td>
+                                {% if data.total_due == 0 %}
+                                <span class="status paid">Paid</span>
+                                {% elif data.total_paid == 0 %}
+                                <span class="status pending">Pending</span>
+                                {% else %}
+                                <span class="status partial">Partial</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'student_fee_details' data.student.college_id %}" class="btn-view">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% else %}
-                <div class="no-results">
-                    <i class="fas fa-info-circle fa-3x mb-3" style="color: #6c757d;"></i>
-                    <h4>No students found</h4>
-                    <p>Try adjusting your filters to find students</p>
-                </div>
+            <div class="no-results">
+                <i class="fas fa-info-circle fa-3x mb-3" style="color: #6c757d;"></i>
+                <h4>No students found</h4>
+                <p>Try adjusting your filters to find students</p>
+            </div>
             {% endif %}
         </div>
     </div>
@@ -604,13 +618,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="fas fa-money-bill-wave me-2"></i>Process Fee Payment</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="paymentForm">
                         <input type="hidden" id="student_id">
                         <input type="hidden" id="fee_structure_id">
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -620,7 +635,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="payment_method"><i class="fas fa-credit-card me-1"></i>Payment Method</label>
+                                    <label for="payment_method"><i class="fas fa-credit-card me-1"></i>Payment
+                                        Method</label>
                                     <select class="form-control" id="payment_method" required>
                                         <option value="">Select Method</option>
                                         <option value="Cash">Cash</option>
@@ -631,11 +647,12 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="transaction_id"><i class="fas fa-receipt me-1"></i>Transaction/Reference ID</label>
+                                    <label for="transaction_id"><i class="fas fa-receipt me-1"></i>Transaction/Reference
+                                        ID</label>
                                     <input type="text" class="form-control" id="transaction_id">
                                 </div>
                             </div>
@@ -646,14 +663,14 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <button type="submit" class="btn-pay">
                                 <i class="fas fa-money-bill-wave"></i> Process Payment
                             </button>
                         </div>
                     </form>
-                    
+
                     <div id="receipt" class="receipt" style="display: none;">
                         <h4><i class="fas fa-receipt"></i> Payment Receipt</h4>
                         <div class="receipt-details">
@@ -699,35 +716,35 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Auto-dismiss alerts after 5 seconds
             setTimeout(() => {
                 $('.alert').alert('close');
             }, 5000);
 
             // Course change handler
-            $('#course').change(function() {
+            $('#course').change(function () {
                 const course = $(this).val();
                 if (course) {
-                    $.get('/get_course_details/', {course_name: course}, function(data) {
+                    $.get('/get_course_details/', { course_name: course }, function (data) {
                         if (data.success) {
                             // Update year dropdown
                             $('#year').empty().append('<option value="">All Years</option>');
                             data.years.forEach(year => {
                                 $('#year').append(`<option value="${year}">Year ${year}</option>`);
                             });
-                            
+
                             // Update semester dropdown
                             $('#semester').empty().append('<option value="">All Semesters</option>');
                             data.semesters.forEach(sem => {
                                 $('#semester').append(`<option value="${sem}">Semester ${sem}</option>`);
                             });
-                            
+
                             $('#year, #semester').prop('disabled', false);
                         } else {
                             alert(data.error || 'Failed to load course details');
                         }
-                    }).fail(function() {
+                    }).fail(function () {
                         alert('Server error occurred');
                     });
                 } else {
@@ -736,32 +753,32 @@
             });
 
             // Filter button click
-            $('#filterBtn').click(function() {
+            $('#filterBtn').click(function () {
                 const course = $('#course').val();
                 const year = $('#year').val();
                 const semester = $('#semester').val();
                 const college_id = $('#college_id').val();
-                
+
                 let url = '{% url "admin_fee_management" %}?';
                 if (course) url += `course=${course}&`;
                 if (year) url += `year=${year}&`;
                 if (semester) url += `semester=${semester}&`;
                 if (college_id) url += `college_id=${college_id}`;
-                
+
                 window.location.href = url;
             });
 
             // Handle Enter key in college_id field
-            $('#college_id').keypress(function(e) {
+            $('#college_id').keypress(function (e) {
                 if (e.which === 13) {
                     $('#filterBtn').click();
                 }
             });
 
             // Payment form submission
-            $('#paymentForm').submit(function(e) {
+            $('#paymentForm').submit(function (e) {
                 e.preventDefault();
-                
+
                 const paymentData = {
                     student_id: $('#student_id').val(),
                     fee_structure_id: $('#fee_structure_id').val(),
@@ -771,17 +788,17 @@
                     remarks: $('#remarks').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                 };
-                
+
                 // Disable submit button
                 $('.btn-pay').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-                
+
                 // Send payment data to server
                 $.ajax({
                     url: '/process_fee_payment/',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(paymentData),
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             // Show receipt
                             $('#receipt-number').text(response.receipt_number);
@@ -792,10 +809,10 @@
                             $('#receipt-method').text(paymentData.payment_method);
                             $('#receipt-transaction').text(paymentData.transaction_id || 'N/A');
                             $('#receipt-verified-by').text('{{ request.session.username1 }}');
-                            
+
                             $('#paymentForm').hide();
                             $('#receipt').show();
-                            
+
                             // Reload page after 5 seconds
                             setTimeout(() => {
                                 location.reload();
@@ -805,23 +822,23 @@
                             $('.btn-pay').prop('disabled', false).html('<i class="fas fa-money-bill-wave"></i> Process Payment');
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         let errorMsg = 'Payment failed';
                         try {
                             const response = JSON.parse(xhr.responseText);
                             errorMsg = response.error || errorMsg;
-                        } catch (e) {}
+                        } catch (e) { }
                         alert(errorMsg);
                         $('.btn-pay').prop('disabled', false).html('<i class="fas fa-money-bill-wave"></i> Process Payment');
                     }
                 });
             });
-            
+
             // Initialize payment modal
             const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-            
+
             // Function to open payment modal
-            window.openPaymentModal = function(studentId, studentName, feeStructureId, amountDue) {
+            window.openPaymentModal = function (studentId, studentName, feeStructureId, amountDue) {
                 $('#student_id').val(studentId).data('name', studentName);
                 $('#fee_structure_id').val(feeStructureId);
                 $('#amount').val(amountDue);
@@ -833,4 +850,5 @@
         });
     </script>
 </body>
+
 </html>

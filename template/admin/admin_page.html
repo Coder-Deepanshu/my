@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="{% static 'css/add/student.css' %}">
 </head>
+
 <body>
     {% include "header.html" %}
 
@@ -26,7 +28,8 @@
     <div class="container mt-4">
         {% for message in messages %}
         <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
-            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+            <i
+                class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
             {{ message }}
         </div>
         {% endfor %}
@@ -61,7 +64,7 @@
                     <h3>Add New Admin</h3>
                     <p class="mb-0">Complete all steps to add a new admin record</p>
                 </div>
-                
+
                 <div class="enroll-content">
                     <!-- Form Steps Indicator -->
                     <div class="form-steps">
@@ -102,25 +105,29 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Step 1: Personal Information -->
                     <form method="POST" action="{% url 'admin_functions' %}" id="enrollmentForm">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="add">
                         <div class="form-step active" id="step1">
                             <h4 class="mb-4">Personal Information</h4>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="name" class="form-label"><i class="fas fa-user"></i> First Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter first name" required>
+                                        <label for="name" class="form-label"><i class="fas fa-user"></i> First
+                                            Name</label>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                            placeholder="Enter first name" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="lastName" class="form-label"><i class="fas fa-user"></i> Last Name</label>
-                                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" required>
+                                        <label for="lastName" class="form-label"><i class="fas fa-user"></i> Last
+                                            Name</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName"
+                                            placeholder="Enter last name" required>
                                     </div>
                                 </div>
                             </div>
@@ -128,28 +135,34 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="fathername" class="form-label"><i class="fas fa-user"></i> Father's Name</label>
-                                        <input type="text" class="form-control" id="fathername" name="fathername" placeholder="Enter father name" required>
+                                        <label for="fathername" class="form-label"><i class="fas fa-user"></i> Father's
+                                            Name</label>
+                                        <input type="text" class="form-control" id="fathername" name="fathername"
+                                            placeholder="Enter father name" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="mothername" class="form-label"><i class="fas fa-user"></i> Mother's Name</label>
-                                        <input type="text" class="form-control" id="mothername" name="mothername" placeholder="Enter mother name" required>
+                                        <label for="mothername" class="form-label"><i class="fas fa-user"></i> Mother's
+                                            Name</label>
+                                        <input type="text" class="form-control" id="mothername" name="mothername"
+                                            placeholder="Enter mother name" required>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="birthday" class="form-label"><i class="fas fa-calendar"></i> Date of Birth</label>
+                                        <label for="birthday" class="form-label"><i class="fas fa-calendar"></i> Date of
+                                            Birth</label>
                                         <input type="date" class="form-control" id="birthday" name="birthday" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="gender" class="form-label"><i class="fas fa-venus-mars"></i> Gender</label>
+                                        <label for="gender" class="form-label"><i class="fas fa-venus-mars"></i>
+                                            Gender</label>
                                         <select class="form-select" id="gender" name="gender" required>
                                             <option value="" selected disabled>Select gender</option>
                                             <option value="male">Male</option>
@@ -160,83 +173,97 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="startDate" class="form-label"><i class="fas fa-calendar-alt"></i> Start Date</label>
-                                        <input type="date" class="form-control" id="startDate" name="startDate" required>
+                                        <label for="startDate" class="form-label"><i class="fas fa-calendar-alt"></i>
+                                            Start Date</label>
+                                        <input type="date" class="form-control" id="startDate" name="startDate"
+                                            required>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-navigation">
                                 <button type="button" class="btn btn-outline-primary" disabled>Previous</button>
                                 <button type="button" class="btn btn-primary next-btn" data-next="2">Next</button>
                             </div>
                         </div>
-                        
+
                         <!-- Step 2: Contact Information -->
                         <div class="form-step" id="step2">
                             <h4 class="mb-4">Contact Information</h4>
-                            
+
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" required>
+                                        <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email
+                                            Address</label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            placeholder="Enter email address" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="phone" class="form-label"><i class="fas fa-phone"></i> Phone Number1</label>
-                                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone number" required>
+                                        <label for="phone" class="form-label"><i class="fas fa-phone"></i> Phone
+                                            Number1</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone"
+                                            placeholder="Enter phone number" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="otherphone" class="form-label"><i class="fas fa-phone"></i> Phone Number2</label>
-                                        <input type="tel" class="form-control" id="otherphone" name="otherphone" placeholder="Enter Father phone number" required>
+                                        <label for="otherphone" class="form-label"><i class="fas fa-phone"></i> Phone
+                                            Number2</label>
+                                        <input type="tel" class="form-control" id="otherphone" name="otherphone"
+                                            placeholder="Enter Father phone number" required>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="address" class="form-label"><i class="fas fa-home"></i> Address</label>
-                                <input type="text" class="form-control" id="address" name="address" placeholder="Enter street address" required>
+                                <input type="text" class="form-control" id="address" name="address"
+                                    placeholder="Enter street address" required>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="city" class="form-label">City</label>
-                                        <input type="text" class="form-control" id="city" name="city" placeholder="Enter city" required>
+                                        <input type="text" class="form-control" id="city" name="city"
+                                            placeholder="Enter city" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="state" class="form-label">State</label>
-                                        <input type="text" class="form-control" id="state" name="state" placeholder="Enter state" required>
+                                        <input type="text" class="form-control" id="state" name="state"
+                                            placeholder="Enter state" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="zipcode" class="form-label">ZIP Code</label>
-                                        <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="Enter ZIP code" required>
+                                        <input type="text" class="form-control" id="zipcode" name="zipcode"
+                                            placeholder="Enter ZIP code" required>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-navigation">
-                                <button type="button" class="btn btn-outline-primary prev-btn" data-prev="1">Previous</button>
+                                <button type="button" class="btn btn-outline-primary prev-btn"
+                                    data-prev="1">Previous</button>
                                 <button type="button" class="btn btn-primary next-btn" data-next="3">Next</button>
                             </div>
                         </div>
-                        
+
                         <!-- Step 3: Academic Information -->
                         <div class="form-step" id="step3">
                             <h4 class="mb-4">Academic Information</h4>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="position" class="form-label"><i class="fas fa-graduation-cap"></i> Position</label>
+                                        <label for="position" class="form-label"><i class="fas fa-graduation-cap"></i>
+                                            Position</label>
                                         <select class="form-select" id="position" name="position" required>
                                             <option value="" selected disabled>Select position</option>
                                             <option value="HOD">HOD(Head of Department)</option>
@@ -249,67 +276,74 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                <div class="form-group">
-                                <label for="department" class="form-label"><i class="fas fa-book"></i> Select Department</label>
-                                <select class="form-select" id="department" name="department" required>
-                                    <option value="" selected disabled>Choose a department</option>
-                                    <option value="Computer Application">Computer Application</option>
-                                    <option value="Commerce">Commerce</option>
-                                    <option value="Arts">Arts</option>
-                                    <option value="Science">Science</option>
-                                    <option value="Biology">Biology</option>
-                                </select>
-                               </div>
+                                    <div class="form-group">
+                                        <label for="department" class="form-label"><i class="fas fa-book"></i> Select
+                                            Department</label>
+                                        <select class="form-select" id="department" name="department" required>
+                                            <option value="" selected disabled>Choose a department</option>
+                                            <option value="Computer Application">Computer Application</option>
+                                            <option value="Commerce">Commerce</option>
+                                            <option value="Arts">Arts</option>
+                                            <option value="Science">Science</option>
+                                            <option value="Biology">Biology</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
-                                     <div class="form-group">
+                                    <div class="form-group">
                                         <label for="qualification" class="form-label">Last Qualification</label>
-                                        <input type="text" class="form-control" id="qualification" name="qualification" placeholder="Enter qualification" required>
+                                        <input type="text" class="form-control" id="qualification" name="qualification"
+                                            placeholder="Enter qualification" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                     <div class="form-group">
+                                    <div class="form-group">
                                         <label for="experience" class="form-label">Experience</label>
-                                        <input type="number" class="form-control" id="experience" name="experience" placeholder="Enter experience" required>
+                                        <input type="number" class="form-control" id="experience" name="experience"
+                                            placeholder="Enter experience" required>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-navigation">
-                                <button type="button" class="btn btn-outline-primary prev-btn" data-prev="2">Previous</button>
+                                <button type="button" class="btn btn-outline-primary prev-btn"
+                                    data-prev="2">Previous</button>
                                 <button type="button" class="btn btn-primary next-btn" data-next="4">Next</button>
                             </div>
                         </div>
-                        
+
                         <!-- Step 4: Government Selection -->
                         <div class="form-step" id="step4">
                             <h4 class="mb-4">Government</h4>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="adharno" class="form-label">Adhar Number</label>
-                                        <input type="number" class="form-control" id="adharno" name="adharno" placeholder="Enter Adhar number" required>
+                                        <input type="number" class="form-control" id="adharno" name="adharno"
+                                            placeholder="Enter Adhar number" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="panno" class="form-label">PAN Number</label>
-                                        <input type="text" class="form-control" id="panno" name="panno" placeholder="Enter Pan number" required>
+                                        <input type="text" class="form-control" id="panno" name="panno"
+                                            placeholder="Enter Pan number" required>
                                     </div>
                                 </div>
                             </div>
 
-        
+
 
                             <div class="form-navigation">
-                                <button type="button" class="btn btn-outline-primary prev-btn" data-prev="3">Previous</button>
+                                <button type="button" class="btn btn-outline-primary prev-btn"
+                                    data-prev="3">Previous</button>
                                 <button type="button" class="btn btn-primary next-btn" data-next="5">Next</button>
                             </div>
                         </div>
-                        
+
                         <!-- Step 5: Document  -->
                         <div class="form-step" id="step5">
                             <h4 class="mb-4">Caste & Religion </h4>
@@ -317,7 +351,8 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="caste" class="form-label"><i class="fas fa-graduation-cap"></i> Caste</label>
+                                        <label for="caste" class="form-label"><i class="fas fa-graduation-cap"></i>
+                                            Caste</label>
                                         <select class="form-select" id="caste" name="caste" required>
                                             <option value="" selected disabled>Select caste</option>
                                             <option value="General">General</option>
@@ -331,22 +366,24 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                <div class="form-group">
-                                <label for="nationality" class="form-label"><i class="fas fa-book"></i> Select Nationality</label>
-                                <select class="form-select" id="nationality" name="nationality" required>
-                                    <option value="" selected disabled>Select nationality</option>
-                                    <option value="Indian">Indian</option>
-                                    <option value="NRI">NRI</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                               </div>
+                                    <div class="form-group">
+                                        <label for="nationality" class="form-label"><i class="fas fa-book"></i> Select
+                                            Nationality</label>
+                                        <select class="form-select" id="nationality" name="nationality" required>
+                                            <option value="" selected disabled>Select nationality</option>
+                                            <option value="Indian">Indian</option>
+                                            <option value="NRI">NRI</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="religion" class="form-label"><i class="fas fa-graduation-cap"></i> Religion</label>
+                                        <label for="religion" class="form-label"><i class="fas fa-graduation-cap"></i>
+                                            Religion</label>
                                         <select class="form-select" id="religion" name="religion" required>
                                             <option value="" selected disabled>Select religion</option>
                                             <option value="Hindu">Hindu</option>
@@ -361,31 +398,33 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                <div class="form-group">
-                                <label for="martialstatus" class="form-label"><i class="fas fa-book"></i> Martial Status</label>
-                                <select class="form-select" id="martialstatus" name="martialstatus" required>
-                                    <option value="" selected disabled>Select martial status</option>
-                                    <option value="Married">Married</option>
-                                    <option value="Unmarried">Unmarried</option>
-                                </select>
-                               </div>
+                                    <div class="form-group">
+                                        <label for="martialstatus" class="form-label"><i class="fas fa-book"></i>
+                                            Martial Status</label>
+                                        <select class="form-select" id="martialstatus" name="martialstatus" required>
+                                            <option value="" selected disabled>Select martial status</option>
+                                            <option value="Married">Married</option>
+                                            <option value="Unmarried">Unmarried</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-navigation">
-                                <button type="button" class="btn btn-outline-primary prev-btn" data-prev="4">Previous</button>
+                                <button type="button" class="btn btn-outline-primary prev-btn"
+                                    data-prev="4">Previous</button>
                                 <button type="button" class="btn btn-primary next-btn" data-next="6">Next</button>
                             </div>
                         </div>
-                        
+
                         <!-- Step 6: Review and Submit -->
                         <div class="form-step" id="step6">
                             <h4 class="mb-4">Review Information</h4>
-                            
+
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i> Please review all information before submitting.
                             </div>
-                            
+
                             <div class="card mb-4">
                                 <div class="card-header bg-light">
                                     <h5 class="mb-0">Personal Information</h5>
@@ -396,10 +435,10 @@
                                     <p><strong>Mother's Name:</strong> <span id="reviewmotherName"></span></p>
                                     <p><strong>Date of Birth:</strong> <span id="reviewDob"></span></p>
                                     <p><strong>Gender:</strong> <span id="reviewGender"></span></p>
-                                    
+
                                 </div>
                             </div>
-                            
+
                             <div class="card mb-4">
                                 <div class="card-header bg-light">
                                     <h5 class="mb-0">Contact Information</h5>
@@ -411,7 +450,7 @@
                                     <p><strong>Address:</strong> <span id="reviewAddress"></span></p>
                                 </div>
                             </div>
-                            
+
                             <div class="card mb-4">
                                 <div class="card-header bg-light">
                                     <h5 class="mb-0">Academic Information</h5>
@@ -423,7 +462,7 @@
                                     <p><strong>Experience:</strong> <span id="reviewExperience"></span></p>
                                 </div>
                             </div>
-                            
+
                             <div class="card">
                                 <div class="card-header bg-light">
                                     <h5 class="mb-0">Government ID Information</h5>
@@ -433,7 +472,7 @@
                                     <p><strong>PAN No.:</strong> <span id="reviewpanno"></span></p>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group mt-4">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="agreeTerms" required>
@@ -442,9 +481,10 @@
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div class="form-navigation">
-                                <button type="button" class="btn btn-outline-primary prev-btn" data-prev="5">Previous</button>
+                                <button type="button" class="btn btn-outline-primary prev-btn"
+                                    data-prev="5">Previous</button>
                                 <button type="submit" class="btn btn-primary" id="submitFormBtn">
                                     <i class="fas fa-paper-plane me-2"></i> Submit Application
                                 </button>
@@ -467,8 +507,10 @@
                     <div class="row">
                         <div class="col-md-8">
                             <div class="form-group">
-                                <label for="college_id" class="form-label"><i class="fas fa-id-card"></i> Enter College ID</label>
-                                <input type="text" class="form-control" id="college_id" name="college_id" placeholder="Enter admin's college ID" required>
+                                <label for="college_id" class="form-label"><i class="fas fa-id-card"></i> Enter College
+                                    ID</label>
+                                <input type="text" class="form-control" id="college_id" name="college_id"
+                                    placeholder="Enter admin's college ID" required>
                             </div>
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
@@ -479,29 +521,32 @@
                     </div>
                 </div>
             </form>
-            
+
             {% if admin %}
             <div class="student-details-card active" id="studentDetails">
                 <div class="student-header">
                     <h3 class="mb-0">Admin Details</h3>
                     <div class="student-actions">
-                        <button class="btn btn-outline-primary" id="editStudentBtn" data-bs-toggle="modal" data-bs-target="#editModal">
+                        <button class="btn btn-outline-primary" id="editStudentBtn" data-bs-toggle="modal"
+                            data-bs-target="#editModal">
                             <i class="fas fa-edit me-1"></i> Edit
                         </button>
-                        
+
                         <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                             <i class="fas fa-trash me-1"></i> Delete
                         </button>
-                    
+
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md-4 text-center mb-4">
                         {% if admin.profile_picture %}
-                        <img src="{{ admin.profile_picture.url }}" alt="Admin Photo" class="img-fluid rounded-circle mb-3" style="max-width: 200px;">
+                        <img src="{{ admin.profile_picture.url }}" alt="Admin Photo"
+                            class="img-fluid rounded-circle mb-3" style="max-width: 200px;">
                         {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Photo" class="img-fluid rounded-circle mb-3" style="max-width: 200px;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Photo"
+                            class="img-fluid rounded-circle mb-3" style="max-width: 200px;">
                         {% endif %}
                         <h4>{{ admin.name }} {{ admin.last_name }}</h4>
                         <p class="text-muted">ID: {{ admin.college_id }}</p>
@@ -553,13 +598,15 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label">First Name</label>
-                                    <input type="text" class="form-control" name="name" value="{{ admin.name }}" required>
+                                    <input type="text" class="form-control" name="name" value="{{ admin.name }}"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" name="lastName" value="{{ admin.last_name }}" required>
+                                    <input type="text" class="form-control" name="lastName"
+                                        value="{{ admin.last_name }}" required>
                                 </div>
                             </div>
                         </div>
@@ -568,13 +615,15 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label">Father Name</label>
-                                    <input type="text" class="form-control" name="father_name" value="{{ admin.father_name }}" required>
+                                    <input type="text" class="form-control" name="father_name"
+                                        value="{{ admin.father_name }}" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="form-label">Mother Name</label>
-                                    <input type="text" class="form-control" name="mother_name" value="{{ admin.mother_name }}" required>
+                                    <input type="text" class="form-control" name="mother_name"
+                                        value="{{ admin.mother_name }}" required>
                                 </div>
                             </div>
                         </div>
@@ -583,19 +632,22 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" name="email" value="{{ admin.email }}" required>
+                                    <input type="email" class="form-control" name="email" value="{{ admin.email }}"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">Phone1</label>
-                                    <input type="text" class="form-control" name="phone" value="{{ admin.phone }}" required>
+                                    <input type="text" class="form-control" name="phone" value="{{ admin.phone }}"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">Phone2</label>
-                                    <input type="text" class="form-control" name="other_phone" value="{{ admin.other_phone_no }}" required>
+                                    <input type="text" class="form-control" name="other_phone"
+                                        value="{{ admin.other_phone_no }}" required>
                                 </div>
                             </div>
                         </div>
@@ -604,27 +656,31 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="form-label">Address</label>
-                                    <input type="text" class="form-control" name="address" value="{{ admin.address }}" required>
+                                    <input type="text" class="form-control" name="address" value="{{ admin.address }}"
+                                        required>
                                 </div>
                             </div>
                         </div>
-                        <div class="row" >
+                        <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">City</label>
-                                    <input type="text" class="form-control" name="city" value="{{ admin.city }}" required>
+                                    <input type="text" class="form-control" name="city" value="{{ admin.city }}"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">State</label>
-                                    <input type="text" class="form-control" name="state" value="{{ admin.state }}" required>
+                                    <input type="text" class="form-control" name="state" value="{{ admin.state }}"
+                                        required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="form-label">Zip Code</label>
-                                    <input type="text" class="form-control" name="state_code" value="{{ admin.state_code }}" required>
+                                    <input type="text" class="form-control" name="state_code"
+                                        value="{{ admin.state_code }}" required>
                                 </div>
                             </div>
                         </div>
@@ -640,34 +696,35 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Deletion</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="text-center text-danger mb-4">
-                    <i class="fas fa-exclamation-circle fa-3x"></i>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <h4 class="text-center mb-3">Are you sure?</h4>
-                <p class="text-center">You are about to delete the admin record for <strong>{{ admin.name }} </strong>with ID:<strong> {{ admin.college_id }}</strong>. This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="POST" action="{% url 'admin_functions' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="college_id" value="{{ admin.college_id }}">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-1"></i> Delete Admin
-                    </button>
-                </form>
+                <div class="modal-body">
+                    <div class="text-center text-danger mb-4">
+                        <i class="fas fa-exclamation-circle fa-3x"></i>
+                    </div>
+                    <h4 class="text-center mb-3">Are you sure?</h4>
+                    <p class="text-center">You are about to delete the admin record for <strong>{{ admin.name }}
+                        </strong>with ID:<strong> {{ admin.college_id }}</strong>. This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST" action="{% url 'admin_functions' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="college_id" value="{{ admin.college_id }}">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i> Delete Admin
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
@@ -682,7 +739,8 @@
                         <i class="fas fa-check-circle text-success fa-3x"></i>
                     </div>
                     <h4 class="text-center mb-3">Congratulations!</h4>
-                    <p class="text-center">The admin has been successfully added to the system with ID: <strong>{{ college_id }}</strong></p>
+                    <p class="text-center">The admin has been successfully added to the system with ID: <strong>{{
+                            college_id }}</strong></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue</button>
@@ -691,185 +749,186 @@
         </div>
     </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    $(document).ready(function() {
-        // Show success modal if URL contains success parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success') === 'true') {
-            $('#successModal').modal('show');
-        }
-        
-        // Toggle between Add and View forms
-        $('#addStudentBtn').click(function() {
-            $('.action-btn').removeClass('active');
-            $(this).addClass('active');
-            $('.form-container').removeClass('active');
-            $('#addStudentForm').addClass('active');
-        });
-        
-        $('#viewStudentBtn').click(function() {
-            $('.action-btn').removeClass('active');
-            $(this).addClass('active');
-            $('.form-container').removeClass('active');
-            $('#viewStudentForm').addClass('active');
-        });
-        
-        // Multi-step form navigation
-        $('.next-btn').click(function() {
-            const nextStep = $(this).data('next');
-            const currentStep = nextStep - 1;
-            
-            // Validate current step before proceeding
-            let isValid = true;
-            $(`#step${currentStep} input:required, #step${currentStep} select:required`).each(function() {
-                if (!$(this).val()) {
-                    isValid = false;
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Show success modal if URL contains success parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('success') === 'true') {
+                $('#successModal').modal('show');
+            }
+
+            // Toggle between Add and View forms
+            $('#addStudentBtn').click(function () {
+                $('.action-btn').removeClass('active');
+                $(this).addClass('active');
+                $('.form-container').removeClass('active');
+                $('#addStudentForm').addClass('active');
             });
-            
-            if (!isValid) {
-                alert('Please fill all required fields in this step before proceeding.');
-                return false;
-            }
-            
-            // Update step indicators
-            $(`#step${currentStep}Indicator`).removeClass('active').addClass('completed');
-            $(`#step${nextStep}Indicator`).addClass('active');
-            
-            // Show next step
-            $(`.form-step`).removeClass('active');
-            $(`#step${nextStep}`).addClass('active');
-            
-            // If we're on the review step, populate the review data
-            if (nextStep === 6) {
-                populateReviewData();
-            }
-            
-            // Scroll to top of form
-            $('html, body').animate({
-                scrollTop: $('.form-steps').offset().top - 100
-            }, 500);
-        });
-        
-        $('.prev-btn').click(function() {
-            const prevStep = $(this).data('prev');
-            const currentStep = prevStep + 1;
-            
-            // Update step indicators
-            $(`#step${currentStep}Indicator`).removeClass('active');
-            $(`#step${prevStep}Indicator`).removeClass('completed').addClass('active');
-            
-            // Show previous step
-            $(`.form-step`).removeClass('active');
-            $(`#step${prevStep}`).addClass('active');
-            
-            // Scroll to top of form
-            $('html, body').animate({
-                scrollTop: $('.form-steps').offset().top - 100
-            }, 500);
-        });
-        
-        // Populate review data
-        function populateReviewData() {
-            $('#reviewName').text($('#name').val() + ' ' + $('#lastName').val());
-            $('#reviewDob').text($('#birthday').val());
-            $('#reviewmotherName').text($('#mothername').val());
-            $('#reviewfatherName').text($('#fathername').val());
-            $('#reviewGender').text($('#gender').find('option:selected').text());
-            $('#reviewEmail').text($('#email').val());
-            $('#reviewPhone1').text($('#phone').val());
-            $('#reviewPhone2').text($('#otherphone').val());
-            $('#reviewAddress').text($('#address').val() + ', ' + $('#city').val() + ', ' + $('#state').val() + ' ' + $('#zipcode').val());
-            $('#reviewPosition').text($('#position').find('option:selected').text());
-            $('#reviewDepartment').text($('#department').find('option:selected').text());
-            $('#reviewQualification').text($('#qualification').val());
-            $('#reviewExperience').text($('#experience').val());
-            $('#reviewadharno').text($('#adharno').val());
-            $('#reviewpanno').text($('#panno').val());
-        }
-        
-        // Form submission handling
-        $('#enrollmentForm').on('submit', function(e) {
-            // Validate all required fields
-            let isValid = true;
-            $('input:required, select:required', this).each(function() {
-                if (!$(this).val()) {
-                    isValid = false;
-                    $(this).addClass('is-invalid');
-                } else {
-                    $(this).removeClass('is-invalid');
-                }
+
+            $('#viewStudentBtn').click(function () {
+                $('.action-btn').removeClass('active');
+                $(this).addClass('active');
+                $('.form-container').removeClass('active');
+                $('#viewStudentForm').addClass('active');
             });
-            
-            if (!isValid) {
-                e.preventDefault();
-                alert('Please fill all required fields before submitting.');
-                return false;
+
+            // Multi-step form navigation
+            $('.next-btn').click(function () {
+                const nextStep = $(this).data('next');
+                const currentStep = nextStep - 1;
+
+                // Validate current step before proceeding
+                let isValid = true;
+                $(`#step${currentStep} input:required, #step${currentStep} select:required`).each(function () {
+                    if (!$(this).val()) {
+                        isValid = false;
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    alert('Please fill all required fields in this step before proceeding.');
+                    return false;
+                }
+
+                // Update step indicators
+                $(`#step${currentStep}Indicator`).removeClass('active').addClass('completed');
+                $(`#step${nextStep}Indicator`).addClass('active');
+
+                // Show next step
+                $(`.form-step`).removeClass('active');
+                $(`#step${nextStep}`).addClass('active');
+
+                // If we're on the review step, populate the review data
+                if (nextStep === 6) {
+                    populateReviewData();
+                }
+
+                // Scroll to top of form
+                $('html, body').animate({
+                    scrollTop: $('.form-steps').offset().top - 100
+                }, 500);
+            });
+
+            $('.prev-btn').click(function () {
+                const prevStep = $(this).data('prev');
+                const currentStep = prevStep + 1;
+
+                // Update step indicators
+                $(`#step${currentStep}Indicator`).removeClass('active');
+                $(`#step${prevStep}Indicator`).removeClass('completed').addClass('active');
+
+                // Show previous step
+                $(`.form-step`).removeClass('active');
+                $(`#step${prevStep}`).addClass('active');
+
+                // Scroll to top of form
+                $('html, body').animate({
+                    scrollTop: $('.form-steps').offset().top - 100
+                }, 500);
+            });
+
+            // Populate review data
+            function populateReviewData() {
+                $('#reviewName').text($('#name').val() + ' ' + $('#lastName').val());
+                $('#reviewDob').text($('#birthday').val());
+                $('#reviewmotherName').text($('#mothername').val());
+                $('#reviewfatherName').text($('#fathername').val());
+                $('#reviewGender').text($('#gender').find('option:selected').text());
+                $('#reviewEmail').text($('#email').val());
+                $('#reviewPhone1').text($('#phone').val());
+                $('#reviewPhone2').text($('#otherphone').val());
+                $('#reviewAddress').text($('#address').val() + ', ' + $('#city').val() + ', ' + $('#state').val() + ' ' + $('#zipcode').val());
+                $('#reviewPosition').text($('#position').find('option:selected').text());
+                $('#reviewDepartment').text($('#department').find('option:selected').text());
+                $('#reviewQualification').text($('#qualification').val());
+                $('#reviewExperience').text($('#experience').val());
+                $('#reviewadharno').text($('#adharno').val());
+                $('#reviewpanno').text($('#panno').val());
             }
-            
-            // Check if terms are agreed
-            if (!$('#agreeTerms').is(':checked')) {
-                e.preventDefault();
-                alert('Please confirm that all information is accurate.');
-                return false;
-            }
-            
-            // Show loading state
-            $('#submitFormBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Submitting...');
-            
-            // Form will now submit normally to Django
-            return true;
+
+            // Form submission handling
+            $('#enrollmentForm').on('submit', function (e) {
+                // Validate all required fields
+                let isValid = true;
+                $('input:required, select:required', this).each(function () {
+                    if (!$(this).val()) {
+                        isValid = false;
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please fill all required fields before submitting.');
+                    return false;
+                }
+
+                // Check if terms are agreed
+                if (!$('#agreeTerms').is(':checked')) {
+                    e.preventDefault();
+                    alert('Please confirm that all information is accurate.');
+                    return false;
+                }
+
+                // Show loading state
+                $('#submitFormBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Submitting...');
+
+                // Form will now submit normally to Django
+                return true;
+            });
+
+            // Handle success modal close
+            $('#successModal').on('hidden.bs.modal', function () {
+                // Reset form and go back to first step
+                $('#enrollmentForm')[0].reset();
+                $('.form-step').removeClass('active');
+                $('#step1').addClass('active');
+                $('.step-indicator').removeClass('active completed');
+                $('#step1Indicator').addClass('active');
+                $('#submitFormBtn').prop('disabled', false).html('<i class="fas fa-paper-plane me-2"></i> Submit Application');
+            });
+
+            // Delete student confirmation
+            $('#deleteStudentBtn').click(function () {
+                $('#deleteModal').modal('show');
+            });
+
+            $('#confirmDeleteBtn').click(function () {
+                // Create a form and submit it for deletion
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = "{% url 'admin_functions' %}";
+
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = 'csrfmiddlewaretoken';
+                csrfToken.value = '{{ csrf_token }}';
+                form.appendChild(csrfToken);
+
+                const actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.value = 'delete';
+                form.appendChild(actionInput);
+
+                const collegeIdInput = document.createElement('input');
+                collegeIdInput.type = 'hidden';
+                collegeIdInput.name = 'college_id';
+                collegeIdInput.value = '{{ admin.college_id }}';
+                form.appendChild(collegeIdInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            });
         });
-        
-        // Handle success modal close
-        $('#successModal').on('hidden.bs.modal', function () {
-            // Reset form and go back to first step
-            $('#enrollmentForm')[0].reset();
-            $('.form-step').removeClass('active');
-            $('#step1').addClass('active');
-            $('.step-indicator').removeClass('active completed');
-            $('#step1Indicator').addClass('active');
-            $('#submitFormBtn').prop('disabled', false).html('<i class="fas fa-paper-plane me-2"></i> Submit Application');
-        });
-        
-        // Delete student confirmation
-        $('#deleteStudentBtn').click(function() {
-            $('#deleteModal').modal('show');
-        });
-        
-        $('#confirmDeleteBtn').click(function() {
-            // Create a form and submit it for deletion
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = "{% url 'admin_functions' %}";
-            
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = 'csrfmiddlewaretoken';
-            csrfToken.value = '{{ csrf_token }}';
-            form.appendChild(csrfToken);
-            
-            const actionInput = document.createElement('input');
-            actionInput.type = 'hidden';
-            actionInput.name = 'action';
-            actionInput.value = 'delete';
-            form.appendChild(actionInput);
-            
-            const collegeIdInput = document.createElement('input');
-            collegeIdInput.type = 'hidden';
-            collegeIdInput.name = 'college_id';
-            collegeIdInput.value = '{{ admin.college_id }}';
-            form.appendChild(collegeIdInput);
-            
-            document.body.appendChild(form);
-            form.submit();
-        });
-    });
-</script>
+    </script>
 </body>
+
 </html>

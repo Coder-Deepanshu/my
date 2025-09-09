@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token }}">
@@ -33,6 +34,7 @@
             margin: 0;
             padding: 0;
         }
+
         /* Alert Styles */
         .alert {
             padding: 12px 16px;
@@ -172,7 +174,7 @@
             color: var(--dark);
         }
 
-        .filter-group select, 
+        .filter-group select,
         .filter-group input {
             width: 100%;
             padding: 12px 15px;
@@ -182,7 +184,7 @@
             font-size: 1rem;
         }
 
-        .filter-group select:focus, 
+        .filter-group select:focus,
         .filter-group input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
@@ -637,63 +639,66 @@
                 align-items: flex-start;
                 gap: 15px;
             }
-            
+
             .header-actions {
                 width: 100%;
                 justify-content: flex-end;
             }
-            
+
             .card-header {
                 flex-direction: column;
                 height: auto;
                 text-align: center;
                 padding: 15px 15px 10px;
             }
-            
+
             .card-header .admin-image {
                 order: 1;
                 margin-bottom: 10px;
             }
-            
+
             .header-text {
                 order: 2;
             }
-            
+
             .admin-card {
                 height: auto;
             }
-            
+
             .filter-row {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             .filter-group {
                 min-width: 100%;
             }
-            
+
             .btn-filter {
                 margin-top: 0;
                 width: 100%;
             }
-            
+
             .chat-container {
                 width: 100%;
                 right: 0;
                 height: 70vh;
             }
         }
+
         .admin-card-link {
-  text-decoration: none;
-  color: inherit;
-}
- .no-records {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .no-records {
             text-align: center;
             padding: 30px;
             color: var(--gray);
         }
     </style>
 </head>
+
 <body>
     <header class="header">
         <div class="header-title">
@@ -712,14 +717,14 @@
 
     <div class="container">
         <!-- Filter Section -->
-         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                    <i class="fas fa-info-circle"></i>
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            <i class="fas fa-info-circle"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
         {% endif %}
 
         <div class="filter-section">
@@ -728,7 +733,7 @@
                 <select id="course" class="form-select">
                     <option value="all">All Courses</option>
                     {% for course in courses %}
-                        <option value="{{ course }}">{{ course }}</option>
+                    <option value="{{ course }}">{{ course }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -759,7 +764,7 @@
             </div>
         </div>
 
-       <!-- Loading Indicator -->
+        <!-- Loading Indicator -->
         <div id="loading" class="text-center py-4" style="display: none;">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -768,7 +773,7 @@
         </div>
 
         <div id="results" class="results-section">
-                <!-- Results will be loaded here -->
+            <!-- Results will be loaded here -->
         </div>
 
         <!-- Student Cards -->
@@ -784,9 +789,11 @@
                         {% if student.profile_picture %}
                         <img src="{{ student.profile_picture.url }}" alt="Student Photo" class="admin-image">
                         {% else %}
-                        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180" alt="Student Photo" class="admin-image">
+                        <img src="https://tse4.mm.bing.net/th/id/OIP.audMX4ZGbvT2_GJTx2c4GgHaHw?pid=Api&P=0&h=180"
+                            alt="Student Photo" class="admin-image">
                         {% endif %}
-                        <div class="online-status {% if student.online_status %}online{% else %}offline{% endif %}"></div>
+                        <div class="online-status {% if student.online_status %}online{% else %}offline{% endif %}">
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="admin-detail">
@@ -826,113 +833,113 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        
 
-$(document).ready(function() {
-        // CSRF token handling
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+
+        $(document).ready(function () {
+            // CSRF token handling
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
                     }
                 }
+                return cookieValue;
             }
-            return cookieValue;
-        }
 
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
-                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type)) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    }
                 }
-            }
-        });
-
-        // Auto-dismiss alerts after 5 seconds
-        setTimeout(() => {
-            $('.alert').alert('close');
-        }, 5000);
-
-        // Course change handler
-        $('#course').change(function() {
-            const course = $(this).val();
-            console.log('Course changed:', course);
-            
-            if (course !== 'all') {
-                $.get('{% url "getCourseDetails" %}', {course_name: course}, function(data) {
-                    console.log('Course details response:', data);
-                    
-                    if (data.error) {
-                        showMessage(data.error, 'danger');
-                        return;
-                    }
-                    
-                    // Update year and semester dropdowns
-                    $('#year').empty().append('<option value="all">All Years</option>');
-                    $('#semester').empty().append('<option value="all">All Semesters</option>');
-                    
-                    // Populate years
-                    if (data.years && data.years.length > 0) {
-                        data.years.forEach(year => {
-                            $('#year').append(`<option value="${year}">Year ${year}</option>`);
-                        });
-                    }
-                    
-                    // Populate semesters
-                    if (data.semesters && data.semesters.length > 0) {
-                        data.semesters.forEach(sem => {
-                            $('#semester').append(`<option value="${sem}">Semester ${sem}</option>`);
-                        });
-                    }
-
-                    $('#year, #semester').prop('disabled', false);
-                }).fail(function(xhr) {
-                    console.error('AJAX error:', xhr);
-                    let errorMsg = 'Failed to load course details';
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        errorMsg = response.error || errorMsg;
-                    } catch (e) {
-                        errorMsg = 'Server error occurred';
-                    }
-                    showMessage(errorMsg, 'danger');
-                });
-            } else {
-                $('#year, #semester').prop('disabled', true);
-            }
-        });
-
-         // Filter students function
-        function filterStudents() {
-            const filters = {
-                course: $('#course').val(),
-                year: $('#year').val(),
-                semester: $('#semester').val(),
-                college_id: $('#college_id').val()
-            };
-
-            $('#loading').show();
-            $('#initial-cards').hide();
-            
-            $.get('{% url "filteredFollowedStudents" %}', filters, function(data) {
-                $('#results').html(data.html);
-            }).fail(function(xhr) {
-                console.error('Filter error:', xhr);
-                showMessage('Failed to load student data. Please try again.', 'danger');
-                $('#initial-cards').show();
-            }).always(function() {
-                $('#loading').hide();
             });
-        }
+
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+
+            // Course change handler
+            $('#course').change(function () {
+                const course = $(this).val();
+                console.log('Course changed:', course);
+
+                if (course !== 'all') {
+                    $.get('{% url "getCourseDetails" %}', { course_name: course }, function (data) {
+                        console.log('Course details response:', data);
+
+                        if (data.error) {
+                            showMessage(data.error, 'danger');
+                            return;
+                        }
+
+                        // Update year and semester dropdowns
+                        $('#year').empty().append('<option value="all">All Years</option>');
+                        $('#semester').empty().append('<option value="all">All Semesters</option>');
+
+                        // Populate years
+                        if (data.years && data.years.length > 0) {
+                            data.years.forEach(year => {
+                                $('#year').append(`<option value="${year}">Year ${year}</option>`);
+                            });
+                        }
+
+                        // Populate semesters
+                        if (data.semesters && data.semesters.length > 0) {
+                            data.semesters.forEach(sem => {
+                                $('#semester').append(`<option value="${sem}">Semester ${sem}</option>`);
+                            });
+                        }
+
+                        $('#year, #semester').prop('disabled', false);
+                    }).fail(function (xhr) {
+                        console.error('AJAX error:', xhr);
+                        let errorMsg = 'Failed to load course details';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMsg = response.error || errorMsg;
+                        } catch (e) {
+                            errorMsg = 'Server error occurred';
+                        }
+                        showMessage(errorMsg, 'danger');
+                    });
+                } else {
+                    $('#year, #semester').prop('disabled', true);
+                }
+            });
+
+            // Filter students function
+            function filterStudents() {
+                const filters = {
+                    course: $('#course').val(),
+                    year: $('#year').val(),
+                    semester: $('#semester').val(),
+                    college_id: $('#college_id').val()
+                };
+
+                $('#loading').show();
+                $('#initial-cards').hide();
+
+                $.get('{% url "filteredFollowedStudents" %}', filters, function (data) {
+                    $('#results').html(data.html);
+                }).fail(function (xhr) {
+                    console.error('Filter error:', xhr);
+                    showMessage('Failed to load student data. Please try again.', 'danger');
+                    $('#initial-cards').show();
+                }).always(function () {
+                    $('#loading').hide();
+                });
+            }
             // Show message function
             function showMessage(message, type) {
-                const alertClass = type === 'success' ? 'alert-success' : 
-                                  type === 'warning' ? 'alert-warning' : 'alert-danger';
+                const alertClass = type === 'success' ? 'alert-success' :
+                    type === 'warning' ? 'alert-warning' : 'alert-danger';
                 const alertHtml = `
                     <div class="alert ${alertClass} alert-dismissible fade show">
                         <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
@@ -940,13 +947,13 @@ $(document).ready(function() {
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
-                
+
                 // Remove existing alerts
                 $('.alert-dismissible').remove();
-                
+
                 // Add new alert
                 $('.page-header').after(alertHtml);
-                
+
                 // Auto dismiss after 5 seconds
                 setTimeout(() => {
                     $('.alert').alert('close');
@@ -954,13 +961,14 @@ $(document).ready(function() {
             }
 
             $('#filterBtn').click(filterStudents);
-        
-        $('#college_id').keypress(function(e) {
-            if (e.which === 13) {
-                filterStudents();
-            }
+
+            $('#college_id').keypress(function (e) {
+                if (e.which === 13) {
+                    filterStudents();
+                }
+            });
         });
-    });
     </script>
 </body>
+
 </html>

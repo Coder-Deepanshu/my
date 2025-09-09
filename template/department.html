@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -23,7 +24,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .modal-content {
             background-color: white;
             padding: 20px;
@@ -31,45 +32,46 @@
             width: 400px;
             max-width: 90%;
         }
-        
+
         .modal h3 {
             margin-top: 0;
         }
-        
+
         .modal form {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
-        
+
         .modal form label {
             font-weight: bold;
         }
-        
+
         .modal form input {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
-        
+
         .modal form button {
             padding: 10px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
-        
+
         .modal form button[type="submit"] {
             background-color: #007bff;
             color: white;
         }
-        
+
         .modal form button[type="button"] {
             background-color: #6c757d;
             color: white;
         }
     </style>
 </head>
+
 <body>
     {% include "header.html" %}
 
@@ -91,7 +93,7 @@
                 <div class="stat-value">{{ total_department }}</div>
                 <div class="stat-label">Total Departments</div>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-icon">
                     <i class="fas fa-chalkboard-teacher"></i>
@@ -99,7 +101,7 @@
                 <div class="stat-value">{{ total_faculty }}</div>
                 <div class="stat-label">Faculty Members</div>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-icon">
                     <i class="fas fa-book"></i>
@@ -107,7 +109,7 @@
                 <div class="stat-value">{{ total_course }}</div>
                 <div class="stat-label">Programs Offered</div>
             </div>
-            
+
             <div class="stat-card">
                 <div class="stat-icon">
                     <i class="fas fa-users"></i>
@@ -117,87 +119,103 @@
             </div>
         </div>
     </div>
-    
+
     <div class="content-container">
         <ul class="nav nav-tabs" id="departmentTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="createDepartment" aria-controls="create" aria-selected="true" >
+                <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create"
+                    type="button" role="createDepartment" aria-controls="create" aria-selected="true">
                     <i class="fas fa-plus-circle"></i> Create Department
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="manageDepartment">
-             <i class="fas fa-edit"></i> Manage Departments
-             </button>
+                <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button"
+                    role="manageDepartment">
+                    <i class="fas fa-edit"></i> Manage Departments
+                </button>
             </li>
             <li class="nav-item" role="presentation">
-             <button class="nav-link" id="programs-tab" data-bs-toggle="tab" data-bs-target="#programs" type="button">
-             <i class="fas fa-graduation-cap"></i> Programs
-             </button>
+                <button class="nav-link" id="programs-tab" data-bs-toggle="tab" data-bs-target="#programs"
+                    type="button">
+                    <i class="fas fa-graduation-cap"></i> Programs
+                </button>
             </li>
         </ul>
-         {% if messages %}
-    <div class="container mt-4">
-        {% for message in messages %}
-        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
-            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-            {{ message }}
+        {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                <i
+                    class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-        
+        {% endif %}
+
         <div class="tab-content" id="departmentTabsContent">
             <!-- Create Department Tab -->
-           <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+            <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
                 <div class="form-container">
                     <h3 class="mb-4"><i class="fas fa-plus-circle"></i> Create New Department</h3>
                     <form id="departmentForm" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="form_name" value="departmentCreation">
-                        
+
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label for="deptName" class="form-label"><i class="fas fa-heading"></i> Department Name</label>
-                                
-                                <input type="text" class="form-control" id="deptName" name="name" placeholder="e.g., Computer Science, Mathematics" required>
+                                <label for="deptName" class="form-label"><i class="fas fa-heading"></i> Department
+                                    Name</label>
+
+                                <input type="text" class="form-control" id="deptName" name="name"
+                                    placeholder="e.g., Computer Science, Mathematics" required>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="deptCode" class="form-label"><i class="fas fa-code"></i> Department Code</label>
-                                <input type="text" class="form-control" id="deptCode" name="code" placeholder="e.g., CS, MATH" required>
+                                <label for="deptCode" class="form-label"><i class="fas fa-code"></i> Department
+                                    Code</label>
+                                <input type="text" class="form-control" id="deptCode" name="code"
+                                    placeholder="e.g., CS, MATH" required>
                             </div>
 
                             <div class="col-md-4 mb-3">
                                 <label for="type" class="form-label"><i class="fas fa-venus-mars"></i> Type</label>
                                 <select class="form-select" id="type" name="type" required>
-                                            <option value="" selected disabled>Select type</option>
-                                            <option value="Faculty">Faculty</option>
-                                            <option value="Admin">Admin</option>
+                                    <option value="" selected disabled>Select type</option>
+                                    <option value="Faculty">Faculty</option>
+                                    <option value="Admin">Admin</option>
                                 </select>
                             </div>
                         </div>
-                       
+
                         <div class="mb-3">
-                            <label for="deptDescription" class="form-label"><i class="fas fa-align-left"></i> Description</label>
-                            <textarea class="form-control" id="deptDescription" rows="4" name="description" placeholder="Describe the department's mission and focus areas" required></textarea>
+                            <label for="deptDescription" class="form-label"><i class="fas fa-align-left"></i>
+                                Description</label>
+                            <textarea class="form-control" id="deptDescription" rows="4" name="description"
+                                placeholder="Describe the department's mission and focus areas" required></textarea>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label for="deptPrograms" class="form-label"><i class="fas fa-graduation-cap"></i> Number of Programs</label>
+                                <label for="deptPrograms" class="form-label"><i class="fas fa-graduation-cap"></i>
+                                    Number of Programs</label>
                                 <!-- Change programes_count field name -->
-                                <input type="number" class="form-control" id="deptPrograms" min="0" value="1" name="programe" required>
+                                <input type="number" class="form-control" id="deptPrograms" min="0" value="1"
+                                    name="programe" required>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="deptFaculty" class="form-label"><i class="fas fa-chalkboard-teacher"></i> Faculty Count</label>
-                                <input type="number" class="form-control" id="deptFaculty" min="1" value="1"  name="facultyCount" required>
+                                <label for="deptFaculty" class="form-label"><i class="fas fa-chalkboard-teacher"></i>
+                                    Faculty Count</label>
+                                <input type="number" class="form-control" id="deptFaculty" min="1" value="1"
+                                    name="facultyCount" required>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="deptStudents" class="form-label"><i class="fas fa-users"></i> Student Capacity</label>
-                                <input type="number" class="form-control" id="deptStudents" min="0" value="100" name="studentCapacity" required>
+                                <label for="deptStudents" class="form-label"><i class="fas fa-users"></i> Student
+                                    Capacity</label>
+                                <input type="number" class="form-control" id="deptStudents" min="0" value="100"
+                                    name="studentCapacity" required>
                             </div>
                         </div>
-                        
+
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
                             <button type="submit" class="btn btn-primary">Create Department</button>
@@ -205,83 +223,88 @@
                     </form>
                 </div>
             </div>
-            
+
             <!-- Manage Departments Tab -->
-<div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
-    <div class="table-container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3><i class="fas fa-list"></i> All Departments</h3>
-            <div class="d-flex gap-2">
-                <input type="text" class="form-control" placeholder="Search departments..." style="max-width: 250px;">
-                <button class="btn btn-outline-primary">
-                    <i class="fas fa-download"></i> Export
-                </button>
+            <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-list"></i> All Departments</h3>
+                        <div class="d-flex gap-2">
+                            <input type="text" class="form-control" placeholder="Search departments..."
+                                style="max-width: 250px;">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    {% if page_obj %}
+                    <div class="table-responsive">
+                        <table class="department-table" id="student-table">
+                            <thead>
+                                <tr>
+                                    <th>Department ID</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Code</th>
+                                    <th>Faculty</th>
+                                    <th>Student</th>
+                                    <th>Programe</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detail in page_obj %}
+                                <tr>
+                                    <td>{{ detail.department_id }}</td>
+                                    <td>{{ detail.name }}</td>
+
+                                    {% if detail.type == 'Admin' %}
+                                    <td><span class="badge bg-primary">{{ detail.type }}</span></td>
+                                    {% else %}
+                                    <td><span class="badge bg-info">{{ detail.type }}</span></td>
+                                    {% endif %}
+                                    <td>{{ detail.code }}</td>
+                                    <td>{{ detail.faculty_count }}</td>
+                                    <td>{{ detail.student_capacity }}</td>
+                                    <td>{{ detail.programs_count }}</td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-eye"></i> View</button>
+                                        <button class="btn-action btn-edit"
+                                            onclick="openEditModal('{{ detail.department_id }}','{{ detail.name|escapejs }}')"><i
+                                                class="fas fa-edit"></i> Edit</button>
+                                        <button class="btn-action btn-delete"
+                                            onclick="openDeleteModal('{{ detail.department_id }}')"><i
+                                                class="fas fa-trash"></i> Delete</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No departments found. Please create a department first.
+                    </div>
+                    {% endif %}
+
+                    <div class="pagination" id="pagination">
+                        <button id="prev-btn"
+                            data-page="{% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
+                            {% if not page_obj.has_previous %}disabled{% endif %}>Previous</button>
+                        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        <button id="next-btn"
+                            data-page="{% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}"
+                            {% if not page_obj.has_next %}disabled{% endif %}>Next</button>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        {% if page_obj %}
-        <div class="table-responsive">
-            <table class="department-table" id="student-table">
-                <thead>
-                    <tr>
-                       <th>Department ID</th>
-                       <th>Name</th>
-                       <th>Type</th>
-                       <th>Code</th>
-                       <th>Faculty</th>
-                       <th>Student</th>
-                       <th>Programe</th>
-                       <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-    {% for detail in page_obj %}
-    <tr>
-        <td>{{ detail.department_id }}</td>
-        <td>{{ detail.name }}</td>
-        
-        {% if detail.type == 'Admin' %}
-           <td><span class="badge bg-primary">{{ detail.type }}</span></td>
-        {% else %}
-           <td><span class="badge bg-info">{{ detail.type }}</span></td>
-        {% endif %}
-        <td>{{ detail.code }}</td>
-        <td>{{ detail.faculty_count }}</td>
-        <td>{{ detail.student_capacity }}</td>
-        <td>{{ detail.programs_count }}</td>
-        <td class="action-buttons">
-            <button class="btn-action btn-view"><i class="fas fa-eye"></i> View</button>
-            <button class="btn-action btn-edit" onclick="openEditModal('{{ detail.department_id }}','{{ detail.name|escapejs }}')"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn-action btn-delete" onclick="openDeleteModal('{{ detail.department_id }}')"><i class="fas fa-trash" ></i> Delete</button>
-        </td>
-    </tr>
-    {% endfor %}
-</tbody>
-            </table>
-        </div>
-        {% else %}
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i> No departments found. Please create a department first.
-        </div>
-        {% endif %}
-        
-        <div class="pagination" id="pagination">
-           <button id="prev-btn"
-           data-page="{% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
-           {% if not page_obj.has_previous %}disabled{% endif %}>Previous</button>
-           <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-           <button id="next-btn"
-            data-page="{% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}"
-            {% if not page_obj.has_next %}disabled{% endif %}>Next</button>
-        </div>
-    </div>
-</div>
-            
+
             <!-- Programs Tab -->
             <div class="tab-pane fade" id="programs" role="tabpanel" aria-labelledby="programs-tab">
                 <div class="form-container">
                     <h3 class="mb-4"><i class="fas fa-graduation-cap"></i> Department Programs</h3>
-                    
+
                     <div class="table-container">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <a class="btn btn-primary" href="{% url 'course_creation' %}">
@@ -298,7 +321,7 @@
                                         <th>Semester</th>
                                         <th>Intake Capacity</th>
                                         <th>Code</th>
-                                        
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -307,8 +330,8 @@
                                         <td>{{ program.name }} - {{ program.level }}</td>
                                         <td>{{ program.no_of_years }} Years</td>
                                         <td>{{ program.no_of_semesters }} Semester</td>
-                                        <td>{{ program.student_capacity }}</td> 
-                                        <td>{{ program.code }}</td> 
+                                        <td>{{ program.student_capacity }}</td>
+                                        <td>{{ program.code }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -322,81 +345,81 @@
     </div>
 
 
-<!-- Delete Modal -->
-  <div id="deleteModal" class="modal">
-    <div class="modal-content">
-      <h3>Delete Department</h3>
-      <p>Are you sure you want to delete this department?</p>
-      <form method="post" id="deleteForm" action="">
-        {% csrf_token %}
-        <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-danger">Yes, Delete</button>
-          <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3>Delete Department</h3>
+            <p>Are you sure you want to delete this department?</p>
+            <form method="post" id="deleteForm" action="">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 
     <!-- Edit Modal -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <h3>Edit Department</h3>
-      <form method="post" id="editForm" action="">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label for="edit_name" class="form-label">Name:</label>
-          <input type="text" class="form-control" id="edit_name" name="name">
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Department</h3>
+            <form method="post" id="editForm" action="">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="edit_name" class="form-label">Name:</label>
+                    <input type="text" class="form-control" id="edit_name" name="name">
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
+                </div>
+            </form>
         </div>
-        <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary">Update</button>
-          <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">Cancel</button>
-        </div>
-      </form>
     </div>
-  </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Function to reset the form
-function resetDepartmentForm() {
-    document.getElementById('departmentForm').reset();
-}
+        // Function to reset the form
+        function resetDepartmentForm() {
+            document.getElementById('departmentForm').reset();
+        }
 
-// Function to check if there are success messages and reset form
-function checkMessagesAndReset() {
-    const successMessages = document.querySelectorAll('.alert-success');
-    if (successMessages.length > 0) {
-        // If there are success messages, reset the form
-        resetDepartmentForm();
-    }
-}
-document.addEventListener('DOMContentLoaded', function() {
-    // Check messages and reset form on page load
-    checkMessagesAndReset();
+        // Function to check if there are success messages and reset form
+        function checkMessagesAndReset() {
+            const successMessages = document.querySelectorAll('.alert-success');
+            if (successMessages.length > 0) {
+                // If there are success messages, reset the form
+                resetDepartmentForm();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check messages and reset form on page load
+            checkMessagesAndReset();
 
-    // Auto hide messages after 5 seconds
-    setTimeout(function() {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function(alert) {
-            alert.style.display = 'none';
+            // Auto hide messages after 5 seconds
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    alert.style.display = 'none';
+                });
+            }, 5000);
         });
-    }, 5000);
-});
-document.addEventListener("DOMContentLoaded", function() {
-  function loadPage(page) {
-    fetch(`?page=${page}`, {
-      headers: { "x-requested-with": "XMLHttpRequest" }
-    })
-    .then(response => response.json())
-    .then(data => {
-      let tableBody = document.querySelector("#student-table tbody");
-      tableBody.innerHTML = '';
+        document.addEventListener("DOMContentLoaded", function () {
+            function loadPage(page) {
+                fetch(`?page=${page}`, {
+                    headers: { "x-requested-with": "XMLHttpRequest" }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        let tableBody = document.querySelector("#student-table tbody");
+                        tableBody.innerHTML = '';
 
-      data.details.forEach(detail => {
-        let badgeClass = detail.type === 'Admin' ? 'bg-primary' : 'bg-info';
-        
-        tableBody.innerHTML += `
+                        data.details.forEach(detail => {
+                            let badgeClass = detail.type === 'Admin' ? 'bg-primary' : 'bg-info';
+
+                            tableBody.innerHTML += `
           <tr>
             <td>${detail.department_id}</td>
             <td>${detail.name}</td>
@@ -412,56 +435,57 @@ document.addEventListener("DOMContentLoaded", function() {
             </td>
           </tr>
         `;
-      });
+                        });
 
-      // Update buttons
-      document.getElementById("prev-btn").dataset.page = data.page_number - 1;
-      document.getElementById("next-btn").dataset.page = data.page_number + 1;
+                        // Update buttons
+                        document.getElementById("prev-btn").dataset.page = data.page_number - 1;
+                        document.getElementById("next-btn").dataset.page = data.page_number + 1;
 
-      document.getElementById("prev-btn").disabled = !data.has_prev;
-      document.getElementById("next-btn").disabled = !data.has_next;
+                        document.getElementById("prev-btn").disabled = !data.has_prev;
+                        document.getElementById("next-btn").disabled = !data.has_next;
 
-      document.querySelector("#pagination span").innerText = 
-        `Page ${data.page_number} of ${data.total_pages}`;
-    });
-  }
+                        document.querySelector("#pagination span").innerText =
+                            `Page ${data.page_number} of ${data.total_pages}`;
+                    });
+            }
 
-  document.getElementById("prev-btn").addEventListener("click", function() {
-    if (!this.disabled) {
-      loadPage(this.dataset.page);
-    }
-  });
-  
-  document.getElementById("next-btn").addEventListener("click", function() {
-    if (!this.disabled) {
-      loadPage(this.dataset.page);
-    }
-  });
-});
+            document.getElementById("prev-btn").addEventListener("click", function () {
+                if (!this.disabled) {
+                    loadPage(this.dataset.page);
+                }
+            });
 
-// Modal functions
-function openModal(id) {
-  document.getElementById(id).style.display = "flex";
-}
+            document.getElementById("next-btn").addEventListener("click", function () {
+                if (!this.disabled) {
+                    loadPage(this.dataset.page);
+                }
+            });
+        });
 
-function closeModal(id) {
-  document.getElementById(id).style.display = "none";
-}
+        // Modal functions
+        function openModal(id) {
+            document.getElementById(id).style.display = "flex";
+        }
 
-function openEditModal(department_id, name) {
-  let form = document.getElementById("editForm");
-  // Update the form action to match your URL pattern
-  form.action = `/department/edit/${department_id}/`;
-  document.getElementById("edit_name").value = name;
-  openModal("editModal");
-}
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
 
-function openDeleteModal(department_id) {
-  let form = document.getElementById("deleteForm");
-  // Update the form action to match your URL pattern
-  form.action = `/department/delete/${department_id}/`;
-  openModal("deleteModal");
-}
-</script>
+        function openEditModal(department_id, name) {
+            let form = document.getElementById("editForm");
+            // Update the form action to match your URL pattern
+            form.action = `/department/edit/${department_id}/`;
+            document.getElementById("edit_name").value = name;
+            openModal("editModal");
+        }
+
+        function openDeleteModal(department_id) {
+            let form = document.getElementById("deleteForm");
+            // Update the form action to match your URL pattern
+            form.action = `/department/delete/${department_id}/`;
+            openModal("deleteModal");
+        }
+    </script>
 </body>
+
 </html>

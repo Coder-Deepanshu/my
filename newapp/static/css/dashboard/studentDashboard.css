@@ -23,8 +23,8 @@
             --sidebar-active: rgba(67, 97, 238, 0.2);
             --sidebar-hover: #343b52;
             --sidebar-icon: #6e84a3;
-            --ai-purple: #8a2be2;
-            --ai-blue: #4361ee;
+            --ai-purple:#003049;
+            --ai-blue: #669BBC;
             --ai-teal: #38a3a5;
             --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
             --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);

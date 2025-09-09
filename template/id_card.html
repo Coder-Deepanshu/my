@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -158,7 +159,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
             transform: rotate(30deg);
             z-index: -1;
         }
@@ -432,48 +433,49 @@
                 gap: 1rem;
                 padding: 1rem;
             }
-            
+
             .id-card {
                 flex-direction: column;
                 width: 90%;
                 height: auto;
             }
-            
-            .id-card-left, .id-card-right {
+
+            .id-card-left,
+            .id-card-right {
                 width: 100%;
             }
-            
+
             .id-card-left {
                 padding: 1.25rem;
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-around;
             }
-            
+
             .id-card-right {
                 padding: 1.5rem;
             }
-            
+
             .id-card-logo {
                 margin-bottom: 0;
                 order: 1;
             }
-            
+
             .id-card-photo {
                 width: 90px;
                 height: 90px;
                 margin-bottom: 0;
                 order: 2;
             }
-            
+
             .id-card-qr {
                 order: 3;
             }
-            
+
             .id-card-title {
                 display: none;
             }
-            
+
             .id-card-hover-details {
                 display: none;
             }
@@ -484,23 +486,25 @@
                 background: white;
                 padding: 0;
             }
-            
-            .header, .print-btn {
+
+            .header,
+            .print-btn {
                 display: none;
             }
-            
+
             .id-card {
                 box-shadow: none;
                 border: 1px solid #ccc;
                 transform: none !important;
             }
-            
+
             .id-card-hover-details {
                 display: none !important;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <div class="page-title">
@@ -536,24 +540,26 @@
                     <div class="id-card-logo">
                         <i class="fas fa-user-graduate"></i>
                     </div>
-                    
+
                     {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="id-card-photo">
+                    <img src="{{ detail.profile_picture.url }}" alt="Student Photo" class="id-card-photo">
                     {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo" class="id-card-photo">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Photo"
+                        class="id-card-photo">
                     {% endif %}
-                    
+
                     <div class="id-card-qr">
                         <!-- QR Code for Student ID -->
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STUDENT-{{ detail.college_id }}" alt="QR Code">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=STUDENT-{{ detail.college_id }}"
+                            alt="QR Code">
                     </div>
                     <div class="id-card-title">STUDENT ID CARD</div>
                 </div>
-                
+
                 <div class="id-card-right">
                     <div>
                         <div class="id-card-name">{{ detail.name }}</div>
-                        
+
                         <div class="id-card-details">
                             <div class="id-card-detail-row">
                                 <div class="id-card-detail-label">ID Number:</div>
@@ -573,13 +579,13 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="id-card-footer">
                         <div class="id-card-validity">This card is property of University</div>
                         <div class="id-card-signature">Registrar</div>
                     </div>
                 </div>
-                
+
                 <!-- Hover Details Panel -->
                 <div class="id-card-hover-details">
                     <h3 class="hover-title">Additional Information</h3>
@@ -598,24 +604,26 @@
                     <div class="id-card-logo">
                         <i class="fas fa-chalkboard-teacher"></i>
                     </div>
-                    
+
                     {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Faculty Photo" class="id-card-photo">
+                    <img src="{{ detail.profile_picture.url }}" alt="Faculty Photo" class="id-card-photo">
                     {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Faculty Photo" class="id-card-photo">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Faculty Photo"
+                        class="id-card-photo">
                     {% endif %}
-                    
+
                     <div class="id-card-qr">
                         <!-- QR Code for Faculty ID -->
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FACULTY-{{ detail.college_id }}" alt="QR Code">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FACULTY-{{ detail.college_id }}"
+                            alt="QR Code">
                     </div>
                     <div class="id-card-title">FACULTY ID CARD</div>
                 </div>
-                
+
                 <div class="id-card-right">
                     <div>
                         <div class="id-card-name">Dr. {{ detail.name }}</div>
-                        
+
                         <div class="id-card-details">
                             <div class="id-card-detail-row">
                                 <div class="id-card-detail-label">Employee ID:</div>
@@ -635,19 +643,20 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="id-card-footer">
                         <div class="id-card-validity">This card is property of University</div>
                         <div class="id-card-signature">Vice Chancellor</div>
                     </div>
                 </div>
-                
+
                 <!-- Hover Details Panel -->
                 <div class="id-card-hover-details">
                     <h3 class="hover-title">Additional Information</h3>
                     <p class="hover-detail"><i class="fas fa-phone"></i> +91 {{ detail.phone }}</p>
                     <p class="hover-detail"><i class="fas fa-envelope"></i>{{ detail.email }}</p>
-                    <p class="hover-detail"><i class="fas fa-map-marker-alt"></i>{{ detail.address }}-{{ detail.state }}</p>
+                    <p class="hover-detail"><i class="fas fa-map-marker-alt"></i>{{ detail.address }}-{{ detail.state }}
+                    </p>
                     <p class="hover-detail"><i class="fas fa-clock"></i> Office Hours: Mon-Wed 10AM-12PM</p>
                     <p class="hover-detail"><i class="fas fa-book"></i> Specialization: AI & Machine Learning</p>
                     <p class="hover-note">Present this card when requested by university authorities</p>
@@ -660,24 +669,26 @@
                     <div class="id-card-logo">
                         <i class="fas fa-user-tie"></i>
                     </div>
-                    
+
                     {% if detail.profile_picture %}
-                        <img src="{{ detail.profile_picture.url }}" alt="Admin Photo" class="id-card-photo">
+                    <img src="{{ detail.profile_picture.url }}" alt="Admin Photo" class="id-card-photo">
                     {% else %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Photo" class="id-card-photo">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin Photo"
+                        class="id-card-photo">
                     {% endif %}
-                    
+
                     <div class="id-card-qr">
                         <!-- QR Code for Admin ID -->
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ADMIN-{{ detail.college_id }}" alt="QR Code">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ADMIN-{{ detail.college_id }}"
+                            alt="QR Code">
                     </div>
                     <div class="id-card-title">ADMIN ID CARD</div>
                 </div>
-                
+
                 <div class="id-card-right">
                     <div>
                         <div class="id-card-name">{{ detail.name }}</div>
-                        
+
                         <div class="id-card-details">
                             <div class="id-card-detail-row">
                                 <div class="id-card-detail-label">Employee ID:</div>
@@ -697,19 +708,20 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="id-card-footer">
                         <div class="id-card-validity">This card is property of University</div>
                         <div class="id-card-signature">Vice Chancellor</div>
                     </div>
                 </div>
-                
+
                 <!-- Hover Details Panel -->
                 <div class="id-card-hover-details">
                     <h3 class="hover-title">Additional Information</h3>
                     <p class="hover-detail"><i class="fas fa-phone"></i> +91 {{ detail.phone }}</p>
                     <p class="hover-detail"><i class="fas fa-envelope"></i>{{ detail.email }}</p>
-                    <p class="hover-detail"><i class="fas fa-map-marker-alt"></i>{{ detail.address }}-{{ detail.state }}</p>
+                    <p class="hover-detail"><i class="fas fa-map-marker-alt"></i>{{ detail.address }}-{{ detail.state }}
+                    </p>
                     <p class="hover-detail"><i class="fas fa-clock"></i> Office Hours: Mon-Fri 9AM-5PM</p>
                     <p class="hover-detail"><i class="fas fa-cog"></i> System Administrator Access</p>
                     <p class="hover-note">Present this card when requested by university authorities</p>
@@ -726,7 +738,7 @@
 
     <script>
         // Add subtle animation to cards on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const cards = document.querySelectorAll('.id-card');
             cards.forEach((card, index) => {
                 setTimeout(() => {
@@ -737,4 +749,5 @@
         });
     </script>
 </body>
+
 </html>

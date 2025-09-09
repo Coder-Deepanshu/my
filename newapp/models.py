@@ -28,6 +28,7 @@ class Level(models.Model):
         return self.name
     
 class Course(models.Model):
+    image = models.ImageField(upload_to='pictures')
     name = models.CharField(max_length=100)
     department=models.ForeignKey(Department,on_delete=models.CASCADE)
     no_of_years = models.IntegerField()
@@ -39,7 +40,7 @@ class Course(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     level = models.ForeignKey(Level,on_delete=models.CASCADE)
     fees_per_year = models.IntegerField()
-    no_of_lecture = models.IntegerField(default=6)
+    no_of_lecture = models.IntegerField()
 
     def __str__(self):
         return self.name
