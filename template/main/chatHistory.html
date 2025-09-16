@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat History | EduTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 60px 0 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            background: var(--light);
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Form Styles */
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-control,
+        .form-select,
+        .form-textarea {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            outline: none;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .form-section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section-title i {
+            margin-right: 10px;
+            background: var(--primary);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-container {
+            padding: 30px;
+        }
+
+        .department-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .department-table th,
+        .department-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .department-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .department-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Preview Card */
+        .preview-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+            margin-top: 30px;
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .preview-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .preview-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-info-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .preview-info-value {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        /* Chat History Specific Styles */
+        .chat-history-container {
+            padding: 20px;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chat-search {
+            max-width: 300px;
+        }
+
+        .chat-item {
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: white;
+            transition: var(--transition);
+        }
+
+        .chat-item:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-item-header {
+            padding: 15px;
+            background: var(--light);
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .chat-item-body {
+            padding: 15px;
+        }
+
+        .chat-preview {
+            color: var(--gray);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .chat-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .chat-checkbox {
+            margin-right: 10px;
+        }
+
+        .chat-select-all {
+            margin-right: 15px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .content-container {
+                margin: 0 15px 40px;
+            }
+
+            .preview-info {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .module-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .module-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .preview-info {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .chat-search {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .form-section-title {
+                font-size: 1.1rem;
+            }
+
+            .bulk-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            padding: 8px 16px;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .blur {
+            filter: blur(4px);
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'header.html' %}
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Chat History</h1>
+            <p>View and manage your conversation history</p>
+        </div>
+    </section>
+
+    <div class="content-container">
+        <ul class="nav nav-tabs" id="chatTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history"
+                    type="button" role="tab" aria-controls="history" aria-selected="true">
+                    <i class="fas fa-comments"></i> Chat History
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="chatTabsContent">
+            <!-- Chat History Tab -->
+            <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+                <div class="chat-history-container">
+                    <div class="chat-header">
+                        <h3><i class="fas fa-history"></i> Your Conversations</h3>
+                        <div class="chat-search">
+                            <input type="text" class="form-control" placeholder="Search conversations...">
+                        </div>
+                    </div>
+
+                    <div class="bulk-actions">
+                        <div class="form-check chat-select-all">
+                            <input class="form-check-input" type="checkbox" id="selectAllChats">
+                            <label class="form-check-label" for="selectAllChats">
+                                Select All
+                            </label>
+                        </div>
+                        <button class="btn btn-danger" id="deleteSelected">
+                            <i class="fas fa-trash"></i> Delete Selected
+                        </button>
+                    </div>
+
+                    <!-- Sample Chat Items -->
+                    <div class="chat-item">
+                        <div class="chat-item-header">
+                            <div>
+                                <input class="form-check-input chat-checkbox" type="checkbox" value="1">
+                                <strong>Professor Johnson - CS101 Course Inquiry</strong>
+                            </div>
+                            <span class="badge bg-success">Completed</span>
+                        </div>
+                        <div class="chat-item-body">
+                            <p class="chat-preview">Hello, I had a question about the upcoming assignment deadline. Could you please clarify if we can submit it until midnight on Friday?</p>
+                            <div class="chat-meta">
+                                <span><i class="fas fa-clock"></i> 2 days ago</span>
+                                <span>12 messages</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item">
+                        <div class="chat-item-header">
+                            <div>
+                                <input class="form-check-input chat-checkbox" type="checkbox" value="2">
+                                <strong>Admissions Office - Document Submission</strong>
+                            </div>
+                            <span class="badge bg-warning text-dark">Ongoing</span>
+                        </div>
+                        <div class="chat-item-body">
+                            <p class="chat-preview">I need to submit my documents for the scholarship application. What is the process for uploading them through the portal?</p>
+                            <div class="chat-meta">
+                                <span><i class="fas fa-clock"></i> 5 days ago</span>
+                                <span>8 messages</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item">
+                        <div class="chat-item-header">
+                            <div>
+                                <input class="form-check-input chat-checkbox" type="checkbox" value="3">
+                                <strong>IT Support - Login Issues</strong>
+                            </div>
+                            <span class="badge bg-success">Completed</span>
+                        </div>
+                        <div class="chat-item-body">
+                            <p class="chat-preview">I'm having trouble accessing my student portal. It says my password is incorrect even though I'm sure it's correct.</p>
+                            <div class="chat-meta">
+                                <span><i class="fas fa-clock"></i> 1 week ago</span>
+                                <span>5 messages</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item">
+                        <div class="chat-item-header">
+                            <div>
+                                <input class="form-check-input chat-checkbox" type="checkbox" value="4">
+                                <strong>Library Services - Book Renewal</strong>
+                            </div>
+                            <span class="badge bg-success">Completed</span>
+                        </div>
+                        <div class="chat-item-body">
+                            <p class="chat-preview">I would like to renew my borrowed books for another week as I need them for my research paper.</p>
+                            <div class="chat-meta">
+                                <span><i class="fas fa-clock"></i> 2 weeks ago</span>
+                                <span>4 messages</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-item">
+                        <div class="chat-item-header">
+                            <div>
+                                <input class="form-check-input chat-checkbox" type="checkbox" value="5">
+                                <strong>Career Services - Internship Opportunity</strong>
+                            </div>
+                            <span class="badge bg-success">Completed</span>
+                        </div>
+                        <div class="chat-item-body">
+                            <p class="chat-preview">I saw an internship posting on the portal and wanted to get more information about the application process.</p>
+                            <div class="chat-meta">
+                                <span><i class="fas fa-clock"></i> 3 weeks ago</span>
+                                <span>7 messages</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <button disabled>Previous</button>
+                        <span>Page 1 of 3</span>
+                        <button>Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h4><i class="fas fa-exclamation-triangle text-danger"></i> Confirm Deletion</h4>
+            <p>Are you sure you want to delete the selected conversations? This action cannot be undone.</p>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button class="btn btn-secondary" id="cancelDelete">Cancel</button>
+                <button class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select all functionality
+            const selectAll = document.getElementById('selectAllChats');
+            const chatCheckboxes = document.querySelectorAll('.chat-checkbox');
+            
+            selectAll.addEventListener('change', function() {
+                chatCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAll.checked;
+                });
+            });
+            
+            // Individual checkbox click might change "Select All" status
+            chatCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (!this.checked) {
+                        selectAll.checked = false;
+                    } else {
+                        // Check if all checkboxes are now checked
+                        const allChecked = Array.from(chatCheckboxes).every(cb => cb.checked);
+                        selectAll.checked = allChecked;
+                    }
+                });
+            });
+            
+            // Delete selected functionality
+            const deleteSelectedBtn = document.getElementById('deleteSelected');
+            const deleteModal = document.getElementById('deleteModal');
+            const cancelDelete = document.getElementById('cancelDelete');
+            const confirmDelete = document.getElementById('confirmDelete');
+            
+            deleteSelectedBtn.addEventListener('click', function() {
+                const selectedChats = Array.from(chatCheckboxes).filter(cb => cb.checked);
+                
+                if (selectedChats.length === 0) {
+                    alert('Please select at least one conversation to delete.');
+                    return;
+                }
+                
+                deleteModal.style.display = 'flex';
+            });
+            
+            cancelDelete.addEventListener('click', function() {
+                deleteModal.style.display = 'none';
+            });
+            
+            confirmDelete.addEventListener('click', function() {
+                const selectedChats = Array.from(chatCheckboxes).filter(cb => cb.checked);
+                
+                // In a real application, you would send an AJAX request to delete these
+                // For this demo, we'll just remove them from the DOM
+                selectedChats.forEach(checkbox => {
+                    const chatItem = checkbox.closest('.chat-item');
+                    chatItem.style.transition = 'opacity 0.3s ease';
+                    chatItem.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        chatItem.remove();
+                    }, 300);
+                });
+                
+                // Reset select all checkbox
+                selectAll.checked = false;
+                
+                // Close modal
+                deleteModal.style.display = 'none';
+                
+                // Show confirmation message (in a real app, this would be based on server response)
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success';
+                alertDiv.innerHTML = '<i class="fas fa-check-circle"></i> Selected conversations have been deleted successfully.';
+                
+                document.querySelector('.chat-history-container').prepend(alertDiv);
+                
+                // Auto-hide message after 5 seconds
+                setTimeout(() => {
+                    alertDiv.style.transition = 'opacity 0.5s ease';
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => alertDiv.remove(), 500);
+                }, 5000);
+            });
+            
+            // Close modal if clicked outside
+            window.addEventListener('click', function(event) {
+                if (event.target === deleteModal) {
+                    deleteModal.style.display = 'none';
+                }
+            });
+            
+            // Search functionality
+            const searchInput = document.querySelector('.chat-search input');
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const chatItems = document.querySelectorAll('.chat-item');
+                
+                chatItems.forEach(item => {
+                    const headerText = item.querySelector('.chat-item-header').textContent.toLowerCase();
+                    const bodyText = item.querySelector('.chat-preview').textContent.toLowerCase();
+                    
+                    if (headerText.includes(searchTerm) || bodyText.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Materials | EduTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 60px 0 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            background: var(--light);
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Form Styles */
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-control,
+        .form-select,
+        .form-textarea {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            outline: none;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .form-section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section-title i {
+            margin-right: 10px;
+            background: var(--primary);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-container {
+            padding: 30px;
+        }
+
+        .department-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .department-table th,
+        .department-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .department-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .department-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-download {
+            background-color: var(--success);
+            color: white;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .card-icon.notes {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .card-icon.papers {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+
+        .card-icon.work {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+        }
+
+        .card-icon.topics {
+            background-color: rgba(114, 9, 183, 0.2);
+            color: var(--accent);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        /* Material Cards */
+        .material-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+            margin-bottom: 20px;
+        }
+
+        .material-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .material-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .material-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .material-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .material-content {
+            margin-bottom: 15px;
+        }
+
+        .material-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .material-meta {
+            display: flex;
+            gap: 15px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .material-meta i {
+            margin-right: 5px;
+        }
+
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--light);
+            border: 1px solid var(--light-gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-new {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .badge-important {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .content-container {
+                margin: 0 15px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .material-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .material-footer {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .material-meta {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .form-section-title {
+                font-size: 1.1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            padding: 8px 16px;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'header.html' %}
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Study Materials Dashboard</h1>
+            <p>Access notes, question papers, daily work, and course-related topics</p>
+        </div>
+    </section>
+
+    <div class="content-container">
+        <ul class="nav nav-tabs" id="materialsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview"
+                    type="button" role="tab" aria-controls="overview" aria-selected="true">
+                    <i class="fas fa-chart-pie"></i> Overview
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button"
+                    role="tab" aria-controls="notes" aria-selected="false">
+                    <i class="fas fa-sticky-note"></i> Notes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="papers-tab" data-bs-toggle="tab" data-bs-target="#papers" type="button"
+                    role="tab" aria-controls="papers" aria-selected="false">
+                    <i class="fas fa-file-alt"></i> Question Papers
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="work-tab" data-bs-toggle="tab" data-bs-target="#work" type="button"
+                    role="tab" aria-controls="work" aria-selected="false">
+                    <i class="fas fa-tasks"></i> Daily Work
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="topics-tab" data-bs-toggle="tab" data-bs-target="#topics" type="button"
+                    role="tab" aria-controls="topics" aria-selected="false">
+                    <i class="fas fa-book"></i> Course Topics
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="materialsTabsContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                <div class="form-container">
+                    <h3 class="mb-4"><i class="fas fa-user-graduate"></i> Welcome, Rohan Sharma</h3>
+                    
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card">
+                            <div class="card-icon notes">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                            <div class="card-value">24</div>
+                            <div class="card-label">Available Notes</div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <div class="card-icon papers">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="card-value">18</div>
+                            <div class="card-label">Question Papers</div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <div class="card-icon work">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="card-value">12</div>
+                            <div class="card-label">Daily Assignments</div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <div class="card-icon topics">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="card-value">8</div>
+                            <div class="card-label">Course Topics</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-history"></i> Recently Added Materials
+                        </h3>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Data Structures - Linked Lists</div>
+                                <div class="material-date">Added: 15 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Complete notes on linked lists, including singly linked lists, doubly linked lists, and circular linked lists with implementation examples.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF</span>
+                                    <span><i class="fas fa-download"></i> 142 downloads</span>
+                                    <span><i class="fas fa-clock"></i> Updated 2 days ago</span>
+                                </div>
+                                <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Algorithm Analysis - Previous Year Paper</div>
+                                <div class="material-date">Added: 14 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>2022 End Semester Examination paper for Algorithm Analysis with model solutions.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF</span>
+                                    <span><i class="fas fa-download"></i> 98 downloads</span>
+                                    <span class="badge badge-important">Important</span>
+                                </div>
+                                <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Tab -->
+            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-sticky-note"></i> Study Notes</h3>
+                        <div class="d-flex gap-3">
+                            <input type="text" class="form-control" placeholder="Search notes..." style="max-width: 250px;">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="category-filter">
+                        <div class="filter-btn active">All Subjects</div>
+                        <div class="filter-btn">Data Structures</div>
+                        <div class="filter-btn">Algorithms</div>
+                        <div class="filter-btn">Database Systems</div>
+                        <div class="filter-btn">Computer Networks</div>
+                    </div>
+
+                    <div class="materials-list">
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Data Structures - Stack and Queue</div>
+                                <div class="material-date">Added: 13 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Detailed notes on Stack and Queue data structures with implementation examples in C++ and Java. Includes applications and complexity analysis.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF (2.4 MB)</span>
+                                    <span><i class="fas fa-download"></i> 87 downloads</span>
+                                    <span class="badge badge-new">New</span>
+                                </div>
+                                <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Algorithm Complexity Analysis</div>
+                                <div class="material-date">Added: 10 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Complete guide to time and space complexity analysis with examples for common algorithms. Includes Big-O, Omega, and Theta notations.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF (1.8 MB)</span>
+                                    <span><i class="fas fa-download"></i> 112 downloads</span>
+                                </div>
+                                <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">SQL Query Optimization</div>
+                                <div class="material-date">Added: 08 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Notes on advanced SQL query optimization techniques, indexing strategies, and performance tuning for database systems.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF (3.1 MB)</span>
+                                    <span><i class="fas fa-download"></i> 64 downloads</span>
+                                </div>
+                                <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Network Protocols - TCP/IP</div>
+                                <div class="material-date">Added: 05 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Detailed explanation of TCP/IP protocol suite, including packet structure, handshaking process, and congestion control mechanisms.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF (2.7 MB)</span>
+                                    <span><i class="fas fa-download"></i> 93 downloads</span>
+                                </div>
+                                <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pagination">
+                        <button disabled>Previous</button>
+                        <span>Page 1 of 3</span>
+                        <button>Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Papers Tab -->
+            <div class="tab-pane fade" id="papers" role="tabpanel" aria-labelledby="papers-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-file-alt"></i> Question Papers</h3>
+                        <div class="d-flex gap-3">
+                            <select class="form-select" style="max-width: 200px;">
+                                <option>All Years</option>
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                                <option>2020</option>
+                            </select>
+                            <input type="text" class="form-control" placeholder="Search papers..." style="max-width: 250px;">
+                        </div>
+                    </div>
+
+                    <div class="materials-list">
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Data Structures - End Semester 2023</div>
+                                <div class="material-date">Added: 12 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>End semester examination question paper for Data Structures course. Includes questions on trees, graphs, and hashing techniques.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF (1.2 MB)</span>
+                                    <span><i class="fas fa-download"></i> 156 downloads</span>
+                                    <span class="badge badge-new">New</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-eye"></i> Preview</button>
+                                    <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Algorithms - Mid Term 2023</div>
+                                <div class="material-date">Added: 10 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Mid term examination question paper for Algorithms course. Focuses on divide and conquer, greedy algorithms, and dynamic programming.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF (0.9 MB)</span>
+                                    <span><i class="fas fa-download"></i> 128 downloads</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-eye"></i> Preview</button>
+                                    <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Database Systems - End Semester 2022</div>
+                                <div class="material-date">Added: 08 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>2022 End semester examination question paper for Database Systems course. Includes SQL queries, normalization, and transaction processing.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> PDF (1.5 MB)</span>
+                                    <span><i class="fas fa-download"></i> 204 downloads</span>
+                                    <span class="badge badge-important">Important</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-eye"></i> Preview</button>
+                                    <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pagination">
+                        <button disabled>Previous</button>
+                        <span>Page 1 of 2</span>
+                        <button>Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Work Tab -->
+            <div class="tab-pane fade" id="work" role="tabpanel" aria-labelledby="work-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-tasks"></i> Daily Work & Assignments</h3>
+                        <div class="d-flex gap-3">
+                            <select class="form-select" style="max-width: 200px;">
+                                <option>All Status</option>
+                                <option>Pending</option>
+                                <option>Completed</option>
+                                <option>Overdue</option>
+                            </select>
+                            <input type="text" class="form-control" placeholder="Search assignments..." style="max-width: 250px;">
+                        </div>
+                    </div>
+
+                    <div class="materials-list">
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Programming Assignment - Graph Algorithms</div>
+                                <div class="material-date">Due: 18 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Implement BFS and DFS traversal algorithms for graphs. Submit your code along with time complexity analysis.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-word"></i> DOCX Template</span>
+                                    <span><i class="fas fa-clock"></i> 4 days remaining</span>
+                                    <span class="badge badge-new">New</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-info-circle"></i> Details</button>
+                                    <button class="btn-action btn-download"><i class="fas fa-download"></i> Resources</button>
+                                    <button class="btn-action" style="background-color: var(--primary); color: white;"><i class="fas fa-upload"></i> Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">SQL Practice Exercise</div>
+                                <div class="material-date">Due: 15 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Complete the SQL queries for the provided database schema. Test your queries against the sample database.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-database"></i> Database File</span>
+                                    <span><i class="fas fa-clock"></i> 1 day remaining</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-info-circle"></i> Details</button>
+                                    <button class="btn-action btn-download"><i class="fas fa-download"></i> Resources</button>
+                                    <button class="btn-action" style="background-color: var(--primary); color: white;"><i class="fas fa-upload"></i> Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Research Paper Summary</div>
+                                <div class="material-date">Submitted: 10 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Summary of the research paper "An Efficient Algorithm for Network Routing" submitted and graded.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-file-pdf"></i> Submitted File</span>
+                                    <span><i class="fas fa-check-circle" style="color: var(--success);"></i> Graded: 85/100</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-eye"></i> View Feedback</button>
+                                    <button class="btn-action btn-download"><i class="fas fa-download"></i> Download</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pagination">
+                        <button disabled>Previous</button>
+                        <span>Page 1 of 2</span>
+                        <button>Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Topics Tab -->
+            <div class="tab-pane fade" id="topics" role="tabpanel" aria-labelledby="topics-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-book"></i> Course Topics</h3>
+                        <div class="d-flex gap-3">
+                            <select class="form-select" style="max-width: 200px;">
+                                <option>All Courses</option>
+                                <option>Data Structures</option>
+                                <option>Algorithms</option>
+                                <option>Database Systems</option>
+                                <option>Computer Networks</option>
+                            </select>
+                            <input type="text" class="form-control" placeholder="Search topics..." style="max-width: 250px;">
+                        </div>
+                    </div>
+
+                    <div class="materials-list">
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Tree Data Structures</div>
+                                <div class="material-date">Last updated: 14 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Complete coverage of tree data structures including binary trees, BST, AVL trees, and B-trees. Includes implementation details and applications.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-film"></i> 3 Video Lectures</span>
+                                    <span><i class="fas fa-sticky-note"></i> 2 Reading Materials</span>
+                                    <span><i class="fas fa-tasks"></i> 1 Assignment</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-play-circle"></i> Start Learning</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Dynamic Programming</div>
+                                <div class="material-date">Last updated: 12 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Introduction to dynamic programming paradigm with examples like Fibonacci, Knapsack problem, and shortest path algorithms.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-film"></i> 4 Video Lectures</span>
+                                    <span><i class="fas fa-sticky-note"></i> 3 Reading Materials</span>
+                                    <span><i class="fas fa-tasks"></i> 2 Assignments</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-play-circle"></i> Start Learning</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="material-card">
+                            <div class="material-header">
+                                <div class="material-title">Relational Database Design</div>
+                                <div class="material-date">Last updated: 10 Oct 2023</div>
+                            </div>
+                            <div class="material-content">
+                                <p>Principles of relational database design, normalization forms, ER modeling, and relational algebra.</p>
+                            </div>
+                            <div class="material-footer">
+                                <div class="material-meta">
+                                    <span><i class="fas fa-film"></i> 5 Video Lectures</span>
+                                    <span><i class="fas fa-sticky-note"></i> 4 Reading Materials</span>
+                                    <span><i class="fas fa-tasks"></i> 2 Assignments</span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view"><i class="fas fa-play-circle"></i> Start Learning</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pagination">
+                        <button disabled>Previous</button>
+                        <span>Page 1 of 3</span>
+                        <button>Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Filter buttons functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // In a real application, this would filter the content
+                    console.log('Filter applied: ' + this.textContent);
+                });
+            });
+            
+            // Download buttons functionality
+            const downloadButtons = document.querySelectorAll('.btn-download');
+            downloadButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const materialTitle = this.closest('.material-card').querySelector('.material-title').textContent;
+                    alert('Downloading: ' + materialTitle + '\n\nIn a real application, this would download the file.');
+                });
+            });
+            
+            // View buttons functionality
+            const viewButtons = document.querySelectorAll('.btn-view');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const materialTitle = this.closest('.material-card').querySelector('.material-title').textContent;
+                    alert('Viewing: ' + materialTitle + '\n\nIn a real application, this would show a preview.');
+                });
+            });
+            
+            // Submit buttons functionality
+            const submitButtons = document.querySelectorAll('.btn-action');
+            submitButtons.forEach(button => {
+                if (button.innerHTML.includes('fa-upload')) {
+                    button.addEventListener('click', function() {
+                        const assignmentTitle = this.closest('.material-card').querySelector('.material-title').textContent;
+                        alert('Submitting assignment: ' + assignmentTitle + '\n\nIn a real application, this would open a submission form.');
+                    });
+                }
+            });
+            
+            // Start learning buttons functionality
+            const learningButtons = document.querySelectorAll('.btn-action');
+            learningButtons.forEach(button => {
+                if (button.innerHTML.includes('fa-play-circle')) {
+                    button.addEventListener('click', function() {
+                        const topicTitle = this.closest('.material-card').querySelector('.material-title').textContent;
+                        alert('Starting topic: ' + topicTitle + '\n\nIn a real application, this would open the learning materials.');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

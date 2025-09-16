@@ -19,10 +19,13 @@ class BulkStudentEditForm(forms.Form):
 from django import forms
 from .models import Students,Department
 
+
+
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Students
-        fields = ["roll_no", "name", "course"]
+        fields = ['roll_no', 'name', 'course']
+
 
 from django import forms
 from .models import Department

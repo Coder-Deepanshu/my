@@ -230,11 +230,13 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3><i class="fas fa-list"></i> All Departments</h3>
                         <div class="d-flex gap-2">
-                            <input type="text" class="form-control" placeholder="Search departments..."
-                                style="max-width: 250px;">
-                            <button class="btn btn-outline-primary">
-                                <i class="fas fa-download"></i> Export
-                            </button>
+                            <form method="GET" action="{% url 'department_creation' %}" class="d-flex">
+                                <input type="text" class="form-control me-2" name="search" id="searchInput"
+                                    placeholder="Search positions..." value="{{ request.GET.search|default:'' }}">
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </form>
                         </div>
                     </div>
 
@@ -253,7 +255,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="positionsTable">
                                 {% for detail in page_obj %}
                                 <tr>
                                     <td>{{ detail.department_id }}</td>
@@ -485,6 +487,43 @@
             form.action = `/department/delete/${department_id}/`;
             openModal("deleteModal");
         }
+
+        //   document.addEventListener('DOMContentLoaded', function () {
+            
+        //     const searchInput = document.getElementById('searchInput');
+        //     const positionsTable = document.getElementById('positionsTable');
+
+        //     if (searchInput && positionsTable) {
+        //         searchInput.addEventListener('keyup', function () {
+        //             const searchText = this.value.toLowerCase();
+        //             const rows = positionsTable.getElementsByTagName('tr');
+
+        //             for (let i = 0; i < rows.length; i++) {
+        //                 const rowText = rows[i].textContent.toLowerCase();
+        //                 if (rowText.includes(searchText)) {
+        //                     rows[i].style.display = '';
+        //                 } else {
+        //                     rows[i].style.display = 'none';
+        //                 }
+        //             }
+        //         });
+        //     }
+        // });
+        
+        // function getCookie(name) {
+        //     let cookieValue = null;
+        //     if (document.cookie && document.cookie !== '') {
+        //         const cookies = document.cookie.split(';');
+        //         for (let i = 0; i < cookies.length; i++) {
+        //             const cookie = cookies[i].trim();
+        //             if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        //                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        //                 break;
+        //             }
+        //         }
+        //     }
+        //     return cookieValue;
+        // }
     </script>
 </body>
 

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | EduTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 60px 0 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            background: var(--light);
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Form Styles */
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-control,
+        .form-select,
+        .form-textarea {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            outline: none;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .form-section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section-title i {
+            margin-right: 10px;
+            background: var(--primary);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-container {
+            padding: 30px;
+        }
+
+        .department-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .department-table th,
+        .department-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .department-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .department-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-pay {
+            background-color: var(--success);
+            color: white;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .card-icon.pending {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+
+        .card-icon.paid {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+        }
+
+        .card-icon.total {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-pending {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #856404;
+        }
+
+        .badge-paid {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #155724;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .content-container {
+                margin: 0 15px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .form-section-title {
+                font-size: 1.1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            padding: 8px 16px;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'header.html' %}
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Student Dashboard</h1>
+            <p>Track your fines and academic progress</p>
+        </div>
+    </section>
+
+    <div class="content-container">
+        <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview"
+                    type="button" role="tab" aria-controls="overview" aria-selected="true">
+                    <i class="fas fa-chart-pie"></i> Overview
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fines-tab" data-bs-toggle="tab" data-bs-target="#fines" type="button"
+                    role="tab" aria-controls="fines" aria-selected="false">
+                    <i class="fas fa-money-bill-wave"></i> My Fines
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="payment-tab" data-bs-toggle="tab" data-bs-target="#payment" type="button"
+                    role="tab" aria-controls="payment" aria-selected="false">
+                    <i class="fas fa-credit-card"></i> Payment History
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="dashboardTabsContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                <div class="form-container">
+                    <h3 class="mb-4"><i class="fas fa-user-graduate"></i> Welcome, Rohan Sharma</h3>
+                    
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card">
+                            <div class="card-icon total">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="card-value">₹2,450</div>
+                            <div class="card-label">Total Fines</div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <div class="card-icon pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-value">₹1,250</div>
+                            <div class="card-label">Pending Fines</div>
+                        </div>
+                        
+                        <div class="dashboard-card">
+                            <div class="card-icon paid">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-value">₹1,200</div>
+                            <div class="card-label">Paid Fines</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-exclamation-circle"></i> Recent Fines
+                        </h3>
+                        
+                        <div class="table-responsive">
+                            <table class="department-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Reason</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>15 Oct 2023</td>
+                                        <td>Library book late return</td>
+                                        <td>₹500</td>
+                                        <td><span class="badge badge-pending">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>10 Oct 2023</td>
+                                        <td>Lab equipment damage</td>
+                                        <td>₹750</td>
+                                        <td><span class="badge badge-pending">Pending</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>05 Oct 2023</td>
+                                        <td>Sports equipment not returned</td>
+                                        <td>₹1,200</td>
+                                        <td><span class="badge badge-paid">Paid</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Fines Tab -->
+            <div class="tab-pane fade" id="fines" role="tabpanel" aria-labelledby="fines-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-money-bill-wave"></i> My Fine Records</h3>
+                        <div class="d-flex gap-3">
+                            <input type="text" class="form-control" placeholder="Search fines..." style="max-width: 250px;">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="department-table">
+                            <thead>
+                                <tr>
+                                    <th>Fine ID</th>
+                                    <th>Date Issued</th>
+                                    <th>Category</th>
+                                    <th>Reason</th>
+                                    <th>Amount</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#FNE-2023-0015</td>
+                                    <td>15 Oct 2023</td>
+                                    <td>Library</td>
+                                    <td>Late return of "Data Structures" book</td>
+                                    <td>₹500</td>
+                                    <td>30 Oct 2023</td>
+                                    <td><span class="badge badge-pending">Pending</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-eye"></i> Details</button>
+                                        <button class="btn-action btn-pay"><i class="fas fa-credit-card"></i> Pay</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#FNE-2023-0012</td>
+                                    <td>10 Oct 2023</td>
+                                    <td>Laboratory</td>
+                                    <td>Damage to microscope lens</td>
+                                    <td>₹750</td>
+                                    <td>25 Oct 2023</td>
+                                    <td><span class="badge badge-pending">Pending</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-eye"></i> Details</button>
+                                        <button class="btn-action btn-pay"><i class="fas fa-credit-card"></i> Pay</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#FNE-2023-0008</td>
+                                    <td>05 Oct 2023</td>
+                                    <td>Sports</td>
+                                    <td>Football not returned after 3 days</td>
+                                    <td>₹1,200</td>
+                                    <td>15 Oct 2023</td>
+                                    <td><span class="badge badge-paid">Paid</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-eye"></i> Details</button>
+                                        <button class="btn-action btn-view" disabled><i class="fas fa-receipt"></i> Receipt</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#FNE-2023-0005</td>
+                                    <td>28 Sep 2023</td>
+                                    <td>Administrative</td>
+                                    <td>Late fee submission</td>
+                                    <td>₹300</td>
+                                    <td>05 Oct 2023</td>
+                                    <td><span class="badge badge-paid">Paid</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-eye"></i> Details</button>
+                                        <button class="btn-action btn-view" disabled><i class="fas fa-receipt"></i> Receipt</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#FNE-2023-0002</td>
+                                    <td>15 Sep 2023</td>
+                                    <td>Library</td>
+                                    <td>Lost book "Computer Networks"</td>
+                                    <td>₹2,500</td>
+                                    <td>30 Sep 2023</td>
+                                    <td><span class="badge badge-paid">Paid</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-eye"></i> Details</button>
+                                        <button class="btn-action btn-view" disabled><i class="fas fa-receipt"></i> Receipt</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination">
+                        <button disabled>Previous</button>
+                        <span>Page 1 of 1</span>
+                        <button disabled>Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History Tab -->
+            <div class="tab-pane fade" id="payment" role="tabpanel" aria-labelledby="payment-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-history"></i> Payment History</h3>
+                        <div class="d-flex gap-3">
+                            <input type="text" class="form-control" placeholder="Search payments..." style="max-width: 250px;">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="department-table">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Date</th>
+                                    <th>Fine ID</th>
+                                    <th>Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#PAY-2023-0042</td>
+                                    <td>12 Oct 2023</td>
+                                    <td>#FNE-2023-0008</td>
+                                    <td>₹1,200</td>
+                                    <td>Credit Card</td>
+                                    <td><span class="badge badge-paid">Completed</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-receipt"></i> Receipt</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#PAY-2023-0035</td>
+                                    <td>03 Oct 2023</td>
+                                    <td>#FNE-2023-0005</td>
+                                    <td>₹300</td>
+                                    <td>UPI</td>
+                                    <td><span class="badge badge-paid">Completed</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-receipt"></i> Receipt</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#PAY-2023-0021</td>
+                                    <td>20 Sep 2023</td>
+                                    <td>#FNE-2023-0002</td>
+                                    <td>₹2,500</td>
+                                    <td>Net Banking</td>
+                                    <td><span class="badge badge-paid">Completed</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-view"><i class="fas fa-receipt"></i> Receipt</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination">
+                        <button disabled>Previous</button>
+                        <span>Page 1 of 1</span>
+                        <button disabled>Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Auto-hide messages after 5 seconds
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function (alert) {
+                    alert.style.display = 'none';
+                });
+            }, 5000);
+
+            // Payment button functionality
+            const payButtons = document.querySelectorAll('.btn-pay');
+            payButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const fineId = this.closest('tr').querySelector('td:first-child').textContent;
+                    const amount = this.closest('tr').querySelector('td:nth-child(5)').textContent;
+                    
+                    alert(`Initiating payment for ${fineId}\nAmount: ${amount}\n\nThis would redirect to payment gateway in a real application.`);
+                });
+            });
+
+            // View details button functionality
+            const viewButtons = document.querySelectorAll('.btn-view');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const fineId = this.closest('tr').querySelector('td:first-child').textContent;
+                    alert(`Showing details for ${fineId}\n\nThis would open a detailed view in a real application.`);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

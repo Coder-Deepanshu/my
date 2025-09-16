@@ -1,0 +1,62 @@
+<h2>Student Management Dashboard</h2>
+
+<!-- ✅ Filter -->
+<form method="get">
+    <input type="text" name="search" placeholder="Search by name" value="{{ search }}">
+    <input type="text" name="course" placeholder="Filter by course" value="{{ course }}">
+    <button type="submit">Filter</button>
+    <a href="{% url 'student_dashboard' %}">Clear</a>
+</form>
+
+<hr>
+
+<!-- ✅ Add Student Form -->
+<h3>Add Student</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ add_form.as_p }}
+    <button type="submit" name="add_submit">Add</button>
+</form>
+
+<hr>
+
+<!-- ✅ Edit Student Form (only if clicked) -->
+{% if edit_form %}
+    <h3>Edit Student (ID: {{ edit_id }})</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ edit_form.as_p }}
+        <button type="submit" name="edit_submit">Update</button>
+        <a href="{% url 'student_dashboard' %}">Cancel</a>
+    </form>
+    <hr>
+{% endif %}
+
+<!-- ✅ Student List -->
+<h3>Students</h3>
+<ul>
+{% for student in students %}
+    <li>
+        {{ student.roll_no }} - {{ student.name }} ({{ student.course }}, {{ student.city }})
+        <a href="?edit_id={{ student.id }}{% if search %}&search={{ search }}{% endif %}{% if course %}&course={{ course }}{% endif %}">Edit</a>
+        <a href="?delete_id={{ student.id }}" onclick="return confirm('Delete {{ student.name }}?')">Delete</a>
+    </li>
+{% empty %}
+    <p>No students found.</p>
+{% endfor %}
+</ul>
+
+<!-- ✅ Pagination -->
+<div>
+    {% if students.has_previous %}
+        <a href="?page=1{% if search %}&search={{ search }}{% endif %}{% if course %}&course={{ course }}{% endif %}">First</a>
+        <a href="?page={{ students.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if course %}&course={{ course }}{% endif %}">Previous</a>
+    {% endif %}
+
+    Page {{ students.number }} of {{ students.paginator.num_pages }}
+
+    {% if students.has_next %}
+        <a href="?page={{ students.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if course %}&course={{ course }}{% endif %}">Next</a>
+        <a href="?page={{ students.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if course %}&course={{ course }}{% endif %}">Last</a>
+    {% endif %}
+</div>

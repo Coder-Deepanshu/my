@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student History Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 60px 0 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Content Container */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            background: var(--light);
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Form Styles */
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-control,
+        .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Table Styles */
+        .table-container {
+            padding: 30px;
+        }
+
+        .fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .fee-table th,
+        .fee-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .fee-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .fee-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-create {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 500;
+            border-radius: 8px;
+        }
+
+        .btn-create:hover {
+            background-color: var(--primary-dark);
+            color: white;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 15px 20px;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--light-gray);
+            padding: 15px 25px;
+        }
+
+        /* Student Profile */
+        .student-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid var(--primary);
+        }
+
+        .student-info h3 {
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .student-info p {
+            margin-bottom: 3px;
+            color: var(--gray);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 20px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .timeline-content h4 {
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .content-container {
+                margin: 0 15px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .fee-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .student-profile {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .student-avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+
+            .form-container,
+            .table-container {
+                padding: 20px;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Student History Management System</h1>
+            <p>View and manage complete student academic and fee history</p>
+        </div>
+    </section>
+
+    <div class="content-container">
+        <ul class="nav nav-tabs" id="studentTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="search-tab" data-bs-toggle="tab" data-bs-target="#search"
+                    type="button" role="tab" aria-controls="search" aria-selected="true">
+                    <i class="fas fa-search"></i> Search Student
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                    role="tab" aria-controls="history" aria-selected="false">
+                    <i class="fas fa-history"></i> Student History
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="studentTabsContent">
+            <!-- Search Student Tab -->
+            <div class="tab-pane fade show active" id="search" role="tabpanel" aria-labelledby="search-tab">
+                <div class="form-container">
+                    <h3 class="mb-4"><i class="fas fa-search"></i> Find Student Record</h3>
+                    <form id="searchStudentForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="searchType" class="form-label"><i class="fas fa-filter"></i> Search By</label>
+                                <select class="form-select" id="searchType" required>
+                                    <option value="studentId" selected>Student ID</option>
+                                    <option value="name">Student Name</option>
+                                    <option value="rollNo">Roll Number</option>
+                                    <option value="email">Email Address</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="searchValue" class="form-label"><i class="fas fa-tag"></i> Search Value</label>
+                                <input type="text" class="form-control" id="searchValue" placeholder="Enter search value" required>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                            <button type="button" class="btn btn-primary" id="searchStudentBtn">Search Student</button>
+                        </div>
+                    </form>
+
+                    <div id="searchResults" class="mt-4" style="display: none;">
+                        <h4 class="mb-3">Search Results</h4>
+                        <div class="table-responsive">
+                            <table class="fee-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Course</th>
+                                        <th>Batch</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="searchResultsBody">
+                                    <!-- Results will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student History Tab -->
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                <div class="table-container">
+                    <div id="studentProfileContainer" style="display: none;">
+                        <!-- Student Profile -->
+                        <div class="student-profile">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                                 alt="Student Avatar" class="student-avatar">
+                            <div class="student-info">
+                                <h3 id="studentName">Rahul Sharma</h3>
+                                <p><strong>ID:</strong> <span id="studentId">STU2023001</span></p>
+                                <p><strong>Course:</strong> <span id="studentCourse">B.Tech Computer Science</span></p>
+                                <p><strong>Batch:</strong> <span id="studentBatch">2023-2027</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Academic History -->
+                        <h4 class="mb-4"><i class="fas fa-graduation-cap"></i> Academic History</h4>
+                        <div class="timeline" id="academicTimeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">2023-08-15</div>
+                                <div class="timeline-content">
+                                    <h4>Semester 1 Registration</h4>
+                                    <p>Registered for B.Tech Computer Science Semester 1 with 5 courses</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">2023-12-20</div>
+                                <div class="timeline-content">
+                                    <h4>Semester 1 Results</h4>
+                                    <p>CGPA: 8.7 | Status: Pass</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fee History -->
+                        <h4 class="mb-4 mt-5"><i class="fas fa-money-bill-wave"></i> Fee Payment History</h4>
+                        <div class="table-responsive">
+                            <table class="fee-table">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Date</th>
+                                        <th>Semester</th>
+                                        <th>Amount</th>
+                                        <th>Payment Method</th>
+                                        <th>Status</th>
+                                        <th>Receipt</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="feeHistoryBody">
+                                    <tr>
+                                        <td>TXN2023081501</td>
+                                        <td>2023-08-15</td>
+                                        <td>Semester 1</td>
+                                        <td>₹45,000</td>
+                                        <td>Online Payment</td>
+                                        <td><span class="badge bg-success">Paid</span></td>
+                                        <td>
+                                            <button class="btn-action btn-view">
+                                                <i class="fas fa-download"></i> Download
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>TXN2024011502</td>
+                                        <td>2024-01-15</td>
+                                        <td>Semester 2</td>
+                                        <td>₹42,500</td>
+                                        <td>Bank Transfer</td>
+                                        <td><span class="badge bg-success">Paid</span></td>
+                                        <td>
+                                            <button class="btn-action btn-view">
+                                                <i class="fas fa-download"></i> Download
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Documents -->
+                        <h4 class="mb-4 mt-5"><i class="fas fa-file-alt"></i> Document History</h4>
+                        <div class="table-responsive">
+                            <table class="fee-table">
+                                <thead>
+                                    <tr>
+                                        <th>Document Type</th>
+                                        <th>Upload Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="documentsBody">
+                                    <tr>
+                                        <td>Admission Form</td>
+                                        <td>2023-07-10</td>
+                                        <td><span class="badge bg-success">Approved</span></td>
+                                        <td>
+                                            <button class="btn-action btn-view">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>ID Proof</td>
+                                        <td>2023-07-12</td>
+                                        <td><span class="badge bg-success">Approved</span></td>
+                                        <td>
+                                            <button class="btn-action btn-view">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Scholarship Application</td>
+                                        <td>2023-08-05</td>
+                                        <td><span class="badge bg-warning">Pending</span></td>
+                                        <td>
+                                            <button class="btn-action btn-view">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="noStudentSelected" class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <h5>No student selected</h5>
+                            <p class="mb-0">Please search for a student using the Search tab to view their history</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Detail Modal -->
+    <div class="modal fade" id="studentDetailModal" tabindex="-1" aria-labelledby="studentDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentDetailModalLabel">Student Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="student-profile">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                             alt="Student Avatar" class="student-avatar">
+                        <div class="student-info">
+                            <h3 id="modalStudentName">Rahul Sharma</h3>
+                            <p><strong>ID:</strong> <span id="modalStudentId">STU2023001</span></p>
+                            <p><strong>Course:</strong> <span id="modalStudentCourse">B.Tech Computer Science</span></p>
+                            <p><strong>Batch:</strong> <span id="modalStudentBatch">2023-2027</span></p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Personal Information</h5>
+                            <p><strong>Email:</strong> rahul.sharma@example.com</p>
+                            <p><strong>Phone:</strong> +91 9876543210</p>
+                            <p><strong>Address:</strong> 123 Main St, Mumbai, Maharashtra</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Academic Information</h5>
+                            <p><strong>Current Semester:</strong> Semester 2</p>
+                            <p><strong>CGPA:</strong> 8.7</p>
+                            <p><strong>Attendance:</strong> 92%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="viewFullHistoryBtn">View Full History</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // DOM Elements
+            const searchType = document.getElementById('searchType');
+            const searchValue = document.getElementById('searchValue');
+            const searchStudentBtn = document.getElementById('searchStudentBtn');
+            const searchResults = document.getElementById('searchResults');
+            const searchResultsBody = document.getElementById('searchResultsBody');
+            const studentProfileContainer = document.getElementById('studentProfileContainer');
+            const noStudentSelected = document.getElementById('noStudentSelected');
+            const studentDetailModal = new bootstrap.Modal(document.getElementById('studentDetailModal'));
+            const viewFullHistoryBtn = document.getElementById('viewFullHistoryBtn');
+            
+            // Sample student data
+            const students = [
+                {
+                    id: 'STU2023001',
+                    name: 'Rahul Sharma',
+                    course: 'B.Tech Computer Science',
+                    batch: '2023-2027',
+                    status: 'Active',
+                    email: 'rahul.sharma@example.com',
+                    phone: '+91 9876543210',
+                    address: '123 Main St, Mumbai, Maharashtra',
+                    currentSemester: 'Semester 2',
+                    cgpa: 8.7,
+                    attendance: 92
+                },
+                {
+                    id: 'STU2023002',
+                    name: 'Priya Patel',
+                    course: 'MBA',
+                    batch: '2023-2025',
+                    status: 'Active',
+                    email: 'priya.patel@example.com',
+                    phone: '+91 9876543211',
+                    address: '456 Oak Ave, Delhi',
+                    currentSemester: 'Semester 1',
+                    cgpa: 9.2,
+                    attendance: 95
+                },
+                {
+                    id: 'STU2022001',
+                    name: 'Amit Kumar',
+                    course: 'B.Tech Mechanical',
+                    batch: '2022-2026',
+                    status: 'Active',
+                    email: 'amit.kumar@example.com',
+                    phone: '+91 9876543212',
+                    address: '789 Pine Rd, Bangalore',
+                    currentSemester: 'Semester 4',
+                    cgpa: 8.3,
+                    attendance: 88
+                }
+            ];
+
+            // Event Listeners
+            searchStudentBtn.addEventListener('click', searchStudents);
+            viewFullHistoryBtn.addEventListener('click', viewFullHistory);
+
+            // Functions
+            function searchStudents() {
+                const type = searchType.value;
+                const value = searchValue.value.trim().toLowerCase();
+                
+                if (!value) {
+                    alert('Please enter a search value');
+                    return;
+                }
+                
+                // Filter students based on search criteria
+                const results = students.filter(student => {
+                    if (type === 'studentId') {
+                        return student.id.toLowerCase().includes(value);
+                    } else if (type === 'name') {
+                        return student.name.toLowerCase().includes(value);
+                    } else if (type === 'rollNo') {
+                        return student.id.toLowerCase().includes(value);
+                    } else if (type === 'email') {
+                        return student.email.toLowerCase().includes(value);
+                    }
+                    return false;
+                });
+                
+                // Display results
+                displaySearchResults(results);
+            }
+            
+            function displaySearchResults(results) {
+                searchResultsBody.innerHTML = '';
+                
+                if (results.length === 0) {
+                    searchResults.style.display = 'none';
+                    alert('No students found matching your search criteria');
+                    return;
+                }
+                
+                results.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.id}</td>
+                        <td>${student.name}</td>
+                        <td>${student.course}</td>
+                        <td>${student.batch}</td>
+                        <td><span class="badge bg-success">${student.status}</span></td>
+                        <td class="action-buttons">
+                            <button class="btn-action btn-view" data-id="${student.id}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn-action btn-edit" data-id="${student.id}">
+                                <i class="fas fa-history"></i> History
+                            </button>
+                        </td>
+                    `;
+                    searchResultsBody.appendChild(row);
+                });
+                
+                // Add event listeners to action buttons
+                document.querySelectorAll('.btn-view').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const studentId = this.getAttribute('data-id');
+                        showStudentDetails(studentId);
+                    });
+                });
+                
+                document.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const studentId = this.getAttribute('data-id');
+                        showStudentHistory(studentId);
+                    });
+                });
+                
+                searchResults.style.display = 'block';
+            }
+            
+            function showStudentDetails(studentId) {
+                const student = students.find(s => s.id === studentId);
+                
+                if (student) {
+                    // Update modal content
+                    document.getElementById('modalStudentName').textContent = student.name;
+                    document.getElementById('modalStudentId').textContent = student.id;
+                    document.getElementById('modalStudentCourse').textContent = student.course;
+                    document.getElementById('modalStudentBatch').textContent = student.batch;
+                    
+                    // Show modal
+                    studentDetailModal.show();
+                    
+                    // Set data attribute for view full history button
+                    viewFullHistoryBtn.setAttribute('data-id', studentId);
+                }
+            }
+            
+            function showStudentHistory(studentId) {
+                const student = students.find(s => s.id === studentId);
+                
+                if (student) {
+                    // Update student profile
+                    document.getElementById('studentName').textContent = student.name;
+                    document.getElementById('studentId').textContent = student.id;
+                    document.getElementById('studentCourse').textContent = student.course;
+                    document.getElementById('studentBatch').textContent = student.batch;
+                    
+                    // Switch to history tab
+                    const historyTab = new bootstrap.Tab(document.getElementById('history-tab'));
+                    historyTab.show();
+                    
+                    // Show student profile and hide no student message
+                    studentProfileContainer.style.display = 'block';
+                    noStudentSelected.style.display = 'none';
+                }
+            }
+            
+            function viewFullHistory() {
+                const studentId = viewFullHistoryBtn.getAttribute('data-id');
+                studentDetailModal.hide();
+                showStudentHistory(studentId);
+            }
+            
+            // Initialize with some sample data in search results
+            displaySearchResults(students);
+        });
+    </script>
+</body>
+
+</html>

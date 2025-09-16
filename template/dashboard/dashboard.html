@@ -26,12 +26,10 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-container">
-                <div class="logo">
-                    <i class="fas fa-graduation-cap logo-icon"></i>
-                    <span style="color: white;">EduTrack</span>
-                </div>
-            </div>
+            <h1 style="color: white; margin: 0;">
+                <i class="fas fa-graduation-cap me-2" style="color: #4361ee;"></i>
+                EduTrack
+            </h1>
         </div>
 
         <div class="sidebar-menu">
@@ -43,6 +41,16 @@
                         <span class="menu-text">Dashboard</span>
                     </a>
                 </li>
+            </ul>
+
+            <h3 class="menu-title">Personal</h3>
+            <ul>
+            <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="myDetails-tab">
+                        <i class="fas fa-id-badge menu-icon"></i>
+                        <span class="menu-text">My Details</span>
+                    </a>
+            </li>
             </ul>
 
             <h3 class="menu-title">Management</h3>
@@ -64,7 +72,7 @@
 
                 <li class="menu-item">
                     <a href="#" class="menu-link" data-tab="admin-tab">
-                        <i class="fas fa-chalkboard-teacher menu-icon"></i>
+                        <i class="fas fa-tools menu-icon"></i>
                         <span class="menu-text">Admin</span>
                     </a>
                 </li>
@@ -351,6 +359,80 @@
                 </div>
             </div>
 
+            <!-- my details -->
+            <div id="myDetails-tab" class="tab-content">
+                <div class="header-1">
+                    <div class="page-title">
+                        <h1>Personal Details</h1>
+                        <p>See all personal-related activities and information</p>
+                    </div>
+
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search admin...">
+                    </div>
+                </div>
+
+                <!-- ADMIN Action Cards -->
+                <div class="student-actions">
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 class="student-action-title">My Profile</h3>
+                        <p class="student-action-desc">See your Personal Profile</p>
+                        <a href="{% url 'profile_details' %}" class="student-action-btn">Open</a>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3 class="student-action-title">My Attendance</h3>
+                        <p class="student-action-desc">View all about your attendance</p>
+                        <a href="#" class="student-action-btn">Open</a>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h3 class="student-action-title">ID Card</h3>
+                        <p class="student-action-desc">See your ID-Card</p>
+                        <a href="{% url 'id_card' %}" class="student-action-btn">Open</a>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <h3 class="student-action-title">Salary</h3>
+                        <p class="student-action-desc">View all about your salary</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-signal"></i>
+                        </div>
+                        <h3 class="student-action-title">Level History</h3>
+                        <p class="student-action-desc">View all about your position</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h3 class="student-action-title">History</h3>
+                        <p class="student-action-desc">View all about your history</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+                    
+
+                </div>
+            </div>
+
             <!-- Students Tab -->
             <div id="students-tab" class="tab-content">
                 <div class="header-1">
@@ -481,7 +563,7 @@
                             <i class="fas fa-user"></i>
                         </div>
                         <h3 class="student-action-title">Add Admin</h3>
-                        <p class="student-action-desc">View and edit individual faculty records</p>
+                        <p class="student-action-desc">Add individual admin records</p>
                         <a href="{% url 'admin_functions' %}" class="student-action-btn">Open</a>
                     </div>
 
@@ -492,6 +574,33 @@
                         <h3 class="student-action-title">View Admin</h3>
                         <p class="student-action-desc">View all available admin list</p>
                         <a href="{% url 'admin_card' %}" class="student-action-btn">Open</a>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3 class="student-action-title">Mark Attendance</h3>
+                        <p class="student-action-desc">Mark Admin attendance</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3 class="student-action-title">Attendance</h3>
+                        <p class="student-action-desc">View admin attendance</p>
+                        <button class="student-action-btn">Open</button>
+                    </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <h3 class="student-action-title">History</h3>
+                        <p class="student-action-desc">View admin history and logs</p>
+                        <button class="student-action-btn">Open</button>
                     </div>
 
                 </div>
@@ -901,6 +1010,15 @@
                         <p class="student-action-desc">Chat with Student on any problem or complaint</p>
                         <button class="student-action-btn">Open</button>
                     </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h3 class="student-action-title">Chat History</h3>
+                        <p class="student-action-desc">View all details about your chat history</p>
+                        <a href="{% url 'chatHistory' %}"  class="student-action-btn">Open</a>
+                    </div>
                 </div>
             </div>
 
@@ -1069,6 +1187,9 @@
                     pageTitle.textContent = 'Notifications';
                 } else if (tabId === 'adminSignupModal') {
                     pageTitle.textContent = 'Admin';
+                }
+                else if (tabId === 'myDetails-tab') {
+                    pageTitle.textContent = 'myDetails-tab';
                 }
 
                 // Close sidebar on mobile

@@ -91,6 +91,25 @@ urlpatterns = [
     path('department/edit/<str:pk>/', views.DepartmentUpdateView.as_view(), name='department_edit'),
     path('department/delete/<str:pk>/', views.DepartmentDeleteView.as_view(), name='department_delete'),
     path('student_list/', views.student_list, name='student_list'),
+    
+
+
+
+    path('get-student-details/', views.get_student_details, name='get_student_details'),
+    path('update-student/', views.update_student, name='update_student'),
+    path('bulk-update-students/', views.bulk_update_students, name='bulk_update_students'),
+    path('delete-student/', views.delete_student, name='delete_student'),
+    path('bulk-delete-students/', views.bulk_delete_students, name='bulk_delete_students'),
+    path('export-students/', views.export_students, name='export_students'),
+    path('filtered-students/', views.filtered_student, name='filtered_student'),
+    path('Dashboard-Student/Fine-Management/', views.studentFine, name='studentFine'),
+    path('Dashboard-Student/Notice-Management/', views.studentSendNotice, name='studentSendNotice'),
+    path('Dashboard-Student/Notes-Management/', views.studentNotes, name='studentNotes'),
+    path('Dashboard-Student/Chat-Management/', views.chatHistory, name='chatHistory'),
+    
+     path('add/', views.student_dashboard, name='student_dashboard'),
+    
+    
 
 
 ]

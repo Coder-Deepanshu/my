@@ -209,15 +209,15 @@ def profile_details(request):
     if role == 'faculty':
         faculty_id=request.session.get('faculty_college_id')
         details=Faculty.objects.get(college_id=faculty_id)
-        return render(request,'profile.html',{'faculty':details,'role':role})
+        return render(request,'main/profile.html',{'faculty':details,'role':role})
     elif role == 'student':
         student_id=request.session.get('student_college_id')
         details=Student.objects.get(college_id=student_id)
-        return render(request,'profile.html',{'student':details,'role':role})
+        return render(request,'main/profile.html',{'student':details,'role':role})
     elif role == 'admin':
         admin_id=request.session.get('admin_college_id')
         details=Admin.objects.get(college_id=admin_id)
-        return render(request,'profile.html',{'admin':details,'role':role})
+        return render(request,'main/profile.html',{'admin':details,'role':role})
 
 # for uploading picture 
 def profile_upload(request):
@@ -281,7 +281,7 @@ def id_card(request):
     except (Student.DoesNotExist, Faculty.DoesNotExist,Admin.DoesNotExist):
         return redirect('logoutdoor')
     
-    return render(request, 'id_card.html', context)
+    return render(request, 'main/id_card.html', context)
 
 # for admin dashboard
 def dashboard_view(request):
@@ -720,47 +720,265 @@ def get_courses_details(request):
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
     
 def filtered_students(request, template):
-    if not request.session.get('faculty_college_id') or not request.session.get('admin_college_id'):
-        messages.error(request, "Please login First")
-        return redirect('login')
+    
+    
     try:
-        if template != 'chat/student_list_partial.html':
-            filters = {
+        filters = {
             'course': request.GET.get('course', 'all'),
             'year': request.GET.get('year', 'all'),
             'semester': request.GET.get('semester', 'all'),
-            'college_id': request.GET.get('college_id', '')}
+            'college_id': request.GET.get('college_id', '')
+        }
+        
+        # Check which template we're using to determine the base queryset
+        if template != 'chat/student_list_partial.html':
             students = Student.objects.all()
-            if filters['course'] != 'all':
-                students = students.filter(course=filters['course'])
-            if filters['year'] != 'all':
-                students = students.filter(year=filters['year'])
-            if filters['semester'] != 'all':
-                students = students.filter(semester=filters['semester'])
-            if filters['college_id']:
-                students = students.filter(college_id__icontains=filters['college_id'])
+            
         else:
             faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
             students = Student.objects.filter(followed_faculty=faculty)
-            filters = {
+        
+        # Apply filters
+        if filters['course'] != 'all':
+            students = students.filter(course=filters['course'])
+        if filters['year'] != 'all':
+            students = students.filter(year=filters['year'])
+        if filters['semester'] != 'all':
+            students = students.filter(semester=filters['semester'])
+        if filters['college_id']:
+            students = students.filter(college_id__icontains=filters['college_id'])
+            
+    except Exception as e:
+        return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
+
+    html = render_to_string(template, {'students': students})
+    return JsonResponse({'html': html})
+
+
+def filtered_student(request):
+  
+    
+    try:
+        filters = {
             'course': request.GET.get('course', 'all'),
             'year': request.GET.get('year', 'all'),
             'semester': request.GET.get('semester', 'all'),
-            'college_id': request.GET.get('college_id', '')}
-            if filters['course'] != 'all':
-                students = students.filter(course=filters['course'])
-            if filters['year'] != 'all':
-                students = students.filter(year=filters['year'])
-            if filters['semester'] != 'all':
-                students = students.filter(semester=filters['semester'])
-            if filters['college_id']:
-                students = students.filter(college_id__icontains=filters['college_id'])
+            'college_id': request.GET.get('college_id', '')
+        }
+        
+        # Check user role to determine which students to show
+        role = request.session.get('role')
+    
+        students = Student.objects.all()
+       
+        
+        # Apply filters
+        if filters['course'] != 'all':
+            students = students.filter(course=filters['course'])
+        if filters['year'] != 'all':
+            students = students.filter(year=filters['year'])
+        if filters['semester'] != 'all':
+            students = students.filter(semester=filters['semester'])
+        if filters['college_id']:
+            students = students.filter(college_id__icontains=filters['college_id'])
+            
+        # Pagination
+        page = request.GET.get('page', 1)
+        paginator = Paginator(students, 5)  # Show 10 students per page
+        
+        try:
+            students_page = paginator.page(page)
+        except PageNotAnInteger:
+            students_page = paginator.page(1)
+        except EmptyPage:
+            students_page = paginator.page(paginator.num_pages)
+            
+        html = render_to_string('student/student_result_partial.html', {'students': students_page})
+        
+        # Generate pagination HTML
+        pagination_html = ''
+        if paginator.num_pages > 1:
+            pagination_html = '<div class="pagination">'
+            if students_page.has_previous():
+                pagination_html += f'<button class="page-link" data-page="1"><i class="fas fa-angle-double-left"></i></button>'
+                pagination_html += f'<button class="page-link" data-page="{students_page.previous_page_number()}"><i class="fas fa-angle-left"></i></button>'
+            
+            for i in range(1, paginator.num_pages + 1):
+                if i == students_page.number:
+                    pagination_html += f'<button class="page-link active" data-page="{i}">{i}</button>'
+                else:
+                    pagination_html += f'<button class="page-link" data-page="{i}">{i}</button>'
+            
+            if students_page.has_next():
+                pagination_html += f'<button class="page-link" data-page="{students_page.next_page_number()}"><i class="fas fa-angle-right"></i></button>'
+                pagination_html += f'<button class="page-link" data-page="{paginator.num_pages}"><i class="fas fa-angle-double-right"></i></button>'
+            
+            pagination_html += '</div>'
+            
+        return JsonResponse({
+            'html': html,
+            'pagination': pagination_html,
+            'total_pages': paginator.num_pages
+        })
     except Exception as e:
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
 
 
-    html = render_to_string(template, {'students': students})
-    return JsonResponse({'html': html})  # Fixed: removed the extra comma
+
+from django.http import JsonResponse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.shortcuts import get_object_or_404
+import json
+
+def get_student_details(request):
+    
+    
+    try:
+        college_id = request.GET.get('college_id')
+        student = Student.objects.get(college_id=college_id)
+        
+        student_data = {
+            'college_id': student.college_id,
+            'name': student.name,
+            'last_name': student.last_name,
+            'father_name': student.father_name,
+            'mother_name': student.mother_name,
+            'email': student.email,
+            'phone': student.phone,
+            'course': student.course,
+            'level': student.level,
+            'year': student.year,
+            'semester': student.semester,
+            'birthday': student.birthday.strftime('%Y-%m-%d') if student.birthday else '',
+            'address': student.address,
+            'city': student.city,
+            'state': student.state,
+            'pin_code': student.pin_code if hasattr(student, 'pin_code') else '',
+            'date_of_joining': student.date_of_joining.strftime('%Y-%m-%d') if student.date_of_joining else '',
+            'profile_picture': student.profile_picture.url if student.profile_picture else ''
+        }
+        
+        return JsonResponse({'success': True, 'student': student_data})
+    except Student.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Student not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
+
+def update_student(request):
+
+    
+    try:
+        college_id = request.POST.get('college_id')
+        student = Student.objects.get(college_id=college_id)
+        
+        # Update fields
+        student.name = request.POST.get('name')
+        student.last_name = request.POST.get('last_name')
+        student.father_name = request.POST.get('father_name')
+        student.mother_name = request.POST.get('mother_name')
+        student.email = request.POST.get('email')
+        student.phone = request.POST.get('phone')
+        student.course = request.POST.get('course')
+        student.year = int(request.POST.get('year'))
+        student.semester = int(request.POST.get('semester'))
+        student.address = request.POST.get('address')
+        
+        student.save()
+        
+        return JsonResponse({'success': True, 'message': 'Student updated successfully'})
+    except Student.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Student not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
+
+def bulk_update_students(request):
+  
+    
+    try:
+        student_ids = request.POST.get('student_ids', '').split(',')
+        students = Student.objects.filter(college_id__in=student_ids)
+        
+        updated_count = 0
+        for student in students:
+            # Only update fields that have values
+            if request.POST.get('course'):
+                student.course = request.POST.get('course')
+            if request.POST.get('year'):
+                student.year = int(request.POST.get('year'))
+            if request.POST.get('semester'):
+                student.semester = int(request.POST.get('semester'))
+            
+            student.save()
+            updated_count += 1
+        
+        return JsonResponse({'success': True, 'message': f'{updated_count} students updated successfully'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
+
+def delete_student(request):
+
+    
+    try:
+        college_id = request.POST.get('college_id')
+        student = Student.objects.get(college_id=college_id)
+        student.delete()
+        
+        return JsonResponse({'success': True, 'message': 'Student deleted successfully'})
+    except Student.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Student not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
+
+def bulk_delete_students(request):
+
+    
+    try:
+        student_ids = request.POST.get('student_ids', '').split(',')
+        students = Student.objects.filter(college_id__in=student_ids)
+        deleted_count = students.count()
+        students.delete()
+        
+        return JsonResponse({'success': True, 'message': f'{deleted_count} students deleted successfully'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
+
+def export_students(request):
+ 
+    
+    try:
+        student_ids = request.POST.get('student_ids', '').split(',')
+        students = Student.objects.filter(college_id__in=student_ids)
+        
+        # Create CSV response
+        import csv
+        from django.http import HttpResponse
+        
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="students_export.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['College ID', 'Name', 'Email', 'Phone', 'Course', 'Year', 'Semester', 'Father Name', 'Address'])
+        
+        for student in students:
+            writer.writerow([
+                student.college_id,
+                f"{student.name} {student.last_name}",
+                student.email,
+                student.phone,
+                student.course,
+                student.year,
+                student.semester,
+                student.father_name,
+                student.address
+            ])
+        
+        return response
+    except Exception as e:
+        messages.error(request, f"Error exporting students: {str(e)}")
+        return redirect('studentBulkManagement')
+
+
+
 
 # for attendance management student-faculty
 from django.utils import timezone
@@ -852,6 +1070,11 @@ def save_attendance(request):
     
 
 from datetime import datetime
+from django.core.paginator import Paginator
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from newapp.models import Student, Attendance  # Yahan 'newapp' use karo (apne app ka naam)
+
 def student_attendance_view(request):
     role = request.session.get('role')
     if not request.session.get('student_college_id'):
@@ -860,7 +1083,6 @@ def student_attendance_view(request):
         
     try:
         student = Student.objects.get(college_id=request.session['student_college_id'])
-        
         # Get distinct years from attendance records
         years = Attendance.objects.filter(student=student).dates('date', 'year').distinct()
         years = [year.year for year in years]
@@ -871,7 +1093,7 @@ def student_attendance_view(request):
             'student': student,
             'years': years,
             'current_year': current_year,
-            'role':role
+            'role': role
         })
         
     except Student.DoesNotExist:
@@ -880,11 +1102,7 @@ def student_attendance_view(request):
     except Exception as e:
         messages.error(request, f"An error occurred: {str(e)}")
         return redirect('dashboard2')
-    
 
-
-from django.core.paginator import Paginator
-# for student attendance (for student viewing attendance)
 def get_student_attendance(request):
     try:
         student_id = request.GET.get('student_id')
@@ -908,9 +1126,10 @@ def get_student_attendance(request):
         attendance = attendance.order_by('-date', 'lecture_number')
 
         # pagination
-        paginator = Paginator(attendance,5)
+        paginator = Paginator(attendance, 10)
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
+        
         # Calculate summary
         total_lectures = attendance.count()
         present = attendance.filter(status='Present').count()
@@ -920,30 +1139,27 @@ def get_student_attendance(request):
         if total_lectures > 0:
             attendance_percentage = round((present / total_lectures) * 100, 2)
             
-        attendance_list = []
-        for record in page_obj:
-            attendance_list.append({
-                'date': record.date,
-                'lecture_number': record.lecture_number,
-                'course_name': record.course.name if record.course else 'N/A',
-                'status': record.status,
-                'faculty_name': record.faculty.name if record.faculty else 'N/A',
-                'time': record.timing.strftime('%H:%M:%S') if record.timing else 'N/A'
-            })
-            
-        return JsonResponse({
-            'attendance': attendance_list,
+        # Get distinct years again for the template
+        years = Attendance.objects.filter(student=student).dates('date', 'year').distinct()
+        years = [year.year for year in years]
+        
+        return render(request, 'student/student_attendance_view.html', {
+            'page_obj': page_obj,
             'summary': {
                 'total_lectures': total_lectures,
                 'present': present,
                 'absent': absent,
                 'attendance_percentage': attendance_percentage
-            }
+            },
+            'student': student,
+            'years': years,
+            'current_year': datetime.now().year,
+            'role': request.session.get('role')
         })
         
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('student_attendance_view')
 
 # FOR FEES MANAGEMENT OF STUDENT
 
@@ -2178,10 +2394,20 @@ class DepartmentDeleteView(DeleteView):
 
 # course craetion
 from .models import Department, Course,Level
+from django.db.models import Q
 
 def course_creation(request):
     role = request.session.get('role')
+    action = request.POST.get('form_name')
+    query = request.POST.get('q')
     details = Course.objects.all().order_by('created_at')
+    if query : 
+        details = details.filter(
+        Q(name__icontains=query)|
+        Q(code__icontains=query)|
+        Q(department__name=query)|
+        Q(level__name=query)
+        )    
     paginator = Paginator(details,5)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -2204,7 +2430,7 @@ def course_creation(request):
             "has_prev": page_obj.has_previous(),
             "page_number": page_obj.number,
             "total_pages": paginator.num_pages
-        })
+        })        
     try:
         # Get lists for both GET and POST requests
         department_list = Department.objects.filter(type='Faculty')
@@ -2248,15 +2474,39 @@ def course_creation(request):
             'details':details,
             'role':role,
             "page_obj": page_obj, 
-            "course":details
+            "course":details,
+            "query":query
         })
-
+    
 # Created Positions
 from .models import Position, Department
 
 def position_creation(request):
     role = request.session.get('role')
-    details = Position.objects.all().select_related('department')
+    details = Position.objects.all().order_by('position_id')
+    paginator = Paginator(details,10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        data = []
+        for position in page_obj:
+            data.append({
+                "position_id":position.position_id,
+                "name": position.name,
+                "department": position.department.name,
+                "type": position.type,
+                "salary": position.salary,
+                "role": position.role,
+                "level":position.level, 
+                
+            })
+        return JsonResponse({
+            "details": data,
+            "has_next": page_obj.has_next(),
+            "has_prev": page_obj.has_previous(),
+            "page_number": page_obj.number,
+            "total_pages": paginator.num_pages
+        })     
     try:
         # Get lists for both GET and POST requests
         faculty_department_list = Department.objects.filter(type='Faculty')
@@ -2415,7 +2665,8 @@ def position_creation(request):
             'faculty_department_list': faculty_department_list,
             'admin_department_list': admin_department_list,
             'details': details,
-            'role':role
+            'role':role,
+            'page_obj':page_obj
         })
             
     except Exception as e:
@@ -2424,11 +2675,25 @@ def position_creation(request):
             'faculty_department_list': [],
             'admin_department_list': [],
             'details': [],
-            'role':[]
+            'role':[],
+            'page_obj':[]
         })
 
+def studentFine(request):
+    role = request.session.get('role')
+    return render(request,'student/studentFine.html',{'role':role})
 
+def studentSendNotice(request):
+    role = request.session.get('role')
+    return render(request,'student/studentSendNotice.html',{'role':role})
 
+def studentNotes(request):
+    role = request.session.get('role')
+    return render(request,'student/studentNotes.html',{'role':role})
+
+def chatHistory(request):
+    role = request.session.get('role')
+    return render(request,'main/chatHistory.html',{'role':role})
 
 
 
@@ -2477,3 +2742,68 @@ def student_list(request):
         "query": query,
     }
     return render(request, "student_list.html", context)
+
+
+
+
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
+from .models import Students
+from .form import StudentForm
+
+def student_dashboard(request):
+    # ✅ Add Student Form
+    add_form = StudentForm(request.POST or None, prefix="add")
+
+    if request.method == "POST" and "add_submit" in request.POST:
+        if add_form.is_valid():
+            add_form.save()
+            return redirect("student_dashboard")
+
+    # ✅ Edit Student
+    edit_id = request.GET.get("edit_id")
+    student_instance = None
+    edit_form = None
+
+    if edit_id:
+        student_instance = get_object_or_404(Students, id=edit_id)
+        edit_form = StudentForm(request.POST or None, instance=student_instance, prefix="edit")
+
+        if request.method == "POST" and "edit_submit" in request.POST:
+            if edit_form.is_valid():
+                edit_form.save()
+                return redirect("student_dashboard")
+
+    # ✅ Delete
+    if "delete_id" in request.GET:
+        student = get_object_or_404(Students, id=request.GET.get("delete_id"))
+        student.delete()
+        return redirect("student_dashboard")
+
+    # ✅ Filtering
+    search = request.GET.get("search", "")
+    course = request.GET.get("course", "")
+    students = Students.objects.all()
+    if search:
+        students = students.filter(name__icontains=search)
+    if course:
+        students = students.filter(course__icontains=course)
+
+    # ✅ Pagination
+    paginator = Paginator(students.order_by("roll_no"), 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "add_form": add_form,
+        "edit_form": edit_form,
+        "edit_id": edit_id,
+        "students": page_obj,
+        "search": search,
+        "course": course,
+    }
+    return render(request, "student_dashboard.html", context)
+
