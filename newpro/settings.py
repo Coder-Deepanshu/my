@@ -174,6 +174,6 @@ STATIC_URL = 'newapp/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Agar manually aur bhi static folder use karna ho to
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),
-# ]
+STATICFILES_DIRS = [
+   
+]
