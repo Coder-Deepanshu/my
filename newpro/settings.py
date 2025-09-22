@@ -149,9 +149,6 @@ DATE_INPUT_FORMATS = [
     '%m/%d/%Y',  # '10/25/2023'
 ]
 
-# Static files (CSS, JavaScript, Images)
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # settings.py
 LOGIN_URL = '/accounts/login/'
@@ -168,11 +165,9 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "my/staticfiles",  # or wherever your static files are
+]
+STATIC_ROOT = BASE_DIR / "static"  # collectstatic will collect here
 
-# collectstatic ke liye ek jagah
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Ye khali rakho (kyunki tumhare app ke andar static/ hai,
-# Django usko automatically pick karega)
-STATICFILES_DIRS = []
 
