@@ -1,89 +1,420 @@
-<h2>Student List (AJAX Pagination)</h2>
-<table border="1" id="student-table">
-  <tr>
-    <th>Department ID</th>
-    <th>Name</th>
-    <th>Type</th>
-    <th>Code</th>
-    <th>Faculty</th>
-    <th>Student</th>
-    <th>Programe</th>
-  </tr>
-  {% for detail in page_obj %}
-    <tr>
-      <td>{{ detail.department_id }}</td>
-      <td>{{ detail.name }}</td>
-      <td>{{ detail.type }}</td>
-      <td>{{ detail.code }}</td>
-      <td>{{ detail.faculty_count }}</td>
-      <td>{{ detail.student_capacity }}</td>
-      <td>{{ detail.programs_count }}</td>
-    </tr>
-  {% endfor %}
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Viewer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
 
-<div id="pagination">
-  <button id="prev-btn"
-    data-page="{% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
-    {% if not page_obj.has_previous %}disabled{% endif %}>Previous</button>
-  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-  <button id="next-btn"
-    data-page="{% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}"
-    {% if not page_obj.has_next %}disabled{% endif %}>Next</button>
-</div>
+        .document-viewer-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px 0;
+        }
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  function loadPage(page) {
-    fetch(`?page=${page}`, {
-      headers: { "x-requested-with": "XMLHttpRequest" }
-    })
-    .then(response => response.json())
-    .then(data => {
-      let table = document.getElementById("student-table");
-      table.innerHTML = `
-        <tr>
-          <th>Department ID</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Code</th>
-          <th>Faculty</th>
-          <th>Student</th>
-          <th>Programe</th>
-        </tr>
-      `;
+        .document-viewer-container:hover {
+            box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15);
+        }
 
-      data.details.forEach(detail => {
-        table.innerHTML += `
-          <tr>
-            <td>${ detail.department_id }</td>
-            <td>${ detail.name }</td>
-            <td>${ detail.type }</td>
-            <td>${ detail.code }</td>
-            <td>${ detail.faculty_count }</td>
-            <td>${ detail.student_capacity }</td>
-            <td>${ detail.programs_count }</td>
-          </tr>
-        `;
-      });
+        .viewer-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-      // Update buttons
-      document.getElementById("prev-btn").dataset.page = data.page_number - 1;
-      document.getElementById("next-btn").dataset.page = data.page_number + 1;
+        .viewer-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-      document.getElementById("prev-btn").disabled = !data.has_prev;
-      document.getElementById("next-btn").disabled = !data.has_next;
+        .viewer-controls {
+            display: flex;
+            gap: 8px;
+        }
 
-      document.querySelector("#pagination span").innerText = 
-        `Page ${data.page_number} of ${data.total_pages}`;
-    });
-  }
+        .viewer-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
 
-  document.getElementById("prev-btn").addEventListener("click", function() {
-    loadPage(this.dataset.page);
-  });
-  document.getElementById("next-btn").addEventListener("click", function() {
-    loadPage(this.dataset.page);
-  });
-});
-</script>
+        .viewer-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .viewer-body {
+            padding: 20px;
+            background: var(--light);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .document-area {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .document-img {
+            width: 100%;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .document-placeholder {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .document-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--light-gray);
+        }
+
+        .document-placeholder p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .viewer-footer {
+            padding: 15px 20px;
+            background: var(--light);
+            border-top: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .document-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .document-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .zoom-slider {
+            width: 120px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .tool-btn {
+            background: var(--light);
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--dark);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .tool-btn:hover {
+            background: var(--light-gray);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .page-btn:hover {
+            background: var(--light);
+            border-color: var(--gray);
+        }
+
+        .page-indicator {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .viewer-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .viewer-controls {
+                align-self: flex-end;
+            }
+            
+            .viewer-footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .toolbar {
+                overflow-x: auto;
+                padding: 10px 15px;
+            }
+        }
+
+        /* Animation for document loading */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .document-area {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Document Viewer Container -->
+    <div class="document-viewer-container">
+        <div class="viewer-header">
+            <h2 class="viewer-title">
+                <i class="fas fa-file-image"></i>
+                Document Viewer
+            </h2>
+            <div class="viewer-controls">
+                <button class="viewer-btn" title="Download">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="viewer-btn" title="Print">
+                    <i class="fas fa-print"></i>
+                </button>
+                <button class="viewer-btn" title="Fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="viewer-btn" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="toolbar">
+            <button class="tool-btn" title="Zoom In">
+                <i class="fas fa-search-plus"></i>
+            </button>
+            <button class="tool-btn" title="Zoom Out">
+                <i class="fas fa-search-minus"></i>
+            </button>
+            <button class="tool-btn" title="Rotate">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="tool-btn active" title="Select Tool">
+                <i class="fas fa-mouse-pointer"></i>
+            </button>
+            <button class="tool-btn" title="Pan Tool">
+                <i class="fas fa-hand-paper"></i>
+            </button>
+        </div>
+        
+        <div class="viewer-body">
+            <div class="document-area">
+                <img src="https://images.unsplash.com/photo-1589652717521-10c0d092dea9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" 
+                     alt="Sample Document" class="document-img" id="documentImage">
+                
+                <!-- Placeholder for when no document is loaded -->
+                <!-- <div class="document-placeholder">
+                    <i class="fas fa-file-image"></i>
+                    <p>No document to display</p>
+                </div> -->
+            </div>
+            
+            <div class="page-controls">
+                <button class="page-btn" title="Previous Page">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="page-indicator">Page 1 of 1</span>
+                <button class="page-btn" title="Next Page">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="viewer-footer">
+            <div class="document-info">
+                <span title="File format">
+                    <i class="fas fa-file-image"></i> JPEG
+                </span>
+                <span title="Dimensions">
+                    <i class="fas fa-ruler-combined"></i> 1200×800
+                </span>
+                <span title="File size">
+                    <i class="fas fa-weight-hanging"></i> 350 KB
+                </span>
+            </div>
+            
+            <div class="zoom-controls">
+                <button class="viewer-btn" title="Zoom Out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <input type="range" class="zoom-slider" min="50" max="200" value="100">
+                <button class="viewer-btn" title="Zoom In">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <span style="margin-left: 10px; color: var(--gray);">100%</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const documentImage = document.getElementById('documentImage');
+            const zoomSlider = document.querySelector('.zoom-slider');
+            const zoomValue = document.querySelector('.zoom-controls span');
+            const zoomInBtns = document.querySelectorAll('[title="Zoom In"]');
+            const zoomOutBtns = document.querySelectorAll('[title="Zoom Out"]');
+            const rotateBtn = document.querySelector('[title="Rotate"]');
+            const toolBtns = document.querySelectorAll('.tool-btn');
+            
+            let currentZoom = 100;
+            let currentRotation = 0;
+            
+            // Zoom functionality
+            function updateZoom() {
+                documentImage.style.transform = `scale(${currentZoom / 100}) rotate(${currentRotation}deg)`;
+                zoomValue.textContent = `${currentZoom}%`;
+                zoomSlider.value = currentZoom;
+            }
+            
+            zoomSlider.addEventListener('input', function() {
+                currentZoom = this.value;
+                updateZoom();
+            });
+            
+            zoomInBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentZoom = Math.min(currentZoom + 10, 200);
+                    updateZoom();
+                });
+            });
+            
+            zoomOutBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    currentZoom = Math.max(currentZoom - 10, 50);
+                    updateZoom();
+                });
+            });
+            
+            // Rotation functionality
+            rotateBtn.addEventListener('click', function() {
+                currentRotation = (currentRotation + 90) % 360;
+                documentImage.style.transform = `scale(${currentZoom / 100}) rotate(${currentRotation}deg)`;
+            });
+            
+            // Tool selection
+            toolBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    toolBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Fullscreen functionality
+            const fullscreenBtn = document.querySelector('[title="Fullscreen"]');
+            fullscreenBtn.addEventListener('click', function() {
+                const container = document.querySelector('.document-viewer-container');
+                
+                if (!document.fullscreenElement) {
+                    if (container.requestFullscreen) {
+                        container.requestFullscreen();
+                    } else if (container.webkitRequestFullscreen) {
+                        container.webkitRequestFullscreen();
+                    } else if (container.msRequestFullscreen) {
+                        container.msRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -7,13 +7,13 @@ class Department(models.Model):
     department_id = models.CharField(max_length=200,unique=True)
     name = models.CharField(max_length=200)
     code = models.CharField(max_length=20)
-    type = models.CharField(max_length=10)
+    type = models.CharField(max_length=10) # faculty ha ya admin
     description = models.TextField()
     programs_count = models.PositiveIntegerField(default=1)
     faculty_count = models.PositiveIntegerField(default=1)
     student_capacity = models.PositiveIntegerField(default=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return self.name
@@ -33,11 +33,11 @@ class Course(models.Model):
     department=models.ForeignKey(Department,on_delete=models.CASCADE)
     no_of_years = models.IntegerField()
     no_of_semesters = models.IntegerField()
-    code = models.CharField(max_length=10,unique=True)
+    code = models.CharField(max_length=50,unique=True)
     description = models.TextField()
     student_capacity = models.PositiveIntegerField(default=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
     level = models.ForeignKey(Level,on_delete=models.CASCADE)
     fees_per_year = models.IntegerField()
     no_of_lecture = models.IntegerField()
@@ -55,13 +55,16 @@ class Position(models.Model):
     requirment = models.TextField()
     specialization = models.TextField()
     salary = models.IntegerField()
+    
+    status = models.CharField(max_length=10,default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     role = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
+    
     
 class Faculty(models.Model):
     # Basic Info
@@ -72,8 +75,8 @@ class Faculty(models.Model):
     email = models.EmailField(unique=True)
     father_name = models.CharField(max_length=100)
     mother_name = models.CharField(max_length=100)
-    department = models.CharField(max_length=50)
-    position = models.CharField(max_length=100)
+    department = models.ForeignKey(Department,on_delete=models.CASCADE)
+    position = models.OneToOneField(Position,on_delete=models.CASCADE)
     qualification=models.CharField(max_length=50)
 
     # Experience & Joining
@@ -147,7 +150,9 @@ class Faculty(models.Model):
     chat_identifier = models.CharField(max_length=100,unique=False,null=True,blank=True)
     online_status = models.BooleanField(default=False)
     last_seen = models.DateTimeField(default=timezone.now)
-
+    
+    permission = models.BooleanField(default=False)
+    
     def save(self, *args, **kwargs):
         if not self.chat_identifier:
             self.chat_identifier = f"faculty_{self.college_id}"
@@ -156,6 +161,18 @@ class Faculty(models.Model):
 
     def _str_(self):
         return self.name
+    
+class FacultyDocuments(models.Model):
+    faculty = models.OneToOneField(Faculty,on_delete=models.CASCADE)
+    pic1 = models.ImageField(upload_to="pic1/",blank=True,null=True) # Adhar no
+    pic2 = models.ImageField(upload_to="pic2/",blank=True,null=True)# Pan Card
+    pic3 = models.ImageField(upload_to="pic3/",blank=True,null=True)# caste certificate
+    pic4 = models.ImageField(upload_to="pic4/",blank=True,null=True)# residence certificate
+    pic5 = models.ImageField(upload_to="pic5/",blank=True,null=True)# last qualification
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.faculty.name}-{self.uploaded_at}"
     
 class Student(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
@@ -170,8 +187,8 @@ class Student(models.Model):
     occupation=models.CharField(max_length=50,null=True)
     income=models.CharField(max_length=20,null=True)
     gender = models.CharField(max_length=10)
-    course = models.CharField(max_length=100)
-    level = models.CharField(max_length=100)  # Changed to ForeignKey
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    level = models.ForeignKey(Level,on_delete=models.CASCADE)  # Changed to ForeignKey
     birthday = models.DateField()
     address = models.TextField()
     semester = models.IntegerField(default=1)
@@ -219,22 +236,39 @@ class Student(models.Model):
         ('Married', 'Married'),
         ('Unmarried', 'Unmarried')
     ], default='Unmarried')
-    user_id=models.CharField(max_length=10)
-    username=models.EmailField()
-    password=models.CharField(max_length=15)
+    user_id=models.CharField(max_length=10,unique=True)
+    username=models.EmailField(null=True,blank=True)
+    password=models.CharField(max_length=15,unique=True)
     chat_identifier = models.CharField(max_length=255,unique=False,blank=True,null=True)
     online_status = models.BooleanField(default=False)
     last_seen = models.DateTimeField(default=timezone.now)
     followed_faculty = models.ManyToManyField(Faculty, related_name='followers', blank=True)
-
+    permission = models.BooleanField(default=False)
+    
     def save(self, *args, **kwargs):
         if not self.chat_identifier:
             self.chat_identifier = f"student_{self.college_id}"
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} ({self.college_id})"    
-
+        return f"{self.name} ({self.college_id})"  
+    
+class StudentDocuments(models.Model):
+    student = models.OneToOneField(Student,on_delete=models.CASCADE)
+    pic1 = models.ImageField(upload_to="pic1/",blank=True,null=True) # Adhar no
+    pic2 = models.ImageField(upload_to="pic2/",blank=True,null=True)# Pan Card
+    pic3 = models.ImageField(upload_to="pic3/",blank=True,null=True)# caste certificate
+    pic4 = models.ImageField(upload_to="pic4/",blank=True,null=True)# residence certificate
+    pic5 = models.ImageField(upload_to="pic5/",blank=True,null=True)# character certificate
+    pic6 = models.ImageField(upload_to="pic6/",blank=True,null=True)# income certificate
+    pic7 = models.ImageField(upload_to="pic7/",blank=True,null=True)# family id
+    pic8 = models.ImageField(upload_to="pic8/",blank=True,null=True)# 10th DMC
+    pic9 = models.ImageField(upload_to="pic9/",blank=True,null=True)# 12th DMC
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.student.name}-{self.uploaded_at}"  
+    
 # for admin 
 class Admin(models.Model):
     # Basic Info
@@ -245,8 +279,8 @@ class Admin(models.Model):
     email = models.EmailField(unique=True)
     father_name = models.CharField(max_length=100)
     mother_name = models.CharField(max_length=100)
-    department = models.CharField(max_length=50)
-    position = models.CharField(max_length=100)
+    department = models.ForeignKey(Department,on_delete=models.CASCADE)
+    position = models.OneToOneField(Position,on_delete=models.CASCADE)
     qualification=models.CharField(max_length=50)
 
     # Experience & Joining
@@ -317,9 +351,23 @@ class Admin(models.Model):
     user_id=models.CharField(max_length=50,null=True,)
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
-
+    
+    permission = models.BooleanField(default=False)
+    
     def _str_(self):
         return self.name
+    
+class AdminDocuments(models.Model):
+    admin = models.OneToOneField(Admin,on_delete=models.CASCADE)
+    pic1 = models.ImageField(upload_to="pic1/",blank=True,null=True) # Adhar no
+    pic2 = models.ImageField(upload_to="pic2/",blank=True,null=True)# Pan Card
+    pic3 = models.ImageField(upload_to="pic3/",blank=True,null=True)# caste certificate
+    pic4 = models.ImageField(upload_to="pic4/",blank=True,null=True)# residence certificate
+    pic5 = models.ImageField(upload_to="pic5/",blank=True,null=True)# character certificate  
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.admin.name}-{self.uploaded_at}"  
     
 class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -336,77 +384,6 @@ class Attendance(models.Model):
 
     def _str_(self):
         return f"{self.student.name} - Lecture {self.lecture_number} - {self.date}"
-
-class result(models.Model):
-    Student_rollno = models.CharField(max_length=20,unique=True,null=False,default=1)
-    course = models.CharField(max_length=50)
-    one = models.CharField(max_length=20, blank=True, null=False,default=0)
-    two = models.CharField(max_length=20, blank=True, null=True,default=0)
-    three = models.CharField(max_length=20, blank=True, null=True,default=0)
-    four = models.CharField(max_length=20, blank=True, null=True,default=0)
-    five = models.CharField(max_length=20, blank=True, null=True,default=0)
-    six = models.CharField(max_length=20, blank=True, null=True,default=0)
-    seven = models.CharField(max_length=20, blank=True, null=True,default=0)
-    eight = models.CharField(max_length=20, blank=True, null=True,default=0)
-    nine = models.CharField(max_length=20, blank=True, null=True)
-    ten = models.CharField(max_length=20, blank=True, null=True)
-    eleven = models.CharField(max_length=20, blank=True, null=True)
-    twelve = models.CharField(max_length=20, blank=True, null=True)
-    thirteen = models.CharField(max_length=20, blank=True, null=True)
-    fourteen = models.CharField(max_length=20, blank=True, null=True)
-    fifteen = models.CharField(max_length=20, blank=True, null=True)
-    sixteen = models.CharField(max_length=20, blank=True, null=True)
-    seventeen = models.CharField(max_length=20, blank=True, null=True)
-    eighteen = models.CharField(max_length=20, blank=True, null=True)
-    nineteen = models.CharField(max_length=20, blank=True, null=True)
-    twenty = models.CharField(max_length=20, blank=True, null=True)
-    twenty_one = models.CharField(max_length=20, blank=True, null=True)
-    twenty_two = models.CharField(max_length=20, blank=True, null=True)
-    twenty_three = models.CharField(max_length=20, blank=True, null=True)
-    twenty_four = models.CharField(max_length=20, blank=True, null=True)
-    twenty_five = models.CharField(max_length=20, blank=True, null=True)
-    twenty_six = models.CharField(max_length=20, blank=True, null=True)
-    twenty_seven = models.CharField(max_length=20, blank=True, null=True)
-    twenty_eight = models.CharField(max_length=20, blank=True, null=True)
-    twenty_nine = models.CharField(max_length=20, blank=True, null=True)
-    thirty = models.CharField(max_length=20, blank=True, null=True)
-    thirty_one = models.CharField(max_length=20, blank=True, null=True)
-    thirty_two = models.CharField(max_length=20, blank=True, null=True)
-    thirty_three = models.CharField(max_length=20, blank=True, null=True)
-    thirty_four = models.CharField(max_length=20, blank=True, null=True)
-    thirty_five = models.CharField(max_length=20, blank=True, null=True)
-    thirty_six = models.CharField(max_length=20, blank=True, null=True)
-    thirty_seven = models.CharField(max_length=20, blank=True, null=True)
-    thirty_eight = models.CharField(max_length=20, blank=True, null=True)
-    thirty_nine = models.CharField(max_length=20, blank=True, null=True)
-    fourty = models.CharField(max_length=20, blank=True, null=True)
-    fourty_one = models.CharField(max_length=20, blank=True, null=True)
-    fourty_two = models.CharField(max_length=20, blank=True, null=True)
-    fourty_three = models.CharField(max_length=20, blank=True, null=True)
-    fourty_four = models.CharField(max_length=20, blank=True, null=True)
-    fourty_five = models.CharField(max_length=20, blank=True, null=True)
-    fourty_six = models.CharField(max_length=20, blank=True, null=True)
-    fourty_seven = models.CharField(max_length=20, blank=True, null=True)
-    fourty_eight = models.CharField(max_length=20, blank=True, null=True)
-    fourty_nine = models.CharField(max_length=20, blank=True, null=True)
-    fifty = models.CharField(max_length=20, blank=True, null=True)
-    fifty_one = models.CharField(max_length=20, blank=True, null=True)
-    fifty_two = models.CharField(max_length=20, blank=True, null=True)
-    fifty_three = models.CharField(max_length=20, blank=True, null=True)
-    fifty_four = models.CharField(max_length=20, blank=True, null=True)
-    fifty_five = models.CharField(max_length=20, blank=True, null=True)
-    fifty_six = models.CharField(max_length=20, blank=True, null=True)
-    fifty_seven = models.CharField(max_length=20, blank=True, null=True)
-    fifty_eight = models.CharField(max_length=20, blank=True, null=True)
-    fifty_nine = models.CharField(max_length=20, blank=True, null=True)
-    sixty = models.CharField(max_length=20, blank=True, null=True)
-    sixty_one = models.CharField(max_length=20, blank=True, null=True)
-    sixty_two = models.CharField(max_length=20, blank=True, null=True)
-    sixty_three = models.CharField(max_length=20, blank=True, null=True)
-    sixty_four = models.CharField(max_length=20, blank=True, null=True)
-
-    def __str__(self):
-        return f"Marks for {self.Student_rollno}"
 
 class subject(models.Model):
     semester = models.CharField(max_length=200)
@@ -473,7 +450,7 @@ class StudentBalance(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE)
     extra_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     advance_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
-    last_updated = models.DateTimeField(auto_now=True)
+    last_updated = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.student.name} - Extra: {self.extra_amount}, Advance: {self.advance_amount}"
@@ -483,7 +460,7 @@ class ChatRoom(models.Model):
     participant1 = models.CharField(max_length=100)
     participant2 = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    last_activity = models.DateTimeField(auto_now=True)
+    last_activity = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -507,10 +484,18 @@ class Message(models.Model):
     def __str__(self):
         return f"Message from {self.sender_id} in {self.chat_room.name}"
 
-
-
-
-
+class History(models.Model):
+    history_id = models.CharField(max_length=50)
+    content = models.TextField(null=False)
+    position = models.CharField(max_length=50)
+    updatedFrom = models.CharField(max_length=50)
+    updatedTo = models.CharField(max_length=50)
+    type = models.CharField(max_length=50)
+    reciver_type = models.CharField(max_length=50)
+    updatedAt = models.DateTimeField(auto_now_add=True)
+    
+    def _str_(self):
+        return self.history_id
 
 # models.py
 from django.db import models

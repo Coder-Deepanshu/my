@@ -8,7 +8,7 @@ from django.db.models.functions import Coalesce
 from django.db.models import DecimalField
 from decimal import Decimal
 
-
+# function of front page 
 def home(request):
     return render(request,'Home/home.html')
 
@@ -45,24 +45,27 @@ def login_view(request):
             return redirect('login')
         
         if role == 'admin':
-            admin_email = Admin.objects.all().values_list('email',flat=True)
-            if username in admin_email :
+            try:
+                
+             admin_email = Admin.objects.all().values_list('email',flat=True)
+             if (username in admin_email) :
                 admin_detail = Admin.objects.get(email=username)
                 user_id = admin_detail.college_id
                 admin_phone = admin_detail.phone
-
+                
                 if (password==admin_phone and user_id == user_id):
-                    request.session['username1'] =  admin_detail.name
-                    request.session['admin_college_id']= user_id
+                    request.session['username1'] =  str(admin_detail.name) + " " + str(admin_detail.last_name)
+                    request.session['admin_college_id']= user_id 
                     request.session['role'] = role
                     return redirect('dashboard')
+                 
                 else:
-                    messages.error(request, "Invalid admin credentials")
-                    return redirect('login')
-
-            else:
-                messages.error(request, "Invalid admin credentials")
+                  messages.error(request, "Invalid admin credentials")
+                  return redirect('login')
+            except Exception as e:
+                messages.error(request, f"An error occurred: {str(e)}")
                 return redirect('login')
+                
                 
         elif role == 'faculty':
             try:
@@ -322,11 +325,14 @@ def logout_view(request):
     request.session.flush()
     return redirect('login')
 
+from .models import StudentDocuments, AdminDocuments, FacultyDocuments
 # for single students operations 
 def student_functions(request):
     context = {}
     role = request.session.get('role')
     context['role'] = role
+    context['course'] = Course.objects.all()
+    context['level'] = Level.objects.all()
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -369,8 +375,8 @@ def student_functions(request):
                     phone=phone,
                     other_phone_no=request.POST.get("otherphone"),
                     gender=request.POST.get("gender"),
-                    course=request.POST.get("course"),
-                    level=request.POST.get("education"),
+                    course_id=request.POST.get("course"),
+                    level_id=request.POST.get("education"),
                     birthday=request.POST.get("birthday"),
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
@@ -394,6 +400,9 @@ def student_functions(request):
                     year=1,     # Default value
                     country="India"  # Default value
                 )
+                detail = Student.objects.get(college_id = college_id)
+                StudentDocuments.objects.create(student = detail ,pic1 = None, pic2 = None, pic3 = None,
+                pic4 = None, pic5 = None, pic6 = None, pic7 = None, pic8 = None, pic9 = None)
                 messages.success(request, f"Student added successfully with ID: {college_id}!")
                 return redirect(reverse('student_function') + '?success=true')  # Redirect to avoid form resubmission
             except Exception as e:
@@ -449,6 +458,8 @@ def faculty_functions(request):
     context = {}
     role = request.session.get('role')
     context['role'] = role
+    context['position'] = Position.objects.filter(role = 'Faculty')
+    context['department'] = Department.objects.filter(type = 'Faculty')
     if request.method == "POST":
         action = request.POST.get("action")
 
@@ -480,9 +491,9 @@ def faculty_functions(request):
                     email=email,
                     phone=phone,
                     other_phone_no=request.POST.get("otherphone"),
-                    position=request.POST.get("position"),
+                    position_id=request.POST.get("position"),
                     gender=request.POST.get("gender"),
-                    department=request.POST.get("department"),
+                    department_id=request.POST.get("department"),
                     qualification=request.POST.get("qualification"),
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
@@ -502,6 +513,9 @@ def faculty_functions(request):
                     password=phone,
                     country='India'
                 )
+                detail = Faculty.objects.get(college_id = college_id)
+                FacultyDocuments.objects.create(faculty = detail ,pic1 = None, pic2 = None, pic3 = None,
+                pic4 = None, pic5 = None)
                 messages.success(request, F"Faculty added successfully with ID: {college_id}!")
             except Exception as e:
                 messages.error(request, f"Error adding faculty: {str(e)}")
@@ -564,6 +578,8 @@ def admin_functions(request):
     context = {}
     role = request.session.get('role')
     context['role'] = role
+    context['position'] = Position.objects.filter(role = 'Admin')
+    context['department'] = Department.objects.filter(type = 'Admin')
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -596,9 +612,9 @@ def admin_functions(request):
                     email=email,
                     phone=phone,
                     other_phone_no=request.POST.get("otherphone"),
-                    position=request.POST.get("position"),
+                    position_id=request.POST.get("position"),
                     gender=request.POST.get("gender"),
-                    department=request.POST.get("department"),
+                    department_id=request.POST.get("department"),
                     qualification=request.POST.get("qualification"),
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
@@ -619,6 +635,9 @@ def admin_functions(request):
                     password=phone,
                 )
                 User.objects.create_user(username=email,password=phone,is_staff=True,is_superuser=True)
+                detail = Admin.objects.get(college_id = college_id)
+                AdminDocuments.objects.create(admin = detail ,pic1 = None, pic2 = None, pic3 = None,
+                pic4 = None, pic5 = None)
                 messages.success(request, f"Admin added successfully with ID {college_id}!")
             except Exception as e:
                 messages.error(request, f"Error adding admin: {str(e)}")
@@ -720,8 +739,6 @@ def get_courses_details(request):
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
     
 def filtered_students(request, template):
-    
-    
     try:
         filters = {
             'course': request.GET.get('course', 'all'),
@@ -748,6 +765,45 @@ def filtered_students(request, template):
         if filters['college_id']:
             students = students.filter(college_id__icontains=filters['college_id'])
             
+        if template == 'bulkActions/student/studentFilterResult.html':
+            # Pagination
+            page = request.GET.get('page', 1)
+            paginator = Paginator(students, 5)  # Show 10 students per page
+        
+            try:
+                 students_page = paginator.page(page)
+            except PageNotAnInteger:
+                 students_page = paginator.page(1)
+            except EmptyPage:
+                students_page = paginator.page(paginator.num_pages)
+            
+            html = render_to_string(template, {'students': students_page})
+            # Generate pagination HTML
+            pagination_html = ''
+            if paginator.num_pages > 1:
+                pagination_html = '<div class="pagination">'
+                if students_page.has_previous():
+                    pagination_html += f'<button class="page-link" data-page="1"><i class="fas fa-angle-double-left"></i></button>'
+                    pagination_html += f'<button class="page-link" data-page="{students_page.previous_page_number()}"><i class="fas fa-angle-left"></i></button>'
+            
+                for i in range(1, paginator.num_pages + 1):
+                    if i == students_page.number:
+                        pagination_html += f'<button class="page-link active" data-page="{i}">{i}</button>'
+                    else:
+                        pagination_html += f'<button class="page-link" data-page="{i}">{i}</button>'
+            
+                if students_page.has_next():
+                    pagination_html += f'<button class="page-link" data-page="{students_page.next_page_number()}"><i class="fas fa-angle-right"></i></button>'
+                    pagination_html += f'<button class="page-link" data-page="{paginator.num_pages}"><i class="fas fa-angle-double-right"></i></button>'
+            
+                pagination_html += '</div>'
+            
+            return JsonResponse({
+               'html': html,
+               'pagination': pagination_html,
+               'total_pages': paginator.num_pages
+        })
+            
     except Exception as e:
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
 
@@ -756,8 +812,6 @@ def filtered_students(request, template):
 
 
 def filtered_student(request):
-  
-    
     try:
         filters = {
             'course': request.GET.get('course', 'all'),
@@ -766,8 +820,7 @@ def filtered_student(request):
             'college_id': request.GET.get('college_id', '')
         }
         
-        # Check user role to determine which students to show
-        role = request.session.get('role')
+    
     
         students = Student.objects.all()
        
@@ -795,44 +848,16 @@ def filtered_student(request):
             
         html = render_to_string('student/student_result_partial.html', {'students': students_page})
         
-        # Generate pagination HTML
-        pagination_html = ''
-        if paginator.num_pages > 1:
-            pagination_html = '<div class="pagination">'
-            if students_page.has_previous():
-                pagination_html += f'<button class="page-link" data-page="1"><i class="fas fa-angle-double-left"></i></button>'
-                pagination_html += f'<button class="page-link" data-page="{students_page.previous_page_number()}"><i class="fas fa-angle-left"></i></button>'
-            
-            for i in range(1, paginator.num_pages + 1):
-                if i == students_page.number:
-                    pagination_html += f'<button class="page-link active" data-page="{i}">{i}</button>'
-                else:
-                    pagination_html += f'<button class="page-link" data-page="{i}">{i}</button>'
-            
-            if students_page.has_next():
-                pagination_html += f'<button class="page-link" data-page="{students_page.next_page_number()}"><i class="fas fa-angle-right"></i></button>'
-                pagination_html += f'<button class="page-link" data-page="{paginator.num_pages}"><i class="fas fa-angle-double-right"></i></button>'
-            
-            pagination_html += '</div>'
-            
-        return JsonResponse({
-            'html': html,
-            'pagination': pagination_html,
-            'total_pages': paginator.num_pages
-        })
+        
     except Exception as e:
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
-
-
 
 from django.http import JsonResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import get_object_or_404
 import json
 
-def get_student_details(request):
-    
-    
+def get_student_details(request):    
     try:
         college_id = request.GET.get('college_id')
         student = Student.objects.get(college_id=college_id)
@@ -853,7 +878,7 @@ def get_student_details(request):
             'address': student.address,
             'city': student.city,
             'state': student.state,
-            'pin_code': student.pin_code if hasattr(student, 'pin_code') else '',
+            'state_code': student.state_code if hasattr(student, 'state_code') else '',
             'date_of_joining': student.date_of_joining.strftime('%Y-%m-%d') if student.date_of_joining else '',
             'profile_picture': student.profile_picture.url if student.profile_picture else ''
         }
@@ -864,9 +889,7 @@ def get_student_details(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
 
-def update_student(request):
-
-    
+def update_student(request): 
     try:
         college_id = request.POST.get('college_id')
         student = Student.objects.get(college_id=college_id)
@@ -891,9 +914,7 @@ def update_student(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
 
-def bulk_update_students(request):
-  
-    
+def bulk_update_students(request): 
     try:
         student_ids = request.POST.get('student_ids', '').split(',')
         students = Student.objects.filter(college_id__in=student_ids)
@@ -916,8 +937,6 @@ def bulk_update_students(request):
         return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
 
 def delete_student(request):
-
-    
     try:
         college_id = request.POST.get('college_id')
         student = Student.objects.get(college_id=college_id)
@@ -930,8 +949,6 @@ def delete_student(request):
         return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
 
 def bulk_delete_students(request):
-
-    
     try:
         student_ids = request.POST.get('student_ids', '').split(',')
         students = Student.objects.filter(college_id__in=student_ids)
@@ -943,8 +960,6 @@ def bulk_delete_students(request):
         return JsonResponse({'success': False, 'error': f'Server error: {str(e)}'})
 
 def export_students(request):
- 
-    
     try:
         student_ids = request.POST.get('student_ids', '').split(',')
         students = Student.objects.filter(college_id__in=student_ids)
@@ -2698,112 +2713,271 @@ def chatHistory(request):
 
 
 
+from django.db.models import Max
+from .models import History, Student, Faculty, Admin
+from django.shortcuts import render, get_object_or_404
+import json
+
+def historySender(request, type):
+    role = request.session.get('role')
+    data = []
+    
+    if type == 'Admin':
+        history = History.objects.filter(reciver_type__iexact='Admin').values("updatedTo")
+        history = history.annotate(latest_time=Max("updatedAt")).values_list("updatedTo", "latest_time")
+        for i in history:
+            try:
+                detail = Admin.objects.get(college_id=str(i[0]))
+                name = str(detail.name + " " + detail.last_name)
+                data.append({
+                    "name": name, 
+                    "college_id": detail.college_id, 
+                    "department": detail.department.name, 
+                    "position": detail.position.name, 
+                    "last_update": i[1]
+                })
+            except Admin.DoesNotExist:
+                continue
+                
+    elif type == 'Faculty':
+        history = History.objects.filter(reciver_type__iexact='Faculty').values("updatedTo")
+        history = history.annotate(latest_time=Max("updatedAt")).values_list("updatedTo", "latest_time")
+        for i in history:
+            try:
+                detail = Faculty.objects.get(college_id=str(i[0]))
+                name = str(detail.name + " " + detail.last_name)
+                data.append({
+                    "name": name, 
+                    "college_id": detail.college_id, 
+                    "department": detail.department.name, 
+                    "position": detail.position.name, 
+                    "last_update": i[1]
+                })
+            except Faculty.DoesNotExist:
+                continue
+                
+    elif type == 'Student':
+        history = History.objects.filter(reciver_type__iexact='Student').values("updatedTo")
+        history = history.annotate(latest_time=Max("updatedAt")).values_list("updatedTo", "latest_time")
+        for i in history:
+            try:
+                detail = Student.objects.get(college_id=str(i[0]))
+                name = str(detail.name + " " + detail.last_name)
+                data.append({
+                    "name": name, 
+                    "college_id": detail.college_id, 
+                    "course": detail.course.name, 
+                    "level": detail.course.code, 
+                    "last_update": i[1]
+                })
+            except Student.DoesNotExist:
+                continue
+    
+    return render(request, 'main/history.html', {
+        'role': role, 
+        'type': type, 
+        'data': data
+    })
+   
+def get_updatedToDetails(request,college_id):
+    id_prefix = str(college_id[0:2])
+    details = None
+    if id_prefix == 'AD':
+        try:
+           details = Admin.objects.get(college_id = college_id)
+           name = str(details.name + " " + details.last_name) 
+           return JsonResponse({"name":name, "college_id":details.college_id, 
+             "row4":details.position.name, "row3":details.department.name})
+           
+        except Admin.DoesNotExist:
+            return JsonResponse({"error": "Admin not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    elif id_prefix == 'GK':
+        try:
+           details = Faculty.objects.get(college_id = college_id)
+           name = str(details.name + " " + details.last_name)
+           return JsonResponse({"name":name, "college_id":details.college_id, 
+             "row4":details.position.name, "row3":details.department.name})
+           
+        except Faculty.DoesNotExist:
+            return JsonResponse({"error": "Faculty not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    elif id_prefix == 'ST': 
+        try:
+            details = Student.objects.get(college_id = college_id)
+            name = str(details.name + " " + details.last_name)
+            course = details.course.name
+            
+            return JsonResponse({"name":name, "college_id":details.college_id, 
+             "row3":course, "row4":details.course.code})
+        except Student.DoesNotExist:
+            return JsonResponse({"error": "Student not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+from django.db.models import F
+def getHistory(request,college_id):
+    id_prefix = str(college_id[0:2])
+    details = None
+    context = {}
+    if id_prefix == 'ST':
+        try:
+            details = Student.objects.get(college_id = college_id)
+            name = str(details.name + " " + details.last_name)
+            course = str(details.course.name + " - " + details.course.level.name + f" - ({details.course.department.name})")
+            year = details.date_of_joining.year
+            end_year = int(year) + int(details.course.no_of_years)
+            batch = str(str(year) + " - " + str(end_year))
+            documents = StudentDocuments.objects.get(student = details)
+            return JsonResponse({"name":name, "college_id":details.college_id, 
+             "Row3":course, "Row4":batch,'documents':documents.student.name })
+        except Student.DoesNotExist:
+            return JsonResponse({"error": "Student not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+    elif id_prefix == 'AD':
+        try:
+           details = Admin.objects.get(college_id = college_id)
+           name = str(details.name + " " + details.last_name) 
+           return JsonResponse({"name":name, "college_id":details.college_id, 
+             "Row4":str(details.position.name) + " - " + str(details.position.position_id), "Row3":str(details.department.name) + " - " + str(details.department.department_id)})
+           
+        except Admin.DoesNotExist:
+            return JsonResponse({"error": "Admin not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    elif id_prefix == 'GK':
+        try:
+           details = Faculty.objects.get(college_id = college_id)
+           name = str(details.name + " " + details.last_name)
+           return JsonResponse({"name":name, "college_id":details.college_id, 
+             "Row4":str(details.position.name) + " - " + str(details.position.position_id), "Row3":str(details.department.name) + " - " + str(details.department.department_id)})
+           
+        except Faculty.DoesNotExist:
+            return JsonResponse({"error": "Faculty not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return render(request,'main/history.html',{'context':context})
+
+from .models import StudentDocuments, AdminDocuments, FacultyDocuments
+# for uploading documents of faculty,student and admin
+def document(request,type):
+    user_id = None
+    detail = None
+    role = request.session.get('role')
+    batch = None
+    
+    try:
+      if type == 'Student':
+        user_id = request.session.get('student_college_id')
+        detail = Student.objects.get(college_id = user_id)
+        documents = StudentDocuments.objects.get(student = detail)
+       
+        year = detail.date_of_joining.year
+        end_year = int(year) + int(detail.course.no_of_years)
+        batch = str(str(year) + " - " + str(end_year))
+        
+        try:
+            if request.method == 'POST':
+                studentDocument, created = StudentDocuments.objects.get_or_create(student = detail)
+                for i in range(1,10):
+                    field_name = f"pic{i}"
+                    uploaded_file = request.POST.get(field_name)
+                    if uploaded_file :
+                        setattr(studentDocument, field_name, uploaded_file)
+                        studentDocument.save()
+                messages.success(request,"Document Uploaded Successfully!")
+                
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+        
+      elif type == 'Faculty':
+        user_id = request.session.get('faculty_college_id')
+        detail = Faculty.objects.get(college_id = user_id)
+        documents = FacultyDocuments.objects.get(faculty = detail)
+        try:
+            if request.method == 'POST':
+                facultyDocument, created = FacultyDocuments.objects.get_or_create(faculty = detail)
+                for i in range(1,10):
+                    field_name = f"pic{i}"
+                    uploaded_file = request.POST.get(field_name)
+                    if uploaded_file :
+                        setattr(facultyDocument, field_name, uploaded_file)
+                        facultyDocument.save()
+                messages.success(request,"Document Uploaded Successfully!")
+                
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+        
+      elif type == 'Admin':
+        user_id = request.session.get('admin_college_id')
+        detail = Admin.objects.get(college_id = user_id)
+        documents = AdminDocuments.objects.get(admin = detail)
+        try:
+            if request.method == 'POST':
+                adminDocument, created = AdminDocuments.objects.get_or_create(admin = detail)
+                for i in range(1,10):
+                    field_name = f"pic{i}"
+                    uploaded_file = request.POST.get(field_name)
+                    if uploaded_file :
+                        setattr(adminDocument, field_name, uploaded_file)
+                        adminDocument.save()
+                messages.success(request,"Document Uploaded Successfully!")
+                
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+        
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        
+    return render(request,'main/document.html',{'type':type,'detail':detail,'role':role,'batch':batch,'documents':documents})
+    
+    
 
 
-from django.shortcuts import render
-from django.core.paginator import Paginator
-from django.db.models import Q
+
+
+
+
+from django.http import JsonResponse
+def get_data_fetch(request):
+   return render(request,'student_list.html')
 from .models import Students
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import Student
 
-def student_list(request):
-    # Get filters/search inputs from URL params
-    course = request.GET.get("course")
-    roll_no = request.GET.get("roll_no")
-    query = request.GET.get("q")   # generic search
+# All students list
+def students_list(request):
+    students = list(Students.objects.values("roll_no", "name", "course"))
+    return JsonResponse({"students": students})
 
-    students = Students.objects.all().order_by("roll_no")
+# Single student detail
+def student_detail(request, roll_no):
+    try:
+        student = Students.objects.get(roll_no=roll_no)
+        return JsonResponse({
+            "roll_no": student.roll_no,
+            "name": student.name,
+            "course": student.course
+        })
+    except Students.DoesNotExist:
+        return JsonResponse({"error": "Student not found"}, status=404)
 
-    # Apply course filter
-    if course:
-        students = students.filter(course__iexact=course)
-
-    # Apply roll no filter
-    if roll_no:
-        students = students.filter(roll_no=roll_no)
-
-    # Apply advanced search (partial match)
-    if query:
-        students = students.filter(
-            Q(name__icontains=query) |
-            Q(course__icontains=query) |
-            Q(roll_no__icontains=query)
-        )
-
-    # Pagination (5 students per page)
-    paginator = Paginator(students, 5)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-
-    # Send context to template
-    context = {
-        "page_obj": page_obj,
-        "course": course,
-        "roll_no": roll_no,
-        "query": query,
-    }
-    return render(request, "student_list.html", context)
-
-
-
-
-
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.core.paginator import Paginator
-from .models import Students
-from .form import StudentForm
-
-def student_dashboard(request):
-    # ✅ Add Student Form
-    add_form = StudentForm(request.POST or None, prefix="add")
-
-    if request.method == "POST" and "add_submit" in request.POST:
-        if add_form.is_valid():
-            add_form.save()
-            return redirect("student_dashboard")
-
-    # ✅ Edit Student
-    edit_id = request.GET.get("edit_id")
-    student_instance = None
-    edit_form = None
-
-    if edit_id:
-        student_instance = get_object_or_404(Students, id=edit_id)
-        edit_form = StudentForm(request.POST or None, instance=student_instance, prefix="edit")
-
-        if request.method == "POST" and "edit_submit" in request.POST:
-            if edit_form.is_valid():
-                edit_form.save()
-                return redirect("student_dashboard")
-
-    # ✅ Delete
-    if "delete_id" in request.GET:
-        student = get_object_or_404(Students, id=request.GET.get("delete_id"))
-        student.delete()
-        return redirect("student_dashboard")
-
-    # ✅ Filtering
-    search = request.GET.get("search", "")
-    course = request.GET.get("course", "")
-    students = Students.objects.all()
-    if search:
-        students = students.filter(name__icontains=search)
-    if course:
-        students = students.filter(course__icontains=course)
-
-    # ✅ Pagination
-    paginator = Paginator(students.order_by("roll_no"), 5)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        "add_form": add_form,
-        "edit_form": edit_form,
-        "edit_id": edit_id,
-        "students": page_obj,
-        "search": search,
-        "course": course,
-    }
-    return render(request, "student_dashboard.html", context)
-
+# Bulk delete
+@csrf_exempt
+def delete_students(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        roll_nos = data.get("roll_nos", [])
+        deleted_students = list(Students.objects.filter(roll_no__in=roll_nos).values("roll_no", "name", "course"))
+        Students.objects.filter(roll_no__in=roll_nos).delete()
+        return JsonResponse({"message": "Selected students deleted", "deleted": deleted_students})
+    return JsonResponse({"error": "Invalid Request"}, status=400)

@@ -238,11 +238,13 @@
                                         <label for="position" class="form-label"><i class="fas fa-graduation-cap"></i> Position</label>
                                         <select class="form-select" id="position" name="position" required>
                                             <option value="" selected disabled>Select position</option>
-                                            <option value="HOD">HOD(Head of Department)</option>
-                                            <option value="Professor">Professor</option>
-                                            <option value="Associate Professor">Associate Professor</option>
-                                            <option value="Lecturer">Lecturer</option>
-                                            <option value="Lab Instructor">Lab Instructor</option>
+                                            {% if position %}
+                                                {% for i in position %}
+                                                   <option value="{{ i.id }}">{{ i.name }}</option>
+                                                {% endfor %}
+                                            {% else %}
+                                                <option value="" selected disabled>No positions Details</option>
+                                            {% endif %}
                                         </select>
                                     </div>
                                 </div>
@@ -252,11 +254,14 @@
                                 <label for="department" class="form-label"><i class="fas fa-book"></i> Select Department</label>
                                 <select class="form-select" id="department" name="department" required>
                                     <option value="" selected disabled>Choose a department</option>
-                                    <option value="Computer Application">Computer Application</option>
-                                    <option value="Commerce">Commerce</option>
-                                    <option value="Arts">Arts</option>
-                                    <option value="Science">Science</option>
-                                    <option value="Biology">Biology</option>
+                                    {% if department %}
+                                        {% for j in department %}
+                                         <option value="{{ j.id }}">{{ j.name }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="" selected disabled>No Department Details</option>
+                                    {% endif %}
+                                    
                                 </select>
                                </div>
                                 </div>

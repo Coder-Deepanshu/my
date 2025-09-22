@@ -501,7 +501,7 @@
                 <select id="course" name="course" class="form-select">
                     <option value="">All Courses</option>
                     {% for course in courses %}
-                    <option value="{{ course.name }}" {% if selected_course==course.name %}selected{% endif %}>{{
+                    <option value="{{ course.name }}" >{{
                         course.name }}</option>
                     {% endfor %}
                 </select>
@@ -513,7 +513,7 @@
                     <option value="">All Years</option>
                     {% if years %}
                     {% for year in years %}
-                    <option value="{{ year }}" {% if selected_year==year %}selected{% endif %}>Year {{ year }}</option>
+                    <option value="{{ year }}" >Year {{ year }}</option>
                     {% endfor %}
                     {% endif %}
                 </select>
@@ -521,12 +521,12 @@
 
             <div class="filter-group">
                 <label for="semester"><i class="fas fa-calendar"></i> Semester:</label>
-                <select id="semester" name="semester" class="form-select" {% if not selected_course %}disabled{% endif
-                    %}>
+                <select id="semester" name="semester" class="form-select" 
+                   >
                     <option value="">All Semesters</option>
                     {% if semesters %}
                     {% for semester in semesters %}
-                    <option value="{{ semester }}" {% if selected_semester==semester %}selected{% endif %}>Semester {{
+                    <option value="{{ semester }}" >Semester {{
                         semester }}</option>
                     {% endfor %}
                     {% endif %}

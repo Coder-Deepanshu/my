@@ -283,10 +283,14 @@
                                             Education Level</label>
                                         <select class="form-select" id="education" name="education" required>
                                             <option value="" selected disabled>Select education level</option>
-                                            <option value="AI">AI</option>
-                                            <option value="Honours">Honours</option>
-                                            <option value="General">General</option>
-                                            <option value="SF">Self-Finance</option>
+                                            {% if level %}
+                                               {% for i in level %}
+                                                   <option value="{{ i.id }}">{{ i.name }}</option>
+                                               {% endfor %}
+                                            {% else %}
+                                               <option value="" selected disabled>No Level Found</option>
+                                            {% endif %}
+
                                         </select>
                                     </div>
                                 </div>
@@ -297,11 +301,13 @@
                                             Course</label>
                                         <select class="form-select" id="course" name="course" required>
                                             <option value="" selected disabled>Choose a course</option>
-                                            <option value="B.Com">Bachelor of Commerce</option>
-                                            <option value="B.Sc">Bachelor of Science</option>
-                                            <option value="B.A">Bachelor of Arts</option>
-                                            <option value="B.C.A">Bachelor of Computer Application</option>
-                                            <option value="B.B.A">Bachelor of Business Administration</option>
+                                            {% if course %}
+                                               {% for i in course %}
+                                                   <option value="{{ i.id }}">{{ i.name }}</option>
+                                               {% endfor %}
+                                            {% else %}
+                                               <option value="" selected disabled>No Courses Found</option>
+                                            {% endif %}
                                         </select>
                                     </div>
                                 </div>
@@ -541,7 +547,7 @@
                 <div class="search-student-form">
                     <h3 class="mb-4">Find Student Record</h3>
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-12">
                             <div class="form-group">
                                 <label for="college_id" class="form-label"><i class="fas fa-id-card"></i> Enter College
                                     ID</label>
@@ -549,8 +555,8 @@
                                     placeholder="Enter student's college ID" required>
                             </div>
                         </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary w-100">
+                        <div class="d-flex align-items-center">
+                            <button type="submit" class="btn btn-primary w-100" id="searchBtn">
                                 <i class="fas fa-search me-2"></i> Search Student
                             </button>
                         </div>
@@ -595,7 +601,7 @@
                             </div>
                             <div class="col-md-6">
                                 <h5>Academic Information</h5>
-                                <p><strong>Course:</strong> {{ student.course }} - {{ student.level }}</p>
+                                <p><strong>Course:</strong> {{ student.course.name }} - {{ student.level.name }}</p>
                                 <p><strong>Start Date:</strong> {{ student.date_of_joining }}</p>
                                 <p><strong>10th GPA:</strong> {{ student.tenth_percent }}</p>
                                 <p><strong>12th GPA:</strong> {{ student.twelfth_percent }}</p>
@@ -964,7 +970,7 @@
                 form.submit();
             });
         });
+        
     </script>
 </body>
-
 </html>

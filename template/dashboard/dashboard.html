@@ -142,7 +142,7 @@
         <div class="sidebar-footer">
             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
             <div class="user-info">
-                <div class="user-name">Dr.{{ username }}</div>
+                <div class="user-name">Dr. {{ username }}</div>
                 <div class="user-role">Administrator</div>
             </div>
             <a href="{% url 'logoutdoor' %}">
@@ -205,7 +205,7 @@
             <div id="dashboard-tab" class="tab-content active">
                 <div class="header-1">
                     <div class="page-title">
-                        <h1>Welcome back, Dr.{{ username }}!</h1>
+                        <h1>Welcome back, Dr. {{ username }}!</h1>
                         <p>Here's what's happening with your college today</p>
                     </div>
 
@@ -428,6 +428,15 @@
                         <p class="student-action-desc">View all about your history</p>
                         <button class="student-action-btn">Open</button>
                     </div>
+
+                    <div class="student-action-card">
+                        <div class="student-action-icon">
+                            <i class="fas fa-file-excel"></i>
+                        </div>
+                        <h3 class="student-action-title">Document</h3>
+                        <p class="student-action-desc">upload and view Documents</p>
+                        <a  href="{% url 'adminDocumentManagement' %}" class="student-action-btn">Open</a>
+                    </div>
                     
 
                 </div>
@@ -482,7 +491,7 @@
                         </div>
                         <h3 class="student-action-title">History</h3>
                         <p class="student-action-desc">View student history and logs</p>
-                        <button class="student-action-btn">Open</button>
+                        <a href="{% url 'studentHistoryManagement' %}" class="student-action-btn">Open</a>
                     </div>
                 </div>
             </div>
@@ -536,7 +545,7 @@
                         </div>
                         <h3 class="student-action-title">History</h3>
                         <p class="student-action-desc">View faculty history and logs</p>
-                        <button class="student-action-btn">Open</button>
+                        <a href="{% url 'facultyHistoryManagement' %}" class="student-action-btn">Open</a>
                     </div>
 
                 </div>
@@ -600,7 +609,7 @@
                         </div>
                         <h3 class="student-action-title">History</h3>
                         <p class="student-action-desc">View admin history and logs</p>
-                        <button class="student-action-btn">Open</button>
+                        <a href="{% url 'adminHistoryManagement' %}" class="student-action-btn">Open</a>
                     </div>
 
                 </div>

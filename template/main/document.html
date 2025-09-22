@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Document Upload System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main/document.css' %}">
+</head>
+
+<body>
+    {% include 'header.html' %}
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Student Document Management System</h1>
+            <p>Upload and manage student documents securely</p>
+        </div>
+    </section>
+
+    <div class="content-container">
+        <div class="tab-content" id="documentTabsContent">
+            {% if messages %}
+            <div class="container mt-4">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                    role="alert" id="alertMessage">
+                    {{ message }}
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Document Upload Tab -->
+            <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                <div class="form-container">
+                <form method="POST" >
+                    {% csrf_token %}
+                    <h3 class="mb-4"><i class="fas fa-file-upload"></i> Upload Student Documents</h3>
+
+                    <div class="student-info">
+                        {% if detail %}
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Avatar"
+                            class="student-avatar">
+                        <div class="student-details">
+                            <h4>{{ detail.name }} {{ detail.last_name }}</h4>
+                            <p><strong>ID:</strong> {{ detail.college_id }}</p>
+                            {% if type == 'Student' %}
+                            <p><strong>Course:</strong> {{ detail.course.name }} - {{ detail.course.level }}</p>
+                            <p><strong>Batch:</strong> {{ batch }}</p>
+                            {% else %}
+                            <p><strong>Position:</strong> {{ detail.position.name }} - {{ detail.department.name }}</p>
+                            {% endif %}
+
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="upload-section">
+                        <h4 class="section-title"><i class="fas fa-file-medical"></i> Required Documents</h4>
+                        <div class="document-grid">
+                            {% if type != 'Student' %}
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <h5 class="document-name">Last Qualifiaction</h5>
+                                
+                                {% if documents.pic5 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic5">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" id="pic5" name="pic5"
+                                    accept=".pdf,.jpg,.jpeg,.png , image/*" >
+                                <label for="pic5" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Document Card 3 -->
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-id-card"></i>
+                                </div>
+                                <h5 class="document-name">Adhar Card</h5>
+
+                                {% if documents.pic1 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic1">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>   
+                                <input type="file" class="file-input" id="pic1" name="pic1"  accept=".jpg,.jpeg,.png,image/*">
+                                <label for="pic1" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: JPG, PNG (Max 2MB)</div>
+                            </div>
+
+                            <!-- Document Card 4 -->
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <h5 class="document-name">PAN Card</h5>
+
+                                {% if documents.pic2 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic2">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" name="pic2" id="pic2" accept=".pdf,image/*" >
+                                <label for="pic2" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: PDF (Max 5MB)</div>
+                            </div>
+
+                            <!-- Document Card 5 -->
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-users-cog"></i>
+                                </div>
+                                <h5 class="document-name">Caste Certificate</h5>
+
+                                {% if documents.pic3 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic3">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" name="pic3" id="pic3"
+                                    accept=".pdf,.jpg,.jpeg,.png,image/*" >
+                                <label for="pic3" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                            </div>
+
+                            <!-- Document Card 6 -->
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <h5 class="document-name">Residence Certificate</h5>
+
+                                {% if documents.pic4 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic4">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" id="pic4"
+                                   name="pic4" accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                <label for="pic4" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                            </div>
+
+                            {% if type == 'Student' %}
+
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <h5 class="document-name">Character Certificate</h5>
+
+                                {% if documents.pic5 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic5">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" id="pic5" name="pic5"
+                                    accept=".pdf,.jpg,.jpeg,.png,image/*" >
+                                <label for="pic5" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                            </div>
+
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-hand-holding-usd"></i>
+                                </div>
+                                <h5 class="document-name">Income Certificate</h5>
+
+                                {% if documents.pic6 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic6">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" id="pic6" name="pic6"
+                                    accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                <label for="pic6" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                            </div>
+
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h5 class="document-name">Family ID</h5>
+
+                                {% if documents.pic7 %}
+                                <span class="document-status status-uploaded" data-id="Pic7">Uploaded</span>
+                                <button type="button" class="view-btn">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" id="pic7" name="pic7" accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                <label for="pic7" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                            </div>
+
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <h5 class="document-name">10th DMC</h5>
+
+                                {% if documents.pic8 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic8">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" id="pic8" name="pic8" accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                <label for="pic8" class="upload-btn">Select File</label>
+                                {% endif %}
+
+                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                            </div>
+
+                            <!-- Document Card 2 -->
+                            <div class="document-card">
+                                <div class="document-icon">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                                <h5 class="document-name">12th DMC</h5>
+
+                                {% if documents.pic9 %}
+                                <span class="document-status status-uploaded">Uploaded</span>
+                                <button type="button" class="view-btn" data-id="Pic9">View File</button>
+                                {% else %}
+                                <span class="document-status status-required">Pending</span>
+                                <input type="file" class="file-input" id="pic9" name="pic9" accept=".pdf,.jpg,.jpeg,.png,image/*" >
+                                <label for="pic9" class="upload-btn">Select File</label>
+                                {% endif %}
+                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                            </div>
+                            {% endif %}
+                       
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" id="resetBtn" class="btn-reset">Reset</button>
+                        <button  type="submit" class="btn-submit">Submit All Documents</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const viewBtn = document.querySelectorAll(".view-btn")
+        let resetBtn = document.querySelector("#resetBtn")
+        let closeBtn = document.getElementById("closeMessageBtn")
+        let alertMessage = document.querySelector("#alertMessage")
+
+       
+        viewBtn.forEach((pic)=>{
+            pic.addEventListener('click',()=>{
+                alert(`clicked pic`)
+            })
+        })
+
+        resetBtn.addEventListener('click',()=>{
+            console.log("button was clicked")
+            alertMessage.innerHTML = 'Form was Reseted Successfully!'
+        })
+
+    // Auto-hide messages after 5 seconds
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function (alert) {
+                alert.style.display = 'none';
+            });
+        }, 5000);
+
+        closeBtn.addEventListener('click',()=>{
+            alertMessage.style.display = 'none';
+        })
+       
+    </script>
+</body>
+
+</html>

@@ -10,7 +10,7 @@ from .views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # urls for login
+    # urls for Home
     path('', views.home, name='home'),
     path('Feature/', views.feature, name='feature'),
     path('Success-Stories/', views.success_stories, name='success_stories'),
@@ -27,33 +27,30 @@ urlpatterns = [
     path('Faculty/Dashboard/', views.dashboard1, name='dashboard1'),
     path('Student/Dashboard/', views.dashboard2, name='dashboard2'), 
 
-    # urls for student functions
-    path("Admin-Dashboard/Student-Management/", views.student_functions, name="student_function"),
+    # urls for student/faculty/admin functions
+    path("Dashboard-Admin/Student-Management/", views.student_functions, name="student_function"),
+    path("Dashboard-Admin/Faculty-Management/", views.faculty_functions, name="faculty_functions"),
+    path("Dashboard-SuperAdmin/Admin-Management/", views.admin_functions, name="admin_functions"),
 
-    # urls for faculty functions 
-    path("Admin-Dashboard/Faculty-Management/", views.faculty_functions, name="faculty_functions"),
-    path("Super-Admin/Admin-Management/", views.admin_functions, name="admin_functions"),
-
-    # urls for profile
+    # urls for Main
     path("Dashboard/Profile/", views.profile_details, name="profile_details"),
-
-    # for id card
+    path('profile_upload/', views.profile_upload, name='profile_upload'),# for profile upload in profile
     path("Dashboard/ID-Card", views.id_card, name="id_card"),
     path('Login-In/Forgot-Password/', views.forget_password, name='forgot_password'),
+
+    # for id card
     path('admin-adding-page/', views.admin_adding_page, name='admin_adding_page'),
     path('admin-card/', views.admin_card, name='admin_card'),
     
-    path('profile_upload/', views.profile_upload, name='profile_upload'),
-    
-    # for attendance management student-faculty
- 
+    # for attendance management 
+    # # # for student attendance management
     path('save_attendance/', views.save_attendance, name='save_attendance'),
-    path('Student/Dashboard/Attendance/', views.student_attendance_view, name='student_attendance_view'),
-    path('get_student_attendance/', views.get_student_attendance, name='get_student_attendance'),
-    path('Student/Dashboard/Fees/', views.student_fees_view, name='student_fees_view'),
+    path('Dashboard-Student/Attendance-Management/', views.student_attendance_view, name='student_attendance_view'),
+    path('get-student-attendance/', views.get_student_attendance, name='get_student_attendance'),
     
     # Fee Management URLs
     path('fee-management/', views.admin_fee_management, name='admin_fee_management'),
+    path('Student/Dashboard/Fees/', views.student_fees_view, name='student_fees_view'),
     path('student-fee-details/<str:student_id>/', views.student_fee_details, name='student_fee_details'),
     path('process-fee-payment/', views.process_fee_payment, name='process_fee_payment'),
     path('adjust_extra_payments/', views.adjust_extra_payments, name='adjust_extra_payments'),
@@ -74,45 +71,58 @@ urlpatterns = [
     path('faculty/students/', views.faculty_student_list, name='faculty_student_list'),
     path('delete_chat/<int:room_id>/', views.delete_chat, name='delete_chat'),
 
-# for creating department , positions , courses
+# for creating department/positions/courses
     path('Admin-Dashboard/Department-Creation/',views.department_creation,name='department_creation'),
     path('Admin-Dashboard/Course-Creation/',views.course_creation,name='course_creation'),
     path('Admin-Dashboard/Staff-Positions-Creation/',views.position_creation,name='position_creation'),
 
-    
+# for getting student details on faculty/admin/studentportal 
     path('Faculty-Dashboard/Student-Attendance-Management',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
     path('Faculty-Dashboard/Faculty-Student-Chat',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
-    path('Admin-Dashboard/Student-Bulk-Management',lambda request: views.course_details(request,"student/student_filter.html"),name='studentBulkManagement'),
+    
     path('Admin-Dashboard/Student-Fee-Structure-Management',lambda request: views.course_details(request,"fee_structure_management.html"),name='studentFeeStructureManagement'),
     path('get-courses-details/', views.get_courses_details, name='getCourseDetails'),
     path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents'),
     path('Faculty-Dashboard/Filtered-Student-Chat-Management', lambda request: views.filtered_students(request, "chat/student_list_partial.html"), name='filteredFollowedStudents'),
 
-    path('department/edit/<str:pk>/', views.DepartmentUpdateView.as_view(), name='department_edit'),
-    path('department/delete/<str:pk>/', views.DepartmentDeleteView.as_view(), name='department_delete'),
-    path('student_list/', views.student_list, name='student_list'),
-    
-
-
-
+# for Bulk Actions
+    # for student bulk management
+    path('Admin-Dashboard/Student-Bulk-Management',lambda request: views.course_details(request,"bulkActions/student/studentActions.html"),name='studentBulkManagement'),
+    path('Dashboard-Admin/BulkAction-Student-Management',lambda request : views.filtered_students(request,"bulkActions/student/studentFilterResult.html"), name='bulkStudentFiltering'),
     path('get-student-details/', views.get_student_details, name='get_student_details'),
     path('update-student/', views.update_student, name='update_student'),
     path('bulk-update-students/', views.bulk_update_students, name='bulk_update_students'),
     path('delete-student/', views.delete_student, name='delete_student'),
     path('bulk-delete-students/', views.bulk_delete_students, name='bulk_delete_students'),
     path('export-students/', views.export_students, name='export_students'),
-    path('filtered-students/', views.filtered_student, name='filtered_student'),
+    
+    # for other features
     path('Dashboard-Student/Fine-Management/', views.studentFine, name='studentFine'),
     path('Dashboard-Student/Notice-Management/', views.studentSendNotice, name='studentSendNotice'),
     path('Dashboard-Student/Notes-Management/', views.studentNotes, name='studentNotes'),
-    path('Dashboard-Student/Chat-Management/', views.chatHistory, name='chatHistory'),
+    path('Dashboard-Student/Chat-Management/', views.chatHistory, name='chatHistory'), 
     
-     path('add/', views.student_dashboard, name='student_dashboard'),
+    # for history feature
+    path('Dashboard-Admin/Student-History-Management', lambda request : views.historySender(request,"Student"), name='studentHistoryManagement'),
+    path('Dashboard-Admin/Faculty-History-Management', lambda request : views.historySender(request,"Faculty"), name='facultyHistoryManagement'),
+    path('Dashboard-Admin/Admin-History-Management', lambda request : views.historySender(request,"Admin"), name='adminHistoryManagement'),
+    path('Get-Details/<str:college_id>/',views.get_updatedToDetails,name="get_updatedToDetails"),
+    path('Get-History/<str:college_id>/',views.getHistory,name="getHistory"),
+    
+    # for document uploading feature
+    path('Dashboard-Student/Document-Management', lambda request : views.document(request,"Student"), name='studentDocumentManagement'),
+    path('Dashboard-Faculty/Document-Management', lambda request : views.document(request,"Faculty"), name='facultyDocumentManagement'),
+    path('Dashboard-Admin/Document-Management', lambda request : views.document(request,"Admin"), name='adminDocumentManagement'),
     
     
-
-
+    # ajax practise urls
+    path("get-data1/", views.get_data_fetch, name="get_fetch"),
+    path("students/", views.students_list, name="students_list"),
+    path("students/<int:roll_no>/", views.student_detail, name="student_detail"),
+    path("students/delete_bulk/", views.delete_students, name="delete_students"),
 ]
+
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

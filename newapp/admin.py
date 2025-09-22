@@ -1,10 +1,25 @@
 from django.contrib import admin
-from .models import Student,result,subject,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin,StudentBalance
-from .models import Department,Level,Position
+from .models import Student,subject,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin,StudentBalance
+from .models import Department,Level,Position, StudentDocuments,AdminDocuments, FacultyDocuments
 @admin.register(StudentBalance)
 class StudentAddAdmin(admin.ModelAdmin):
     list_display = ('student', 'extra_amount')
     search_fields = ('student',)
+
+@admin.register(StudentDocuments)
+class StudentDocuments(admin.ModelAdmin):
+    list_display = ('student', 'uploaded_at')
+    search_fields = ('student',)
+
+@admin.register(FacultyDocuments)
+class FacultyDocuments(admin.ModelAdmin):
+    list_display = ('faculty', 'uploaded_at')
+    search_fields = ('faculty',)
+    
+@admin.register(AdminDocuments)
+class AdminDocuments(admin.ModelAdmin):
+    list_display = ('admin', 'uploaded_at')
+    search_fields = ('admin',)
 
 @admin.register(Student)
 class StudentAddAdmin(admin.ModelAdmin):
@@ -36,26 +51,6 @@ class AddAdmin(admin.ModelAdmin):
     list_display = ('name', )
     search_fields = ('name', )
 
-
-
-# Register the Student_percent model
-@admin.register(result)
-class resultAdmin(admin.ModelAdmin):
-    list_display = (
-        'Student_rollno','course',  # Use correct field name
-        # Remove 'course' from list_display
-        'one','two','three','four','five','six','seven','eight','nine','ten',
-        'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen',
-        'nineteen','twenty','twenty_one','twenty_two','twenty_three','twenty_four',
-        'twenty_five','twenty_six','twenty_seven','twenty_eight','twenty_nine',
-        'thirty','thirty_one','thirty_two','thirty_three','thirty_four','thirty_five',
-        'thirty_six','thirty_seven','thirty_eight','thirty_nine','fourty','fourty_one',
-        'fourty_two','fourty_three','fourty_four','fourty_five','fourty_six','fourty_seven',
-        'fourty_eight','fourty_nine','fifty','fifty_one','fifty_two','fifty_three','fifty_four',
-        'fifty_five','fifty_six','fifty_seven','fifty_eight','fifty_nine','sixty','sixty_one',
-        'sixty_two','sixty_three','sixty_four'
-    )
-    search_fields = ('Student_rollno',)
 
 @admin.register(subject)
 class subjectadmin(admin.ModelAdmin):
@@ -97,12 +92,17 @@ class Position(admin.ModelAdmin):
     search_fields=('name',)
 
 
-from .models import Students
+from .models import Students,History
 @admin.register(Students)
 class Students(admin.ModelAdmin):
     list_display=('name','roll_no','course')
     search_fields=('name',)
 
+
+@admin.register(History)
+class History(admin.ModelAdmin):
+    list_display=('content','updatedFrom','updatedTo')
+    search_fields=('content',)
 
 
 

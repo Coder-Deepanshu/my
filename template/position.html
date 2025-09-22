@@ -370,18 +370,22 @@
                                 <input type="text" class="form-control" id="adminPosition" name="adminPosition"
                                     placeholder="e.g., Registrar, Dean of Students" required>
                             </div>
-                            {% if admin_department_list %}
+                            
                             <div class="col-md-6 mb-3">
                                 <label for="adminDepartment" class="form-label"><i class="fas fa-building"></i>
                                     Department</label>
                                 <select class="form-select" id="adminDepartment" name="adminDepartment" required>
-                                    <option value="">Select Department</option>
+                                    <option value="" selected disabled>Select Department</option>
+                                {% if admin_department_list %}
                                     {% for list in admin_department_list %}
-                                    <option value="{{ list.id }}">{{ list.name }}</option>
+                                         <option value="{{ list.id }}">{{ list.name }}</option>
                                     {% endfor %}
+                                {% else %}
+                                    <option value="" selected disabled>No Department Founded</option>
+                                {% endif %}
                                 </select>
                             </div>
-                            {% endif %}
+                            
                         </div>
 
                         <div class="row">
