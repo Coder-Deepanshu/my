@@ -2832,9 +2832,8 @@ def getHistory(request,college_id):
             year = details.date_of_joining.year
             end_year = int(year) + int(details.course.no_of_years)
             batch = str(str(year) + " - " + str(end_year))
-            documents = StudentDocuments.objects.get(student = details)
             return JsonResponse({"name":name, "college_id":details.college_id, 
-             "Row3":course, "Row4":batch,'documents':documents.student.name })
+             "Row3":course, "Row4":batch})
         except Student.DoesNotExist:
             return JsonResponse({"error": "Student not found"}, status=404)
         except Exception as e:

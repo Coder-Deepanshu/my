@@ -167,13 +167,13 @@ ASGI_APPLICATION = 'newpro.routing.application'
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
-# Django ko batane ke liye ke app-specific static files kahan hai
+# Jaha collectstatic sab static files ko ikattha karega
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Agar manually aur bhi static folder use karna ho to
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "newapp", "static"),  # newapp ke andar jo static folder hai
+    os.path.join(BASE_DIR, "static"),
 ]
-
-# Jaha collectstatic sari files ek jagah rakhega
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
