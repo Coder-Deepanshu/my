@@ -161,13 +161,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ASGI_APPLICATION = 'newpro.routing.application'
 
 
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "my/staticfiles",  # or wherever your static files are
+    os.path.join(BASE_DIR, "my/staticfiles"),
 ]
-STATIC_ROOT = BASE_DIR / "static"  # collectstatic will collect here
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
