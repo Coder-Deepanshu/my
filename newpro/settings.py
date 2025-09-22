@@ -127,37 +127,31 @@ USE_I18N = True
 USE_TZ = True
 
 
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# STATIC
+STATIC_URL = '/static/'  # URL me /static/ use hoga
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "my/static"),  # tumhare editor me jo folder hai
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # collectstatic folder
+
+# MEDIA
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
+# ---------------- OTHER SETTINGS -------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# Date input formats
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# DATE FORMAT (agar use ho)
 DATE_INPUT_FORMATS = [
     '%d/%m/%Y',  # '25/10/2023'
     '%Y-%m-%d',  # '2023-10-25'
     '%m/%d/%Y',  # '10/25/2023'
 ]
-
-
-# settings.py
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/'  # Will be overridden by the view based on user type
-LOGOUT_REDIRECT_URL = '/accounts/login/'
-
-# For media files (profile pictures)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-ASGI_APPLICATION = 'newpro.routing.application'
-
-
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "my/staticfiles"),  # dev folder
-]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # production folder
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
