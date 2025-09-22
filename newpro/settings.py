@@ -131,19 +131,22 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# STATIC
-STATIC_URL = '/static/'  # URL me /static/ use hoga
+# Static files (CSS, JS)
+STATIC_URL = '/static/'
+
+# Development ke liye
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "my/static"),  # tumhare editor me jo folder hai
+    os.path.join(BASE_DIR, 'newapp/static'),  # tumhare app ke static folder
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # collectstatic folder
 
-# MEDIA
+# Production ke liye collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (Uploaded files)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-# ---------------- OTHER SETTINGS -------------
+# Other settings
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
