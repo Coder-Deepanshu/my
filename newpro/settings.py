@@ -130,7 +130,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'newapp/static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Media files (Uploaded files)
@@ -167,13 +167,12 @@ ASGI_APPLICATION = 'newpro.routing.application'
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = 'newapp/static/'
+STATIC_URL = '/static/'
 
-# Jaha collectstatic sab static files ko ikattha karega
+# collectstatic ke liye ek jagah
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Agar manually aur bhi static folder use karna ho to
-STATICFILES_DIRS = [
-   
-]
+# Ye khali rakho (kyunki tumhare app ke andar static/ hai,
+# Django usko automatically pick karega)
+STATICFILES_DIRS = []
+
