@@ -75,12 +75,17 @@ urlpatterns = [
     path('Admin-Dashboard/Department-Creation/',views.department_creation,name='department_creation'),
     path('Admin-Dashboard/Course-Creation/',views.course_creation,name='course_creation'),
     path('Admin-Dashboard/Staff-Positions-Creation/',views.position_creation,name='position_creation'),
+    path('Send-Batch/', views.sendBatch, name='sendBatch'),
+    path('Create-Fees-Structure/',views.createFeeStructure, name='createFeeStructure'),
+    path('Fetch-Filter-Batch/',views.fetchBatch, name='fetchBatch'),
+    path('Delete-Structure/<str:value>/',views.deleteStructure, name='deleteStructure'),
 
+    
 # for getting student details on faculty/admin/studentportal 
     path('Faculty-Dashboard/Student-Attendance-Management',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
     path('Faculty-Dashboard/Faculty-Student-Chat',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
     
-    path('Admin-Dashboard/Student-Fee-Structure-Management',lambda request: views.course_details(request,"fee_structure_management.html"),name='studentFeeStructureManagement'),
+    path('Admin-Dashboard/Student-Fee-Structure-Management',lambda request: views.course_details(request,"feeStructureCreation.html"),name='studentFeeStructureManagement'),
     path('get-courses-details/', views.get_courses_details, name='getCourseDetails'),
     path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents'),
     path('Faculty-Dashboard/Filtered-Student-Chat-Management', lambda request: views.filtered_students(request, "chat/student_list_partial.html"), name='filteredFollowedStudents'),
@@ -108,11 +113,17 @@ urlpatterns = [
     path('Dashboard-Admin/Admin-History-Management', lambda request : views.historySender(request,"Admin"), name='adminHistoryManagement'),
     path('Get-Details/<str:college_id>/',views.get_updatedToDetails,name="get_updatedToDetails"),
     path('Get-History/<str:college_id>/',views.getHistory,name="getHistory"),
+    path('Delete-History/<str:college_id>/',views.deleteHistory,name="deleteHistory"),
     
     # for document uploading feature
     path('Dashboard-Student/Document-Management', lambda request : views.document(request,"Student"), name='studentDocumentManagement'),
     path('Dashboard-Faculty/Document-Management', lambda request : views.document(request,"Faculty"), name='facultyDocumentManagement'),
     path('Dashboard-Admin/Document-Management', lambda request : views.document(request,"Admin"), name='adminDocumentManagement'),
+    path('Dashboard-Admin/Get-Documents/', views.getDocuments, name='getDocuments'),
+    path('Dashboard-Admin/View-Documents/<str:college_id>/<str:documentid>/',views.viewDocuments,name='viewDocuments'),
+    
+
+ 
     
     
     # ajax practise urls

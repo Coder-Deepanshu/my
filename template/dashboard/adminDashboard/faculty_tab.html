@@ -1,0 +1,49 @@
+<div class="tab-header">
+    <div class="header-content">
+        <h1>Faculty Management</h1>
+        <p>Manage faculty members and their details</p>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search faculty...">
+    </div>
+</div>
+<!-- faculty Action Cards -->
+<div class="action-grid">
+    <div class="action-card">
+        <div class="action-icon setting">
+            <i class="fas fa-user"></i>
+        </div>
+        <h3 class="action-title">Single Faculty</h3>
+        <p class="action-desc">View and edit individual faculty records</p>
+        <a href="{% url 'faculty_functions' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon birthday">
+            <i class="fas fa-users"></i>
+        </div>
+        <h3 class="action-title">All Faculty</h3>
+        <p class="action-desc">View and manage complete faculty list</p>
+        <button class="action-btn">Open</button>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon upload">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3 class="action-title">Attendance</h3>
+        <p class="action-desc">Manage faculty attendance records</p>
+        <button class="action-btn">Open</button>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon backup">
+            <i class="fas fa-history"></i>
+        </div>
+        <h3 class="action-title">History</h3>
+        <p class="action-desc">View faculty history and logs</p>
+        <a href="{% url 'facultyHistoryManagement' %}" class="action-btn">Open</a>
+    </div>
+
+</div>

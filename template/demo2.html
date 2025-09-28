@@ -1141,4 +1141,470 @@
         .chart-container {
             position: relative;
             height: 300px;
+        }<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Student Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard/adminDashboard.css' %}">
+</head>
+
+<body>
+    <div class="bubbles">
+        <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s;"></div>
+        <div class="bubble" style="width: 120px; height: 120px; left: 20%; animation-delay: 2s;"></div>
+        <div class="bubble" style="width: 60px; height: 60px; left: 30%; animation-delay: 4s;"></div>
+        <div class="bubble" style="width: 100px; height: 100px; left: 40%; animation-delay: 6s;"></div>
+        <div class="bubble" style="width: 70px; height: 70px; left: 60%; animation-delay: 8s;"></div>
+        <div class="bubble" style="width: 90px; height: 90px; left: 80%; animation-delay: 10s;"></div>
+    </div>
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 style="color: white; margin: 0;">
+                <i class="fas fa-graduation-cap me-2" style="color: #4361ee;"></i>
+                EduTrack
+            </h1>
+        </div>
+
+        <div class="sidebar-menu">
+            <h3 class="menu-title">Main</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="#" class="menu-link active" data-tab="dashboard-tab">
+                        <i class="fas fa-tachometer-alt menu-icon"></i>
+                        <span class="menu-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+
+            <h3 class="menu-title">Personal</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="myDetails-tab">
+                        <i class="fas fa-id-badge menu-icon"></i>
+                        <span class="menu-text">My Details</span>
+                    </a>
+                </li>
+            </ul>
+
+            <h3 class="menu-title">Management</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="students-tab">
+                        <i class="fas fa-user-graduate menu-icon"></i>
+                        <span class="menu-text">Students</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="faculty-tab">
+                        <i class="fas fa-chalkboard-teacher menu-icon"></i>
+                        <span class="menu-text">Faculty</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="admin-tab">
+                        <i class="fas fa-tools menu-icon"></i>
+                        <span class="menu-text">Admin</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="result-tab">
+                        <i class="fas fa-poll menu-icon"></i>
+                        <span class="menu-text">Results</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="facultySetting-tab">
+                        <i class="fas fa-cogs menu-icon"></i>
+                        <span class="menu-text">Faculty Setting</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="studentSetting-tab">
+                        <i class="fas fa-user-edit menu-icon"></i>
+                        <span class="menu-text">Student Setting</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="schedule-tab">
+                        <i class="fas fa-calendar-alt menu-icon"></i>
+                        <span class="menu-text">Schedule</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="payment-tab">
+                        <i class="fas fa-money-check-alt menu-icon"></i>
+                        <span class="menu-text">Payment</span>
+                    </a>
+                </li>
+            </ul>
+
+            <h3 class="menu-title">System</h3>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="setting-tab">
+                        <i class="fas fa-sliders-h menu-icon"></i>
+                        <span class="menu-text">Settings</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="grade-tab">
+                        <i class="fas fa-chart-bar menu-icon"></i>
+                        <span class="menu-text">Grade</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#" class="menu-link" data-tab="notification-tab">
+                        <i class="fas fa-comment-alt menu-icon"></i>
+                        <span class="menu-text">Notifications</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
+            <div class="user-info">
+                <div class="user-name">Dr. {{ username }}</div>
+                <div class="user-role">Administrator</div>
+            </div>
+            <a href="{% url 'logoutdoor' %}">
+                <button class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="page-title">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>Dashboard</h3>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </button>
+
+                <div class="user-dropdown">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User"
+                        class="user-dropdown-avatar">
+                    <span class="user-dropdown-name">{{ username }}</span>
+                    <div class="user-dropdown-menu">
+                        <a href="{% url 'profile_details' %}" class="dropdown-item">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <a href="{% url 'id_card' %}" class="dropdown-item">
+                            <i class="fas fa-id-card"></i> ID Card
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-calendar-check"></i> Attendance
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-money-bill-wave"></i> Salary
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logoutdoor' %}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                {% include 'dashboard/adminDashboard/main_content.html' %}
+            </div>
+
+            <!-- Other Tabs -->
+            <div id="myDetails-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/my_details_content.html' %}
+            </div>
+            
+            <div id="students-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/student_tab.html' %}
+            </div>
+            
+            <div id="faculty-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/faculty_tab.html' %}
+            </div>
+            
+            <div id="admin-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/admin_tab.html' %}
+            </div>
+            
+            <div id="result-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/result_tab.html' %}
+            </div>
+            
+            <div id="facultySetting-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/facultySetting_tab.html' %}
+            </div>
+            
+            <div id="studentSetting-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/studentSetting_tab.html' %}
+            </div>
+            
+            <div id="schedule-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/schedule_tab.html' %}
+            </div>
+            
+            <div id="payment-tab" class="tab-content">
+                {% include 'dashboard/adminDashboard/payment_tab.html' %}
+            </div>
+
+            <!-- Setting Tab -->
+            <div id="setting-tab" class="tab-content">
+                <div class="tab-header">
+                    <div class="header-content">
+                        <h1 class="tab-title">
+                            <i class="fas fa-sliders-h"></i>
+                            Setting Management
+                        </h1>
+                        <p class="tab-subtitle">Manage all system settings and configurations</p>
+                    </div>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search settings...">
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <div class="action-card">
+                        <div class="action-icon setting">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3 class="action-title">Semester Setting</h3>
+                        <p class="action-desc">Change Semester and year after time period</p>
+                        <button class="action-btn">Configure</button>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-icon birthday">
+                            <i class="fas fa-gifts"></i>
+                        </div>
+                        <h3 class="action-title">Birthday Wishes</h3>
+                        <p class="action-desc">Wish birthday and create cards for faculty and students</p>
+                        <button class="action-btn">Manage</button>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-icon upload">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h3 class="action-title">Upload Notes</h3>
+                        <p class="action-desc">Upload notes and study materials for Students</p>
+                        <button class="action-btn">Upload</button>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-icon backup">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3 class="action-title">Data Backup</h3>
+                        <p class="action-desc">Create backup of important data for safety</p>
+                        <button class="action-btn">Backup Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade Tab -->
+            <div id="grade-tab" class="tab-content">
+                <div class="tab-header">
+                    <div class="header-content">
+                        <h1 class="tab-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Grade Management
+                        </h1>
+                        <p class="tab-subtitle">Manage all grades and academic evaluations</p>
+                    </div>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search grades...">
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <div class="action-card">
+                        <div class="action-icon grade">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <h3 class="action-title">Student Grades</h3>
+                        <p class="action-desc">View and manage grades marked by faculty</p>
+                        <button class="action-btn">View Grades</button>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-icon assignment">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <h3 class="action-title">Assignments</h3>
+                        <p class="action-desc">Monitor pending assignments under courses</p>
+                        <button class="action-btn">Check Status</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Tab -->
+            <div id="notification-tab" class="tab-content">
+                <div class="tab-header">
+                    <div class="header-content">
+                        <h1 class="tab-title">
+                            <i class="fas fa-comment-alt"></i>
+                            Notification Center
+                        </h1>
+                        <p class="tab-subtitle">Manage all communication and notifications</p>
+                    </div>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search messages...">
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <div class="action-card">
+                        <div class="action-icon chat">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <h3 class="action-title">Faculty Chat</h3>
+                        <p class="action-desc">Communicate with faculty members</p>
+                        <button class="action-btn">Start Chat</button>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-icon chat">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="action-title">Student Chat</h3>
+                        <p class="action-desc">Chat with students regarding issues</p>
+                        <button class="action-btn">Open Chat</button>
+                    </div>
+
+                    <div class="action-card">
+                        <div class="action-icon history">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h3 class="action-title">Chat History</h3>
+                        <p class="action-desc">Review complete communication history</p>
+                        <a href="{% url 'chatHistory' %}" class="action-btn">View History</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Toggle Sidebar
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const sidebar = document.querySelector('.sidebar');
+
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Tab Switching Functionality
+        document.querySelectorAll('[data-tab]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Show selected tab
+                const selectedTab = document.getElementById(tabId);
+                if (selectedTab) {
+                    selectedTab.classList.add('active');
+                }
+
+                // Update active menu item
+                document.querySelectorAll('.menu-link').forEach(menuLink => {
+                    menuLink.classList.remove('active');
+                });
+                link.classList.add('active');
+
+                // Update page title
+                const pageTitle = document.querySelector('.page-title h1');
+                const tabTitles = {
+                    'dashboard-tab': 'Dashboard',
+                    'myDetails-tab': 'My Details',
+                    'students-tab': 'Students',
+                    'faculty-tab': 'Faculty',
+                    'admin-tab': 'Admin',
+                    'result-tab': 'Results',
+                    'facultySetting-tab': 'Faculty Setting',
+                    'studentSetting-tab': 'Student Setting',
+                    'schedule-tab': 'Schedule',
+                    'payment-tab': 'Payment',
+                    'setting-tab': 'Settings',
+                    'grade-tab': 'Grades',
+                    'notification-tab': 'Notifications'
+                };
+
+                if (pageTitle && tabTitles[tabId]) {
+                    pageTitle.textContent = tabTitles[tabId];
+                }
+
+                // Close sidebar on mobile
+                if (window.innerWidth < 1200) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+
+        // Add hover effects to action cards
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Notification badge animation
+        const notificationBadge = document.querySelector('.notification-badge');
+        if (notificationBadge) {
+            setInterval(() => {
+                notificationBadge.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    notificationBadge.style.transform = 'scale(1)';
+                }, 300);
+            }, 3000);
         }
+    </script>
+</body>
+</html>

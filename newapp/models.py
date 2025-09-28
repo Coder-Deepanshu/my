@@ -401,17 +401,19 @@ class subject(models.Model):
 from django.db import models
 from django.core.validators import MinValueValidator
 
+# Example of what your model might look like
 class FeeStructure(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    year = models.IntegerField()
-    semester = models.IntegerField()
-    amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
-    for_year = models.IntegerField()
+    structure_id = models.CharField(max_length=20, unique=True)
+    course = models.CharField(max_length=100)
     due_date = models.DateField()
-
+    year = models.CharField(max_length=50)  # or IntegerField
+    semester = models.CharField(max_length=50)  # or IntegerField
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    batch = models.CharField(max_length=20)  # or for_year if that's the field name
+    
     def __str__(self):
-        return f"{self.course.name} - Year {self.year} Sem {self.semester}"
-
+        return f"{self.course} - {self.batch}"
+    
 class FeePayment(models.Model):
     PAYMENT_TYPES = [
         ('REGULAR', 'Regular Payment'),

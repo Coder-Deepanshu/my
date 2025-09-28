@@ -1,0 +1,49 @@
+<div class="tab-header">
+    <div class="header-content">
+        <h1>Faculty Settings</h1>
+        <p>Configure faculty-related settings</p>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search faculty settings...">
+    </div>
+</div>
+
+<!-- faculty setting Action Cards -->
+<div class="action-grid">
+    <div class="action-card">
+        <div class="action-icon setting">
+            <i class="fas fa-sitemap"></i>
+        </div>
+        <h3 class="action-title">Department</h3>
+        <p class="action-desc">Create Department First for Faculty</p>
+        <a href="{% url 'department_creation' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon birthday">
+            <i class="fas fa-door-open"></i>
+        </div>
+        <h3 class="action-title">Room</h3>
+        <p class="action-desc">Create and Enter Rooms and Labs</p>
+        <button class="action-btn">Open</button>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon upload">
+            <i class="fas fa-id-badge"></i>
+        </div>
+        <h3 class="action-title">Position</h3>
+        <p class="action-desc">Create and Positions of faculty</p>
+        <a href="{% url 'position_creation' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon backup">
+            <i class="fas fa-rupee-sign"></i>
+        </div>
+        <h3 class="action-title">Salary</h3>
+        <p class="action-desc">Create and Enter Salary for Postions of Faculty</p>
+        <button class="action-btn">Open</button>
+    </div>
+</div>

@@ -1,0 +1,153 @@
+<div class="tab-header">
+    <div class="header-content">
+        <h1>Dashboard Overview</h1>
+        <p>Welcome back, Dr. {{ username }}! Here's what's happening today.</p>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search...">
+    </div>
+</div>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--primary);">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="stat-info">
+            <h3>1,254</h3>
+            <p>Total Students</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--success);">
+            <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <div class="stat-info">
+            <h3>68</h3>
+            <p>Faculty Members</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--warning);">
+            <i class="fas fa-book"></i>
+        </div>
+        <div class="stat-info">
+            <h3>42</h3>
+            <p>Active Courses</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--danger);">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-info">
+            <h3>92%</h3>
+            <p>Attendance Rate</p>
+        </div>
+    </div>
+</div>
+
+<div class="section-title">
+    <i class="fas fa-bolt"></i> Quick Actions
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <a href="#" class="action-btn2">
+        <i class="fas fa-user-plus"></i>
+        <span class="action-text2">Add Student</span>
+    </a>
+
+    <a href="#" class="action-btn2">
+        <i class="fas fa-poll"></i>
+        <span class="action-text2">Publish Results</span>
+    </a>
+
+    <a href="#" class="action-btn2">
+        <i class="fas fa-money-bill-wave"></i>
+        <span class="action-text2">Collect Fine</span>
+    </a>
+
+    <a href="#" class="action-btn2">
+        <i class="fas fa-bullhorn"></i>
+        <span class="action-text2">Notice</span>
+    </a>
+
+    <a href="#" class="action-btn2">
+        <i class="fas fa-cog"></i>
+        <span class="action-text2">Settings</span>
+    </a>
+
+    <a href="#" class="action-btn2">
+        <i class="fas fa-cog"></i>
+        <span class="action-text2">Data Analytics</span>
+    </a>
+</div>
+{% include 'Home/sidebar.html' %}
+
+{% include 'Home/ai.html' %}
+<!-- Recent Activity -->
+<div class="recent-activity">
+    <h3 class="section-title">
+        <i class="fas fa-history"></i>
+        Recent Activity
+    </h3>
+
+    <ul class="activity-list">
+        <li class="activity-item">
+            <div class="activity-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="activity-content">
+                <h4 class="activity-title">New Student Registered</h4>
+                <p class="activity-desc">Rahul Sharma enrolled in BCA program</p>
+            </div>
+            <div class="activity-time">10 mins ago</div>
+        </li>
+
+        <li class="activity-item">
+            <div class="activity-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="activity-content">
+                <h4 class="activity-title">Fine Payment Received</h4>
+                <p class="activity-desc">Priya Patel paid ₹500 for library fine</p>
+            </div>
+            <div class="activity-time">45 mins ago</div>
+        </li>
+
+        <li class="activity-item">
+            <div class="activity-icon">
+                <i class="fas fa-poll"></i>
+            </div>
+            <div class="activity-content">
+                <h4 class="activity-title">Results Published</h4>
+                <p class="activity-desc">Semester 3 results published for B.Com</p>
+            </div>
+            <div class="activity-time">2 hours ago</div>
+        </li>
+
+        <li class="activity-item">
+            <div class="activity-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="activity-content">
+                <h4 class="activity-title">New Event Added</h4>
+                <p class="activity-desc">Sports Day scheduled for May 25th</p>
+            </div>
+            <div class="activity-time">5 hours ago</div>
+        </li>
+
+        <li class="activity-item">
+            <div class="activity-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="activity-content">
+                <h4 class="activity-title">New Faculty Member</h4>
+                <p class="activity-desc">Dr. Amit Kumar joined as Computer Science professor</p>
+            </div>
+            <div class="activity-time">1 day ago</div>
+        </li>
+    </ul>
+</div>

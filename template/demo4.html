@@ -3,417 +3,1531 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Viewer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin Dashboard | Student Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --accent: #7209b7;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --transition: all 0.3s ease;
+            /* Primary Colors */
+            --primary: #3a56d4;
+            --primary-dark: #2f4ac0;
+            --primary-light: #f5f7ff;
+            --primary-extra-light: #eef1ff;
+
+            /* Secondary Colors */
+            --secondary: #4a6bff;
+            --accent: #5c7cff;
+            --success: #4cc9f0;
+            --warning: #ff9f1c;
+            --danger: #ff477e;
+
+            /* Neutral Colors */
+            --dark: #2d3748;
+            --darker: #1a202c;
+            --light: #f8fafc;
+            --lighter: #ffffff;
+            --gray: #718096;
+            --light-gray: #e2e8f0;
+            --dark-gray: #4a5568;
+
+            /* Status Colors */
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --info: #4299e1;
+
+            /* Sidebar Colors */
+            --sidebar-bg: #2d3748;
+            --sidebar-text: #cbd5e0;
+            --sidebar-active: rgba(74, 107, 255, 0.2);
+            --sidebar-hover: #4a5568;
+            --sidebar-icon: #a0aec0;
+
+            /* Other Variables */
+            --sidebar-width: 280px;
+            --sidebar-collapsed: 70px;
+            --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --box-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
         }
 
-        .document-viewer-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: var(--transition);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 20px 0;
-        }
-
-        .document-viewer-container:hover {
-            box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15);
-        }
-
-        .viewer-header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .viewer-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+        * {
             margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
-        .viewer-controls {
-            display: flex;
-            gap: 8px;
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        .viewer-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+        .layout {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
             transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .viewer-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .viewer-body {
-            padding: 20px;
-            background: var(--light);
-            min-height: 400px;
+            z-index: 1000;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar.collapsed .sidebar-header h1,
+        .sidebar.collapsed .menu-title,
+        .sidebar.collapsed .menu-text,
+        .sidebar.collapsed .user-info,
+        .sidebar.collapsed .user-dropdown-name {
+            display: none;
+        }
+
+        .sidebar.collapsed .menu-link {
+            justify-content: center;
+            padding: 0.8rem 0.5rem;
+        }
+
+        .sidebar.collapsed .menu-icon {
+            margin-right: 0;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1.5rem 1rem;
+            display: flex;
             align-items: center;
             justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            height: var(--header-height);
         }
 
-        .document-area {
-            width: 100%;
-            max-width: 800px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+        .sidebar-header h1 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+            white-space: nowrap;
             overflow: hidden;
-            position: relative;
-        }
-
-        .document-img {
-            width: 100%;
-            display: block;
             transition: var(--transition);
         }
 
-        .document-placeholder {
-            padding: 60px 20px;
-            text-align: center;
-            color: var(--gray);
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
         }
 
-        .document-placeholder i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: var(--light-gray);
+        .sidebar-menu::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .document-placeholder p {
-            margin: 0;
-            font-size: 1.1rem;
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background-color: var(--sidebar-hover);
+            border-radius: 3px;
         }
 
-        .viewer-footer {
-            padding: 15px 20px;
-            background: var(--light);
-            border-top: 1px solid var(--light-gray);
+        .sidebar-menu::-webkit-scrollbar-track {
+            background-color: var(--sidebar-bg);
+        }
+
+        .menu-title {
+            padding: 0.75rem 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--sidebar-text);
+            font-weight: 600;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-item {
+            position: relative;
+            margin: 0.15rem 0;
+        }
+
+        .menu-link {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        .document-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--gray);
+            padding: 0.8rem 1.5rem;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
             font-size: 0.9rem;
+            margin: 0 0.5rem;
+            border-radius: 6px;
         }
 
-        .document-info span {
+        .menu-link:hover {
+            color: white;
+            background-color: var(--sidebar-hover);
+            transform: translateX(5px);
+        }
+
+        .menu-link.active {
+            color: white;
+            background-color: var(--sidebar-active);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-icon {
+            font-size: 1rem;
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            color: var(--sidebar-icon);
+            transition: var(--transition);
+        }
+
+        .menu-link:hover .menu-icon,
+        .menu-link.active .menu-icon {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .menu-text {
+            flex: 1;
+            transition: var(--transition);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .menu-link:hover .menu-text {
+            transform: translateX(3px);
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 0.75rem;
+            background: rgba(0, 0, 0, 0.1);
         }
 
-        .zoom-controls {
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .sidebar-footer:hover .user-avatar {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.1rem;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-role {
+            font-size: 0.7rem;
+            color: var(--sidebar-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            border-radius: 50%;
         }
 
-        .zoom-slider {
-            width: 120px;
+        .logout-btn:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: rotate(180deg);
         }
 
-        .toolbar {
-            display: flex;
-            gap: 10px;
-            padding: 15px 20px;
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        /* Header Styles */
+        .header {
+            height: var(--header-height);
             background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 900;
             border-bottom: 1px solid var(--light-gray);
         }
 
-        .tool-btn {
-            background: var(--light);
-            border: 1px solid var(--light-gray);
-            border-radius: 6px;
-            padding: 8px 15px;
+        .header-left {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: var(--dark);
-            transition: var(--transition);
+            gap: 1rem;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--gray);
             cursor: pointer;
-        }
-
-        .tool-btn:hover {
-            background: var(--light-gray);
-        }
-
-        .tool-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .page-controls {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-top: 20px;
+            justify-content: center;
         }
 
-        .page-btn {
-            background: white;
-            border: 1px solid var(--light-gray);
-            border-radius: 6px;
+        .toggle-sidebar:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 1.25rem;
+            cursor: pointer;
             width: 40px;
             height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
+            border-radius: 50%;
             transition: var(--transition);
         }
 
-        .page-btn:hover {
-            background: var(--light);
-            border-color: var(--gray);
+        .notification-btn:hover {
+            background-color: var(--light-gray);
+            color: var(--dark);
+            transform: translateY(-2px);
         }
 
-        .page-indicator {
+        .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            position: relative;
+            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .user-dropdown:hover {
+            background-color: var(--light-gray);
+        }
+
+        .user-dropdown-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .user-dropdown:hover .user-dropdown-avatar {
+            transform: scale(1.1);
+            border-color: var(--primary-light);
+        }
+
+        .user-dropdown-name {
             font-size: 0.9rem;
-            color: var(--gray);
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+            white-space: nowrap;
         }
 
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .viewer-header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-            
-            .viewer-controls {
-                align-self: flex-end;
-            }
-            
-            .viewer-footer {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .toolbar {
-                overflow-x: auto;
-                padding: 10px 15px;
-            }
+        .user-dropdown:hover .user-dropdown-name {
+            color: var(--primary);
         }
 
-        /* Animation for document loading */
+        .user-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            min-width: 220px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow-lg);
+            padding: 0.5rem 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .user-dropdown:hover .user-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.25rem;
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding-left: 1.5rem;
+        }
+
+        .dropdown-item i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--light-gray);
+            margin: 0.5rem 0;
+        }
+
+        /* Content Styles */
+        .content {
+            padding: 1.5rem;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .document-area {
-            animation: fadeIn 0.5s ease-out;
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 1.25rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-info h3 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-info p {
+            margin: 0.25rem 0 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Tab Header */
+        .tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .header-content h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .header-content p {
+            margin: 0.5rem 0 0;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .search-bar {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            color: var(--gray);
+        }
+
+        .search-bar input {
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            width: 250px;
+            transition: var(--transition);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .action-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .action-card:hover .action-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .action-icon.setting { background: var(--primary); }
+        .action-icon.birthday { background: var(--success); }
+        .action-icon.upload { background: var(--warning); }
+        .action-icon.backup { background: var(--danger); }
+        .action-icon.grade { background: var(--info); }
+        .action-icon.assignment { background: var(--accent); }
+        .action-icon.chat { background: var(--primary); }
+        .action-icon.history { background: var(--success); }
+
+        .action-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+
+        .action-desc {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Bubbles Background */
+        .bubbles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(106, 163, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-1000px) translateX(100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Mobile Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive Styles */
+        @media (min-width: 1200px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-width);
+            }
+            
+            .sidebar.collapsed ~ .main-content {
+                margin-left: var(--sidebar-collapsed);
+            }
+            
+            .sidebar-overlay {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1199px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .toggle-sidebar {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .content {
+                padding: 1.25rem;
+            }
+
+            .tab-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .search-bar {
+                width: 100%;
+            }
+
+            .search-bar input {
+                width: 100%;
+            }
+            
+            .header-content h1 {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 0 1.25rem;
+            }
+
+            .user-dropdown-name {
+                display: none;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1.25rem;
+            }
+            
+            .action-card {
+                padding: 1.5rem;
+            }
+            
+            .header-content h1 {
+                font-size: 1.4rem;
+            }
+            
+            .page-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content {
+                padding: 0.75rem;
+            }
+            
+            .action-card {
+                padding: 1.25rem;
+            }
+            
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+                margin-right: 1rem;
+            }
+            
+            .stat-info h3 {
+                font-size: 1.4rem;
+            }
+            
+            .header {
+                padding: 0 1rem;
+            }
+            
+            .tab-header {
+                margin-bottom: 1.5rem;
+            }
+            
+            .stats-container {
+                margin-bottom: 2rem;
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .header-right {
+                gap: 0.5rem;
+            }
+            
+            .notification-btn {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .user-dropdown-avatar {
+                width: 34px;
+                height: 34px;
+            }
+            
+            .toggle-sidebar {
+                width: 36px;
+                height: 36px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <!-- Document Viewer Container -->
-    <div class="document-viewer-container">
-        <div class="viewer-header">
-            <h2 class="viewer-title">
-                <i class="fas fa-file-image"></i>
-                Document Viewer
-            </h2>
-            <div class="viewer-controls">
-                <button class="viewer-btn" title="Download">
-                    <i class="fas fa-download"></i>
-                </button>
-                <button class="viewer-btn" title="Print">
-                    <i class="fas fa-print"></i>
-                </button>
-                <button class="viewer-btn" title="Fullscreen">
-                    <i class="fas fa-expand"></i>
-                </button>
-                <button class="viewer-btn" title="Close">
-                    <i class="fas fa-times"></i>
-                </button>
+    <div class="bubbles">
+        <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s;"></div>
+        <div class="bubble" style="width: 120px; height: 120px; left: 20%; animation-delay: 2s;"></div>
+        <div class="bubble" style="width: 60px; height: 60px; left: 30%; animation-delay: 4s;"></div>
+        <div class="bubble" style="width: 100px; height: 100px; left: 40%; animation-delay: 6s;"></div>
+        <div class="bubble" style="width: 70px; height: 70px; left: 60%; animation-delay: 8s;"></div>
+        <div class="bubble" style="width: 90px; height: 90px; left: 80%; animation-delay: 10s;"></div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>
+                    <i class="fas fa-graduation-cap me-2" style="color: #4361ee;"></i>
+                    EduTrack
+                </h1>
             </div>
-        </div>
-        
-        <div class="toolbar">
-            <button class="tool-btn" title="Zoom In">
-                <i class="fas fa-search-plus"></i>
-            </button>
-            <button class="tool-btn" title="Zoom Out">
-                <i class="fas fa-search-minus"></i>
-            </button>
-            <button class="tool-btn" title="Rotate">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-            <button class="tool-btn active" title="Select Tool">
-                <i class="fas fa-mouse-pointer"></i>
-            </button>
-            <button class="tool-btn" title="Pan Tool">
-                <i class="fas fa-hand-paper"></i>
-            </button>
-        </div>
-        
-        <div class="viewer-body">
-            <div class="document-area">
-                <img src="https://images.unsplash.com/photo-1589652717521-10c0d092dea9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" 
-                     alt="Sample Document" class="document-img" id="documentImage">
+
+            <div class="sidebar-menu">
+                <h3 class="menu-title">Main</h3>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link active" data-tab="dashboard-tab">
+                            <i class="fas fa-tachometer-alt menu-icon"></i>
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <h3 class="menu-title">Personal</h3>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="myDetails-tab">
+                            <i class="fas fa-id-badge menu-icon"></i>
+                            <span class="menu-text">My Details</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <h3 class="menu-title">Management</h3>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="students-tab">
+                            <i class="fas fa-user-graduate menu-icon"></i>
+                            <span class="menu-text">Students</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="faculty-tab">
+                            <i class="fas fa-chalkboard-teacher menu-icon"></i>
+                            <span class="menu-text">Faculty</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="admin-tab">
+                            <i class="fas fa-tools menu-icon"></i>
+                            <span class="menu-text">Admin</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="result-tab">
+                            <i class="fas fa-poll menu-icon"></i>
+                            <span class="menu-text">Results</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="facultySetting-tab">
+                            <i class="fas fa-cogs menu-icon"></i>
+                            <span class="menu-text">Faculty Setting</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="studentSetting-tab">
+                            <i class="fas fa-user-edit menu-icon"></i>
+                            <span class="menu-text">Student Setting</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="schedule-tab">
+                            <i class="fas fa-calendar-alt menu-icon"></i>
+                            <span class="menu-text">Schedule</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="payment-tab">
+                            <i class="fas fa-money-check-alt menu-icon"></i>
+                            <span class="menu-text">Payment</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <h3 class="menu-title">System</h3>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="setting-tab">
+                            <i class="fas fa-sliders-h menu-icon"></i>
+                            <span class="menu-text">Settings</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="grade-tab">
+                            <i class="fas fa-chart-bar menu-icon"></i>
+                            <span class="menu-text">Grade</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="notification-tab">
+                            <i class="fas fa-comment-alt menu-icon"></i>
+                            <span class="menu-text">Notifications</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
+                <div class="user-info">
+                    <div class="user-name">Dr. Admin User</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <a href="#">
+                    <button class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="toggle-sidebar" id="toggleSidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <h3>Dashboard</h3>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+
+                    <div class="user-dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User"
+                            class="user-dropdown-avatar">
+                        <span class="user-dropdown-name">Admin User</span>
+                        <div class="user-dropdown-menu">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-id-card"></i> ID Card
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-calendar-check"></i> Attendance
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-money-bill-wave"></i> Salary
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content active">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Dashboard Overview</h1>
+                            <p>Welcome back, Dr. Admin! Here's what's happening today.</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search...">
+                        </div>
+                    </div>
+
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--primary);">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>1,254</h3>
+                                <p>Total Students</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--success);">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>68</h3>
+                                <p>Faculty Members</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--warning);">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>42</h3>
+                                <p>Active Courses</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--danger);">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>92%</h3>
+                                <p>Attendance Rate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Tabs -->
+                <div id="myDetails-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>My Details</h1>
+                            <p>View and manage your personal information</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search details...">
+                        </div>
+                    </div>
+                    <p>Personal details content will appear here.</p>
+                </div>
                 
-                <!-- Placeholder for when no document is loaded -->
-                <!-- <div class="document-placeholder">
-                    <i class="fas fa-file-image"></i>
-                    <p>No document to display</p>
-                </div> -->
+                <div id="students-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Student Management</h1>
+                            <p>Manage all student records and information</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search students...">
+                        </div>
+                    </div>
+                    <p>Student management content will appear here.</p>
+                </div>
+                
+                <div id="faculty-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Faculty Management</h1>
+                            <p>Manage faculty members and their details</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search faculty...">
+                        </div>
+                    </div>
+                    <p>Faculty management content will appear here.</p>
+                </div>
+                
+                <div id="admin-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Admin Management</h1>
+                            <p>Manage administrative tasks and settings</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search admin tasks...">
+                        </div>
+                    </div>
+                    <p>Admin management content will appear here.</p>
+                </div>
+                
+                <div id="result-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Result Management</h1>
+                            <p>View and manage student results</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search results...">
+                        </div>
+                    </div>
+                    <p>Result management content will appear here.</p>
+                </div>
+                
+                <div id="facultySetting-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Faculty Settings</h1>
+                            <p>Configure faculty-related settings</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search faculty settings...">
+                        </div>
+                    </div>
+                    <p>Faculty settings content will appear here.</p>
+                </div>
+                
+                <div id="studentSetting-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Student Settings</h1>
+                            <p>Configure student-related settings</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search student settings...">
+                        </div>
+                    </div>
+                    <p>Student settings content will appear here.</p>
+                </div>
+                
+                <div id="schedule-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Schedule Management</h1>
+                            <p>Manage class schedules and timetables</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search schedules...">
+                        </div>
+                    </div>
+                    <p>Schedule management content will appear here.</p>
+                </div>
+                
+                <div id="payment-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Payment Management</h1>
+                            <p>Manage fee payments and transactions</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search payments...">
+                        </div>
+                    </div>
+                    <p>Payment management content will appear here.</p>
+                </div>
+
+                <!-- Setting Tab -->
+                <div id="setting-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Setting Management</h1>
+                            <p>Manage all system settings and configurations</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search settings...">
+                        </div>
+                    </div>
+
+                    <div class="action-grid">
+                        <div class="action-card">
+                            <div class="action-icon setting">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h3 class="action-title">Semester Setting</h3>
+                            <p class="action-desc">Change Semester and year after time period</p>
+                            <button class="action-btn">Configure</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="action-icon birthday">
+                                <i class="fas fa-gifts"></i>
+                            </div>
+                            <h3 class="action-title">Birthday Wishes</h3>
+                            <p class="action-desc">Wish birthday and create cards for faculty and students</p>
+                            <button class="action-btn">Manage</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="action-icon upload">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <h3 class="action-title">Upload Notes</h3>
+                            <p class="action-desc">Upload notes and study materials for Students</p>
+                            <button class="action-btn">Upload</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="action-icon backup">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h3 class="action-title">Data Backup</h3>
+                            <p class="action-desc">Create backup of important data for safety</p>
+                            <button class="action-btn">Backup Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grade Tab -->
+                <div id="grade-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Grade Management</h1>
+                            <p>Manage all grades and academic evaluations</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search grades...">
+                        </div>
+                    </div>
+
+                    <div class="action-grid">
+                        <div class="action-card">
+                            <div class="action-icon grade">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <h3 class="action-title">Student Grades</h3>
+                            <p class="action-desc">View and manage grades marked by faculty</p>
+                            <button class="action-btn">View Grades</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="action-icon assignment">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <h3 class="action-title">Assignments</h3>
+                            <p class="action-desc">Monitor pending assignments under courses</p>
+                            <button class="action-btn">Check Status</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification Tab -->
+                <div id="notification-tab" class="tab-content">
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Notification Center</h1>
+                            <p>Manage all communication and notifications</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search messages...">
+                        </div>
+                    </div>
+
+                    <div class="action-grid">
+                        <div class="action-card">
+                            <div class="action-icon chat">
+                                <i class="fas fa-comment-dots"></i>
+                            </div>
+                            <h3 class="action-title">Faculty Chat</h3>
+                            <p class="action-desc">Communicate with faculty members</p>
+                            <button class="action-btn">Start Chat</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="action-icon chat">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h3 class="action-title">Student Chat</h3>
+                            <p class="action-desc">Chat with students regarding issues</p>
+                            <button class="action-btn">Open Chat</button>
+                        </div>
+
+                        <div class="action-card">
+                            <div class="action-icon history">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <h3 class="action-title">Chat History</h3>
+                            <p class="action-desc">Review complete communication history</p>
+                            <a href="#" class="action-btn">View History</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="page-controls">
-                <button class="page-btn" title="Previous Page">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <span class="page-indicator">Page 1 of 1</span>
-                <button class="page-btn" title="Next Page">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </div>
-        
-        <div class="viewer-footer">
-            <div class="document-info">
-                <span title="File format">
-                    <i class="fas fa-file-image"></i> JPEG
-                </span>
-                <span title="Dimensions">
-                    <i class="fas fa-ruler-combined"></i> 1200×800
-                </span>
-                <span title="File size">
-                    <i class="fas fa-weight-hanging"></i> 350 KB
-                </span>
-            </div>
-            
-            <div class="zoom-controls">
-                <button class="viewer-btn" title="Zoom Out">
-                    <i class="fas fa-search-minus"></i>
-                </button>
-                <input type="range" class="zoom-slider" min="50" max="200" value="100">
-                <button class="viewer-btn" title="Zoom In">
-                    <i class="fas fa-search-plus"></i>
-                </button>
-                <span style="margin-left: 10px; color: var(--gray);">100%</span>
-            </div>
-        </div>
+        </main>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const documentImage = document.getElementById('documentImage');
-            const zoomSlider = document.querySelector('.zoom-slider');
-            const zoomValue = document.querySelector('.zoom-controls span');
-            const zoomInBtns = document.querySelectorAll('[title="Zoom In"]');
-            const zoomOutBtns = document.querySelectorAll('[title="Zoom Out"]');
-            const rotateBtn = document.querySelector('[title="Rotate"]');
-            const toolBtns = document.querySelectorAll('.tool-btn');
-            
-            let currentZoom = 100;
-            let currentRotation = 0;
-            
-            // Zoom functionality
-            function updateZoom() {
-                documentImage.style.transform = `scale(${currentZoom / 100}) rotate(${currentRotation}deg)`;
-                zoomValue.textContent = `${currentZoom}%`;
-                zoomSlider.value = currentZoom;
+        // Toggle Sidebar
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        toggleSidebar.addEventListener('click', () => {
+            if (window.innerWidth < 1200) {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            } else {
+                sidebar.classList.toggle('collapsed');
             }
-            
-            zoomSlider.addEventListener('input', function() {
-                currentZoom = this.value;
-                updateZoom();
-            });
-            
-            zoomInBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    currentZoom = Math.min(currentZoom + 10, 200);
-                    updateZoom();
+        });
+
+        // Close sidebar when clicking on overlay
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Tab Switching Functionality
+        document.querySelectorAll('[data-tab]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
                 });
-            });
-            
-            zoomOutBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    currentZoom = Math.max(currentZoom - 10, 50);
-                    updateZoom();
+
+                // Show selected tab
+                const selectedTab = document.getElementById(tabId);
+                if (selectedTab) {
+                    selectedTab.classList.add('active');
+                }
+
+                // Update active menu item
+                document.querySelectorAll('.menu-link').forEach(menuLink => {
+                    menuLink.classList.remove('active');
                 });
-            });
-            
-            // Rotation functionality
-            rotateBtn.addEventListener('click', function() {
-                currentRotation = (currentRotation + 90) % 360;
-                documentImage.style.transform = `scale(${currentZoom / 100}) rotate(${currentRotation}deg)`;
-            });
-            
-            // Tool selection
-            toolBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    toolBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Fullscreen functionality
-            const fullscreenBtn = document.querySelector('[title="Fullscreen"]');
-            fullscreenBtn.addEventListener('click', function() {
-                const container = document.querySelector('.document-viewer-container');
-                
-                if (!document.fullscreenElement) {
-                    if (container.requestFullscreen) {
-                        container.requestFullscreen();
-                    } else if (container.webkitRequestFullscreen) {
-                        container.webkitRequestFullscreen();
-                    } else if (container.msRequestFullscreen) {
-                        container.msRequestFullscreen();
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    }
+                link.classList.add('active');
+
+                // Update page title
+                const pageTitle = document.querySelector('.page-title h3');
+                const tabTitles = {
+                    'dashboard-tab': 'Dashboard',
+                    'myDetails-tab': 'My Details',
+                    'students-tab': 'Students',
+                    'faculty-tab': 'Faculty',
+                    'admin-tab': 'Admin',
+                    'result-tab': 'Results',
+                    'facultySetting-tab': 'Faculty Setting',
+                    'studentSetting-tab': 'Student Setting',
+                    'schedule-tab': 'Schedule',
+                    'payment-tab': 'Payment',
+                    'setting-tab': 'Settings',
+                    'grade-tab': 'Grades',
+                    'notification-tab': 'Notifications'
+                };
+
+                if (pageTitle && tabTitles[tabId]) {
+                    pageTitle.textContent = tabTitles[tabId];
+                }
+
+                // Close sidebar on mobile
+                if (window.innerWidth < 1200) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
                 }
             });
+        });
+
+        // Add hover effects to action cards
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Notification badge animation
+        const notificationBadge = document.querySelector('.notification-badge');
+        if (notificationBadge) {
+            setInterval(() => {
+                notificationBadge.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    notificationBadge.style.transform = 'scale(1)';
+                }, 300);
+            }, 3000);
+        }
+
+        // Responsive behavior
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1200) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
         });
     </script>
 </body>

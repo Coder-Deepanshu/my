@@ -411,7 +411,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             function loadPage(page) {
                 fetch(`?page=${page}`, {
-                    headers: { "x-requested-with": "XMLHttpRequest" }
+                    headers: { "x-requested-with" : "XMLHttpRequest" }
                 })
                     .then(response => response.json())
                     .then(data => {

@@ -1,0 +1,48 @@
+<div class="tab-header">
+    <div class="header-content">
+        <h1>Payment Management</h1>
+        <p>Manage fee payments and transactions</p>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search payments...">
+    </div>
+</div>
+<!-- payment Action Cards -->
+<div class="action-grid">
+    <div class="action-card">
+        <div class="action-icon setting">
+            <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <h3 class="action-title">Fine Payment</h3>
+        <p class="action-desc">View and alter fine of student</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon birthday">
+            <i class="fas fa-credit-card"></i>
+        </div>
+        <h3 class="action-title">Salary Payment</h3>
+        <p class="action-desc">Pay and view the Salarty of Faculty</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon upload">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <h3 class="action-title">Fees Payment</h3>
+        <p class="action-desc">View and pay fees with fine</p>
+        <a href="{% url 'admin_fee_management' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon backup">
+            <i class="fas fa-coins"></i>
+        </div>
+        <h3 class="action-title">Total Payment</h3>
+        <p class="action-desc">View all details about payment and recieved Money</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+</div>

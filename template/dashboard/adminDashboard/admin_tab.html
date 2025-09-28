@@ -1,0 +1,59 @@
+<div class="tab-header">
+    <div class="header-content">
+        <h1>Admin Management</h1>
+        <p>Manage administrative tasks and settings</p>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search admin tasks...">
+    </div>
+</div>
+
+<!-- ADMIN Action Cards -->
+<div class="action-grid">
+    <div class="action-card">
+        <div class="action-icon setting">
+            <i class="fas fa-user"></i>
+        </div>
+        <h3 class="action-title">Add Admin</h3>
+        <p class="action-desc">Add individual admin records</p>
+        <a href="{% url 'admin_functions' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon birthday">
+            <i class="fas fa-users"></i>
+        </div>
+        <h3 class="action-title">View Admin</h3>
+        <p class="action-desc">View all available admin list</p>
+        <a href="{% url 'admin_card' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon upload">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3 class="action-title">Mark Attendance</h3>
+        <p class="action-desc">Mark Admin attendance</p>
+        <button class="action-btn">Open</button>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon backup">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3 class="action-title">Attendance</h3>
+        <p class="action-desc">View admin attendance</p>
+        <button class="action-btn">Open</button>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon history">
+            <i class="fas fa-history"></i>
+        </div>
+        <h3 class="action-title">History</h3>
+        <p class="action-desc">View admin history and logs</p>
+        <a href="{% url 'adminHistoryManagement' %}" class="action-btn">Open</a>
+    </div>
+
+</div>

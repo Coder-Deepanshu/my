@@ -696,44 +696,89 @@ def admin_functions(request):
 
     return render(request, "admin/admin_page.html", context)
 
-
 #  for multiple student filtering
 from django.template.loader import render_to_string
-
-def course_details(request,template):
+from django.core.paginator import Paginator
+def course_details(request, template):
     role = request.session.get('role')
+
     try:
         # Get all courses from Course model (not from Student records)
-        if template !='chat/page2.html':
-            courses = Course.objects.all().values_list('code', flat=True)
+        if template != 'chat/page2.html':
+            courses = Course.objects.all().values_list('name', flat=True)
             students = Student.objects.all()
-            return render(request, template, {'courses': courses, 'students': students,'role':role})
+            
+            if template == 'feeStructureCreation.html':
+                values = FeeStructure.objects.all().order_by("structure_id")
+                paginator = Paginator(values, 1)  # Changed from 1 to reasonable number
+                page_number = request.GET.get("page")
+                page_obj = paginator.get_page(page_number)
+                
+                # for ajax working
+                if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                    data = []
+                    for i in page_obj:
+                        data.append({
+                            'structure_id': i.structure_id, 
+                            'course': i.course, 
+                            'year': i.year, 
+                            'semester': i.semester, 
+                            'due_date': i.due_date.strftime("%Y-%m-%d"), 
+                            'batch': i.batch, 
+                            'amount': i.amount
+                        })
+                    return JsonResponse({
+                        "data1": data, 
+                        "has_next": page_obj.has_next(), 
+                        "has_prev": page_obj.has_previous(),
+                        "page_number": page_obj.number, 
+                        "total_pages": paginator.num_pages  # Fixed variable name
+                    })
+                    
+            return render(request, template, {
+                'courses': courses, 
+                'students': students, 
+                'role': role, 
+                'page_obj': page_obj
+            })
         else:
-            courses = Course.objects.all().values_list('code', flat=True)
+            courses = Course.objects.all().values_list('name', flat=True)
             faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
             students = Student.objects.filter(followed_faculty=faculty)
-            return render(request, 'chat/page2.html', {'faculty': faculty,'students': students,'role': 'faculty','courses': courses,'role':role                                     
-        })
+            return render(request, 'chat/page2.html', {
+                'faculty': faculty,
+                'courses': courses, 
+                'students': students, 
+                'role': role  # Removed duplicate 'role' parameter
+            })
 
     except Exception as e:
         messages.error(request, f"Error loading courses: {str(e)}")
-        return render(request, template, {'courses': [],'students': [],'faculty':[],'role':[]})
-
+        return render(request, template, {
+            'courses': [],
+            'students': [], 
+            'faculty': [], 
+            'role': role,
+            'page_obj': []  # Added missing page_obj for error case
+        })
+        
 def get_courses_details(request):
+   
     try:
-        course_name = request.GET.get('course_name')
+      if request.method == 'POST':
+        data = json.loads(request.body)
+        course_name = data.get('course_name')
         if not course_name or course_name == 'all':
             return JsonResponse({'error': 'Please select a valid course'}, status=400)
             
         # Get the course - make sure name matching is case-insensitive
-        course = Course.objects.filter(code__iexact=course_name).first()
+        course = Course.objects.filter(name__iexact=course_name).first()
         if not course:
             return JsonResponse({'error': f'Course "{course_name}" not found'}, status=404)
             
         return JsonResponse({
             'years': list(range(1, course.no_of_years + 1)),
             'semesters': list(range(1, course.no_of_semesters + 1)),
-            'lectures': list(range(1, course.no_of_lecture + 1))
         })
     except Exception as e:
         return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
@@ -1777,6 +1822,137 @@ def get_receipt_data(request, receipt_number):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+# [[[[[[[[[[[[[Send Batch Details]]]]]]]]]]]]]
+from django.db.models import Max, IntegerField
+from django.db.models.functions import Cast, Substr
+def sendBatch(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        course = data.get('course')
+        course_detail = Course.objects.get(name = course)
+        year = data.get('year')
+        semester = data.get('semester')
+        try:
+            max_id = Student.objects.annotate(id_as_int = Cast(Substr('college_id',3),IntegerField()))
+            max_id = max_id.filter(year = int(year), semester = int(semester), course = course_detail)
+            if max_id.exists():
+               max_id = max_id.aggregate(Max('id_as_int'))['id_as_int__max']
+               max_id = 'ST' + str(max_id)
+               student = Student.objects.get(college_id = str(max_id))
+                # get course fees:
+               fees = float((Course.objects.get(name = course).fees_per_year)/2)
+               return JsonResponse({'batch':student.date_of_joining.year,'fees':fees})
+            else:
+                return JsonResponse({'error':'Student Does not exist with this Infomation!'},status=400)        
+        except Exception as e:
+            return JsonResponse({'error': f'An error Occured: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid Method'}, status=400)
+
+def createFeeStructure(request):
+    if request.method == 'POST':
+        try:
+            # Check content type to handle both FormData and JSON
+            if request.content_type == 'application/json':
+                data = json.loads(request.body)
+            else:
+                # Handle form data
+                data = {
+                    'course': request.POST.get('course'),
+                    'dueDate': request.POST.get('dueDate'),
+                    'year': request.POST.get('year'),
+                    'semester': request.POST.get('semester'),
+                    'feeAmt': request.POST.get('feeAmt'),
+                    'batch': request.POST.get('batch')
+                }
+            
+            # Validate required fields
+            required_fields = ['course', 'dueDate', 'year', 'semester', 'feeAmt', 'batch']
+            for field in required_fields:
+                if not data.get(field):
+                    return JsonResponse({'error': f'{field} is required'}, status=400)
+
+            # Auto-generate structure ID
+            max_id = FeeStructure.objects.aggregate(max_id=models.Max('structure_id'))['max_id']          
+            if max_id is None:
+                structure_id = 'FS20251'  # Initial ID
+            else:
+                try:
+                    # Extract numeric part and increment
+                    numeric_part = int(max_id[2:])  # Remove 'FS' prefix
+                    structure_id = f'FS{numeric_part + 1}'
+                except (ValueError, IndexError):
+                    structure_id = 'FS20251'
+
+            # Create FeeStructure object (NOT Course)
+            checking = FeeStructure.objects.filter(
+                course=data.get('course'),
+                due_date=data.get('dueDate'),
+                year=data.get('year'),
+                semester=data.get('semester'),
+                amount=float(data.get('feeAmt')),
+                batch=data.get('batch'))
+
+            if checking.exists():
+                return JsonResponse({'error': 'Fee Structure created Already!'})
+            else:
+                FeeStructure.objects.create(
+                structure_id=structure_id,
+                course=data.get('course'),
+                due_date=data.get('dueDate'),
+                year=data.get('year'),
+                semester=data.get('semester'),
+                amount=float(data.get('feeAmt')),
+                batch=data.get('batch')  # Changed from for_year to batch
+            )
+                return JsonResponse({'success': 'Fee Structure Created Successfully'})
+            
+        except Exception as e:
+            return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid Method'}, status=400)
+
+def fetchBatch(request):
+    if request.method == 'POST':
+            data = json.loads(request.body)
+            course = data.get('course')
+            year = data.get('year')
+            semester = data.get('semester')
+            batch = data.get('batch')
+            try:
+                if not batch or batch == ''  :
+                    all_detail = FeeStructure.objects.filter(course = course, year = year, semester = semester)
+                    if all_detail.exists():
+                        batch = all_detail.order_by('batch').values_list('batch',flat=True)
+                        return JsonResponse({'batch':list(batch)})
+                    else:
+                        return JsonResponse({'error':'No Fee Structure Fouded with this Information!'},status = 400)
+                elif batch != '':
+                    all_detail = FeeStructure.objects.filter(course = course, year = year, semester = semester, batch = batch).order_by('structure_id')
+                    if all_detail.exists():
+                        info = []
+                        for i in all_detail:
+                            info.append({'structure_id':i.structure_id, 'course':i.course, 'year':i.year, 'semester':i.semester, 'due_date':i.due_date.strftime("%Y-%m-%d"), 'batch':i.batch, 'amount':i.amount})
+                        return JsonResponse({'info':info})
+                    else:
+                        return JsonResponse({'error':'No Fee Structure Fouded with this Information!'},status = 400)
+                             
+            except Exception as e:
+                return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid Method'}, status=400)
+
+def deleteStructure(request,value):
+    try:
+        value_copy = value
+        structure = FeeStructure.objects.get(structure_id = value)
+        structure.delete()
+        return JsonResponse({'success':f"Fee Structure Deleted Successfully with ID: {value_copy}"})
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+            
+
 # chatting management :
 from .models import Student, Faculty, ChatRoom, Message
 # Update your chat_home view in views.py
@@ -2723,6 +2899,7 @@ def historySender(request, type):
     data = []
     
     if type == 'Admin':
+        
         history = History.objects.filter(reciver_type__iexact='Admin').values("updatedTo")
         history = history.annotate(latest_time=Max("updatedAt")).values_list("updatedTo", "latest_time")
         for i in history:
@@ -2823,7 +3000,6 @@ from django.db.models import F
 def getHistory(request,college_id):
     id_prefix = str(college_id[0:2])
     details = None
-    context = {}
     if id_prefix == 'ST':
         try:
             details = Student.objects.get(college_id = college_id)
@@ -2832,8 +3008,10 @@ def getHistory(request,college_id):
             year = details.date_of_joining.year
             end_year = int(year) + int(details.course.no_of_years)
             batch = str(str(year) + " - " + str(end_year))
+            # getting history:
+            history = list(History.objects.filter(updatedTo = college_id, reciver_type = 'Student').values('history_id','position','updatedFrom','updatedAt','updatedTo','content','type'))
             return JsonResponse({"name":name, "college_id":details.college_id, 
-             "Row3":course, "Row4":batch})
+             "Row3":course, "Row4":batch, "history": history})
         except Student.DoesNotExist:
             return JsonResponse({"error": "Student not found"}, status=404)
         except Exception as e:
@@ -2843,8 +3021,10 @@ def getHistory(request,college_id):
         try:
            details = Admin.objects.get(college_id = college_id)
            name = str(details.name + " " + details.last_name) 
+           history = list(History.objects.filter(updatedTo = college_id, reciver_type = 'Admin').values('history_id','position','updatedFrom','updatedAt','updatedTo','content','type'))
            return JsonResponse({"name":name, "college_id":details.college_id, 
-             "Row4":str(details.position.name) + " - " + str(details.position.position_id), "Row3":str(details.department.name) + " - " + str(details.department.department_id)})
+             "Row4":str(details.position.name) + " - " + str(details.position.position_id), "Row3":str(details.department.name) + " - " + str(details.department.department_id),
+            'history':history})
            
         except Admin.DoesNotExist:
             return JsonResponse({"error": "Admin not found"}, status=404)
@@ -2855,87 +3035,165 @@ def getHistory(request,college_id):
         try:
            details = Faculty.objects.get(college_id = college_id)
            name = str(details.name + " " + details.last_name)
+           history = list(History.objects.filter(updatedTo = college_id, reciver_type = 'Faculty').values('history_id','position','updatedFrom','updatedAt','updatedTo','content','type'))
            return JsonResponse({"name":name, "college_id":details.college_id, 
-             "Row4":str(details.position.name) + " - " + str(details.position.position_id), "Row3":str(details.department.name) + " - " + str(details.department.department_id)})
+             "Row4":str(details.position.name) + " - " + str(details.position.position_id), "Row3":str(details.department.name) + " - " + str(details.department.department_id),
+            'history': history})
            
         except Faculty.DoesNotExist:
             return JsonResponse({"error": "Faculty not found"}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-    return render(request,'main/history.html',{'context':context})
+
+def deleteHistory(request,college_id):
+    prefix_id = college_id[0:2]
+    if prefix_id == 'ST':
+        try:
+            copy_id = college_id
+            history = History.objects.filter(updatedTo = college_id)
+            history.delete()
+            return JsonResponse({'success': f'{copy_id} History Deleted Successfully!'})
+        except Exception as e:
+           return JsonResponse({'error':f"An error occurred: {str(e)}"})
 
 from .models import StudentDocuments, AdminDocuments, FacultyDocuments
 # for uploading documents of faculty,student and admin
-def document(request,type):
+def document(request, type):
     user_id = None
     detail = None
     role = request.session.get('role')
     batch = None
     
     try:
-      if type == 'Student':
-        user_id = request.session.get('student_college_id')
-        detail = Student.objects.get(college_id = user_id)
-        documents = StudentDocuments.objects.get(student = detail)
-       
-        year = detail.date_of_joining.year
-        end_year = int(year) + int(detail.course.no_of_years)
-        batch = str(str(year) + " - " + str(end_year))
-        
-        try:
+        if type == 'Student':
+            user_id = request.session.get('student_college_id')
+            detail = Student.objects.get(college_id=user_id)
+            permission = detail.permission
+            if permission == True:
+                permission = 'Yes'
+            else: 
+                permission = 'No'
+            
+            # Get or create documents object
+            documents, created = StudentDocuments.objects.get_or_create(student=detail)
+            
+            year = detail.date_of_joining.year
+            end_year = int(year) + int(detail.course.no_of_years)
+            batch = str(str(year) + " - " + str(end_year))
+            
             if request.method == 'POST':
-                studentDocument, created = StudentDocuments.objects.get_or_create(student = detail)
-                for i in range(1,10):
+                for i in range(1, 10):
                     field_name = f"pic{i}"
-                    uploaded_file = request.POST.get(field_name)
-                    if uploaded_file :
-                        setattr(studentDocument, field_name, uploaded_file)
-                        studentDocument.save()
-                messages.success(request,"Document Uploaded Successfully!")
+                    uploaded_file = request.FILES.get(field_name)  # Changed to request.FILES
+                    if uploaded_file:
+                        setattr(documents, field_name, uploaded_file)
+                documents.save()
+                messages.success(request, "Document Uploaded Successfully!")
                 
-        except Exception as e:
-            messages.error(request, f"An error occurred: {str(e)}")
-        
-      elif type == 'Faculty':
-        user_id = request.session.get('faculty_college_id')
-        detail = Faculty.objects.get(college_id = user_id)
-        documents = FacultyDocuments.objects.get(faculty = detail)
-        try:
+        elif type == 'Faculty':
+            user_id = request.session.get('faculty_college_id')
+            detail = Faculty.objects.get(college_id=user_id)
+            documents, created = FacultyDocuments.objects.get_or_create(faculty=detail)
+            
             if request.method == 'POST':
-                facultyDocument, created = FacultyDocuments.objects.get_or_create(faculty = detail)
-                for i in range(1,10):
+                for i in range(1, 6):  # Faculty has only 5 documents
                     field_name = f"pic{i}"
-                    uploaded_file = request.POST.get(field_name)
-                    if uploaded_file :
-                        setattr(facultyDocument, field_name, uploaded_file)
-                        facultyDocument.save()
-                messages.success(request,"Document Uploaded Successfully!")
+                    uploaded_file = request.FILES.get(field_name)  # Changed to request.FILES
+                    if uploaded_file:
+                        setattr(documents, field_name, uploaded_file)
+                documents.save()
+                messages.success(request, "Document Uploaded Successfully!")
                 
-        except Exception as e:
-            messages.error(request, f"An error occurred: {str(e)}")
-        
-      elif type == 'Admin':
-        user_id = request.session.get('admin_college_id')
-        detail = Admin.objects.get(college_id = user_id)
-        documents = AdminDocuments.objects.get(admin = detail)
-        try:
+        elif type == 'Admin':
+            user_id = request.session.get('admin_college_id')
+            detail = Admin.objects.get(college_id=user_id)
+            documents, created = AdminDocuments.objects.get_or_create(admin=detail)
+            
             if request.method == 'POST':
-                adminDocument, created = AdminDocuments.objects.get_or_create(admin = detail)
-                for i in range(1,10):
+                for i in range(1, 6):  # Admin has only 5 documents
                     field_name = f"pic{i}"
-                    uploaded_file = request.POST.get(field_name)
-                    if uploaded_file :
-                        setattr(adminDocument, field_name, uploaded_file)
-                        adminDocument.save()
-                messages.success(request,"Document Uploaded Successfully!")
+                    uploaded_file = request.FILES.get(field_name)  # Changed to request.FILES
+                    if uploaded_file:
+                        setattr(documents, field_name, uploaded_file)
+                documents.save()
+                messages.success(request, "Document Uploaded Successfully!")
                 
-        except Exception as e:
-            messages.error(request, f"An error occurred: {str(e)}")
-        
     except Exception as e:
         messages.error(request, f"An error occurred: {str(e)}")
         
-    return render(request,'main/document.html',{'type':type,'detail':detail,'role':role,'batch':batch,'documents':documents})
+    return render(request, 'main/document.html', {
+        'type': type, 
+        'detail': detail, 
+        'role': role, 
+        'batch': batch, 
+        'documents': documents
+    })
+
+
+def getDocuments(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        college_id = data.get('college_id')
+        documentid = data.get('documentid')
+        exists = None
+        prefix_id = college_id[0:2]
+        
+        if prefix_id == 'AD':
+            detail = Admin.objects.get(college_id = college_id)
+            exists = AdminDocuments.objects.filter(admin = detail).exists()
+            if exists:
+                return JsonResponse({'success':True})
+            else : 
+                return JsonResponse({'success':False})
+        elif prefix_id == 'GK':
+            detail = Faculty.objects.get(college_id = college_id)
+            exists = FacultyDocuments.objects.filter(faculty = detail).exists()
+            if exists:
+                return JsonResponse({'success':True})
+            else : 
+                return JsonResponse({'success':False})
+        else :
+            detail = Student.objects.get(college_id = college_id)
+            exists = StudentDocuments.objects.filter(student = detail).exists()
+            if exists:
+                return JsonResponse({'success':True})
+            else : 
+                return JsonResponse({'success':False})
+            
+               
+def viewDocuments(request, college_id, documentid):
+    role = request.session.get('role')
+    try:
+        prefix_id = college_id[0:2]
+        docName = None
+        
+        if prefix_id == 'AD':
+            detail = Admin.objects.get(college_id=college_id)
+            documents = AdminDocuments.objects.get(admin=detail)
+            docName = getattr(documents, documentid, None)
+            
+        elif prefix_id == 'GK':
+            detail = Faculty.objects.get(college_id=college_id)
+            documents = FacultyDocuments.objects.get(faculty=detail)
+            docName = getattr(documents, documentid, None)
+            
+        else:
+            detail = Student.objects.get(college_id=college_id)
+            documents = StudentDocuments.objects.get(student=detail)  # Fixed: student
+            docName = getattr(documents, documentid, None)
+            
+        if not docName:
+            return render(request, 'main/viewDocument.html', {
+                'error': 'Document not found'
+            })
+            
+        return render(request, 'main/viewDocument.html', {'docName': docName,'role':role})
+        
+    except Exception as e:
+        return render(request, 'main/viewDocument.html', {
+            'error': f'Error loading document: {str(e)}'
+        })
+     
     
     
 
@@ -2980,3 +3238,6 @@ def delete_students(request):
         Students.objects.filter(roll_no__in=roll_nos).delete()
         return JsonResponse({"message": "Selected students deleted", "deleted": deleted_students})
     return JsonResponse({"error": "Invalid Request"}, status=400)
+
+
+    

@@ -1,0 +1,75 @@
+<div class="tab-header">
+    <div class="header-content">
+        <h1>My Details</h1>
+        <p>View and manage your personal information</p>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search details...">
+    </div>
+</div>
+<!-- ADMIN Action Cards -->
+<div class="action-grid">
+    <div class="action-card">
+        <div class="action-icon setting">
+            <i class="fas fa-user"></i>
+        </div>
+        <h3 class="action-title">My Profile</h3>
+        <p class="action-desc">See your Personal Profile</p>
+        <a href="{% url 'profile_details' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon birthday">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3 class="action-title">My Attendance</h3>
+        <p class="action-desc">View all about your attendance</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon upload">
+            <i class="fas fa-id-card"></i>
+        </div>
+        <h3 class="action-title">ID Card</h3>
+        <p class="action-desc">See your ID-Card</p>
+        <a href="{% url 'id_card' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon backup">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <h3 class="action-title">Salary</h3>
+        <p class="action-desc">View all about your salary</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon assignment">
+            <i class="fas fa-signal"></i>
+        </div>
+        <h3 class="action-title">Level History</h3>
+        <p class="action-desc">View all about your position</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon chat">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h3 class="action-title">History</h3>
+        <p class="action-desc">View all about your history</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon grade">
+            <i class="fas fa-file-excel"></i>
+        </div>
+        <h3 class="action-title">Document</h3>
+        <p class="action-desc">upload and view Documents</p>
+        <a href="{% url 'adminDocumentManagement' %}" class="action-btn">Open</a>
+    </div>
+</div>

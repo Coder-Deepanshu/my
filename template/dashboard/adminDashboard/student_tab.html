@@ -1,0 +1,49 @@
+<div class="tab-header">
+    <div class="header-content">
+        <h1>Student Management</h1>
+        <p>Manage all student records and information</p>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search students...">
+    </div>
+</div>
+
+<!-- Student Action Cards -->
+<div class="action-grid">
+    <div class="action-card">
+        <div class="action-icon backup">
+            <i class="fas fa-user"></i>
+        </div>
+        <h3 class="action-title">Single Student</h3>
+        <p class="action-desc">View and edit individual student records</p>
+        <a href="{% url 'student_function' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon upload">
+            <i class="fas fa-users"></i>
+        </div>
+        <h3 class="action-title">All Students</h3>
+        <p class="action-desc">View and manage complete student list</p>
+        <a href="{% url 'studentBulkManagement' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon birthday">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3 class="action-title">Attendance</h3>
+        <p class="action-desc">Manage student attendance records</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon assignment">
+            <i class="fas fa-history"></i>
+        </div>
+        <h3 class="action-title">History</h3>
+        <p class="action-desc">View and manage students history</p>
+        <a href="{% url 'studentHistoryManagement' %}" class="action-btn">Open</a>
+    </div>
+</div>

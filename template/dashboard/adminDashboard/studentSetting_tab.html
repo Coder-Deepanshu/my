@@ -1,0 +1,58 @@
+<div class="tab-header">
+    <div class="header-content">
+        <h1>Student Settings</h1>
+        <p>Configure student-related settings</p>
+    </div>
+    <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search student settings...">
+    </div>
+</div>
+
+<!-- student setting Action Cards -->
+<div class="action-grid">
+    <div class="action-card">
+        <div class="action-icon setting">
+            <i class="fas fa-book-open"></i>
+        </div>
+        <h3 class="action-title">Subjects</h3>
+        <p class="action-desc">Create and Enter Subjects for the courses firstly</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon birthday">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h3 class="action-title">Course</h3>
+        <p class="action-desc">Create and enter Course with subjects</p>
+        <a href="{% url 'course_creation' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon upload">
+            <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <h3 class="action-title">Fees</h3>
+        <p class="action-desc">Create and define fees per course</p>
+        <a href="{% url 'studentFeeStructureManagement' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon backup">
+            <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <h3 class="action-title">Expenses/Fines</h3>
+        <p class="action-desc">Create and define fines on Student</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon assignment">
+            <i class="fas fa-sticky-note"></i>
+        </div>
+        <h3 class="action-title">Notes</h3>
+        <p class="action-desc">Create Notes for Subjects under Courses</p>
+        <a href="#" class="action-btn">Open</a>
+    </div>
+</div>

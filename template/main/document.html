@@ -40,7 +40,7 @@
             <!-- Document Upload Tab -->
             <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
                 <div class="form-container">
-                <form method="POST" >
+                <form method="POST" enctype="multipart/form-data" >
                     {% csrf_token %}
                     <h3 class="mb-4"><i class="fas fa-file-upload"></i> Upload Student Documents</h3>
 
@@ -50,7 +50,7 @@
                             class="student-avatar">
                         <div class="student-details">
                             <h4>{{ detail.name }} {{ detail.last_name }}</h4>
-                            <p><strong>ID:</strong> {{ detail.college_id }}</p>
+                            <p id="{{ detail.college_id }}" class="college_id"><strong>ID:</strong> {{ detail.college_id }}</p>
                             {% if type == 'Student' %}
                             <p><strong>Course:</strong> {{ detail.course.name }} - {{ detail.course.level }}</p>
                             <p><strong>Batch:</strong> {{ batch }}</p>
@@ -74,7 +74,7 @@
                                 
                                 {% if documents.pic5 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic5">View File</button>
+                                <button type="button" class="view-btn" data-id="pic5">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
                                 <input type="file" class="file-input" id="pic5" name="pic5"
@@ -94,7 +94,7 @@
 
                                 {% if documents.pic1 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic1">View File</button>
+                                <button type="button" class="view-btn" data-id="pic1">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>   
                                 <input type="file" class="file-input" id="pic1" name="pic1"  accept=".jpg,.jpeg,.png,image/*">
@@ -112,7 +112,7 @@
 
                                 {% if documents.pic2 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic2">View File</button>
+                                <button type="button" class="view-btn" data-id="pic2">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
                                 <input type="file" class="file-input" name="pic2" id="pic2" accept=".pdf,image/*" >
@@ -130,7 +130,7 @@
 
                                 {% if documents.pic3 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic3">View File</button>
+                                <button type="button" class="view-btn" data-id="pic3">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
                                 <input type="file" class="file-input" name="pic3" id="pic3"
@@ -149,7 +149,7 @@
 
                                 {% if documents.pic4 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic4">View File</button>
+                                <button type="button" class="view-btn" data-id="pic4">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
                                 <input type="file" class="file-input" id="pic4"
@@ -169,7 +169,7 @@
 
                                 {% if documents.pic5 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic5">View File</button>
+                                <button type="button" class="view-btn" data-id="pic5">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
                                 <input type="file" class="file-input" id="pic5" name="pic5"
@@ -187,7 +187,7 @@
 
                                 {% if documents.pic6 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic6">View File</button>
+                                <button type="button" class="view-btn" data-id="pic6">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
                                 <input type="file" class="file-input" id="pic6" name="pic6"
@@ -204,7 +204,7 @@
                                 <h5 class="document-name">Family ID</h5>
 
                                 {% if documents.pic7 %}
-                                <span class="document-status status-uploaded" data-id="Pic7">Uploaded</span>
+                                <span class="document-status status-uploaded" data-id="pic7">Uploaded</span>
                                 <button type="button" class="view-btn">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
@@ -222,7 +222,7 @@
 
                                 {% if documents.pic8 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic8">View File</button>
+                                <button type="button" class="view-btn" data-id="pic8">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
                                 <input type="file" class="file-input" id="pic8" name="pic8" accept=".pdf,.jpg,.jpeg,.png,image/*">
@@ -241,7 +241,7 @@
 
                                 {% if documents.pic9 %}
                                 <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="Pic9">View File</button>
+                                <button type="button" class="view-btn" data-id="pic9">View File</button>
                                 {% else %}
                                 <span class="document-status status-required">Pending</span>
                                 <input type="file" class="file-input" id="pic9" name="pic9" accept=".pdf,.jpg,.jpeg,.png,image/*" >
@@ -269,18 +269,77 @@
         let resetBtn = document.querySelector("#resetBtn")
         let closeBtn = document.getElementById("closeMessageBtn")
         let alertMessage = document.querySelector("#alertMessage")
+        const element = document.querySelector(".college_id")
+        const college_id = element.id;
 
        
         viewBtn.forEach((pic)=>{
-            pic.addEventListener('click',()=>{
-                alert(`clicked pic`)
+            pic.addEventListener('click',(event)=>{
+                const value = event.target.getAttribute('data-id');
+                viewDocument(college_id,value);
             })
         })
 
-        resetBtn.addEventListener('click',()=>{
-            console.log("button was clicked")
-            alertMessage.innerHTML = 'Form was Reseted Successfully!'
-        })
+        function viewDocument(college_id, value){
+    fetch("/Dashboard-Admin/Get-Documents/", {  // Added leading slash
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({'college_id': college_id, 'documentid': value})
+    })
+    .then(res => res.json())
+    .then(data => { 
+        if(data.success){
+            window.location.href = `/Dashboard-Admin/View-Documents/${college_id}/${value}/`;  // Added slashes
+        } else {
+            alert('Document Detail Not Found!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error checking document');
+    });
+}
+
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Check if this cookie string begins with the name we want
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+// Simple reset with message
+document.querySelector("#resetBtn").addEventListener('click', function() {
+    // Form reset
+    document.querySelector('form').reset();
+    
+    // File inputs clear
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+        input.value = '';
+    });
+    
+    // Success message existing messages container mein
+    const messagesContainer = document.querySelector('.container.mt-4');
+    if (messagesContainer) {
+        messagesContainer.innerHTML = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                Form reset successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        ` + messagesContainer.innerHTML;
+    }
+});
+
 
     // Auto-hide messages after 5 seconds
         setTimeout(function () {

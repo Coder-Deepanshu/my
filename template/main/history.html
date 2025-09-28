@@ -20,10 +20,21 @@
         <div class="container" id="container">
             <h1>{{ type }} History Management System</h1>
             <p>View and manage complete {{ type }} academic and fee history</p>
-            
+
         </div>
-        
+
     </section>
+           {% if messages %}
+            <div class="container mt-4" id="message-container">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                    role="alert" id="alertMessage">
+                    {{ message }}
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
     <div class="content-container">
         <ul class="nav nav-tabs" id="studentTabs" role="tablist">
@@ -133,8 +144,7 @@
                                     <tr>
                                         <td colspan="8" class="no-result"
                                             style="justify-content: center;justify-items: center; background-color:whitesmoke;">
-                                            <h5><i class="fas fa-info-circle" style="margin-right: 15px;"></i>No {{ type
-                                                }} Record Founded</h5>
+                                            <h5><i class="fas fa-info-circle" style="margin-right: 15px;"></i>No {{ type }} Record Founded</h5>
                                             <p class="mb-0">History Record for a {{ type }} is empty in your database.
                                             </p>
                                         </td>
@@ -169,8 +179,7 @@
                                     <tr>
                                         <td colspan="8" class="no-result"
                                             style="justify-content: center;justify-items: center; background-color:whitesmoke;">
-                                            <h5><i class="fas fa-info-circle" style="margin-right:15px ;"></i>No {{ type
-                                                }} Record Founded</h5>
+                                            <h5><i class="fas fa-info-circle" style="margin-right:15px ;"></i>No {{ type }} Record Founded</h5>
                                             <p class="mb-0">History for a {{ type }} is empty in your database.</p>
                                         </td>
                                     </tr>
@@ -188,6 +197,18 @@
             <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
                 <div class="table-container">
                     <div id="studentProfileContainer" class="history-container">
+                        <div class="bulk-actions">
+                            <div class="form-check chat-select-all">
+                                <input class="form-check-input" type="checkbox" id="selectAllChats">
+                                <label class="form-check-label" for="selectAllChats">
+                                    Select All
+                                </label>
+                            </div>
+                            <button class="btn btn-danger" id="deleteSelected">
+                                <i class="fas fa-trash"></i> Delete Selected
+                            </button>
+                        </div>
+
                         <!-- Student Profile -->
                         <div class="student-profile">
                             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Avatar"
@@ -205,20 +226,9 @@
                         <!-- Academic History -->
                         <h4 class="mb-4"><i class="fas fa-graduation-cap"></i> Academic History</h4>
                         <div class="timeline" id="academicTimeline">
-                            <div class="timeline-item">
-                                <div class="timeline-date">2023-08-15</div>
-                                <div class="timeline-content">
-                                    <h4>Semester 1 Registration</h4>
-                                    <p>Registered for B.Tech Computer Science Semester 1 with 5 courses</p>
-                                </div>
-                            </div>
-                            <div class="timeline-item">
-                                <div class="timeline-date">2023-12-20</div>
-                                <div class="timeline-content">
-                                    <h4>Semester 1 Results</h4>
-                                    <p>CGPA: 8.7 | Status: Pass</p>
-                                </div>
-                            </div>
+
+                            <!-- result loaded here -->
+
                         </div>
 
                         <!-- Fee History -->
@@ -266,47 +276,6 @@
                                 </tbody>
                             </table>
                         </div>
-
-                        <!-- Documents ----------------------------------------------------------->
-                        <h4 class="mb-4 mt-5"><i class="fas fa-file-alt"></i> Document History</h4>
-                        <div class="table-responsive">
-                            <table class="fee-table">
-                                <thead>
-                                    <tr>
-                                        <th>Document Type</th>
-                                        <th>Upload Date</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <!-- <tbody id="documentsBody">
-                                    {% if documents.pic8 %}
-                                    <tr>
-                                        <td>Admission Form</td>
-                                        <td>{{ documents.uploaded_at }}</td>
-                                        <td><span class="badge bg-success">Approved</span></td>
-                                        <td>
-                                            <button class="btn-action btn-view">
-                                                <i class="fas fa-eye"></i> View
-                                            </button>
-                                        </td>
-                                    </tr> {% else %}
-                                    <tr>
-                                        <td>Form</td>
-                                        <td>{{ documents.uploaded_at }}</td>
-                                        <td><span class="badge bg-success">Pending</span></td>
-                                        <td>
-                                            <button class="btn-action btn-view">
-                                                <i class="fas fa-eye"></i> View
-                                            </button>
-                                        </td>
-                                    </tr>
-                                          {% endif %}
-                                    
-
-                                </tbody> -->
-                            </table>
-                        </div>
                     </div>
 
                     <div id="noStudentSelected" class="alert alert-info mt-4">
@@ -351,7 +320,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="close-btn"
                         style="margin-right: 5px;">Close</button>
-                    <button type="button" class="btn btn-primary" id="history-btn">View Full History</button>
+                    <button type="button" class="btn btn-history-primary" id="history-btn">View Full History</button>
                 </div>
             </div>
         </div>
@@ -359,22 +328,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const viewBtn = document.querySelectorAll('#view-btn');
-        const viewForm = document.querySelector("#studentDetailModal")
-        const closeBtn = document.querySelectorAll("#close-btn")
-        const historyBtn = document.querySelectorAll("#history-btn")
-        const historyContainer = document.querySelector(".history-container")
-        const alertContainer = document.querySelector(".alert")
-        const searchTab = document.querySelector("#search-tab")
-        let button1 = document.getElementById("search-tab")
-        let button2 = document.getElementById("history-tab")
+        const viewForm = document.querySelector("#studentDetailModal");
+        const closeBtn = document.querySelectorAll("#close-btn");
+        const historyBtn = document.querySelectorAll("#history-btn");
+        const historyContainer = document.querySelector(".history-container");
+        const alertContainer = document.querySelector(".alert");
+        const searchTab = document.querySelector("#search-tab");
+        let button1 = document.getElementById("search-tab");
+        let button2 = document.getElementById("history-tab");
         let searchPage = document.getElementById("search");
-        let historyPage = document.getElementById("history")
+        let historyPage = document.getElementById("history");
+        let container = document.querySelector(".container");
 
 
         viewBtn.forEach((view) => {
             view.addEventListener("click", (event) => {
                 const value = event.target.getAttribute('data-id');
                 getDetails(value);
+                
             });
         });
 
@@ -399,13 +370,33 @@
                 .then(res => res.json())
                 .then(st => {
                     if (st.error) {
-                        alert(st.error);
+                        container.innerHTML = `
+                <div class="alert alert-danger" role="alert" id="alertMessage">
+                    ${st.error}
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
                     } else {
                         document.querySelector("#collegeId").innerText = st.college_id;
                         document.querySelector("#Name").innerText = st.name;
                         document.querySelector("#Row3").innerText = st.Row3;
                         document.querySelector("#Row4").innerText = st.Row4;
-                        // document.querySelector('#container').innerText = st.documents
+                        let rows = "";
+                        st.history.forEach(his => {
+                            // updatedAt me se sirf date nikal lo
+                            const dateOnly = his.updatedAt.split('T')[0];
+
+                            rows += `<div class="timeline-item">
+                                <input type="checkbox" class="studentChk" value="">
+                                       <div class="timeline-date">${dateOnly}</div>
+                                           <div class="timeline-content">
+                                               <h4>${his.type} - ${his.history_id}</h4>
+                                               <p>${his.content}</p>
+                                               <h6>${his.position} - ${his.updatedFrom}</h6>
+                                        </div>
+                                    </div>`;
+                        });
+
+                        document.querySelector("#academicTimeline").innerHTML = rows;
                     }
                 });
         };
@@ -422,23 +413,60 @@
                 .then(res => res.json())
                 .then(st => {
                     if (st.error) {
-                        alert(st.error);
+                    container.innerHTML = `
+                <div class="alert alert-danger" role="alert" id="alertMessage">
+                    ${st.error}
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
                     } else {
                         document.querySelector("#modalCollegeId").innerText = st.college_id;
                         document.querySelector("#modalName").innerText = st.name;
                         document.querySelector("#modal3row").innerText = st.row3;
                         document.querySelector("#modal4row").innerText = st.row4;
+                        let btnHistory = document.querySelector(".btn-history-primary")
+                        btnHistory.setAttribute('data-id',`${st.college_id}`)
                         viewForm.style.display = "block";
 
                     }
                 });
         };
-
         closeBtn.forEach((close) => {
             close.addEventListener("click", () => {
                 viewForm.style.display = "none"
             })
         })
+
+        // Delete Button Working :
+        const deleteBtn = document.querySelectorAll(".btn-delete");
+        
+
+        deleteBtn.forEach((del) => {
+            del.addEventListener("click",(event1) => {
+                const val = event1.target.getAttribute("data-id")
+                deleteFunc(val);
+            })
+        })
+
+        function deleteFunc(college_id){
+            fetch(`/Delete-History/${college_id}/`)
+            .then(res => res.json())
+            .then(mess =>{
+                if (mess.error){
+                    container.innerHTML = `
+                <div class="alert alert-danger" role="alert" id="alertMessage">
+                    ${mess.error}
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+                }
+                else{container.innerHTML=`
+                <div class="alert alert-success" role="alert" id="alertMessage">
+                    ${mess.success}
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`
+                }
+            })
+        }
+
     </script>
 </body>
 

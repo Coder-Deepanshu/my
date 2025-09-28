@@ -151,7 +151,7 @@
                         <span class="menu-text">ID Card</span>
                     </a>
                 </li>
-                
+
                 <li class="menu-item">
                     <a href="{% url 'studentSendNotice' %}" class="menu-link">
                         <i class="fas fa-newspaper menu-icon"></i>
@@ -610,6 +610,111 @@
                 showSlide(nextSlide);
             }, 5000);
         });
+        // AI Chat Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            initStudentAIChat();
+        });
+
+        function initStudentAIChat() {
+            // Personal Assistant Chat
+            const studentPersonalChat = document.getElementById('studentPersonalChat');
+            const studentPersonalInput = document.getElementById('studentPersonalInput');
+            const studentPersonalSend = document.getElementById('studentPersonalSend');
+
+            // University Info Chat
+            const studentUniversityChat = document.getElementById('studentUniversityChat');
+            const studentUniversityInput = document.getElementById('studentUniversityInput');
+            const studentUniversitySend = document.getElementById('studentUniversitySend');
+
+            // Personal Assistant Responses
+            const personalResponses = {
+                'exam': 'Exam schedules are available in the "Schedule" section. Mid-term exams start next month.',
+                'fee': 'You can check your fee status in the "Payment" section. The due date is 15th of each month.',
+                'assignment': 'Your pending assignments are listed in the "Grade" section. Submit before the deadline.',
+                'attendance': 'Current attendance: 85%. You need 75% to be eligible for exams.',
+                'result': 'Semester results will be published next week in the "Results" section.',
+                'default': 'I can help with exam schedules, fees, assignments, attendance, and results. What would you like to know?'
+            };
+
+            // University Info Responses
+            const universityResponses = {
+                'rule': 'Academic rules require 75% attendance and timely submission of assignments.',
+                'regulation': 'University regulations are available in the student handbook section.',
+                'edutrack': 'EduTrack helps manage your academic journey. Use different tabs for various features.',
+                'campus': 'Campus facilities include library, labs, sports complex, and cafeteria.',
+                'default': 'I can provide information about university rules, regulations, campus facilities, and EduTrack usage.'
+            };
+
+            // Add message to chat
+            function addStudentMessage(chatElement, message, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `student-message ${isUser ? 'student-user' : 'student-bot'}`;
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'student-message-content';
+                contentDiv.textContent = message;
+
+                messageDiv.appendChild(contentDiv);
+                chatElement.appendChild(messageDiv);
+                chatElement.scrollTop = chatElement.scrollHeight;
+            }
+
+            // Get response based on input
+            function getStudentResponse(input, responses) {
+                input = input.toLowerCase();
+
+                for (const [key, response] of Object.entries(responses)) {
+                    if (input.includes(key)) {
+                        return response;
+                    }
+                }
+                return responses.default;
+            }
+
+            // Personal chat event listeners
+            if (studentPersonalSend) {
+                studentPersonalSend.addEventListener('click', sendPersonalMessage);
+                studentPersonalInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') sendPersonalMessage();
+                });
+            }
+
+            // University chat event listeners
+            if (studentUniversitySend) {
+                studentUniversitySend.addEventListener('click', sendUniversityMessage);
+                studentUniversityInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') sendUniversityMessage();
+                });
+            }
+
+            function sendPersonalMessage() {
+                const message = studentPersonalInput.value.trim();
+                if (message) {
+                    addStudentMessage(studentPersonalChat, message, true);
+                    studentPersonalInput.value = '';
+
+                    // Simulate AI response
+                    setTimeout(() => {
+                        const response = getStudentResponse(message, personalResponses);
+                        addStudentMessage(studentPersonalChat, response, false);
+                    }, 1000);
+                }
+            }
+
+            function sendUniversityMessage() {
+                const message = studentUniversityInput.value.trim();
+                if (message) {
+                    addStudentMessage(studentUniversityChat, message, true);
+                    studentUniversityInput.value = '';
+
+                    // Simulate AI response
+                    setTimeout(() => {
+                        const response = getStudentResponse(message, universityResponses);
+                        addStudentMessage(studentUniversityChat, response, false);
+                    }, 1000);
+                }
+            }
+        }
     </script>
 </body>
 

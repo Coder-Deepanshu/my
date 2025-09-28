@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Analytics | Edutrack University</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 80px 0 40px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            opacity: 0.9;
+        }
+
+        /* Stats Cards */
+        .stats-section {
+            padding: 40px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin: 0 auto 15px;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            padding: 40px 0 60px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            height: 100%;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-btn {
+            background: var(--light);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .chart-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            background: white;
+            color: var(--dark);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .page-header {
+                padding: 60px 0 30px;
+            }
+            
+            .chart-wrapper {
+                height: 250px;
+            }
+            
+            .stat-number {
+                font-size: 1.8rem;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+            
+            .chart-container {
+                padding: 20px;
+            }
+            
+            .chart-wrapper {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Students</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Faculty</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Analytics</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Settings</a>
+                        </li>
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="#" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                        <a href="{% url 'logoutdoor' %}" class="btn btn-primary">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Admin Analytics Dashboard</h1>
+            <p>Comprehensive insights and performance metrics for Edutrack University</p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #4361ee;">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-number">2,847</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #4cc9f0;">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-number">124</div>
+                        <div class="stat-label">Faculty Members</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #7209b7;">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-number">68</div>
+                        <div class="stat-label">Active Courses</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f72585;">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-number">94.2%</div>
+                        <div class="stat-label">Attendance Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-group">
+                <span class="filter-label">Filter by:</span>
+                <select class="filter-select">
+                    <option>All Time</option>
+                    <option selected>Last 30 Days</option>
+                    <option>Last 90 Days</option>
+                    <option>This Semester</option>
+                </select>
+                <select class="filter-select">
+                    <option>All Departments</option>
+                    <option>Computer Science</option>
+                    <option>Business</option>
+                    <option>Engineering</option>
+                    <option>Arts</option>
+                </select>
+                <select class="filter-select">
+                    <option>All Courses</option>
+                    <option>Undergraduate</option>
+                    <option>Postgraduate</option>
+                    <option>Certificate</option>
+                </select>
+                <button class="btn btn-primary">
+                    <i class="fas fa-filter me-1"></i>Apply Filters
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+        <div class="container">
+            <div class="row">
+                <!-- Chart 1: Student Enrollment Trend -->
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Student Enrollment Trend</h3>
+                            <div class="chart-actions">
+                                <button class="chart-btn" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="chart-btn" title="Refresh">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="enrollmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Course Performance -->
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Course Performance</h3>
+                            <div class="chart-actions">
+                                <button class="chart-btn" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="chart-btn" title="Refresh">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 3: Attendance Distribution -->
+                <div class="col-lg-12 mb-4">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Attendance Distribution by Department</h3>
+                            <div class="chart-actions">
+                                <button class="chart-btn" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button class="chart-btn" title="Refresh">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Set current year in footer
+            $('#currentYear').text(new Date().getFullYear());
+
+            // Chart 1: Student Enrollment Trend
+            const enrollmentCtx = document.getElementById('enrollmentChart').getContext('2d');
+            const enrollmentChart = new Chart(enrollmentCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'New Enrollments',
+                        data: [120, 150, 180, 200, 240, 280, 300, 320, 290, 260, 220, 180],
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Total Students',
+                        data: [1200, 1350, 1530, 1730, 1970, 2250, 2550, 2870, 3160, 3420, 3640, 3820],
+                        borderColor: '#7209b7',
+                        backgroundColor: 'rgba(114, 9, 183, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Course Performance
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Computer Science', 'Business Admin', 'Engineering', 'Arts', 'Medicine', 'Law'],
+                    datasets: [{
+                        label: 'Average Grade (%)',
+                        data: [85, 78, 82, 75, 88, 80],
+                        backgroundColor: [
+                            'rgba(67, 97, 238, 0.8)',
+                            'rgba(76, 201, 240, 0.8)',
+                            'rgba(114, 9, 183, 0.8)',
+                            'rgba(247, 37, 133, 0.8)',
+                            'rgba(72, 149, 239, 0.8)',
+                            'rgba(58, 134, 255, 0.8)'
+                        ],
+                        borderColor: [
+                            '#4361ee',
+                            '#4cc9f0',
+                            '#7209b7',
+                            '#f72585',
+                            '#4895ef',
+                            '#3a86ff'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Chart 3: Attendance Distribution
+            const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+            const attendanceChart = new Chart(attendanceCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Computer Science', 'Business Admin', 'Engineering', 'Arts', 'Medicine', 'Law', 'Science'],
+                    datasets: [{
+                        data: [95, 92, 88, 85, 96, 90, 87],
+                        backgroundColor: [
+                            '#4361ee', '#4cc9f0', '#7209b7', '#f72585', 
+                            '#4895ef', '#3a86ff', '#560bad'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // Chart actions
+            $('.chart-btn').click(function() {
+                const $btn = $(this);
+                const originalHtml = $btn.html();
+                
+                if ($btn.find('.fa-sync-alt').length) {
+                    // Refresh button
+                    $btn.html('<i class="fas fa-spinner fa-spin"></i>');
+                    setTimeout(() => {
+                        $btn.html(originalHtml);
+                        alert('Charts refreshed successfully!');
+                    }, 1000);
+                } else if ($btn.find('.fa-download').length) {
+                    // Download button
+                    alert('Chart data download initiated!');
+                }
+            });
+
+            // Filter application
+            $('.btn-primary').click(function() {
+                $(this).html('<i class="fas fa-spinner fa-spin me-1"></i>Applying...');
+                setTimeout(() => {
+                    $(this).html('<i class="fas fa-filter me-1"></i>Apply Filters');
+                    alert('Filters applied successfully! Charts updated.');
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>

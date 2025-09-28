@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Structure Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/creation/feeStructure.css' %}">
+    <style>
+        /* Alert Styles */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+         /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            padding: 8px 16px;
+        }
+         .modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+             background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; }
+    .modal-content { background:#fff; padding:20px; border-radius:10px; width:400px; }
+    .blur { filter: blur(4px); }
+    </style>
+
+</head>
+
+<body>
+    {% include "header.html" %}
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Fee Structure Management System</h1>
+            <p>Create and manage fee structures for different courses and batches</p>
+        </div>
+    </section>
+
+    <div class="container mt-4 messageShow">
+
+    </div>
+
+    {% if messages %}
+    <div class="container mt-4 ">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+            role="alert" id="alertMessage">
+            {{ message }}
+            <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert"
+                aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="content-container">
+
+        <ul class="nav nav-tabs" id="feeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create"
+                    type="button" role="tab" aria-controls="create" aria-selected="true">
+                    <i class="fas fa-plus-circle"></i> Create Fee Structure
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button"
+                    role="tab" aria-controls="manage" aria-selected="false">
+                    <i class="fas fa-list"></i> Manage Fee Structures
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="feeTabsContent">
+            <!-- Create Fee Structure Tab -->
+            <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+                <div class="form-container">
+                    <h3 class="mb-4"><i class="fas fa-plus-circle"></i> Create New Fee Structure</h3>
+                    <form id="createFeeStructureForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-8 mb-4">
+                                <label for="course" class="form-label"><i class="fas fa-book"></i> Course</label>
+                                <select class="form-select select" id="course" name="course" required>
+                                    <option value="">Select Course</option>
+                                    {% for course in courses %}
+                                    <option value="{{ course }}">{{ course }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label for="dueDate" class="form-label"><i class="fas fa-hourglass-half"></i> Due
+                                    Date</label>
+                                <input type="date" name="dueDate" id="dueDate" class="form-control"
+                                    placeholder="Enter Due Date" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="year" class="form-label"><i class="fas fa-calendar-alt"></i> Year</label>
+                                <select class="form-select select" id="year" name="year" required disabled>
+                                    <option value="" selected disabled>Select Year</option>
+                                    <!-- result loaded here -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="semester" class="form-label"><i class="fas fa-calendar"></i>
+                                    Semester</label>
+                                <select class="form-select select" id="semester" name="semester" required disabled>
+                                    <option value="" selected disabled>Select Semester</option>
+                                    <!-- result loaded here -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4 batch-change">
+                                <label for="batch" class="form-label "><i class="fas fa-users"></i> Batch</label>
+                                <input type="text" name="batch" id="batch" class="form-control"
+                                    placeholder="Enter Batch e.g 2025" required disabled>
+                            </div>
+                            <div class="col-md-6 mb-4 fees-change">
+                                <label for="feeAmt" class="form-label"><i class="fas fa-money-bill-wave"></i> Fees
+                                    Amount</label>
+                                <input type="number" name="feeAmt" id="feeAmt" class="form-control"
+                                    placeholder="Enter Fees Amount" min="5000" required disabled>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary me-md-2" id="resetFormBtn">Reset</button>
+                            <button type="button" class="btn btn-primary" id="openFeeModalBtn">Add Fee Details</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Manage Fee Structures Tab -->
+            <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3><i class="fas fa-list"></i> All Fee Structures</h3>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Section -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="courseFilter" class="form-label">Course</label>
+                            <select class="form-select" id="courseFilter">
+                                <option value=""> Select Course</option>
+                                {% for course in courses %}
+                                <option value="{{ course }}">{{ course }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="yearFilter" class="form-label">Year</label>
+                            <select class="form-select" id="yearFilter" disabled>
+                                <option value="" selected>All Years</option>
+                                <!-- result loaded here -->
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="semesterFilter" class="form-label">Semester</label>
+                            <select class="form-select" id="semesterFilter" disabled>
+                                <option value="" selected>All Semesters</option>
+                                <!-- result loaded here -->
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="filterBatch" class="form-label">Batch</label>
+                            <select class="form-select" id="filterBatch" disabled>
+                                <option value="" selected disabled>Select Batch</option>
+                                <!-- result loaded here -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="fee-table" id="fee-table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Year</th>
+                                    <th>Semester</th>
+                                    <th>Batch</th>
+                                    <th>Fee Amount</th>
+                                    <th>Due Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="feeStructuresTableBody">
+                                <!-- result loaded here -->
+                                {% for i in page_obj %}
+                                <tr>
+                                    <td>{{ i.course }}</td>
+                                    <td>Year {{ i.year }}</td>
+                                    <td>Semester {{ i.semester }}</td>
+                                    <td>{{ i.batch }}</td>
+                                    <td>₹{{ i.amount }}</td>
+                                    <td>{{ i.due_date|date:'Y-m-d' }}</td>
+                                    <td class="action-buttons">
+                                        <button class="btn-action btn-delete" id="deleteBtn"
+                                            data-id="{{ i.structure_id }}">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                        <div id="noRecordsMessage" class="alert alert-info mt-4" style="display: none;">
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                <h5>No fee structures found</h5>
+                                <p class="mb-0">Try adjusting your filters or create a new fee structure</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pagination" id="pagination">
+                        <button id="prev-btn"
+                            data-page="{% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
+                            {% if not page_obj.has_previous %}disabled{% endif %}>Previous</button>
+                        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        <button id="next-btn"
+                            data-page="{% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}"
+                            {% if not page_obj.has_next %}disabled{% endif %}>Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fee Details Modal -->
+    <div class="modal-overlay" style="display: none;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="feeDetailsModalLabel">Add Fee Details</h5>
+                    <button type="button" id="closeBtn" class="btn-close btn-close-white" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="selectedCourseInfo">Please review the selected course details before adding fee
+                            information.</span>
+                    </div>
+
+                    <form id="feeDetailsForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dueDateReview" class="form-label"><i class="fas fa-calendar-day"></i> Fee
+                                    Due Date</label>
+                                <input type="date" class="form-control" name="dueDateReview" id="dueDateReview"
+                                    disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="batchReview" class="form-label"><i class="fas fa-money-bill-wave"></i> For
+                                    Batch</label>
+                                <input type="text" class="form-control" name="batchReview" id="batchReview" disabled>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feeAmountReview" class="form-label"><i class="fas fa-rupee-sign"></i> Fee
+                                Amount</label>
+                            <input type="number" class="form-control" id="feeAmountReview" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="courseReview" class="form-label"><i class="fas fa-file-alt"></i> Course</label>
+                            <input type="text" class="form-control" id="courseReview" name="courseReview" disabled>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="margin-right: 20px;"
+                        id="cancelBtn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitFeeBtn">Submit Fee Structure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const courseSelect = document.querySelector('#course');
+        const courseFilterSelect = document.querySelector('#courseFilter');
+        let messageShow = document.querySelector(".messageShow");
+        const semester = document.querySelector("#semester");
+        const year = document.querySelector("#year");
+        const semesterFilter = document.querySelector("#semesterFilter");
+        const yearFilter = document.querySelector("#yearFilter");
+        const batchInput = document.getElementById("batch");
+        const feeAmtInput = document.getElementById("feeAmt");
+        const dueDateInput = document.querySelector("#dueDate");
+        const batchFilter = document.querySelector("#filterBatch")
+
+        let openFeeModalBtn = document.querySelector("#openFeeModalBtn");
+        let modalOverlay = document.querySelector(".modal-overlay");
+        let closeBtn = document.querySelector("#closeBtn");
+        let cancelBtn = document.querySelector("#cancelBtn");
+        let submitFeeBtn = document.querySelector("#submitFeeBtn");
+        let noRecordMessage = document.querySelector("#noRecordsMessage")
+
+        // Course change handler for both create and filter sections
+        courseFilterSelect.addEventListener('change', function () {
+            courseHandler.call(this, yearFilter, semesterFilter);
+        });
+
+        courseSelect.addEventListener('change', function () {
+            courseHandler.call(this, year, semester);
+        });
+
+        function courseHandler(yearEl, semesterEl) {
+            const course_name = this.value;
+            if (course_name !== "") {
+                yearEl.disabled = false;
+                semesterEl.disabled = false;
+                getCourseDetail(course_name, yearEl, semesterEl);
+                // Reset batch and fees when course changes
+                batchInput.disabled = true;
+                feeAmtInput.disabled = true;
+                batchInput.value = "";
+                feeAmtInput.value = "";
+            } else {
+                yearEl.disabled = true;
+                semesterEl.disabled = true;
+                yearEl.innerHTML = "<option value='' selected disabled>Select Year</option>";
+                semesterEl.innerHTML = "<option value='' selected disabled>Select Semester</option>";
+                batchInput.disabled = true;
+                feeAmtInput.disabled = true;
+            }
+        }
+
+        function getCourseDetail(course_name, yearEl, semesterEl) {
+            fetch("/get-courses-details/", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'course_name': course_name })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        showMessage(data.error, 'danger');
+                    } else {
+                        // Populate Year options
+                        let yearOptions = "<option value='' selected disabled>Select Year</option>";
+                        data.years.forEach(value => {
+                            yearOptions += `<option value="${value}">${value}</option>`;
+                        });
+                        yearEl.innerHTML = yearOptions;
+
+                        // Populate Semester options
+                        let semOptions = "<option value='' selected disabled>Select Semester</option>";
+                        data.semesters.forEach(value => {
+                            semOptions += `<option value="${value}">${value}</option>`;
+                        });
+                        semesterEl.innerHTML = semOptions;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching course details:", err);
+                    showMessage("Error fetching course details", 'danger');
+                });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const selects = [courseSelect, year, semester];
+
+        function checkAllSelected() {
+            if (courseSelect.value !== "" && year.value !== "" && semester.value !== "") {
+                batchInput.disabled = false;
+                feeAmtInput.disabled = false;
+                let courseEl = courseSelect.value;
+                let yearEl = year.value;
+                let semEl = semester.value;
+                getBatch(courseEl, yearEl, semEl);
+            } else {
+                batchInput.disabled = true;
+                feeAmtInput.disabled = true;
+                batchInput.value = "";
+                feeAmtInput.value = "";
+            }
+        }
+
+        selects.forEach(sel => {
+            sel.addEventListener('change', checkAllSelected);
+        });
+
+        function getBatch(courseEl, yearEl, semEl) {
+            fetch("/Send-Batch/", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'course': courseEl, 'year': Number(yearEl), 'semester': Number(semEl) })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        showMessage(data.error, 'danger');
+                        document.getElementById('createFeeStructureForm').reset();
+                        year.disabled = true;
+                        semester.disabled = true;
+                        batchInput.disabled = true;
+                        feeAmtInput.disabled = true;
+                        year.innerHTML = "<option value='' selected disabled>Select Year</option>";
+                        semester.innerHTML = "<option value='' selected disabled>Select Semester</option>";
+                    } else {
+                        batchInput.value = data.batch;
+                        feeAmtInput.value = data.fees;
+                    }
+                })
+        }
+
+        // Open modal button click handler
+        openFeeModalBtn.addEventListener("click", function () {
+            // Validate all fields
+            let inputs = document.querySelectorAll("#createFeeStructureForm input, #createFeeStructureForm select");
+            let allFieldsFilled = true;
+
+            inputs.forEach(el => {
+                if (el.value.trim() === "" && el.hasAttribute('required')) {
+                    allFieldsFilled = false;
+                    el.classList.add('is-invalid');
+                } else {
+                    el.classList.remove('is-invalid');
+                }
+            });
+
+            if (!allFieldsFilled) {
+                showMessage("All fields are required! Please fill all fields!", 'danger');
+                return;
+            }
+
+            // Populate modal with form data
+            document.getElementById('dueDateReview').value = dueDateInput.value;
+            document.getElementById('batchReview').value = batchInput.value;
+            document.getElementById('feeAmountReview').value = feeAmtInput.value;
+            document.getElementById('courseReview').value = courseSelect.options[courseSelect.selectedIndex].text;
+
+            // Show modal
+            modalOverlay.style.display = 'block';
+        });
+
+        // Close modal handlers
+        closeBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+        });
+
+        // Submit fee structure
+        submitFeeBtn.addEventListener('click', () => {
+            // Collect form data
+            const formData = {
+                'course': courseSelect.value,
+                'dueDate': dueDateInput.value,
+                'year': year.value,
+                'semester': semester.value,
+                'feeAmt': feeAmtInput.value,
+                'batch': batchInput.value
+            };
+
+            // Validate all fields are filled
+            for (let key in formData) {
+                if (!formData[key]) {
+                    showMessage(`Please fill all fields. Missing: ${key}`, 'danger');
+                    return;
+                };
+            };
+
+            // Submit as JSON
+            fetch("/Create-Fees-Structure/", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        modalOverlay.style.display = 'none';
+                        showMessage(data.success, 'success');
+
+                        // Reset form completely
+                        document.getElementById('createFeeStructureForm').reset();
+                        year.disabled = true;
+                        semester.disabled = true;
+                        batchInput.disabled = true;
+                        feeAmtInput.disabled = true;
+                        year.innerHTML = "<option value='' selected disabled>Select Year</option>";
+                        semester.innerHTML = "<option value='' selected disabled>Select Semester</option>";
+
+                    } else if (data.error) {
+                        modalOverlay.style.display = 'none';
+                        showMessage(data.error, 'danger');
+                        document.getElementById('createFeeStructureForm').reset();
+                        year.disabled = true;
+                        semester.disabled = true;
+                        batchInput.disabled = true;
+                        feeAmtInput.disabled = true;
+                        year.innerHTML = "<option value='' selected disabled>Select Year</option>";
+                        semester.innerHTML = "<option value='' selected disabled>Select Semester</option>";
+                    };
+                });
+        });
+
+        // Utility function to show messages
+        function showMessage(message, type) {
+            const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+            if (messageShow) {
+                messageShow.innerHTML = `
+                    <div class="alert ${alertClass} alert-dismissible fade show" role="alert" id="alertMessage">
+                        ${message}
+                        <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+            };
+
+            // Auto-remove message after 5 seconds
+            setTimeout(() => {
+                if (messageShow) {
+                    messageShow.innerHTML = '';
+                }
+            }, 10000);
+        };
+
+        // Close message button handler
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id === 'closeMessageBtn') {
+                if (messageShow) {
+                    messageShow.innerHTML = '';
+                };
+            };
+        });
+
+        // Reset form button
+        document.getElementById('resetFormBtn').addEventListener('click', function () {
+            year.disabled = true;
+            semester.disabled = true;
+            batchInput.disabled = true;
+            feeAmtInput.disabled = true;
+            year.innerHTML = "<option value='' selected disabled>Select Year</option>";
+            semester.innerHTML = "<option value='' selected disabled>Select Semester</option>";
+        });
+        // for handling filter and pagination
+        const selectors = [courseFilterSelect, semesterFilter, yearFilter, batchFilter]
+
+        function showBatch() {
+            if (courseFilterSelect.value !== "" && semesterFilter.value !== "" && yearFilter.value !== "") {
+                batchFilter.disabled = false;
+                fetchBatch();
+            }
+            else {
+                batchFilter.disabled = true;
+            };
+        };
+
+        function fetchBatch() {
+            fetch('/Fetch-Filter-Batch/', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'course': courseFilterSelect.value, 'year': yearFilter.value, 'semester': semesterFilter.value, 'batch': batchFilter.value })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.batch) {
+                        // logic loaded here
+                        let option = "<option value='' selected disabled>Selected Batch</option>";
+                        data.batch.forEach(val => {
+                            option += `<option value='${val}'>${val}</option>`;
+                        })
+                        batchFilter.innerHTML = option;
+
+                    } else if (data.error) {
+                        showMessage(data.error, 'danger');
+                        yearFilter.disabled = true;
+                        semesterFilter.disabled = true;
+                        batchFilter.disabled = true;
+                        yearFilter.innerHTML = "<option value='' selected disabled>Select Year</option>";
+                        semesterFilter.innerHTML = "<option value='' selected disabled>Select Semester</option>"
+                        batchFilter.innerHTML = "<option value='' selected disabled>Select Batch</option>";
+
+                    } else if (data.info) {
+                        let filter = "";
+                        data.info.forEach(val => {
+                            filter += `<tr>
+                                <td>${val.course}</td>
+                                <td>Year ${val.year}</td>
+                                <td>Semester ${val.semester}</td>
+                                <td>${val.batch}</td>
+                                <td>₹${val.amount}</td>
+                                <td>${val.due_date}</td>
+                                <td class="action-buttons">
+                                    <button class="btn-action btn-delete"  id="deleteBtn" data-id="${val.structure_id}">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>`
+                        })
+                        document.querySelector('#feeStructuresTableBody').innerHTML = filter
+                        yearFilter.disabled = true;
+                        semesterFilter.disabled = true;
+                        batchFilter.disabled = true;
+                        yearFilter.innerHTML = "<option value='' selected disabled>Select Year</option>";
+                        semesterFilter.innerHTML = "<option value='' selected disabled>Select Semester</option>"
+                        batchFilter.innerHTML = "<option value='' selected disabled>Select Batch</option>";
+                    }
+                });
+        };
+
+        selectors.forEach(sele => {
+            sele.addEventListener('change', showBatch)
+        });
+        let deleteBtn = document.querySelectorAll("#deleteBtn")
+        // for delete button
+        deleteBtn.forEach(del => {
+            del.addEventListener('click', (event) => {
+                const structure_id = event.currentTarget.getAttribute('data-id');
+                deleteStructure(structure_id);
+            })
+        })
+
+        function deleteStructure(value) {
+            fetch(`/Delete-Structure/${value}/`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        showMessage(data.error, "danger");
+                    } else {
+                        showMessage(data.success, "success");
+                    }
+                })
+        }
+        // Pagination section me correction:
+        document.addEventListener("DOMContentLoaded", function () {
+            function loadPage(page) {
+                fetch(`?page=${page}`, {
+                    headers: { "x-requested-with": "XMLHttpRequest" }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        let tableBody = document.getElementById("feeStructuresTableBody");
+                        let tableHead = "";
+
+                        data.data1.forEach(val => {
+                            tableHead += `<tr>
+                        <td>${val.course}</td>
+                        <td>Year ${val.year}</td>
+                        <td>Semester ${val.semester}</td>
+                        <td>${val.batch}</td>
+                        <td>₹${val.amount}</td>
+                        <td>${val.due_date}</td>
+                        <td class="action-buttons">
+                            <button class="btn-action btn-delete" id="deleteBtn" data-id="${val.structure_id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>`;
+                        });
+
+                        tableBody.innerHTML = tableHead;
+
+                        // Update pagination buttons
+                        document.getElementById("prev-btn").dataset.page = data.page_number - 1;
+                        document.getElementById("next-btn").dataset.page = data.page_number + 1;
+
+                        document.getElementById("prev-btn").disabled = !data.has_prev;
+                        document.getElementById("next-btn").disabled = !data.has_next;
+
+                        document.querySelector("#pagination span").innerText =
+                            `Page ${data.page_number} of ${data.total_pages}`;
+
+                      
+                    });
+            }
+
+            document.getElementById("prev-btn").addEventListener("click", function () {
+                if (!this.disabled) {
+                    loadPage(this.dataset.page);
+                }
+            });
+
+            document.getElementById("next-btn").addEventListener("click", function () {
+                if (!this.disabled) {
+                    loadPage(this.dataset.page);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

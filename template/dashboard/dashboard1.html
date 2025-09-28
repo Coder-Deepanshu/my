@@ -5,427 +5,848 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Dashboard</title>
+    <title>Admin Dashboard | Student Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Add jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="{% static '/css/dashboard/facultyDashboard.css'  %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard/adminDashboard.css' %}">
 </head>
 
 <body>
     <div class="bubbles">
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
+        <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s;"></div>
+        <div class="bubble" style="width: 120px; height: 120px; left: 20%; animation-delay: 2s;"></div>
+        <div class="bubble" style="width: 60px; height: 60px; left: 30%; animation-delay: 4s;"></div>
+        <div class="bubble" style="width: 100px; height: 100px; left: 40%; animation-delay: 6s;"></div>
+        <div class="bubble" style="width: 70px; height: 70px; left: 60%; animation-delay: 8s;"></div>
+        <div class="bubble" style="width: 90px; height: 90px; left: 80%; animation-delay: 10s;"></div>
     </div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h1 style="color: white; margin: 0;">
-                <i class="fas fa-graduation-cap me-2" style="color: #4361ee;"></i>
-                EduTrack
-            </h1>
-        </div>
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <div class="sidebar-menu">
-            <h3 class="menu-title">Main</h3>
-            <ul class="menu-list">
-                <li class="menu-item active">
-                    <a href="#" class="menu-link active">
-                        <i class="fas fa-tachometer-alt menu-icon"></i>
-                        <span class="menu-text">Dashboard</span>
-                    </a>
-                </li>
-            </ul>
-
-            <h3 class="menu-title">Management</h3>
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'profile_details' %}" class="menu-link">
-                        <i class="fas fa-user-tie menu-icon"></i>
-                        <span class="menu-text">Profile</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="{% url 'facultyDocumentManagement' %}" class="menu-link">
-                        <i class="fas fa-copy menu-icon"></i>
-                        <span class="menu-text">Document</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="{% url 'facultyStudent_chat' %}" class="menu-link">
-                        <i class="fas fa-comments menu-icon"></i>
-                        <span class="menu-text">Student Chat</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-headset menu-icon"></i>
-                        <span class="menu-text">Admin Chat</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="{% url 'chatHistory' %}" class="menu-link">
-                        <i class="fas fa-history menu-icon"></i>
-                        <span class="menu-text">Chat History</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="{% url 'studentAttendance_management' %}" class="menu-link">
-                        <i class="fas fa-calendar-check menu-icon"></i>
-                        <span class="menu-text">Attendance</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-calendar-alt menu-icon"></i>
-                        <span class="menu-text">Time Table</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-chalkboard-teacher menu-icon"></i>
-                        <span class="menu-text">Lectures</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-tasks menu-icon"></i>
-                        <span class="menu-text">Assignments</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-money-bill-wave menu-icon"></i>
-                        <span class="menu-text">Salary</span>
-                    </a>
-                </li>
-            </ul>
-
-            <h3 class="menu-title">Resources</h3>
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{% url 'id_card' %}" class="menu-link">
-                        <i class="fas fa-id-card menu-icon"></i>
-                        <span class="menu-text">ID Card</span>
-                    </a>
-                </li>
-
-                <li class="menu-item">
-                    <a href="#" class="menu-link">
-                        <i class="fas fa-book menu-icon"></i>
-                        <span class="menu-text">Resources</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="sidebar-footer">
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
-            <div class="user-info">
-                <div class="user-name">{{ username }}</div>
-                <div class="user-role">Faculty Member</div>
-            </div>
-            <a href="{% url 'logoutdoor' %}">
-                <button class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </a>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-left">
-                <button class="toggle-sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1 class="page-title">
-                    <i class="fas fa-tachometer-alt"></i>
-                    Faculty Dashboard
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>
+                    <i class="fas fa-graduation-cap me-2" style="color: #4361ee;"></i>
+                    EduTrack
                 </h1>
             </div>
 
-            <div class="header-right">
-                <button class="notification-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">5</span>
-                </button>
-
-                <div class="user-dropdown">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User"
-                        class="user-dropdown-avatar">
-                    <span class="user-dropdown-name">{{ username }}</span>
-                    <div class="user-dropdown-menu">
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-user mr-2"></i> Profile
+            <div class="sidebar-menu">
+                <h3 class="menu-title">Main</h3>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link active" data-tab="dashboard-tab">
+                            <i class="fas fa-tachometer-alt menu-icon"></i>
+                            <span class="menu-text">Dashboard</span>
                         </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog mr-2"></i> Settings
+                    </li>
+                </ul>
+
+                <h3 class="menu-title">Personal</h3>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="myDetails-tab">
+                            <i class="fas fa-id-badge menu-icon"></i>
+                            <span class="menu-text">My Details</span>
                         </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{% url 'logoutdoor' %}" class="dropdown-item">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                    </li>
+                </ul>
+
+                <h3 class="menu-title">Management</h3>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="students-tab">
+                            <i class="fas fa-user-graduate menu-icon"></i>
+                            <span class="menu-text">Students</span>
                         </a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Content -->
-        <div class="content">
-            <div class="header-1">
-                <div class="page-title">
-                    <h1>Welcome back, Professor {{ username }}!</h1>
-                    <p>Here's what's happening with your classes today</p>
-                </div>
-
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search...">
-                </div>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--primary);">
-                        <i class="fas fa-calendar-day"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>3</h3>
-                        <p>Today's Classes</p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--success);">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>12</h3>
-                        <p>Pending Evaluations</p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--warning);">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>5</h3>
-                        <p>Unread Messages</p>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--danger);">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="stat-info">
-                        <h3>92%</h3>
-                        <p>Performance</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <h3 class="section-title">
-                <i class="fas fa-bolt"></i> Quick Actions
-            </h3>
-
-            <div class="quick-actions">
-                <a href="#" class="action-btn">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span class="action-text">Take Attendance</span>
-                </a>
-
-                <a href="#" class="action-btn">
-                    <i class="fas fa-check-circle"></i>
-                    <span class="action-text">Grade Assignments</span>
-                </a>
-
-                <a href="#" class="action-btn">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span class="action-text">View Schedule</span>
-                </a>
-
-                <a href="#" class="action-btn">
-                    <i class="fas fa-inbox"></i>
-                    <span class="action-text">Check Messages</span>
-                </a>
-
-                <a href="#" class="action-btn">
-                    <i class="fas fa-upload"></i>
-                    <span class="action-text">Upload Materials</span>
-                </a>
-            </div>
-
-            {% include "Home/sidebar.html" %}
-
-            {% include "Home/ai.html" %}
-
-            <!-- Faculty Cards -->
-            <div class="faculty-cards">
-                <div class="faculty-card">
-                    <div class="faculty-card-header">
-                        <div class="faculty-card-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <h3 class="faculty-card-title">Attendance Management</h3>
-                    </div>
-                    <div class="faculty-card-body">
-                        <p>Mark and manage student attendance for your current classes. View historical attendance
-                            records and generate reports.</p>
-                        <a href="#" class="btn"
-                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"><i
-                                class="fas fa-clipboard-list"></i> Manage Attendance</a>
-                    </div>
-                </div>
-
-                <div class="faculty-card">
-                    <div class="faculty-card-header">
-                        <div class="faculty-card-icon">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <h3 class="faculty-card-title">Today's Lectures</h3>
-                    </div>
-                    <div class="faculty-card-body">
-                        <p>You have 2 lectures scheduled today. Next lecture is Advanced Algorithms at 11:00 AM in Room
-                            C-304.</p>
-                        <a href="#" class="btn"
-                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"><i
-                                class="fas fa-calendar-alt"></i> View Schedule</a>
-                    </div>
-                </div>
-
-                <div class="faculty-card">
-                    <div class="faculty-card-header">
-                        <div class="faculty-card-icon">
-                            <i class="fas fa-tasks"></i>
-                        </div>
-                        <h3 class="faculty-card-title">Assignment Evaluation</h3>
-                    </div>
-                    <div class="faculty-card-body">
-                        <p>12 assignments await your evaluation. 3 submissions are overdue for grading from last week.
-                        </p>
-                        <a href="#" class="btn"
-                            style="background: var(--primary); color: white; padding: 0.6rem 1.25rem; border-radius: 6px; text-decoration: none; display: inline-block; margin-top: 1rem;"
-                            s><i class="fas fa-check-circle"></i> Grade Assignments</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Recent Activity -->
-            <div class="recent-activity">
-                <h3 class="section-title">
-                    <i class="fas fa-history"></i> Recent Activity
-                </h3>
-
-                <ul class="activity-list">
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">Attendance Marked</h4>
-                            <p class="activity-desc">You marked attendance for Data Structures class</p>
-                        </div>
-                        <div class="activity-time">10 mins ago</div>
                     </li>
 
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-comment"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">New Message</h4>
-                            <p class="activity-desc">Rahul Sharma sent you a message about assignment</p>
-                        </div>
-                        <div class="activity-time">45 mins ago</div>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="faculty-tab">
+                            <i class="fas fa-chalkboard-teacher menu-icon"></i>
+                            <span class="menu-text">Faculty</span>
+                        </a>
                     </li>
 
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-upload"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">Material Uploaded</h4>
-                            <p class="activity-desc">You uploaded lecture slides for Algorithms course</p>
-                        </div>
-                        <div class="activity-time">2 hours ago</div>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="admin-tab">
+                            <i class="fas fa-tools menu-icon"></i>
+                            <span class="menu-text">Admin</span>
+                        </a>
                     </li>
 
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">Assignment Graded</h4>
-                            <p class="activity-desc">You graded Database Systems assignment</p>
-                        </div>
-                        <div class="activity-time">5 hours ago</div>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="result-tab">
+                            <i class="fas fa-poll menu-icon"></i>
+                            <span class="menu-text">Results</span>
+                        </a>
                     </li>
 
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">New Announcement</h4>
-                            <p class="activity-desc">Department meeting scheduled for Friday</p>
-                        </div>
-                        <div class="activity-time">1 day ago</div>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="facultySetting-tab">
+                            <i class="fas fa-cogs menu-icon"></i>
+                            <span class="menu-text">Faculty Setting</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="studentSetting-tab">
+                            <i class="fas fa-user-edit menu-icon"></i>
+                            <span class="menu-text">Student Setting</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="schedule-tab">
+                            <i class="fas fa-calendar-alt menu-icon"></i>
+                            <span class="menu-text">Schedule</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="payment-tab">
+                            <i class="fas fa-money-check-alt menu-icon"></i>
+                            <span class="menu-text">Payment</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <h3 class="menu-title">System</h3>
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="setting-tab">
+                            <i class="fas fa-sliders-h menu-icon"></i>
+                            <span class="menu-text">Settings</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="grade-tab">
+                            <i class="fas fa-chart-bar menu-icon"></i>
+                            <span class="menu-text">Grade</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="notification-tab">
+                            <i class="fas fa-comment-alt menu-icon"></i>
+                            <span class="menu-text">Notifications</span>
+                        </a>
                     </li>
                 </ul>
             </div>
-        </div>
-    </main>
+
+            <div class="sidebar-footer">
+                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
+                <div class="user-info">
+                    <div class="user-name">Dr. {{ username }}</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <a href="#">
+                    <button class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="toggle-sidebar" id="toggleSidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <h3>Dashboard</h3>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+
+                    <div class="user-dropdown">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User"
+                            class="user-dropdown-avatar">
+                        <span class="user-dropdown-name">Admin User</span>
+                        <div class="user-dropdown-menu">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-id-card"></i> ID Card
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-calendar-check"></i> Attendance
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-money-bill-wave"></i> Salary
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content active">
+
+                    <div class="tab-header">
+                        <div class="header-content">
+                            <h1>Dashboard Overview</h1>
+                            <p>Welcome back, Dr. {{ username }}! Here's what's happening today.</p>
+                        </div>
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search...">
+                        </div>
+                    </div>
+
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--primary);">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>1,254</h3>
+                                <p>Total Students</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--success);">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>68</h3>
+                                <p>Faculty Members</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--warning);">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>42</h3>
+                                <p>Active Courses</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: var(--danger);">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>92%</h3>
+                                <p>Attendance Rate</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">
+                        <i class="fas fa-bolt"></i> Quick Actions
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <a href="#" class="action-btn2">
+                            <i class="fas fa-user-plus"></i>
+                            <span class="action-text2">Add Student</span>
+                        </a>
+
+                        <a href="#" class="action-btn2">
+                            <i class="fas fa-poll"></i>
+                            <span class="action-text2">Publish Results</span>
+                        </a>
+
+                        <a href="#" class="action-btn2">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span class="action-text2">Collect Fine</span>
+                        </a>
+
+                        <a href="#" class="action-btn2">
+                            <i class="fas fa-bullhorn"></i>
+                            <span class="action-text2">Notice</span>
+                        </a>
+
+                        <a href="#" class="action-btn2">
+                            <i class="fas fa-cog"></i>
+                            <span class="action-text2">Settings</span>
+                        </a>
+
+                        <a href="#" class="action-btn2">
+                            <i class="fas fa-cog"></i>
+                            <span class="action-text2">Data Analytics</span>
+                        </a>
+                    </div>
+                    {% include 'Home/sidebar.html' %}
+
+                    {% include 'Home/ai.html' %}
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <h3 class="section-title">
+                            <i class="fas fa-history"></i>
+                            Recent Activity
+                        </h3>
+
+                        <ul class="activity-list">
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4 class="activity-title">New Student Registered</h4>
+                                    <p class="activity-desc">Rahul Sharma enrolled in BCA program</p>
+                                </div>
+                                <div class="activity-time">10 mins ago</div>
+                            </li>
+
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4 class="activity-title">Fine Payment Received</h4>
+                                    <p class="activity-desc">Priya Patel paid ₹500 for library fine</p>
+                                </div>
+                                <div class="activity-time">45 mins ago</div>
+                            </li>
+
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-poll"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4 class="activity-title">Results Published</h4>
+                                    <p class="activity-desc">Semester 3 results published for B.Com</p>
+                                </div>
+                                <div class="activity-time">2 hours ago</div>
+                            </li>
+
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4 class="activity-title">New Event Added</h4>
+                                    <p class="activity-desc">Sports Day scheduled for May 25th</p>
+                                </div>
+                                <div class="activity-time">5 hours ago</div>
+                            </li>
+
+                            <li class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4 class="activity-title">New Faculty Member</h4>
+                                    <p class="activity-desc">Dr. Amit Kumar joined as Computer Science professor</p>
+                                </div>
+                                <div class="activity-time">1 day ago</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
         // Toggle Sidebar
-        const toggleSidebar = document.querySelector('.toggle-sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
         const sidebar = document.querySelector('.sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
 
         toggleSidebar.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-
-        // Menu Dropdowns
-        const menuItems = document.querySelectorAll('.menu-item');
-
-        menuItems.forEach(item => {
-            const link = item.querySelector('.menu-link');
-            const submenu = item.querySelector('.submenu');
-
-            if (submenu) {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    item.classList.toggle('active');
-                });
+            if (window.innerWidth < 1200) {
+                sidebar.classList.toggle('active');
+                sidebarOverlay.classList.toggle('active');
+            } else {
+                sidebar.classList.toggle('collapsed');
             }
         });
+
+        // Close sidebar when clicking on overlay
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        });
+
+        // Tab Switching Functionality
+        document.querySelectorAll('[data-tab]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Show selected tab
+                const selectedTab = document.getElementById(tabId);
+                if (selectedTab) {
+                    selectedTab.classList.add('active');
+                }
+
+                // Update active menu item
+                document.querySelectorAll('.menu-link').forEach(menuLink => {
+                    menuLink.classList.remove('active');
+                });
+                link.classList.add('active');
+
+                // Update page title
+                const pageTitle = document.querySelector('.page-title h3');
+                const tabTitles = {
+                    'dashboard-tab': 'Dashboard',
+                    'myDetails-tab': 'My Details',
+                    'students-tab': 'Students',
+                    'faculty-tab': 'Faculty',
+                    'admin-tab': 'Admin',
+                    'result-tab': 'Results',
+                    'facultySetting-tab': 'Faculty Setting',
+                    'studentSetting-tab': 'Student Setting',
+                    'schedule-tab': 'Schedule',
+                    'payment-tab': 'Payment',
+                    'setting-tab': 'Settings',
+                    'grade-tab': 'Grades',
+                    'notification-tab': 'Notifications'
+                };
+
+                if (pageTitle && tabTitles[tabId]) {
+                    pageTitle.textContent = tabTitles[tabId];
+                }
+
+                // Close sidebar on mobile
+                if (window.innerWidth < 1200) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Add hover effects to action cards
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Notification badge animation
+        const notificationBadge = document.querySelector('.notification-badge');
+        if (notificationBadge) {
+            setInterval(() => {
+                notificationBadge.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    notificationBadge.style.transform = 'scale(1)';
+                }, 300);
+            }, 3000);
+        }
+
+        // Responsive behavior
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1200) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            // Slider functionality
+            const slider = document.querySelector('.slider');
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.querySelector('.prev-slide');
+            const nextBtn = document.querySelector('.next-slide');
+            const dots = document.querySelectorAll('.slider-dot');
+
+            let currentSlide = 0;
+            const slideCount = slides.length;
+            let autoPlayInterval;
+
+            // Initialize slider
+            function initSlider() {
+                updateSlider();
+                startAutoPlay();
+            }
+
+            // Update slider position and indicators
+            function updateSlider() {
+                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+                // Update dots
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+
+            // Go to next slide
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slideCount;
+                updateSlider();
+            }
+
+            // Go to previous slide
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+                updateSlider();
+            }
+
+            // Start auto-play
+            function startAutoPlay() {
+                autoPlayInterval = setInterval(nextSlide, 5000);
+            }
+
+            // Stop auto-play
+            function stopAutoPlay() {
+                clearInterval(autoPlayInterval);
+            }
+
+            // Event listeners for buttons
+            nextBtn.addEventListener('click', function () {
+                stopAutoPlay();
+                nextSlide();
+                startAutoPlay();
+            });
+
+            prevBtn.addEventListener('click', function () {
+                stopAutoPlay();
+                prevSlide();
+                startAutoPlay();
+            });
+
+            // Event listeners for dots
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', function () {
+                    stopAutoPlay();
+                    currentSlide = index;
+                    updateSlider();
+                    startAutoPlay();
+                });
+            });
+
+            // Pause auto-play when hovering over slider
+            const sliderContainer = document.querySelector('.slider-container');
+            sliderContainer.addEventListener('mouseenter', stopAutoPlay);
+            sliderContainer.addEventListener('mouseleave', startAutoPlay);
+
+            // Initialize the slider
+            initSlider();
+        });
+
+        // User Dropdown
+        const userDropdown = document.querySelector('.user-dropdown');
+
+        userDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        document.addEventListener('click', () => {
+            const dropdownMenu = document.querySelector('.user-dropdown-menu');
+            dropdownMenu.style.opacity = '0';
+            dropdownMenu.style.visibility = 'hidden';
+            dropdownMenu.style.transform = 'translateY(10px)';
+        });
+        // Student Slider Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize student slider
+            initStudentSlider();
+        });
+
+        function initStudentSlider() {
+            const studentSlider = document.querySelector('.student-slider');
+            const studentSlides = document.querySelectorAll('.student-slide');
+            const studentPrevBtn = document.querySelector('.student-prev-btn');
+            const studentNextBtn = document.querySelector('.student-next-btn');
+            const studentDotsContainer = document.querySelector('.student-slider-dots');
+
+            let currentStudentSlide = 0;
+            const totalStudentSlides = studentSlides.length;
+
+            // Create dots dynamically
+            function createDots() {
+                studentDotsContainer.innerHTML = '';
+                for (let i = 0; i < totalStudentSlides; i++) {
+                    const dot = document.createElement('span');
+                    dot.classList.add('student-slider-dot');
+                    if (i === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => goToStudentSlide(i));
+                    studentDotsContainer.appendChild(dot);
+                }
+            }
+
+            // Go to specific slide
+            function goToStudentSlide(slideIndex) {
+                currentStudentSlide = slideIndex;
+                updateStudentSlider();
+            }
+
+            // Update slider position and dots
+            function updateStudentSlider() {
+                studentSlider.style.transform = `translateX(-${currentStudentSlide * 100}%)`;
+
+                // Update dots
+                const studentDots = document.querySelectorAll('.student-slider-dot');
+                studentDots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentStudentSlide);
+                });
+            }
+
+            // Next slide
+            function nextStudentSlide() {
+                currentStudentSlide = (currentStudentSlide + 1) % totalStudentSlides;
+                updateStudentSlider();
+            }
+
+            // Previous slide
+            function prevStudentSlide() {
+                currentStudentSlide = (currentStudentSlide - 1 + totalStudentSlides) % totalStudentSlides;
+                updateStudentSlider();
+            }
+
+            // Auto slide every 5 seconds
+            let studentAutoSlide = setInterval(nextStudentSlide, 5000);
+
+            // Pause auto slide on hover
+            studentSlider.addEventListener('mouseenter', () => {
+                clearInterval(studentAutoSlide);
+            });
+
+            // Resume auto slide when not hovering
+            studentSlider.addEventListener('mouseleave', () => {
+                studentAutoSlide = setInterval(nextStudentSlide, 5000);
+            });
+
+            // Event listeners for buttons
+            studentNextBtn.addEventListener('click', () => {
+                clearInterval(studentAutoSlide);
+                nextStudentSlide();
+                studentAutoSlide = setInterval(nextStudentSlide, 5000);
+            });
+
+            studentPrevBtn.addEventListener('click', () => {
+                clearInterval(studentAutoSlide);
+                prevStudentSlide();
+                studentAutoSlide = setInterval(nextStudentSlide, 5000);
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    clearInterval(studentAutoSlide);
+                    prevStudentSlide();
+                    studentAutoSlide = setInterval(nextStudentSlide, 5000);
+                } else if (e.key === 'ArrowRight') {
+                    clearInterval(studentAutoSlide);
+                    nextStudentSlide();
+                    studentAutoSlide = setInterval(nextStudentSlide, 5000);
+                }
+            });
+
+            // Touch swipe support for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            studentSlider.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                clearInterval(studentAutoSlide);
+            });
+
+            studentSlider.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleStudentSwipe();
+                studentAutoSlide = setInterval(nextStudentSlide, 5000);
+            });
+
+            function handleStudentSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // Swipe left - next slide
+                        nextStudentSlide();
+                    } else {
+                        // Swipe right - previous slide
+                        prevStudentSlide();
+                    }
+                }
+            }
+
+            // Initialize
+            createDots();
+            updateStudentSlider();
+
+            // Preload images for better performance
+            preloadStudentImages();
+        }
+
+        // Preload slider images
+        function preloadStudentImages() {
+            const studentImages = [
+                "{% static 'images/library.jpg' %}",
+                "{% static 'images/university.jpg' %}",
+                "{% static 'images/university_campus.jpg' %}",
+                "{% static 'images/acheivments.jpg' %}"
+            ];
+
+            studentImages.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+
+        // Function to dynamically add new slides (if needed)
+        function addStudentSlide(imageSrc, title, text) {
+            const studentSlider = document.querySelector('.student-slider');
+            const studentDotsContainer = document.querySelector('.student-slider-dots');
+
+            const newSlide = document.createElement('div');
+            newSlide.classList.add('student-slide');
+            newSlide.innerHTML = `
+        <img src="${imageSrc}" alt="${title}" onerror="this.src='https://via.placeholder.com/1200x650/3a56d4/ffffff?text=New+Slide'">
+        <div class="student-slide-content">
+            <h3 class="student-slide-title">${title}</h3>
+            <p class="student-slide-text">${text}</p>
+        </div>
+    `;
+
+            studentSlider.appendChild(newSlide);
+            initStudentSlider(); // Reinitialize to include new slide
+        }
+
+        // Function to update slide content dynamically
+        function updateStudentSlide(slideIndex, imageSrc, title, text) {
+            const studentSlides = document.querySelectorAll('.student-slide');
+            if (studentSlides[slideIndex]) {
+                const slide = studentSlides[slideIndex];
+                slide.querySelector('img').src = imageSrc;
+                slide.querySelector('.student-slide-title').textContent = title;
+                slide.querySelector('.student-slide-text').textContent = text;
+            }
+        }
+        // AI Chat Functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            initStudentAIChat();
+        });
+
+        function initStudentAIChat() {
+            // Personal Assistant Chat
+            const studentPersonalChat = document.getElementById('studentPersonalChat');
+            const studentPersonalInput = document.getElementById('studentPersonalInput');
+            const studentPersonalSend = document.getElementById('studentPersonalSend');
+
+            // University Info Chat
+            const studentUniversityChat = document.getElementById('studentUniversityChat');
+            const studentUniversityInput = document.getElementById('studentUniversityInput');
+            const studentUniversitySend = document.getElementById('studentUniversitySend');
+
+            // Personal Assistant Responses
+            const personalResponses = {
+                'exam': 'Exam schedules are available in the "Schedule" section. Mid-term exams start next month.',
+                'fee': 'You can check your fee status in the "Payment" section. The due date is 15th of each month.',
+                'assignment': 'Your pending assignments are listed in the "Grade" section. Submit before the deadline.',
+                'attendance': 'Current attendance: 85%. You need 75% to be eligible for exams.',
+                'result': 'Semester results will be published next week in the "Results" section.',
+                'default': 'I can help with exam schedules, fees, assignments, attendance, and results. What would you like to know?'
+            };
+
+            // University Info Responses
+            const universityResponses = {
+                'rule': 'Academic rules require 75% attendance and timely submission of assignments.',
+                'regulation': 'University regulations are available in the student handbook section.',
+                'edutrack': 'EduTrack helps manage your academic journey. Use different tabs for various features.',
+                'campus': 'Campus facilities include library, labs, sports complex, and cafeteria.',
+                'default': 'I can provide information about university rules, regulations, campus facilities, and EduTrack usage.'
+            };
+
+            // Add message to chat
+            function addStudentMessage(chatElement, message, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `student-message ${isUser ? 'student-user' : 'student-bot'}`;
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'student-message-content';
+                contentDiv.textContent = message;
+
+                messageDiv.appendChild(contentDiv);
+                chatElement.appendChild(messageDiv);
+                chatElement.scrollTop = chatElement.scrollHeight;
+            }
+
+            // Get response based on input
+            function getStudentResponse(input, responses) {
+                input = input.toLowerCase();
+
+                for (const [key, response] of Object.entries(responses)) {
+                    if (input.includes(key)) {
+                        return response;
+                    }
+                }
+                return responses.default;
+            }
+
+            // Personal chat event listeners
+            if (studentPersonalSend) {
+                studentPersonalSend.addEventListener('click', sendPersonalMessage);
+                studentPersonalInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') sendPersonalMessage();
+                });
+            }
+
+            // University chat event listeners
+            if (studentUniversitySend) {
+                studentUniversitySend.addEventListener('click', sendUniversityMessage);
+                studentUniversityInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') sendUniversityMessage();
+                });
+            }
+
+            function sendPersonalMessage() {
+                const message = studentPersonalInput.value.trim();
+                if (message) {
+                    addStudentMessage(studentPersonalChat, message, true);
+                    studentPersonalInput.value = '';
+
+                    // Simulate AI response
+                    setTimeout(() => {
+                        const response = getStudentResponse(message, personalResponses);
+                        addStudentMessage(studentPersonalChat, response, false);
+                    }, 1000);
+                }
+            }
+
+            function sendUniversityMessage() {
+                const message = studentUniversityInput.value.trim();
+                if (message) {
+                    addStudentMessage(studentUniversityChat, message, true);
+                    studentUniversityInput.value = '';
+
+                    // Simulate AI response
+                    setTimeout(() => {
+                        const response = getStudentResponse(message, universityResponses);
+                        addStudentMessage(studentUniversityChat, response, false);
+                    }, 1000);
+                }
+            }
+        }
+
     </script>
 </body>
 
