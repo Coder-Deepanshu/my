@@ -480,6 +480,14 @@
                 padding: 20px;
             }
         }
+
+        .due {
+            color: var(--overdue);
+        }
+
+        .over-due {
+            color: var(--paid);
+        }
     </style>
 </head>
 
@@ -507,18 +515,18 @@
 
             <!-- Alert Messages -->
             {% if messages %}
-            <div id="alertContainer">
+            <div class="container mt-4 ">
                 {% for message in messages %}
-                <div
-                    class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
-                    <i
-                        class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                    role="alert" id="alertMessage">
                     {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert"
+                        aria-label="Close"></button>
                 </div>
                 {% endfor %}
             </div>
             {% endif %}
+
 
             <div class="student-info">
                 <div class="info-card">
@@ -526,12 +534,12 @@
                     <p>{{ student.name }}</p>
                 </div>
                 <div class="info-card">
-                    <h3><i class="fas fa-id-card"></i> College ID</h3>
+                    <h3><i class="fas fa-id-card" data-id="{{ student.college_id }}"></i> College ID</h3>
                     <p>{{ student.college_id }}</p>
                 </div>
                 <div class="info-card">
                     <h3><i class="fas fa-book"></i> Course</h3>
-                    <p>{{ student.course }}</p>
+                    <p>{{ student.course.code }} - {{ student.course.level }}</p>
                 </div>
                 <div class="info-card">
                     <h3><i class="fas fa-calendar-alt"></i> Current Year/Semester</h3>
@@ -539,82 +547,128 @@
                 </div>
                 <div class="info-card">
                     <h3><i class="fas fa-money-bill-wave"></i> Course Full Fees</h3>
-                    <p>₹{{ total_course_fees|floatformat:2|cut:"-" }}</p>
+                    <p>₹{{ totalFee|floatformat:2|cut:"-" }}</p>
                 </div>
             </div>
 
             <!-- Fee Note Section -->
             <div class="fee-note"
                 style="padding: 10px 20px; background-color: #fff8e1; border-left: 4px solid #ffc107; margin: 0 20px; border-radius: 4px;margin-top: 10px;">
-                {% if total_due < 0 %} <i class="fas fa-info-circle" style="color: #4caf50;"></i> Your account has an
-                    advance of ₹{{ total_due|floatformat:2|cut:"-" }}
-                    {% else %}
-                    <i class="fas fa-info-circle" style="color: #f44336;"></i> Your due amount is ₹{{
-                    total_due|floatformat:2 }}
-                    {% endif %}
+                {% if advance %} <i class="fas fa-info-circle" style="color: #4caf50;"></i> Your account has an
+                advance of ₹{{ advance|floatformat:2|cut:"-" }}
+                {% elif pending %}
+                <i class="fas fa-info-circle" style="color: #f44336;"></i> Your due amount is ₹{{ pending|floatformat:2 }}
+                {% endif %}
             </div>
 
             <!-- Fee Summary Cards -->
             <div class="summary-cards">
                 <div class="summary-card">
                     <h3><i class="fas fa-receipt"></i> Total Course Fee</h3>
-                    <p>₹{{ total_semester_fees|floatformat:2 }}</p>
+                    {% if fee %}
+                    <p>₹{{ fee|floatformat:2 }}</p>
+                    {% else %}
+                    <p>₹ 0.00</p>
+                    {% endif %}
                 </div>
                 <div class="summary-card">
                     <h3><i class="fas fa-check-circle"></i> Total Paid</h3>
-                    <p>₹{{ total_paid|floatformat:2 }}</p>
+                    {% if paid %}
+                    <p>₹{{ paid|floatformat:2 }}</p>
+                    {% else %}
+                    <p>₹ 0.00</p>
+                    {% endif %}
                 </div>
                 <div class="summary-card">
                     <h3><i class="fas fa-exclamation-circle"></i> Total Due</h3>
-                    <p>₹{{ total_due|floatformat:2 }}</p>
+                    {% if pending %}
+                    <p style="color: var(--overdue);">₹{{ pending|floatformat:2 }}</p>
+                    {% elif advance %}
+                    <p style="color: var(--paid);">₹{{ pending|floatformat:2 }}</p>
+                    {% else %}
+                    <p>₹ 0.00</p>
+                    {% endif %}
                 </div>
                 <div class="summary-card">
                     <h3><i class="fas fa-chart-pie"></i> Payment Status</h3>
-                    <p>{{ payment_percentage|floatformat:0 }}% Paid</p>
+                    {% if percent %}
+                    <p>{{ percent|floatformat:0 }}% Paid</p>
+                    {% else %}
+                    <p>0.00 % Paid</p>
+                    {% endif %}
                 </div>
             </div>
 
             <!-- Year-wise Fee Cards Section -->
             <h2 class="section-title"><i class="fas fa-calendar"></i> Year-wise Fee Status</h2>
             <div class="fee-years">
-                {% for year_data in year_wise_data %}
+                {% for i in data %}
                 <div class="year-card 
-                    {% if year_data.status == 'Paid' %}paid{% endif %}
-                    {% if year_data.status == 'Pending' %}pending{% endif %}
-                    {% if year_data.status == 'Overdue' %}overdue{% endif %}
-                    {% if year_data.status == 'No Fee' %}no-fee{% endif %}">
+                    {% if i.status == 'Paid' %}paid{% endif %}
+                    {% if i.status == 'Pending' %}{% if i.due %}overdue{% else %}pending{% endif %}{% endif %}
+                    {% if i.status == 'Overdue' %}paid{% endif %}
+                    {% if i.status == 'No-fee' %}no-fee{% endif %}">
 
-                    <h3><i class="fas fa-calendar"></i> Year {{ year_data.year }}</h3>
-                    <div class="amount">₹{{ year_data.amount|floatformat:2 }}</div>
+                    <h3><i class="fas fa-calendar"></i> Year {{ i.year }} - Sem {{ i.semester }}</h3>
+                <div class="amount">
+                    {% if i.feeAmt %}
+                    <div >₹ {{ i.feeAmt|floatformat:2 }}</div>
+                        {% if i.overdue %}
+                            <div class="over-due">₹ {{ i.overdue|floatformat:2 }}</div>
+                        {% elif i.due %}
+                            <div class="due">₹ {{ i.due|floatformat:2 }}</div>
+                        {% endif %}
+                    {% else %}
+                    <div>₹ 0.00</div>
+                    {% endif %}
+                </div>
 
                     <!-- Status Badge with Dynamic Colors -->
                     <div class="status-badge 
-                        {% if year_data.status == 'Paid' %}paid{% endif %}
-                        {% if year_data.status == 'Pending' %}pending{% endif %}
-                        {% if year_data.status == 'Overdue' %}overdue{% endif %}
-                        {% if year_data.status == 'No Fee' %}no-fee{% endif %}">
-                        {{ year_data.status }}
+                        {% if i.status == 'Paid' %}paid{% endif %}
+                        {% if i.status == 'Pending' %}{% if i.due %}overdue{% else %}pending{% endif %}{% endif %}
+                        {% if i.status == 'Overdue' %}paid{% endif %}
+                        {% if i.status == 'No-fee' %}no-fee{% endif %}">
+                        {{ i.status }}
                     </div>
 
                     <div class="due-date">
                         <i class="fas fa-calendar-day"></i>
-                        {% if year_data.status == 'Paid' %}
+                        {% if i.status == 'Paid' %}
                         Last payment: {{ year_data.payments.0.payment_date|date:"d/m/Y" }}
-                        {% elif year_data.status == 'No Fee' %}
-                        No Fee Call by College
-                        {% else %}
-                        Due Date: {{ year_data.due_date|date:"d/m/Y" }}
+                        {% elif i.status == 'No-fee' %}
+                        No Fee Call
+                        {% elif i.status == 'Pending' %}
+                        {% if i.dueDate %}
+                        Due Date: {{ i.dueDate|date:"d/m/Y" }}
+                        {% endif %}
                         {% endif %}
                     </div>
 
-                    {% if year_data.payments %}
-                    <button class="btn btn-primary view-payments" data-year="{{ year_data.year }}">
+                    {% if i.status == 'Paid' %}
+                    <button class="btn btn-primary view-payments" data-year="{{ i.year }}" data-sem="{{ i.semester }}">
                         <i class="fas fa-receipt"></i> View Payments
                     </button>
-                    {% endif %}
 
-                    {% if year_data.status != 'Paid' and year_data.status != 'No Fee' %}
-                    <button class="btn btn-outline-primary mt-2 pay-now" data-year="{{ year_data.year }}">
+                    {% elif i.status == 'Overdue' %}
+                    <button class="btn btn-primary view-payments" data-year="{{ i.year }}" data-sem="{{ i.semester }}">
+                        <i class="fas fa-receipt"></i> View Payments
+                    </button>
+
+                    {% elif i.status == 'Pending' %}
+                    <button class="btn btn-outline-primary mt-2 pay-now" data-year="{{ i.year }}"
+                        data-sem="{{ i.semester }}">
+                        <i class="fas fa-credit-card"></i> Pay Now
+                    </button>
+
+                    {% elif i.due and i.status == 'Pending' %}
+                    <button class="btn btn-outline-primary mt-2 pay-now" data-year="{{ i.year }}"
+                        data-sem="{{ i.semester }}">
+                        <i class="fas fa-credit-card"></i> Pay Pending Amount
+                    </button>
+
+                    {% elif i.status == 'No-fee' %}
+                    <button class="btn btn-outline-gray mt-2 no-fee" disabled>
                         <i class="fas fa-credit-card"></i> Pay Now
                     </button>
                     {% endif %}
@@ -625,7 +679,7 @@
             <!-- Payment History Section -->
             <div class="payment-history">
                 <h2><i class="fas fa-history"></i> Payment History</h2>
-                {% if all_payments %}
+                {% if paymentDetails %}
                 <div class="table-responsive">
                     <table class="payment-table">
                         <thead>
@@ -641,7 +695,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for payment in all_payments %}
+                            {% for payment in paymentDetails %}
                             <tr>
                                 <td>{{ payment.receipt_number }}</td>
                                 <td>{{ payment.payment_date|date:"d/m/Y" }}</td>

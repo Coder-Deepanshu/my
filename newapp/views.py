@@ -315,7 +315,7 @@ def dashboard2(request):
     college_id = request.session.get('student_college_id')
     detail = Student.objects.get(college_id = college_id)  # Retrieve username from session
     if username:
-        return render(request, 'dashboard/dashboard2.html', {'username': username,'detail':detail,'role':role})
+        return render(request, 'dashboard/dashboard2.html', {'username': username,'detail':detail,'role':role, 'college_id':college_id})
     else:
         return redirect('login') 
 
@@ -705,9 +705,14 @@ def course_details(request, template):
     try:
         # Get all courses from Course model (not from Student records)
         if template != 'chat/page2.html':
-            courses = Course.objects.all().values_list('name', flat=True)
+            courses = Course.objects.all().values_list('name', 'level__name', 'course_id')
             students = Student.objects.all()
-            
+            page_obj = None
+            data = []
+            # for fit the course in data
+            for i in courses:
+                data.append({'name': str(i[0]) + ' with ' + str(i[1]), 'course_id':i[2]})
+                
             if template == 'feeStructureCreation.html':
                 values = FeeStructure.objects.all().order_by("structure_id")
                 paginator = Paginator(values, 1)  # Changed from 1 to reasonable number
@@ -736,7 +741,7 @@ def course_details(request, template):
                     })
                     
             return render(request, template, {
-                'courses': courses, 
+                'data': data, 
                 'students': students, 
                 'role': role, 
                 'page_obj': page_obj
@@ -1224,604 +1229,265 @@ def get_student_attendance(request):
 # FOR FEES MANAGEMENT OF STUDENT
 
 #  for student, for viewing fees
-def student_fees_view(request):
-    role =  request.session.get('role')
-    if 'username3' not in request.session:
-        return redirect('login')
-    
-    try:
-        student = Student.objects.get(college_id=request.session['student_college_id'])
-        
-        # Get the Course object based on the student's course name
-        try:
-            course = Course.objects.get(code=student.course)
-            no_of_years = course.no_of_years
-        except Course.DoesNotExist:
-            messages.error(request, "Course information not found")
-            return redirect('dashboard2')
-        
-        # Get all fee structures for this course
-        batch_year=student.date_of_joining.year
-        course_fee_structures = FeeStructure.objects.filter(course=course)
-        course_fee_structure_batchyear = course_fee_structures.filter(for_year=batch_year)
-        
-        # Calculate total semester fee with proper type handling and  calculate the total course fees
-        total_semester_fee = course_fee_structure_batchyear.aggregate(
-            total=Coalesce(
-                Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2)),
-                Decimal('0.00'),
-                output_field=DecimalField(max_digits=10, decimal_places=2)
-            )
-        )['total'] or Decimal('0.00')
-
-
-        if course_fee_structure_batchyear.exists():
-            total_course_fees = course.fees_per_year * course.no_of_years
-        else :
-            total_course_fees = Decimal('0.00')
-    
-        # Get all payments for this student
-        all_payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
-        
-        # Calculate total payment with proper type handling
-        total_payment = all_payments.aggregate(
-            total=Coalesce(
-                Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2)),
-                Decimal('0.00'),
-                output_field=DecimalField(max_digits=10, decimal_places=2)
-            )
-        )['total'] or Decimal('0.00')
-        
-        # Calculate total due amount
-        total_due_amount = total_semester_fee - total_payment
-        
-        # Prepare year-wise data with proper decimal handling
-        year_wise_data = []
-        for year in range(1, no_of_years + 1):
-            # Get fee structures for this year
-            batch_year = student.date_of_joining.year
-            semester = (student.semester)+1
-
-            # for batch yaer wise fees matching with fees structure
-            year_fees = course_fee_structures.filter(year=year)
-            year_fees_of_batchyear = year_fees.filter(for_year=batch_year)
-            year_total = year_fees_of_batchyear.aggregate(
-            total=Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2))
-            )['total'] or Decimal('0.00')
-
-            # Get the due date for current semester
-            current_semester_fee = year_fees_of_batchyear.filter(semester=semester).first()
-            due_date = current_semester_fee.due_date if current_semester_fee else None
-            
-            # Get payments for this year
-            year_payments = all_payments.filter(fee_structure__year=year)
-
-            year_paid = year_payments.aggregate(
-                total=Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2))
-            )['total'] or Decimal('0.00')
-            
-            # Determine status
-            if year_total == Decimal('0.00'):
-                status = "No Fee"
-            elif year_paid >= year_total:
-                status = "Paid" 
-            elif year_paid > Decimal('0.00'):
-                status = "Partial"
-            else:
-                status = "Pending"
-            
-            year_wise_data.append({
-                'year': year,
-                'amount': year_total,
-                'paid': year_paid,
-                'due': year_total - year_paid,
-                'status': status,
-                'payments': year_payments,
-                'due_date': due_date  # Now this will be a single date or None
-            })
-          
-        context = {
-            'student': student,
-            'course': course,
-            'total_semester_fees': total_semester_fee,
-            'total_paid': total_payment,
-            'total_due': total_due_amount,
-            'total_course_fees':total_course_fees,
-            'payment_percentage': float((total_payment / total_semester_fee * 100)) if total_semester_fee > Decimal('0.00') else 0,
-            'year_wise_data': year_wise_data,
-            'all_payments': all_payments,
-            'role':role
-        }
-        
-        return render(request, 'student/student_fees_view.html', context)
-        
-    except Student.DoesNotExist:
-        messages.error(request, "Student not found")
-        return redirect('dashboard2')
-    except Exception as e:
-        messages.error(request, f"An error occurred: {str(e)}")
-        return redirect('dashboard2')
-    
-# for admin dashboard for voewing students fees
-def admin_fee_management(request):
+# for student, for viewing fees
+def student_fees_view(request, college_id, number):
     role = request.session.get('role')
-    if 'username1' not in request.session:
-        return redirect('login')
-    
-    # Get all courses for filter dropdown
-    courses = Course.objects.all()
-    
-    # Default filter values
-    course_filter = None
-    year_filter = None
-    semester_filter = None
-    college_id_filter = None
-    
-    # Check if filters are applied
-    if request.method == 'GET':
-        course_filter = request.GET.get('course', '')
-        year_filter = request.GET.get('year', '')
-        semester_filter = request.GET.get('semester', '')
-        college_id_filter = request.GET.get('college_id', '')
-    
-    # Build the filter query
-    filters = Q()
-    if course_filter:
-        filters &= Q(course=course_filter)
-    if year_filter:
-        filters &= Q(year=year_filter)
-    if semester_filter:
-        filters &= Q(semester=semester_filter)
-    if college_id_filter:
-        filters &= Q(college_id__icontains=college_id_filter)
-    
-    # Get filtered students
-    students = Student.objects.filter(filters).order_by('college_id')
-    
-    # Prepare student data with fee summaries
-    student_data = []
-    for student in students:
-        try:
-            course = Course.objects.get(code=student.course)
-            batch_year =  student.date_of_joining.year
-            fee_structures = FeeStructure.objects.filter(course=course).filter(for_year=batch_year)
-            
-            # Calculate total course fee
-            total_course_fee = fee_structures.aggregate(
-                total=Coalesce(
-                    Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2)),
-                    Decimal('0.00'),
-                    output_field=DecimalField(max_digits=10, decimal_places=2)
-                )
-            )['total'] or Decimal('0.00')
-            
-            # Get all payments for this student
-            all_payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
-            
-            # Calculate total payment
-            total_payment = all_payments.aggregate(
-                total=Coalesce(
-                    Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2)),
-                    Decimal('0.00'),
-                    output_field=DecimalField(max_digits=10, decimal_places=2)
-                )
-            )['total'] or Decimal('0.00')
-            
-            # Calculate total due amount
-            if total_course_fee >= total_payment:
-               total_due_amount = total_course_fee - total_payment
-            
-            else:
-                total_due_amount = total_course_fee - total_payment #due amount which paid by student in advance 
-            
-            student_data.append({
-                'student': student,
-                'total_course_fee': total_course_fee,
-                'total_paid': total_payment,
-                'total_due': total_due_amount,
-                'payment_percentage': float((total_payment / total_course_fee * 100)) if total_course_fee > Decimal('0.00') else 0,
-            })
-        except Exception as e:
-            messages.error(request, f"Error processing student {student.college_id}: {str(e)}")
-            continue
-    
-    context = {
-        'courses': courses,
-        'student_data': student_data,
-        'selected_course': course_filter,
-        'selected_year': year_filter,
-        'selected_semester': semester_filter,
-        'selected_college_id': college_id_filter,
-        'role':role
-    }
-    
-    return render(request, 'admin/admin_fee_management.html', context)
-
-# for sending courses available to the admin dashboard
-def get_course_details(request):
-    if request.method == 'GET' and 'course_name' in request.GET:
-        course_name = request.GET.get('course_name')
-        try:
-            course = Course.objects.get(code=course_name)
-            
-            # Get unique years and semesters from fee structures for this course
-            years = FeeStructure.objects.filter(course=course).values_list('year', flat=True).distinct().order_by('year')
-            semesters = FeeStructure.objects.filter(course=course).values_list('semester', flat=True).distinct().order_by('semester')
-            
-            return JsonResponse({
-                'success': True,
-                'years': list(years),
-                'semesters': list(semesters),
-            })
-        except Course.DoesNotExist:
-            return JsonResponse({'error': 'Course not found'}, status=404)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
-
-# for sending fees details to the student detail template
-from django.db.models import Sum, Q, F, DecimalField
-from django.db.models.functions import Coalesce
-from decimal import Decimal
-import time
-
-def student_fee_details(request, student_id):
-    if 'username1' not in request.session:
-        return redirect('login')
+    if number == 'P1':
+        college_id = college_id
+        template = 'student/student_fee_detail.html'
+        value = 'tem1'
+    else:
+        college_id = college_id
+        template = 'student/student_fees_view.html'
+        value = 'tem2'
     
     try:
-        student = Student.objects.get(college_id=student_id)
-        balance, _ = StudentBalance.objects.get_or_create(student=student)
+        student = Student.objects.get(college_id=college_id)
+        course = student.course # student course name
+        year = student.course.no_of_years # student course time period
+        batch = student.date_of_joining.year # fetch the student starting year only 
+        totalFee = float(int(course.fees_per_year)*year)
+        fee = 0 # total fee in starting is zero
+        paid = 0 # total fee payment in starting is zero
+        pending = 0 # (if any pending payment), in starting pending payment is zero
+        advance = 0 #(if student paid extra payment)
+        percent = 0 # payment percentage
         
-        # Get the Course object
-        try:
-            batch_year = student.date_of_joining.year
-            course = Course.objects.get(code=student.course)
-            no_of_years = course.no_of_years
-        except Course.DoesNotExist:
-            messages.error(request, "Course information not found")
-            return redirect('admin_fee_management')
-        
-        # Get all fee structures for this course
-        course_fee_structures = FeeStructure.objects.filter(course=course, for_year=batch_year)
-        
-        # Calculate total course fee
-        total_course_fee = course_fee_structures.aggregate(
-            total=Coalesce(
-                Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2)),
-                Decimal('0.00'),
-                output_field=DecimalField(max_digits=10, decimal_places=2)
-            )
-        )['total'] or Decimal('0.00')
-        
-        # Get all payments for this student
-        all_payments = FeePayment.objects.filter(student=student).order_by('-payment_date')
-        
-        # Calculate total payment
-        total_payment = all_payments.aggregate(
-            total=Coalesce(
-                Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2)),
-                Decimal('0.00'),
-                output_field=DecimalField(max_digits=10, decimal_places=2)
-            )
-        )['total'] or Decimal('0.00')
-        
-        # Calculate total due amount (considering extra and advance payments)
-        total_due_amount = max(total_course_fee - total_payment, Decimal('0.00'))
-        
-        # Prepare year-wise data
-        year_wise_data = []
-        for year in range(1, no_of_years + 1):
-            year_fees = course_fee_structures.filter(year=year)
-            year_total = year_fees.aggregate(
-                total=Sum('amount', output_field=DecimalField(max_digits=10, decimal_places=2))
-            )['total'] or Decimal('0.00')
-            
-            year_payments = all_payments.filter(
-                Q(fee_structure__year=year) | 
-                Q(payment_type='ADVANCE') |
-                Q(payment_type='ADJUSTMENT')
-            )
-            
-            year_paid = year_payments.aggregate(
-                total=Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2))
-            )['total'] or Decimal('0.00')
 
-            # Create list of fee structures with payment info
-            fee_details = []
-            for fee in year_fees:
-                payments = year_payments.filter(fee_structure=fee)
-                paid_amount = payments.aggregate(
-                    total=Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2))
-                )['total'] or Decimal('0.00')
-                
-                fee_details.append({
-                    'fee': fee,
-                    'payments': payments,
-                    'paid_amount': paid_amount,
-                    'is_paid': paid_amount >= fee.amount
-                })
-
-            status = "No Fee" if year_total == Decimal('0.00') else \
-                     "Paid" if year_paid >= year_total else \
-                     "Partial" if year_paid > Decimal('0.00') else \
-                     "Pending"
+        data = [] # for showing year seperately
+        s = 0 # starting point
+        e = 2 # ending point
+        for i in range(1, year+1):   
+            for j in range(s+i, e+i):
+                feeStructure = FeeStructure.objects.filter(course = course, batch = str(batch), year = str(i), semester = str(j))
+                dic1 = {'year':i, 'semester':j, }
+                if feeStructure.exists():
+                    payment = FeePayment.objects.filter(student = student, fee_structure = feeStructure.first())
+                    dueDate = feeStructure.first().due_date # due date for fee payment
+                    if payment.exists():
+                        # render payment history
+                        paymentDetails = FeePayment.objects.filter(student = student).order_by('payment_date')
+                        if value == 'tem1':
+                            dic1['singlePayment'] = payment
+                        # calculate amount1 and amount2
+                        amount1 = float(feeStructure.first().amount) # structure amount access
+                        amount2 = float(payment.first().amount_paid) # payment amount access
+                        extra = float(payment.first().extra)
+                        # calculate the total paid amount
+                        fee += amount1
+                        paid += amount2
+                        percent = (amount2/amount1)*100
+                        amount2 = amount2 + extra
+                        if amount1 == amount2 :
+                            dic1['status'] = 'Paid'
+                            dic1['feeAmt'] = amount1
+                            if value == 'tem1':
+                                dic1['paid'] = amount2
+                        elif amount1 != amount2:
+                            if amount1 > amount2 :
+                                due = amount1 - amount2
+                                pending += due
+                                dic1['status'] = 'Pending'
+                                dic1['due'] = due
+                                dic1['dueDate'] = dueDate
+                                dic1['feeAmt'] = amount1
+                                if value == 'tem1':
+                                    dic1['paid'] = amount2
+                            elif amount2 > amount1 :
+                                overdue = amount2 - amount1
+                                advance += overdue
+                                dic1['status'] = 'Overdue'
+                                dic1['overdue'] = overdue
+                                dic1['dueDate'] = dueDate
+                                dic1['feeAmt'] = amount1
+                                if value == 'tem1':
+                                    dic1['paid'] = amount2
+                    else:
+                        dic1['status'] = 'Pending'           
+                        dic1['dueDate'] = dueDate
+                        dic1['feeAmt'] = amount1
+                else:
+                    dic1['status'] = "No-fee"
+                data.append(dic1)
+            s+=1
+            e+=1 
             
-            year_wise_data.append({
-                'year': year,
-                'amount': year_total,
-                'paid': year_paid,
-                'due': max(year_total - year_paid, Decimal('0.00')),
-                'status': status,
-                'payments': year_payments,
-                'fee_details': fee_details,
-                'extra_payments': all_payments.filter(payment_type='EXTRA', fee_structure__year=year),
-                'advance_payments': all_payments.filter(payment_type='ADVANCE', fee_structure__year=year)
-            })
-        extra_payments = [p for p in all_payments if p.payment_type == "EXTRA"]
-        advance_payments = [p for p in all_payments if p.payment_type == "ADVANCE"]
-        context = {
-            'student': student,
-            'course': course,
-            'total_course_fee': total_course_fee,
-            'total_paid': total_payment,
-            'total_due': total_due_amount,
-            'payment_percentage': float((total_payment / total_course_fee * 100)) if total_course_fee > Decimal('0.00') else 0,
-            'year_wise_data': year_wise_data,
-            'all_payments': all_payments,
-            'extra_payments': extra_payments,
-            'advance_payments': advance_payments,
-        }
-        
-        return render(request, 'student/student_fee_detail.html', context)
-        
+        return render(request, template, {'student':student, 'totalFee':totalFee, 'data':data, 'role':role, 'fee':fee, 'paid':paid, 'pending':pending, 'advance':advance, 'percent':percent, 'paymentDetails':paymentDetails})
+                 
     except Student.DoesNotExist:
         messages.error(request, "Student not found")
-        return redirect('admin_fee_management')
+        # YEH LINE ADD KARO
+        return render(request, 'error.html', {'message': 'Student not found'})
+    
     except Exception as e:
         messages.error(request, f"An error occurred: {str(e)}")
-        return redirect('admin_fee_management')
+        # YEH LINE ADD KARO  
+        return render(request, 'error.html', {'message': f'An error occurred: {str(e)}'})
 
-@csrf_exempt
-def process_fee_payment(request):
-    if 'username1' not in request.session:
-        return JsonResponse({'error': 'Unauthorized'}, status=401)
-    
+# for admin - for payment of fees
+def feePayment(request):
+       
+            students = Student.objects.all()
+            data = []
+            
+            for student in students:
+                batch = student.date_of_joining.year
+                course = Course.objects.get(course_id=student.course.course_id)
+                s = 0
+                e = 2
+                Amt1 = 0
+                Amt2 = 0
+                due = 0
+                overdue = 0
+                totalFee = int(course.fees_per_year * course.no_of_years)
+                year = course.no_of_years
+                for i in range(1, year+1):   
+                    for j in range(s + i, e + i):
+                        feeStructure = FeeStructure.objects.filter(
+                            year=str(i), 
+                            semester=str(j), 
+                            batch=batch, 
+                            course=course
+                        )
+                        
+                        if feeStructure.exists():
+                            fee_structure = feeStructure.first()
+                            Amt1 += fee_structure.amount
+                            
+                            feePayment = FeePayment.objects.filter(
+                                student=student, 
+                                fee_structure=fee_structure
+                            )
+                            
+                            if feePayment.exists():
+                                Amt2 += feePayment.first().amount_paid                                  
+                    s += 1
+                    e += 1
+               
+                # Determine status
+                if (Amt1>0) and (Amt2>0):
+                    percent = (Amt2/Amt1)*100
+                    if Amt1 == Amt2:
+                       data.append({'status':'Paid', 'student': student, 'total':totalFee, 'paid':Amt2, 'percent':percent})
+                    elif Amt1 > Amt2:
+                        data.append({'status':'Due', 'student':student, 'total':totalFee, 'paid':Amt2, 'due':Amt1-Amt2, 'percent':percent})
+                    elif Amt2 > Amt1:
+                        data.append({'status':'Overdue', 'student':student, 'total':totalFee, 'paid':Amt2, 'overdue':Amt2-Amt1, 'percent':percent})
+                elif (Amt1>0) and (Amt2 == 0):
+                    data.append({'status':'Pending', 'student':student, 'total':totalFee})
+                else:
+                    data.append({'status':'New', 'student':student, 'total':totalFee})
+
+            return render(request, 'admin/admin_fee_management.html',{'data':data})
+
+from datetime import datetime
+def payNow(request, college_id):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            student_id = data.get('student_id')
-            fee_structure_id = data.get('fee_structure_id')
-            amount = Decimal(data.get('amount'))
-            payment_method = data.get('payment_method')
-            transaction_id = data.get('transaction_id')
-            remarks = data.get('remarks', '')
-            
-            # Validate required fields
-            if not all([student_id, fee_structure_id, amount, payment_method]):
-                return JsonResponse({'error': 'Missing required fields'}, status=400)
-            
-            try:
-                student = Student.objects.get(college_id=student_id)
-                fee_structure = FeeStructure.objects.get(id=fee_structure_id)
-                balance = StudentBalance.objects.get(student=student)
-            except (Student.DoesNotExist, FeeStructure.DoesNotExist, StudentBalance.DoesNotExist) as e:
-                return JsonResponse({'error': str(e)}, status=404)
-            
-            # Check if this is an advance payment (for a future semester)
-            current_semester = student.semester
-            is_advance = fee_structure.semester > current_semester
-            
-            # Calculate how much is remaining for this fee structure
-            paid_for_structure = FeePayment.objects.filter(
-                student=student,
-                fee_structure=fee_structure
-            ).aggregate(
-                total=Coalesce(
-                    Sum('amount_paid', output_field=DecimalField(max_digits=10, decimal_places=2)),
-                    Decimal('0.00'),
-                    output_field=DecimalField(max_digits=10, decimal_places=2)
-                )
-            )['total'] or Decimal('0.00')
-            
-            remaining_amount = fee_structure.amount - paid_for_structure
-            
-            payment_type = 'REGULAR'
-            adjusted_in = None
-            
-            if amount > remaining_amount:
-                # This is an extra payment
-                extra_amount = amount - remaining_amount
-                balance.extra_amount += extra_amount
-                balance.save()
-                
-                # Create two payment records - one for regular, one for extra
-                if remaining_amount > 0:
-                    regular_payment = FeePayment(
-                        student=student,
-                        fee_structure=fee_structure,
-                        amount_paid=remaining_amount,
-                        payment_method=payment_method,
-                        transaction_id=transaction_id,
-                        receipt_number=f"RCPT-{student.college_id}-{int(time.time())}-1",
-                        remarks=remarks,
-                        verified_by=request.session['username1'],
-                        status='Paid',
-                        payment_type='REGULAR'
-                    )
-                    regular_payment.save()
-                
-                extra_payment = FeePayment(
-                    student=student,
-                    fee_structure=fee_structure,
-                    amount_paid=extra_amount,
-                    payment_method=payment_method,
-                    transaction_id=transaction_id,
-                    receipt_number=f"RCPT-{student.college_id}-{int(time.time())}-2",
-                    remarks=f"Extra payment - {remarks}",
-                    verified_by=request.session['username1'],
-                    status='Paid',
-                    payment_type='EXTRA'
-                )
-                extra_payment.save()
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Payment processed with extra amount',
-                    'receipt_numbers': [regular_payment.receipt_number, extra_payment.receipt_number],
-                    'payment_date': regular_payment.payment_date.strftime('%Y-%m-%d %H:%M:%S'),
-                    'is_extra': True
-                })
-            elif is_advance:
-                # This is an advance payment for future semester
-                balance.advance_amount += amount
-                balance.save()
-                
-                advance_payment = FeePayment(
-                    student=student,
-                    fee_structure=fee_structure,
-                    amount_paid=amount,
-                    payment_method=payment_method,
-                    transaction_id=transaction_id,
-                    receipt_number=f"RCPT-{student.college_id}-{int(time.time())}",
-                    remarks=f"Advance payment - {remarks}",
-                    verified_by=request.session['username1'],
-                    status='Paid',
-                    payment_type='ADVANCE'
-                )
-                advance_payment.save()
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Advance payment processed successfully',
-                    'receipt_number': advance_payment.receipt_number,
-                    'payment_date': advance_payment.payment_date.strftime('%Y-%m-%d %H:%M:%S'),
-                    'is_advance': True
-                })
-            else:
-                # Regular payment
-                payment = FeePayment(
-                    student=student,
-                    fee_structure=fee_structure,
-                    amount_paid=amount,
-                    payment_method=payment_method,
-                    transaction_id=transaction_id,
-                    receipt_number=f"RCPT-{student.college_id}-{int(time.time())}",
-                    remarks=remarks,
-                    verified_by=request.session['username1'],
-                    status='Paid',
-                    payment_type='REGULAR'
-                )
-                payment.save()
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Payment processed successfully',
-                    'receipt_number': payment.receipt_number,
-                    'payment_date': payment.payment_date.strftime('%Y-%m-%d %H:%M:%S'),
-                    'is_regular': True
-                })
-            
+            info = json.loads(request.body)
+            college_id = info.get('college_id')
+            S_year = info.get('year')
+            S_sem = info.get('semester')
+            student = Student.objects.get(college_id = college_id)
+            year = student.course.no_of_years
+            s = 0
+            e = 2 
+            data = []
+            for i in range(1, year + 1 ):   
+                for j in range(s + i, e + i):
+                    feeStructure = FeeStructure.objects.filter(year = str(i), semester = str(j), student = student)
+                    if feeStructure.exists():
+                        feePayment = FeePayment.objects.filter(fee_structure = feeStructure.first(), student = student.college_id)
+                        if not feePayment.exists() and (i, j) == (S_year, S_sem):
+                            feeShow = float(feeStructure.first().amount)
+                            status = 'New'
+                            # Generate receipt no
+                            current_year = str(datetime.now().year)
+                            max_receipt_no = FeePayment.objects.aggregate(max_id=models.Max('receipt_number'))['max_receipt_no']
+                            
+                            if max_receipt_no is None:
+                                receipt_no = 'GK' + current_year + 'RC1'  # Initial ID
+                            else:
+                                try:
+                                # Extract numeric part and increment
+                                    numeric_part = int(max_receipt_no[8:])  # Remove 'ST' prefix
+                                    receipt_no = f'GK{current_year}RC{numeric_part + 1}'
+                                except (ValueError, IndexError):
+                                    receipt_no = 'GK' + current_year + 'RC1'  # Fallback if format is wrong
+
+                            # generate transaction id
+                            max_TR_id = FeePayment.objects.aggregate(max_id=models.Max('transaction_id'))['max_TR_id']
+                            
+                            if max_TR_id is None:
+                                TR_id = 'GK' + current_year + 'TR1'  # Initial ID
+                            else:
+                                try:
+                                # Extract numeric part and increment
+                                    numeric_part = int(max_receipt_no[8:])  # Remove 'ST' prefix
+                                    TR_id = f'GK{current_year}TR{numeric_part + 1}'
+                                except (ValueError, IndexError):
+                                    TR_id = 'GK' + current_year + 'TR1'  # Fallback if format is wrong
+
+                            data.append({'feeShow':feeShow, 'TR_id': TR_id, 'receipt_no':receipt_no, 'status':status})                                           
+                s += 1
+                e += 1
+            return JsonResponse({'data':data})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
+            return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid Method'}, status=400)
 
-@csrf_exempt
-def adjust_extra_payments(request):
-    if 'username1' not in request.session:
-        return JsonResponse({'error': 'Unauthorized'}, status=401)
     
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            student_id = data.get('student_id')
-            payment_id = data.get('payment_id')
-            
-            if not student_id or not payment_id:
-                return JsonResponse({'error': 'Missing required parameters'}, status=400)
-            
-            # Get the payment to adjust
-            extra_payment = FeePayment.objects.get(
-                id=payment_id,
-                student__college_id=student_id,
-                payment_type='EXTRA'
-            )
-            
-            # Find the next due payment to apply this to
-            next_due_payment = FeePayment.objects.filter(
-                student__college_id=student_id,
-                status='Pending'
-            ).order_by('fee_structure__year', 'fee_structure__semester').first()
-            
-            if not next_due_payment:
-                return JsonResponse({'error': 'No pending payments to adjust against'}, status=400)
-            
-            # Create adjustment record
-            adjustment = FeePayment(
-                student=extra_payment.student,
-                fee_structure=next_due_payment.fee_structure,
-                amount_paid=extra_payment.amount_paid,
-                payment_method='Adjustment',
-                receipt_number=f"ADJ-{extra_payment.receipt_number}",
-                remarks=f"Adjustment from extra payment {extra_payment.receipt_number}",
-                verified_by=request.session['username1'],
-                status='Paid',
-                payment_type='ADJUSTMENT',
-                adjusted_in=extra_payment
-            )
-            adjustment.save()
-            
-            # Update the extra payment to mark it as adjusted
-            extra_payment.adjusted_in = adjustment
-            extra_payment.save()
-            
-            # Update the student balance
-            balance = StudentBalance.objects.get(student=extra_payment.student)
-            balance.extra_amount -= extra_payment.amount_paid
-            balance.save()
-            
-            return JsonResponse({
-                'success': True,
-                'message': f'Successfully adjusted ₹{extra_payment.amount_paid}',
-                'receipt_number': adjustment.receipt_number
-            })
-            
-        except FeePayment.DoesNotExist:
-            return JsonResponse({'error': 'Payment not found'}, status=404)
-        except StudentBalance.DoesNotExist:
-            return JsonResponse({'error': 'Student balance not found'}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
+# def payNow(request, college_id):
+#     if request.method == 'POST':
+#         try:
+#             student = Student.objects.get(college_id = college_id)
+#             year = student.course.no_of_years
+#             s = 0
+#             e = 2 
+#             for i in range(1, year + 1 ):   
+#                 for j in range(s + i, e + i):
+#                     feeStructure = FeeStructure.objects.filter(year = str(i), semester = str(j), student = student)
+#                     if feeStructure.exists():
+#                         feePayment = FeePayment.objects.filter(fee_structure = feeStructure.first(), student = student.college_id)
+#                         if feePayment.exists():
+#                             amount1 = feeStructure.first().amount # actually payment call
+#                             amount2 = feePayment.first().amount_paid # payment paid by student
+#                             extra = feePayment.first().extra # extra payment
+#                             amount2  = amount2 + extra
+#                             if amount1 == amount2:
+#                                 print("paid")
+#                             else:
+#                                 if amount1 > amount2 :
+#                                     print("due")
+#                                 elif amount2 > amount1:
+#                                     print("overdue")
+#                         else:
+#                             print("pending")
+#                     else:
+#                         print("nofee")                      
+#                 s += 1
+#                 e += 1
+#         except Exception as e:
+#             return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+#     else:
+#         return JsonResponse({'error': 'Invalid Method'}, status=400)
 
-# for receipt 
-@csrf_exempt  # Temporary for testing, remove in production
-def get_receipt_data(request, receipt_number):
-    try:
-        payment = FeePayment.objects.get(
-            receipt_number=receipt_number,
-            student__college_id=request.session.get('student_college_id')
-        )
+    
+
         
-        return JsonResponse({
-            'success': True,
-            'receipt_number': payment.receipt_number,
-            'student_name': payment.student.name,
-            'amount_paid': str(payment.amount_paid),
-            'payment_date': payment.payment_date.strftime("%d/%m/%Y"),
-            'status': payment.status,
-            'payment_method': payment.payment_method,
-            'transaction_id': payment.transaction_id or "N/A",
-            'verified_by': payment.verified_by or "Not specified",
-            'remarks': payment.remarks or "None"
-        })
+ 
+         
         
-    except FeePayment.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Receipt not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+      
 
+
+
+
+
+
+
+# for fee structure creation
 # [[[[[[[[[[[[[Send Batch Details]]]]]]]]]]]]]
 from django.db.models import Max, IntegerField
 from django.db.models.functions import Cast, Substr
@@ -1887,7 +1553,6 @@ def createFeeStructure(request):
             # Create FeeStructure object (NOT Course)
             checking = FeeStructure.objects.filter(
                 course=data.get('course'),
-                due_date=data.get('dueDate'),
                 year=data.get('year'),
                 semester=data.get('semester'),
                 amount=float(data.get('feeAmt')),
@@ -1942,10 +1607,10 @@ def fetchBatch(request):
     else:
         return JsonResponse({'error': 'Invalid Method'}, status=400)
 
-def deleteStructure(request,value):
+def deleteStructure(request,structure_id):
     try:
-        value_copy = value
-        structure = FeeStructure.objects.get(structure_id = value)
+        value_copy = structure_id
+        structure = FeeStructure.objects.get(structure_id = structure_id)
         structure.delete()
         return JsonResponse({'success':f"Fee Structure Deleted Successfully with ID: {value_copy}"})
     except Exception as e:
@@ -2635,9 +2300,22 @@ def course_creation(request):
                     duration = int(request.POST.get('courseDuration'))
                     capacity = int(request.POST.get('studentCapacity'))
                     fees = float(request.POST.get('courseFees'))
+                    # Auto-generate employee ID
+                    max_id = Course.objects.aggregate(max_id=models.Max('course_id'))['max_id']
+                
+                    if max_id is None:
+                        course_id = 'GK-C-01'  # Initial ID
+                    else:
+                        try:
+                            # Extract numeric part and increment
+                            numeric_part = int(max_id[5:])  # Remove 'GK' prefix
+                            course_id = f'GK-C-{numeric_part + 1}'
+                        except (ValueError, IndexError):
+                            course_id = 'GK-C-01'  
                     
                     # Create course with foreign key IDs
                     Course.objects.create(
+                        course_id = course_id,
                         image = request.POST.get('cousreImage'),
                         name=request.POST.get('courseName'),
                         department_id=request.POST.get('courseDepartment'),  # Use _id field
@@ -2650,7 +2328,7 @@ def course_creation(request):
                         fees_per_year=fees,
                         no_of_lecture = request.POST.get('courseLecture')
                     )
-                    messages.success(request, "Course Created Successfully!")
+                    messages.success(request, f"Course Created Successfully with {course_id}!")
                     return redirect("course_creation")
                 except ValueError:
                     messages.error(request, "Invalid number format in form data")

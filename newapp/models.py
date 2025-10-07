@@ -28,12 +28,13 @@ class Level(models.Model):
         return self.name
     
 class Course(models.Model):
+    course_id = models.CharField(max_length=50, unique=True)
     image = models.ImageField(upload_to='pictures')
     name = models.CharField(max_length=100)
     department=models.ForeignKey(Department,on_delete=models.CASCADE)
     no_of_years = models.IntegerField()
     no_of_semesters = models.IntegerField()
-    code = models.CharField(max_length=50,unique=True)
+    code = models.CharField(max_length=50)
     description = models.TextField()
     student_capacity = models.PositiveIntegerField(default=100)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -424,7 +425,7 @@ class FeePayment(models.Model):
     
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     fee_structure = models.ForeignKey(FeeStructure, on_delete=models.SET_NULL, null=True, blank=True)
-    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateField(auto_now_add=True)
     payment_method = models.CharField(max_length=50, choices=[
         ('Cash', 'Cash'),
@@ -443,7 +444,10 @@ class FeePayment(models.Model):
     ])
     remarks = models.TextField(blank=True, null=True)
     verified_by = models.CharField(max_length=100, blank=True, null=True)
-    adjusted_in = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    adjusted_in_year = models.CharField(max_length=5,null=True, blank=True)
+    adjusted_in_semester = models.CharField(max_length=5,null=True, blank=True)
+    extra = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    due_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
 
     def __str__(self):
         return f"{self.student.name} - {self.amount_paid} ({self.payment_type})"

@@ -132,10 +132,10 @@
                 </li>
 
                 <li class="menu-item">
-                    <a href="{% url 'student_fees_view' %}" class="menu-link">
+                    <button type="button" class="menu-link" data-id="{{ college_id }}" id="feeBtn">
                         <i class="fas fa-file-invoice-dollar menu-icon"></i>
                         <span class="menu-text">Fees</span>
-                    </a>
+                    </button>
                 </li>
 
                 <li class="menu-item">
@@ -715,6 +715,12 @@
                 }
             }
         }
+        let feeBtn = document.querySelector("#feeBtn");
+        feeBtn.addEventListener('click',()=>{
+            const value = feeBtn.getAttribute('data-id');
+            window.location.href = `/Student-Dashboard/Fee-Managment/${value}/P2/`
+            
+        });
     </script>
 </body>
 

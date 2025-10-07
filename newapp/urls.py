@@ -49,13 +49,11 @@ urlpatterns = [
     path('get-student-attendance/', views.get_student_attendance, name='get_student_attendance'),
     
     # Fee Management URLs
-    path('fee-management/', views.admin_fee_management, name='admin_fee_management'),
-    path('Student/Dashboard/Fees/', views.student_fees_view, name='student_fees_view'),
-    path('student-fee-details/<str:student_id>/', views.student_fee_details, name='student_fee_details'),
-    path('process-fee-payment/', views.process_fee_payment, name='process_fee_payment'),
-    path('adjust_extra_payments/', views.adjust_extra_payments, name='adjust_extra_payments'),
-    path('get_receipt_data/<str:receipt_number>/', views.get_receipt_data, name='get_receipt_data'),
-
+    path('Student-Dashboard/Fee-Managment/<str:college_id>/<str:number>/', views.student_fees_view, name='student_fees_view'),
+    path('Admin-Dashboard/Student/Fee-Payment/',views.feePayment, name='feePayment'),
+    path('Admin-Dashboard/Student/Fee-Detail/<str:college_id>/<str:number>/',views.student_fees_view, name='feeDetail'),
+    path('payNow/', views.payNow, name='payNow'),
+  
 # for chatting management between faculty and student
     path('chat_home/', views.chat_home, name='chat_home'),
     path('create_chat_room/', views.create_chat_room, name='create_chat_room'),
@@ -78,13 +76,13 @@ urlpatterns = [
     path('Send-Batch/', views.sendBatch, name='sendBatch'),
     path('Create-Fees-Structure/',views.createFeeStructure, name='createFeeStructure'),
     path('Fetch-Filter-Batch/',views.fetchBatch, name='fetchBatch'),
-    path('Delete-Structure/<str:value>/',views.deleteStructure, name='deleteStructure'),
+    path('Delete-Structure/<str:structure_id>/',views.deleteStructure, name='deleteStructure'),
 
     
 # for getting student details on faculty/admin/studentportal 
-    path('Faculty-Dashboard/Student-Attendance-Management',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
-    path('Faculty-Dashboard/Faculty-Student-Chat',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
-    
+    path('Faculty-Dashboard/Student-Attendance-Management/',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
+    path('Faculty-Dashboard/Faculty-Student-Chat/',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
+   
     path('Admin-Dashboard/Student-Fee-Structure-Management',lambda request: views.course_details(request,"feeStructureCreation.html"),name='studentFeeStructureManagement'),
     path('get-courses-details/', views.get_courses_details, name='getCourseDetails'),
     path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents'),

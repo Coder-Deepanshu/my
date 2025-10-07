@@ -299,6 +299,11 @@
             background-color: #e9ecef;
         }
 
+        .nofee {
+            background-color: rgba(201, 198, 198, 0.664);
+            color: var(--new);
+        }
+
         .progress-bar {
             border-radius: 4px;
         }
@@ -336,16 +341,13 @@
         }
 
         /* Payment Modal Styles */
-        .modal-content {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-        }
+
 
         .modal-header {
             background: var(--primary);
             color: white;
             border-bottom: none;
+            border-radius: 5px;
             padding: 20px;
         }
 
@@ -541,6 +543,84 @@
                 padding: 20px;
             }
         }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+        }
+
+        /* Modal Styles */
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            background: white;
+            padding: 20px;
+            min-width: 750px;
+            justify-items: center;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease;
+            margin-top: 90px;
+
+        }
+
+        .payment-info-box {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #6a11cb;
+        }
+
+        .status-new {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-pending {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-due {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .status-overdue {
+            background-color: #fce4ec;
+            color: #ad1457;
+        }
+
+        .status-paid {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: 8px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -550,7 +630,7 @@
     <!-- Page Header -->
     <section class="page-header">
         <div class="container">
-            <h1>Fee Details for {{ student.name }}</h1>
+            <h1>Fee Details for {{ student.name }} {{ student.last_name }}</h1>
             <p>View and manage student fee payments</p>
         </div>
     </section>
@@ -575,40 +655,66 @@
             <div class="summary-cards">
                 <div class="summary-card">
                     <h3>Total Course Fee</h3>
-                    <p>₹{{ total_course_fee }}</p>
+                    {% if totalFee %}
+                    <p>₹ {{ totalFee|floatformat:2|cut:"-" }}</p>
+                    {% else %}
+                    <p>₹ 0.00</p>
+                    {% endif %}
                 </div>
                 <div class="summary-card">
                     <h3>Total Paid</h3>
-                    <p>₹{{ total_paid }}</p>
+                    {% if paid %}
+                    <p>₹{{ paid|floatformat:2 }}</p>
+                    {% else %}
+                    <p>₹ 0.00</p>
+                    {% endif %}
                 </div>
                 <div class="summary-card">
                     <h3>Total Due</h3>
-                    <p>₹{{ total_due }}</p>
+                    {% if pending %}
+                    <p style="color: red;">₹{{ pending|floatformat:2 }}</p>
+                    {% elif advance %}
+                    <p style="color: green;">₹{{ advance|floatformat:2 }}</p>
+                    {% else %}
+                    <p>₹ 0.00</p>
+                    {% endif %}
                 </div>
                 <div class="summary-card">
                     <h3>Payment Completion</h3>
-                    <p>{{ payment_percentage|floatformat:2 }}%</p>
+                    {% if percent %}
+                    <p>{{ percent|floatformat:0 }}% Paid</p>
+                    {% else %}
+                    <p>0.00 % Paid</p>
+                    {% endif %}
                 </div>
             </div>
 
             <!-- Year-wise Fee Breakdown -->
             <div class="results-section">
-                {% for year_data in year_wise_data %}
+                {% for i in data %}
                 <div class="card mb-4">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Year {{ year_data.year }}</h5>
+                        <h5 class="mb-0">Year-{{ i.year }} / Sem-{{ i.semester }}</h5>
                         <div>
-                            <span class="me-3">Total: ₹{{ year_data.amount }}</span>
-                            <span class="me-3">Paid: ₹{{ year_data.paid }}</span>
-                            <span class="me-3">Due: ₹{{ year_data.due }}</span>
-                            <span
-                                class="status {% if year_data.status == 'Paid' %}paid{% elif year_data.status == 'Pending' %}pending{% else %}partial{% endif %}">
-                                {{ year_data.status }}
+                            <span class="me-3">Total:{% if i.feeAmt %} ₹{{ i.feeAmt|floatformat:00 }}{% else %} ₹0.00{% endif %}</span>
+                            <span class="me-3">Paid: {% if i.paid %}₹{{ i.paid|floatformat:00 }}{% else %}₹0.00{% endif %}</span>
+                            {% if i.due %}
+                            <span class="me-3" style="color: red;">Due: ₹{{ i.due|floatformat:00 }}</span>
+                            {% elif i.overdue %}
+                            <span class="me-3" style="color: green;">OverDue: ₹{{ i.overdue|floatformat:00 }}</span>
+                            {% else %}
+                            <span class="me-3">Due: ₹0.00</span>
+                            {% endif %}
+                            <span class="status {% if i.status == 'Paid' %}paid{% endif %}
+                            {% if i.status == 'Pending' %}{% if i.due %}pending{% else %}partial{% endif %}{% endif %}
+                            {% if i.status == 'Overdue' %}paid{% endif %}
+                            {% if i.status == 'No-fee' %}nofee{% endif %}">
+                                {{ i.status }}
                             </span>
                         </div>
                     </div>
                     <div class="card-body">
-                        <h6 class="mb-3">Fee Installments</h6>
+                        <h6 class="mb-3">Fee Installment</h6>
 
                         <div class="table-responsive">
                             <table class="table table-bordered">
@@ -622,37 +728,53 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for detail in year_data.fee_details %}
                                     <tr>
-                                        <td>Semester {{ detail.fee.semester }}</td>
-                                        <td>₹{{ detail.fee.amount }}</td>
-                                        <td>{{ detail.fee.due_date|date:"d M Y" }}</td>
+                                        <td>Semester {{ i.semester }}</td>
+                                        {% if i.feeAmt %}
+                                        <td>₹{{ i.feeAmt }}</td>
+                                        {% else %}
+                                        <td>₹0.00</td>
+                                        {% endif %}
+
+                                        {% if i.dueDate %}
+                                        <td>{{ i.dueDate|date:"d M Y" }}</td>
+                                        {% else %}
+                                        <td style="color: blue;">Null</td>
+                                        {% endif %}
+
                                         <td>
-                                            {% if detail.is_paid %}
+                                            {% if i.status == 'Paid' %}
                                             <span class="status paid">Paid</span>
-                                            {% else %}
+                                            {% elif i.status == 'Pending' %}
+                                            {% if i.due %}
                                             <span class="status pending">Pending</span>
+                                            {% else %}
+                                            <span class="status partial">Pending</span>
+                                            {% endif %}
+                                            {% elif i.status == 'Overdue' %}
+                                            <span class="status paid">Overdue</span>
+                                            {% else %}
+                                            <span class="status nofee">No Fee</span>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {% if detail.is_paid %}
+                                            {% if i.status == 'Paid' %}
                                             <button class="btn btn-sm btn-outline-primary" disabled>
                                                 <i class="fas fa-check"></i> Paid
                                             </button>
                                             {% else %}
-                                            <button class="btn btn-sm btn-primary"
-                                                onclick="openPaymentModal('{{ student.college_id }}', '{{ student.name }}', '{{ detail.fee.id }}', '{{ detail.fee.amount }}')">
+                                            <button class="btn btn-sm btn-primary" id="payNowBtn" data-id="{{ student.college_id }}" data-year="{{ i.year }}" data-sem="{{ i.semester }}" {% if i.status=='No-fee' %}disabled{%
+                                                endif %}>
                                                 <i class="fas fa-money-bill-wave"></i> Pay Now
                                             </button>
                                             {% endif %}
                                         </td>
                                     </tr>
-                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
 
-                        {% if year_data.payments %}
+                        {% if i.singlePayment %}
                         <h6 class="mt-4 mb-3">Payment History</h6>
                         <div class="table-responsive">
                             <table class="table table-bordered">
@@ -668,7 +790,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for payment in year_data.payments %}
+                                    {% for payment in i.singlePayment %}
                                     <tr>
                                         <td>{{ payment.payment_date|date:"d M Y" }}</td>
                                         <td>₹{{ payment.amount_paid }}</td>
@@ -692,7 +814,7 @@
             <div class="results-section">
                 <h3 class="mb-4">All Payments</h3>
 
-                {% if all_payments %}
+                {% if paymentDetails %}
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead>
@@ -707,7 +829,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for payment in all_payments %}
+                            {% for payment in paymentDetails %}
                             <tr>
                                 <td>{{ payment.payment_date|date:"d M Y" }}</td>
                                 <td>Year {{ payment.fee_structure.year }}</td>
@@ -722,238 +844,117 @@
                     </table>
                 </div>
                 {% else %}
-                <div class="alert alert-info">
-                    No payment records found for this student.
+                <div class="no-results">
+                    <i class="fas fa-info-circle fa-3x mb-3" style="color: #6c757d;"></i>
+                    <h4>No students found</h4>
+                    <p>Try adjusting your filters to find students</p>
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Payment Modal -->
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+    <!-- Fee Details Modal -->
+    <div class="modal-overlay" style="display: none;">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-money-bill-wave me-2"></i>Process Fee Payment</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <h5 class="modal-title" id="feeDetailsModalLabel">Add Fee Details</h5>
+                    <button type="button" id="closeBtn" class="btn-close btn-close-white" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="paymentForm">
-                        <input type="hidden" id="student_id">
-                        <input type="hidden" id="fee_structure_id">
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="amount"><i class="fas fa-rupee-sign me-1"></i>Amount (₹)</label>
-                                    <input type="number" class="form-control" id="amount" min="0" step="0.01" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="payment_method"><i class="fas fa-credit-card me-1"></i>Payment
-                                        Method</label>
-                                    <select class="form-control" id="payment_method" required>
-                                        <option value="">Select Method</option>
-                                        <option value="Cash">Cash</option>
-                                        <option value="Cheque">Cheque</option>
-                                        <option value="Online">Online Transfer</option>
-                                        <option value="Card">Credit/Debit Card</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="transaction_id"><i class="fas fa-receipt me-1"></i>Transaction/Reference
-                                        ID</label>
-                                    <input type="text" class="form-control" id="transaction_id">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="remarks"><i class="fas fa-sticky-note me-1"></i>Remarks</label>
-                                    <input type="text" class="form-control" id="remarks" placeholder="Optional">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <button type="submit" class="btn-pay">
-                                <i class="fas fa-money-bill-wave"></i> Process Payment
-                            </button>
-                        </div>
-                    </form>
-
-                    <div id="receipt" class="receipt" style="display: none;">
-                        <h4><i class="fas fa-receipt"></i> Payment Receipt</h4>
-                        <div class="receipt-details">
-                            <div class="receipt-detail">
-                                <strong>Receipt Number</strong>
-                                <span id="receipt-number"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Date</strong>
-                                <span id="receipt-date"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Student ID</strong>
-                                <span id="receipt-student-id"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Student Name</strong>
-                                <span id="receipt-student-name"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Amount Paid</strong>
-                                <span id="receipt-amount"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Payment Method</strong>
-                                <span id="receipt-method"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Transaction ID</strong>
-                                <span id="receipt-transaction"></span>
-                            </div>
-                            <div class="receipt-detail">
-                                <strong>Verified By</strong>
-                                <span id="receipt-verified-by"></span>
-                            </div>
+                    <div class="payment-info-box">
+                        <h6><i class="fas fa-info-circle me-2"></i>Payment Status</h6>
+                        <div class="status-container">
+                            <!-- result loaded here -->
+                            <!-- <span class="status-badge status-new">New</span>
+                            <span class="status-badge status-pending">Pending</span>
+                            <span class="status-badge status-due">Due</span>
+                            <span class="status-badge status-overdue">Overdue</span>
+                            <span class="status-badge status-paid">Paid</span> -->
                         </div>
                     </div>
+
+                    <form id="feeDetailsForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dueDateReview" class="form-label"><i class="fas fa-calendar-day"></i> Total
+                                    Fee</label>
+                                <input type="number" class="form-control" name="dueDateReview" id="dueDateReview" placeholder="0.00">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="batchReview" class="form-label"><i class="fas fa-money-bill-wave"></i> Paid
+                                    Fee</label>
+                                <input type="number" class="form-control" name="batchReview" id="batchReview" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="transaction_id" class="form-label">
+                                    <i class="fas fa-receipt me-1"></i>Transaction ID
+                                </label>
+                                <input type="text" class="form-control" id="transaction_id"
+                                    placeholder="Enter transaction ID">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="receipt_no" class="form-label">
+                                    <i class="fas fa-file-invoice me-1"></i>Receipt No.
+                                </label>
+                                <input type="text" class="form-control" id="receipt_no" placeholder="Receipt number">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="payment_method" class="form-label"><i class="fas fa-rupee-sign"></i> Select
+                                    Method</label>
+                                <select class="form-control" id="payment_method" required>
+                                    <option value="">Select Method</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Cheque">Cheque</option>
+                                    <option value="Online">Online Transfer</option>
+                                    <option value="Card">Credit/Debit Card</option>
+                                    <option value="UPI">UPI</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="extra_amount" class="form-label">
+                                    <i class="fas fa-plus-circle me-1"></i>Extra Amount (₹)
+                                </label>
+                                <input type="number" class="form-control" id="extra_amount" min="0" step="0.01"
+                                    placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="remark" class="form-label"><i class="fas fa-file-alt"></i> Remark (Optional)</label>
+                            <input type="text" class="form-control" id="remark" name="remark"placeholder="Optional notes">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="margin-right: 20px;"
+                        id="cancelBtn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="submitFeeBtn">Submit Fee Structure</button>
                 </div>
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // Auto-dismiss alerts after 5 seconds
-            setTimeout(() => {
-                $('.alert').alert('close');
-            }, 5000);
-
-            // Initialize payment modal
-            const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
-
-            // Function to open payment modal
-            window.openPaymentModal = function (studentId, studentName, feeStructureId, amountDue) {
-                $('#student_id').val(studentId);
-                $('#fee_structure_id').val(feeStructureId);
-                $('#student_name').val(studentName);
-                $('#fee_amount').val('₹' + amountDue);
-                $('#amount').val(amountDue);
-                $('#paymentForm').show();
-                $('#receipt').hide();
-                paymentModal.show();
-            };
-
-            // Payment form submission
-            $('#paymentForm').submit(function (e) {
-                e.preventDefault();
-
-                const paymentData = {
-                    student_id: $('#student_id').val(),
-                    fee_structure_id: $('#fee_structure_id').val(),
-                    amount: $('#amount').val(),
-                    payment_method: $('#payment_method').val(),
-                    transaction_id: $('#transaction_id').val(),
-                    remarks: $('#remarks').val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                };
-
-                // Disable submit button
-                $('.btn-pay').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
-
-                // Send payment data to server
-                $.ajax({
-                    url: '{% url "process_fee_payment" %}',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(paymentData),
-                    success: function (response) {
-                        if (response.success) {
-                            // Show receipt
-                            $('#receipt-number').text(response.receipt_number);
-                            $('#receipt-date').text(response.payment_date);
-                            $('#receipt-student-id').text(paymentData.student_id);
-                            $('#receipt-student-name').text($('#student_name').val());
-                            $('#receipt-amount').text('₹' + paymentData.amount);
-                            $('#receipt-method').text(paymentData.payment_method);
-                            $('#receipt-transaction').text(paymentData.transaction_id || 'N/A');
-                            $('#receipt-verified-by').text('{{ request.session.username1 }}');
-
-                            $('#paymentForm').hide();
-                            $('#receipt').show();
-
-                            // Reload page after 5 seconds
-                            setTimeout(() => {
-                                location.reload();
-                            }, 5000);
-                        } else {
-                            alert(response.error || 'Payment failed');
-                            $('.btn-pay').prop('disabled', false).html('<i class="fas fa-money-bill-wave"></i> Process Payment');
-                        }
-                    },
-                    error: function (xhr) {
-                        let errorMsg = 'Payment failed';
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            errorMsg = response.error || errorMsg;
-                        } catch (e) { }
-                        alert(errorMsg);
-                        $('.btn-pay').prop('disabled', false).html('<i class="fas fa-money-bill-wave"></i> Process Payment');
-                    }
-                });
-            });
-        });
+        const payNowBtn = document.querySelectorAll("#payNowBtn");
+        
+        payNowBtn.forEach(btn =>{
+            btn.addEventListener('click', ()=>{
+                const college_id = btn.getAttribute('data-id');
+                const year = btn.getAttribute('data-year');
+                const sem = btn.getAttribute('data-sem');
+                alert(college_id)
+            })
+        })
     </script>
-    <script>
-        function showExtraPayments() {
-            const modal = new bootstrap.Modal(document.getElementById('extraPaymentsModal'));
-            modal.show();
-        }
 
-        function showAdvancePayments() {
-            const modal = new bootstrap.Modal(document.getElementById('advancePaymentsModal'));
-            modal.show();
-        }
 
-        function adjustExtraPayment(studentId, paymentId) {
-            if (!confirm('Are you sure you want to adjust this extra payment?')) {
-                return;
-            }
-
-            $.ajax({
-                url: '{% url "adjust_extra_payments" %}',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    student_id: studentId,
-                    payment_id: paymentId,
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                }),
-                success: function (response) {
-                    if (response.success) {
-                        alert(response.message);
-                        location.reload();
-                    } else {
-                        alert(response.error || 'Adjustment failed');
-                    }
-                },
-                error: function (xhr) {
-                    alert('Error adjusting payment');
-                }
-            });
-        }
-    </script>
 </body>
 
 </html>

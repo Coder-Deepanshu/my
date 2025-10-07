@@ -3,1532 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Student Management System</title>
+    <title>Fee Payment Container</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            /* Primary Colors */
-            --primary: #3a56d4;
-            --primary-dark: #2f4ac0;
-            --primary-light: #f5f7ff;
-            --primary-extra-light: #eef1ff;
-
-            /* Secondary Colors */
-            --secondary: #4a6bff;
-            --accent: #5c7cff;
-            --success: #4cc9f0;
-            --warning: #ff9f1c;
-            --danger: #ff477e;
-
-            /* Neutral Colors */
-            --dark: #2d3748;
-            --darker: #1a202c;
-            --light: #f8fafc;
-            --lighter: #ffffff;
-            --gray: #718096;
-            --light-gray: #e2e8f0;
-            --dark-gray: #4a5568;
-
-            /* Status Colors */
-            --success: #48bb78;
-            --warning: #ed8936;
-            --danger: #f56565;
-            --info: #4299e1;
-
-            /* Sidebar Colors */
-            --sidebar-bg: #2d3748;
-            --sidebar-text: #cbd5e0;
-            --sidebar-active: rgba(74, 107, 255, 0.2);
-            --sidebar-hover: #4a5568;
-            --sidebar-icon: #a0aec0;
-
-            /* Other Variables */
-            --sidebar-width: 280px;
-            --sidebar-collapsed: 70px;
-            --header-height: 70px;
-            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            --border-radius: 8px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --box-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        body {
-            background-color: #f5f7fb;
-            color: var(--dark);
-            min-height: 100vh;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            transition: var(--transition);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-            transform: translateX(-100%);
-        }
-
-        .sidebar.active {
-            transform: translateX(0);
-        }
-
-        .sidebar.collapsed {
-            width: var(--sidebar-collapsed);
-        }
-
-        .sidebar.collapsed .sidebar-header h1,
-        .sidebar.collapsed .menu-title,
-        .sidebar.collapsed .menu-text,
-        .sidebar.collapsed .user-info,
-        .sidebar.collapsed .user-dropdown-name {
-            display: none;
-        }
-
-        .sidebar.collapsed .menu-link {
-            justify-content: center;
-            padding: 0.8rem 0.5rem;
-        }
-
-        .sidebar.collapsed .menu-icon {
-            margin-right: 0;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem 1.5rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            height: var(--header-height);
-        }
-
-        .sidebar-header h1 {
-            color: white;
-            margin: 0;
-            font-size: 1.5rem;
-            white-space: nowrap;
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+        <style>
+        .payment-modal-container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--sidebar-hover) var(--sidebar-bg);
-        }
-
-        .sidebar-menu::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar-menu::-webkit-scrollbar-thumb {
-            background-color: var(--sidebar-hover);
-            border-radius: 3px;
-        }
-
-        .sidebar-menu::-webkit-scrollbar-track {
-            background-color: var(--sidebar-bg);
-        }
-
-        .menu-title {
-            padding: 0.75rem 1.5rem 0.5rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--sidebar-text);
-            font-weight: 600;
-            opacity: 0.7;
-            margin-top: 0.5rem;
-            white-space: nowrap;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .menu-list {
-            list-style: none;
-        }
-
-        .menu-item {
-            position: relative;
-            margin: 0.15rem 0;
-        }
-
-        .menu-link {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1.5rem;
-            color: var(--sidebar-text);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            border-left: 3px solid transparent;
-            font-size: 0.9rem;
-            margin: 0 0.5rem;
-            border-radius: 6px;
-        }
-
-        .menu-link:hover {
-            color: white;
-            background-color: var(--sidebar-hover);
-            transform: translateX(5px);
-        }
-
-        .menu-link.active {
-            color: white;
-            background-color: var(--sidebar-active);
-            border-left-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .menu-icon {
-            font-size: 1rem;
-            margin-right: 0.75rem;
-            width: 20px;
-            text-align: center;
-            color: var(--sidebar-icon);
-            transition: var(--transition);
-        }
-
-        .menu-link:hover .menu-icon,
-        .menu-link.active .menu-icon {
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .menu-text {
-            flex: 1;
-            transition: var(--transition);
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .menu-link:hover .menu-text {
-            transform: translateX(3px);
-        }
-
-        .sidebar-footer {
-            padding: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .user-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition);
-        }
-
-        .sidebar-footer:hover .user-avatar {
-            transform: scale(1.1);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .user-info {
-            flex: 1;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .user-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.1rem;
-            color: white;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-role {
-            font-size: 0.7rem;
-            color: var(--sidebar-text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--sidebar-text);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: var(--transition);
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .logout-btn:hover {
-            color: white;
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: rotate(180deg);
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            flex: 1;
             width: 100%;
-            transition: var(--transition);
-        }
-
-        /* Header Styles */
-        .header {
-            height: var(--header-height);
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1.5rem;
-            box-shadow: var(--box-shadow);
-            position: sticky;
-            top: 0;
-            z-index: 900;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .toggle-sidebar {
-            background: none;
-            border: none;
-            font-size: 1.25rem;
-            color: var(--gray);
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .toggle-sidebar:hover {
-            background-color: var(--light-gray);
-            color: var(--dark);
-        }
-
-        .page-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .page-title i {
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .notification-btn {
-            position: relative;
-            background: none;
-            border: none;
-            color: var(--gray);
-            font-size: 1.25rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .notification-btn:hover {
-            background-color: var(--light-gray);
-            color: var(--dark);
-            transform: translateY(-2px);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--danger);
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.6rem;
-            font-weight: bold;
-            border: 2px solid white;
-        }
-
-        .user-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            position: relative;
-            padding: 0.25rem 0.25rem 0.25rem 0.75rem;
-            border-radius: 50px;
-            transition: var(--transition);
-        }
-
-        .user-dropdown:hover {
-            background-color: var(--light-gray);
-        }
-
-        .user-dropdown-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--light-gray);
-            transition: var(--transition);
-        }
-
-        .user-dropdown:hover .user-dropdown-avatar {
-            transform: scale(1.1);
-            border-color: var(--primary-light);
-        }
-
-        .user-dropdown-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--dark);
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-
-        .user-dropdown:hover .user-dropdown-name {
-            color: var(--primary);
-        }
-
-        .user-dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            background: white;
-            min-width: 220px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow-lg);
-            padding: 0.5rem 0;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: var(--transition);
-            z-index: 100;
-        }
-
-        .user-dropdown:hover .user-dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            padding: 0.7rem 1.25rem;
-            color: var(--dark);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: var(--transition);
-        }
-
-        .dropdown-item:hover {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding-left: 1.5rem;
-        }
-
-        .dropdown-item i {
-            margin-right: 0.75rem;
-            width: 20px;
-            text-align: center;
-            font-size: 0.95rem;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: var(--light-gray);
-            margin: 0.5rem 0;
-        }
-
-        /* Content Styles */
-        .content {
-            padding: 1.5rem;
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Stats Cards */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            align-items: center;
-            transition: var(--transition);
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--box-shadow-lg);
-        }
-
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .stat-card:hover::after {
-            opacity: 1;
-        }
-
-        .stat-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-            margin-right: 1.25rem;
-            flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-info h3 {
-            margin: 0;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .stat-info p {
-            margin: 0.25rem 0 0;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        /* Tab Header */
-        .tab-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-        }
-
-        .header-content h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            color: var(--dark);
-            font-weight: 700;
-        }
-
-        .header-content p {
-            margin: 0.5rem 0 0;
-            color: var(--gray);
-            font-size: 0.95rem;
-        }
-
-        .search-bar {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-bar i {
-            position: absolute;
-            left: 15px;
-            color: var(--gray);
-        }
-
-        .search-bar input {
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 1px solid var(--light-gray);
-            border-radius: 50px;
-            font-size: 0.9rem;
-            width: 250px;
-            transition: var(--transition);
-        }
-
-        .search-bar input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-        }
-
-        /* Action Grid */
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .action-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
-            text-align: center;
-            border: 1px solid rgba(0, 0, 0, 0.03);
-        }
-
-        .action-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--box-shadow-lg);
-        }
-
-        .action-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 1.5rem;
-            color: white;
-            transition: var(--transition);
-        }
-
-        .action-card:hover .action-icon {
-            transform: scale(1.1) rotate(10deg);
-        }
-
-        .action-icon.setting { background: var(--primary); }
-        .action-icon.birthday { background: var(--success); }
-        .action-icon.upload { background: var(--warning); }
-        .action-icon.backup { background: var(--danger); }
-        .action-icon.grade { background: var(--info); }
-        .action-icon.assignment { background: var(--accent); }
-        .action-icon.chat { background: var(--primary); }
-        .action-icon.history { background: var(--success); }
-
-        .action-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: var(--dark);
-        }
-
-        .action-desc {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
-        }
-
-        .action-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-block;
-            text-decoration: none;
-        }
-
-        .action-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
-        }
-
-        /* Bubbles Background */
-        .bubbles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .bubble {
-            position: absolute;
-            bottom: -100px;
-            background: rgba(106, 163, 255, 0.1);
-            border-radius: 50%;
-            animation: float 15s infinite ease-in;
-            opacity: 0.5;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0) translateX(0) scale(0.5);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateY(-1000px) translateX(100px) scale(1.5);
-                opacity: 0;
-            }
-        }
-
-        /* Mobile Overlay */
-        .sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-        }
-
-        .sidebar-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Responsive Styles */
-        @media (min-width: 1200px) {
-            .sidebar {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: var(--sidebar-width);
-            }
-            
-            .sidebar.collapsed ~ .main-content {
-                margin-left: var(--sidebar-collapsed);
-            }
-            
-            .sidebar-overlay {
-                display: none;
-            }
-        }
-
-        @media (max-width: 1199px) {
-            .sidebar {
-                transform: translateX(-100%);
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .toggle-sidebar {
-                display: flex;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .content {
-                padding: 1.25rem;
-            }
-
-            .tab-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .search-bar {
-                width: 100%;
-            }
-
-            .search-bar input {
-                width: 100%;
-            }
-            
-            .header-content h1 {
-                font-size: 1.6rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-
-            .action-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
-                padding: 0 1.25rem;
-            }
-
-            .user-dropdown-name {
-                display: none;
-            }
-            
-            .content {
-                padding: 1rem;
-            }
-            
-            .stat-card {
-                padding: 1.25rem;
-            }
-            
-            .action-card {
-                padding: 1.5rem;
-            }
-            
-            .header-content h1 {
-                font-size: 1.4rem;
-            }
-            
-            .page-title {
-                font-size: 1.2rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .content {
-                padding: 0.75rem;
-            }
-            
-            .action-card {
-                padding: 1.25rem;
-            }
-            
-            .stat-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 1.25rem;
-                margin-right: 1rem;
-            }
-            
-            .stat-info h3 {
-                font-size: 1.4rem;
-            }
-            
-            .header {
-                padding: 0 1rem;
-            }
-            
-            .tab-header {
-                margin-bottom: 1.5rem;
-            }
-            
-            .stats-container {
-                margin-bottom: 2rem;
-                gap: 1rem;
-            }
+            max-width: 800px;
+            margin: 20px auto;
         }
         
-        @media (max-width: 400px) {
-            .header-right {
-                gap: 0.5rem;
-            }
-            
-            .notification-btn {
-                width: 36px;
-                height: 36px;
-            }
-            
-            .user-dropdown-avatar {
-                width: 34px;
-                height: 34px;
-            }
-            
-            .toggle-sidebar {
-                width: 36px;
-                height: 36px;
-            }
+        .payment-modal-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-bottom: none;
+            padding: 20px 25px;
+        }
+        
+        .payment-modal-title {
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .payment-modal-body {
+            padding: 25px;
+        }
+        
+        .payment-form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #495057;
+        }
+        
+        .payment-form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            transition: all 0.3s;
+        }
+        
+        .payment-form-control:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.25);
+        }
+        
+        .btn-pay {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .status-new {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .status-pending {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+        
+        .status-due {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .status-overdue {
+            background-color: #fce4ec;
+            color: #ad1457;
+        }
+        
+        .status-paid {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .hidden-inputs {
+            display: none;
+        }
+        
+        .payment-info-box {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #6a11cb;
         }
     </style>
+    
 </head>
-
 <body>
-    <div class="bubbles">
-        <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s;"></div>
-        <div class="bubble" style="width: 120px; height: 120px; left: 20%; animation-delay: 2s;"></div>
-        <div class="bubble" style="width: 60px; height: 60px; left: 30%; animation-delay: 4s;"></div>
-        <div class="bubble" style="width: 100px; height: 100px; left: 40%; animation-delay: 6s;"></div>
-        <div class="bubble" style="width: 70px; height: 70px; left: 60%; animation-delay: 8s;"></div>
-        <div class="bubble" style="width: 90px; height: 90px; left: 80%; animation-delay: 10s;"></div>
-    </div>
-
-    <!-- Mobile Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <div class="layout">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1>
-                    <i class="fas fa-graduation-cap me-2" style="color: #4361ee;"></i>
-                    EduTrack
-                </h1>
-            </div>
-
-            <div class="sidebar-menu">
-                <h3 class="menu-title">Main</h3>
-                <ul class="menu-list">
-                    <li class="menu-item">
-                        <a href="#" class="menu-link active" data-tab="dashboard-tab">
-                            <i class="fas fa-tachometer-alt menu-icon"></i>
-                            <span class="menu-text">Dashboard</span>
-                        </a>
-                    </li>
-                </ul>
-
-                <h3 class="menu-title">Personal</h3>
-                <ul class="menu-list">
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="myDetails-tab">
-                            <i class="fas fa-id-badge menu-icon"></i>
-                            <span class="menu-text">My Details</span>
-                        </a>
-                    </li>
-                </ul>
-
-                <h3 class="menu-title">Management</h3>
-                <ul class="menu-list">
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="students-tab">
-                            <i class="fas fa-user-graduate menu-icon"></i>
-                            <span class="menu-text">Students</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="faculty-tab">
-                            <i class="fas fa-chalkboard-teacher menu-icon"></i>
-                            <span class="menu-text">Faculty</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="admin-tab">
-                            <i class="fas fa-tools menu-icon"></i>
-                            <span class="menu-text">Admin</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="result-tab">
-                            <i class="fas fa-poll menu-icon"></i>
-                            <span class="menu-text">Results</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="facultySetting-tab">
-                            <i class="fas fa-cogs menu-icon"></i>
-                            <span class="menu-text">Faculty Setting</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="studentSetting-tab">
-                            <i class="fas fa-user-edit menu-icon"></i>
-                            <span class="menu-text">Student Setting</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="schedule-tab">
-                            <i class="fas fa-calendar-alt menu-icon"></i>
-                            <span class="menu-text">Schedule</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="payment-tab">
-                            <i class="fas fa-money-check-alt menu-icon"></i>
-                            <span class="menu-text">Payment</span>
-                        </a>
-                    </li>
-                </ul>
-
-                <h3 class="menu-title">System</h3>
-                <ul class="menu-list">
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="setting-tab">
-                            <i class="fas fa-sliders-h menu-icon"></i>
-                            <span class="menu-text">Settings</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="grade-tab">
-                            <i class="fas fa-chart-bar menu-icon"></i>
-                            <span class="menu-text">Grade</span>
-                        </a>
-                    </li>
-
-                    <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="notification-tab">
-                            <i class="fas fa-comment-alt menu-icon"></i>
-                            <span class="menu-text">Notifications</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="sidebar-footer">
-                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
-                <div class="user-info">
-                    <div class="user-name">Dr. Admin User</div>
-                    <div class="user-role">Administrator</div>
+    <div class="payment-container">
+        <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-money-bill-wave me-2"></i>Process Fee Payment</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <!-- Status Section -->
+            <div class="status-section">
+                <div class="status-title">
+                    <i class="fas fa-info-circle"></i> Payment Status
                 </div>
-                <a href="#">
-                    <button class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Header -->
-            <header class="header">
-                <div class="header-left">
-                    <button class="toggle-sidebar" id="toggleSidebar">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="page-title">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <h3>Dashboard</h3>
-                    </div>
-                </div>
-
-                <div class="header-right">
-                    <button class="notification-btn">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">5</span>
-                    </button>
-
-                    <div class="user-dropdown">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User"
-                            class="user-dropdown-avatar">
-                        <span class="user-dropdown-name">Admin User</span>
-                        <div class="user-dropdown-menu">
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-user"></i> Profile
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-id-card"></i> ID Card
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-calendar-check"></i> Attendance
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-money-bill-wave"></i> Salary
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Content -->
-            <div class="content">
-                <!-- Dashboard Tab -->
-                <div id="dashboard-tab" class="tab-content active">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Dashboard Overview</h1>
-                            <p>Welcome back, Dr. Admin! Here's what's happening today.</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search...">
-                        </div>
-                    </div>
-
-                    <div class="stats-container">
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: var(--primary);">
-                                <i class="fas fa-user-graduate"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>1,254</h3>
-                                <p>Total Students</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: var(--success);">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>68</h3>
-                                <p>Faculty Members</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: var(--warning);">
-                                <i class="fas fa-book"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>42</h3>
-                                <p>Active Courses</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon" style="background: var(--danger);">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="stat-info">
-                                <h3>92%</h3>
-                                <p>Attendance Rate</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Other Tabs -->
-                <div id="myDetails-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>My Details</h1>
-                            <p>View and manage your personal information</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search details...">
-                        </div>
-                    </div>
-                    <p>Personal details content will appear here.</p>
-                </div>
-                
-                <div id="students-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Student Management</h1>
-                            <p>Manage all student records and information</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search students...">
-                        </div>
-                    </div>
-                    <p>Student management content will appear here.</p>
-                </div>
-                
-                <div id="faculty-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Faculty Management</h1>
-                            <p>Manage faculty members and their details</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search faculty...">
-                        </div>
-                    </div>
-                    <p>Faculty management content will appear here.</p>
-                </div>
-                
-                <div id="admin-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Admin Management</h1>
-                            <p>Manage administrative tasks and settings</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search admin tasks...">
-                        </div>
-                    </div>
-                    <p>Admin management content will appear here.</p>
-                </div>
-                
-                <div id="result-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Result Management</h1>
-                            <p>View and manage student results</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search results...">
-                        </div>
-                    </div>
-                    <p>Result management content will appear here.</p>
-                </div>
-                
-                <div id="facultySetting-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Faculty Settings</h1>
-                            <p>Configure faculty-related settings</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search faculty settings...">
-                        </div>
-                    </div>
-                    <p>Faculty settings content will appear here.</p>
-                </div>
-                
-                <div id="studentSetting-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Student Settings</h1>
-                            <p>Configure student-related settings</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search student settings...">
-                        </div>
-                    </div>
-                    <p>Student settings content will appear here.</p>
-                </div>
-                
-                <div id="schedule-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Schedule Management</h1>
-                            <p>Manage class schedules and timetables</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search schedules...">
-                        </div>
-                    </div>
-                    <p>Schedule management content will appear here.</p>
-                </div>
-                
-                <div id="payment-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Payment Management</h1>
-                            <p>Manage fee payments and transactions</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search payments...">
-                        </div>
-                    </div>
-                    <p>Payment management content will appear here.</p>
-                </div>
-
-                <!-- Setting Tab -->
-                <div id="setting-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Setting Management</h1>
-                            <p>Manage all system settings and configurations</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search settings...">
-                        </div>
-                    </div>
-
-                    <div class="action-grid">
-                        <div class="action-card">
-                            <div class="action-icon setting">
-                                <i class="fas fa-cogs"></i>
-                            </div>
-                            <h3 class="action-title">Semester Setting</h3>
-                            <p class="action-desc">Change Semester and year after time period</p>
-                            <button class="action-btn">Configure</button>
-                        </div>
-
-                        <div class="action-card">
-                            <div class="action-icon birthday">
-                                <i class="fas fa-gifts"></i>
-                            </div>
-                            <h3 class="action-title">Birthday Wishes</h3>
-                            <p class="action-desc">Wish birthday and create cards for faculty and students</p>
-                            <button class="action-btn">Manage</button>
-                        </div>
-
-                        <div class="action-card">
-                            <div class="action-icon upload">
-                                <i class="fas fa-upload"></i>
-                            </div>
-                            <h3 class="action-title">Upload Notes</h3>
-                            <p class="action-desc">Upload notes and study materials for Students</p>
-                            <button class="action-btn">Upload</button>
-                        </div>
-
-                        <div class="action-card">
-                            <div class="action-icon backup">
-                                <i class="fas fa-database"></i>
-                            </div>
-                            <h3 class="action-title">Data Backup</h3>
-                            <p class="action-desc">Create backup of important data for safety</p>
-                            <button class="action-btn">Backup Now</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Grade Tab -->
-                <div id="grade-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Grade Management</h1>
-                            <p>Manage all grades and academic evaluations</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search grades...">
-                        </div>
-                    </div>
-
-                    <div class="action-grid">
-                        <div class="action-card">
-                            <div class="action-icon grade">
-                                <i class="fas fa-clipboard-check"></i>
-                            </div>
-                            <h3 class="action-title">Student Grades</h3>
-                            <p class="action-desc">View and manage grades marked by faculty</p>
-                            <button class="action-btn">View Grades</button>
-                        </div>
-
-                        <div class="action-card">
-                            <div class="action-icon assignment">
-                                <i class="fas fa-tasks"></i>
-                            </div>
-                            <h3 class="action-title">Assignments</h3>
-                            <p class="action-desc">Monitor pending assignments under courses</p>
-                            <button class="action-btn">Check Status</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notification Tab -->
-                <div id="notification-tab" class="tab-content">
-                    <div class="tab-header">
-                        <div class="header-content">
-                            <h1>Notification Center</h1>
-                            <p>Manage all communication and notifications</p>
-                        </div>
-                        <div class="search-bar">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Search messages...">
-                        </div>
-                    </div>
-
-                    <div class="action-grid">
-                        <div class="action-card">
-                            <div class="action-icon chat">
-                                <i class="fas fa-comment-dots"></i>
-                            </div>
-                            <h3 class="action-title">Faculty Chat</h3>
-                            <p class="action-desc">Communicate with faculty members</p>
-                            <button class="action-btn">Start Chat</button>
-                        </div>
-
-                        <div class="action-card">
-                            <div class="action-icon chat">
-                                <i class="fas fa-comments"></i>
-                            </div>
-                            <h3 class="action-title">Student Chat</h3>
-                            <p class="action-desc">Chat with students regarding issues</p>
-                            <button class="action-btn">Open Chat</button>
-                        </div>
-
-                        <div class="action-card">
-                            <div class="action-icon history">
-                                <i class="fas fa-clipboard-list"></i>
-                            </div>
-                            <h3 class="action-title">Chat History</h3>
-                            <p class="action-desc">Review complete communication history</p>
-                            <a href="#" class="action-btn">View History</a>
-                        </div>
-                    </div>
+                <div>
+                    <span class="status-badge status-new">New</span>
+                    <span class="status-badge status-pending">Pending</span>
+                    <span class="status-badge status-due">Due</span>
+                    <span class="status-badge status-overdue">Overdue</span>
+                    <span class="status-badge status-paid">Paid</span>
                 </div>
             </div>
-        </main>
-    </div>
-
-    <script>
-        // Toggle Sidebar
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const sidebar = document.querySelector('.sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-        toggleSidebar.addEventListener('click', () => {
-            if (window.innerWidth < 1200) {
-                sidebar.classList.toggle('active');
-                sidebarOverlay.classList.toggle('active');
-            } else {
-                sidebar.classList.toggle('collapsed');
-            }
-        });
-
-        // Close sidebar when clicking on overlay
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-        });
-
-        // Tab Switching Functionality
-        document.querySelectorAll('[data-tab]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tabId = link.getAttribute('data-tab');
-
-                // Hide all tab contents
-                document.querySelectorAll('.tab-content').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-
-                // Show selected tab
-                const selectedTab = document.getElementById(tabId);
-                if (selectedTab) {
-                    selectedTab.classList.add('active');
-                }
-
-                // Update active menu item
-                document.querySelectorAll('.menu-link').forEach(menuLink => {
-                    menuLink.classList.remove('active');
-                });
-                link.classList.add('active');
-
-                // Update page title
-                const pageTitle = document.querySelector('.page-title h3');
-                const tabTitles = {
-                    'dashboard-tab': 'Dashboard',
-                    'myDetails-tab': 'My Details',
-                    'students-tab': 'Students',
-                    'faculty-tab': 'Faculty',
-                    'admin-tab': 'Admin',
-                    'result-tab': 'Results',
-                    'facultySetting-tab': 'Faculty Setting',
-                    'studentSetting-tab': 'Student Setting',
-                    'schedule-tab': 'Schedule',
-                    'payment-tab': 'Payment',
-                    'setting-tab': 'Settings',
-                    'grade-tab': 'Grades',
-                    'notification-tab': 'Notifications'
-                };
-
-                if (pageTitle && tabTitles[tabId]) {
-                    pageTitle.textContent = tabTitles[tabId];
-                }
-
-                // Close sidebar on mobile
-                if (window.innerWidth < 1200) {
-                    sidebar.classList.remove('active');
-                    sidebarOverlay.classList.remove('active');
-                }
-            });
-        });
-
-        // Add hover effects to action cards
-        document.querySelectorAll('.action-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
-            });
             
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
+            <form id="paymentForm">
+                <input type="hidden" id="student_id">
+                <input type="hidden" id="fee_structure_id">
+                
+                <!-- Hidden Fields -->
+                <div class="hidden-fields">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="receipt_no"><i class="fas fa-receipt me-1"></i>Receipt No</label>
+                                <input type="text" class="form-control" id="receipt_no">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="total_payment"><i class="fas fa-money-bill me-1"></i>Total Payment</label>
+                                <input type="number" class="form-control" id="total_payment" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="extra_amount"><i class="fas fa-plus-circle me-1"></i>Extra Amount</label>
+                                <input type="number" class="form-control" id="extra_amount" min="0" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Visible Fields -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="amount"><i class="fas fa-rupee-sign me-1"></i>Payment Amount (₹)</label>
+                            <input type="number" class="form-control" id="amount" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="payment_method"><i class="fas fa-credit-card me-1"></i>Payment Method</label>
+                            <select class="form-control" id="payment_method" required>
+                                <option value="">Select Method</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="Online">Online Transfer</option>
+                                <option value="Card">Credit/Debit Card</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-        // Notification badge animation
-        const notificationBadge = document.querySelector('.notification-badge');
-        if (notificationBadge) {
-            setInterval(() => {
-                notificationBadge.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    notificationBadge.style.transform = 'scale(1)';
-                }, 300);
-            }, 3000);
-        }
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="transaction_id"><i class="fas fa-receipt me-1"></i>Transaction/Reference ID</label>
+                            <input type="text" class="form-control" id="transaction_id">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="remarks"><i class="fas fa-sticky-note me-1"></i>Remarks</label>
+                            <input type="text" class="form-control" id="remarks" placeholder="Optional">
+                        </div>
+                    </div>
+                </div>
 
-        // Responsive behavior
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1200) {
-                sidebar.classList.remove('active');
-                sidebarOverlay.classList.remove('active');
-            }
-        });
-    </script>
+                <div class="form-group">
+                    <button type="submit" class="btn-pay">
+                        <i class="fas fa-money-bill-wave"></i> Process Payment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
