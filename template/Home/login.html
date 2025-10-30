@@ -1,435 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Edutrack - Education Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --accent: #7209b7;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #f0f2f5;
-            --border-gray: #dee2e6;
-            --student-color: #4361ee;
-            --faculty-color: #f8961e;
-            --admin-color: #e63946;
-            --transition: all 0.3s ease;
-        }
-
-        body {
-            background: var(--light-gray);
-            color: var(--dark);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
-
-        /* Header Styles */
-        .header {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .nav-link {
-            color: var(--dark);
-            font-weight: 500;
-            margin: 0 10px;
-            transition: var(--transition);
-        }
-
-        .nav-link:hover {
-            color: var(--primary);
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            padding: 8px 20px;
-            border-radius: 6px;
-            transition: var(--transition);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        /* Login Section */
-        .login-section {
-            padding: 60px 0;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            
-            max-width: 700px;
-        }
-
-        .login-right {
-            padding: 40px;
-        }
-
-        .login-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--dark);
-        }
-
-        .login-subtitle {
-            color: var(--gray);
-            margin-bottom: 30px;
-            font-size: 1rem;
-        }
-
-        .form-control {
-            padding: 14px 16px;
-            border: 1px solid var(--border-gray);
-            border-radius: 8px;
-            margin-bottom: 20px;
-            transition: var(--transition);
-            font-size: 1rem;
-        }
-
-        .form-control:focus {
-            border-color: var(--student-color);
-            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
-        }
-
-        .input-group-text {
-            background: white;
-            border: 1px solid var(--border-gray);
-            border-left: none;
-        }
-
-        .role-selection {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .role-btn {
-            flex: 1;
-            text-align: center;
-            padding: 12px 8px;
-            border: 1px solid var(--border-gray);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-            background: white;
-        }
-
-        .role-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .role-btn.active {
-            border-color: var(--student-color);
-            background: rgba(67, 97, 238, 0.05);
-            color: var(--student-color);
-        }
-
-        .role-btn.active.student {
-            border-color: var(--student-color);
-            background: rgba(67, 97, 238, 0.05);
-            color: var(--student-color);
-        }
-
-        .role-btn.active.faculty {
-            border-color: var(--faculty-color);
-            background: rgba(248, 150, 30, 0.05);
-            color: var(--faculty-color);
-        }
-
-        .role-btn.active.admin {
-            border-color: var(--admin-color);
-            background: rgba(230, 57, 70, 0.05);
-            color: var(--admin-color);
-        }
-
-        .role-btn i {
-            font-size: 1.2rem;
-            margin-bottom: 6px;
-            display: block;
-        }
-
-        .login-btn {
-            background: var(--student-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            width: 100%;
-            transition: var(--transition);
-            font-size: 1rem;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
-        }
-
-        .login-btn.student {
-            background: var(--student-color);
-        }
-
-        .login-btn.faculty {
-            background: var(--faculty-color);
-        }
-
-        .login-btn.admin {
-            background: var(--admin-color);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 25px 0;
-        }
-
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-gray);
-        }
-
-        .divider span {
-            padding: 0 15px;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--student-color);
-            border-color: var(--student-color);
-        }
-
-        /* Alert Messages */
-        .alert {
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            border: none;
-        }
-
-        .alert-danger {
-            background: rgba(230, 57, 70, 0.1);
-            color: #e63946;
-        }
-
-        .alert-success {
-            background: rgba(76, 201, 240, 0.1);
-            color: #4cc9f0;
-        }
-
-        /* Footer */
-        .footer {
-            background: rgba(33, 37, 41, 0.95);
-            color: white;
-            padding: 30px 0 15px;
-        }
-
-        .footer-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            position: relative;
-            padding-bottom: 8px;
-        }
-
-        .footer-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: var(--primary);
-        }
-
-        .footer-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer-links li {
-            margin-bottom: 8px;
-        }
-
-        .footer-links a {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: var(--transition);
-            font-size: 0.9rem;
-        }
-
-        .footer-links a:hover {
-            color: white;
-        }
-
-        .footer-social {
-            display: flex;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .footer-social a {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .footer-social a:hover {
-            background: var(--primary);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 25px;
-            margin-top: 25px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.9rem;
-        }
-
-        /* Modal */
-        .modal-content {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid var(--border-gray);
-            padding: 20px;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .modal-footer {
-            border-top: 1px solid var(--border-gray);
-            padding: 15px 20px;
-        }
-
-        /* Help Button */
-        .help-btn {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
-            z-index: 100;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .help-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
-        }
-
-        /* Floating Animation */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .floating {
-            animation: float 4s ease-in-out infinite;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            .login-right {
-                padding: 35px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .login-container {
-                margin: 20px;
-            }
-            
-            .login-right {
-                padding: 30px;
-            }
-            
-            .login-title {
-                font-size: 1.7rem;
-            }
-            
-            .role-selection {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .login-right {
-                padding: 25px 20px;
-            }
-            
-            .navbar-brand {
-                font-size: 1.5rem;
-            }
-            
-            .help-btn {
-                bottom: 20px;
-                right: 20px;
-                width: 45px;
-                height: 45px;
-            }
-            
-            .footer {
-                padding: 25px 0 10px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/main/login.css' %}">
 </head>
+
 <body>
     <!-- Header -->
     <header class="header">
@@ -468,95 +50,129 @@
         </nav>
     </header>
 
+    <!-- userID Modal -->
+    <div class="userIDModal show" id="userIDModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-id-card"></i>
+                        College ID Verification
+                    </h5>
+                </div>
+                <!-- Display Django messages -->
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn">
+                        <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="modal-body">
+                    <!-- Professional Note -->
+                    <div class="info-note">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Enter your college ID to proceed with account login. This helps us verify your institutional
+                            credentials securely.</p>
+                    </div>
+
+                    <form id="userIDForm" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="userID" class="form-label"><i class="fas fa-university"
+                                    style="color: var(--gray);margin-right: 10px;"></i>College ID</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="userID" placeholder="Enter your college ID"
+                                    required>
+                            </div>
+                            <div class="form-text text-muted text-start mt-2">
+                                <small><i class="fas fa-shield-alt me-1"></i> Your information is secure and
+                                    encrypted</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="submitIDBtn">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Verify & Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Section -->
     <section class="login-section">
         <div class="container">
             <div class="row justify-content-center">
-                
-                    <div class="login-container">
-                        <div class="login-right">
-                            <h2 class="login-title animate__animated animate__fadeIn">Sign In</h2>
-                            <p class="login-subtitle animate__animated animate__fadeIn">Enter your credentials to access your account</p>
-                            
-                            <!-- Display Django messages -->
-                            {% if messages %}
-                            <div class="messages">
-                                {% for message in messages %}
-                                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn">
-                                    <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{ message }}
-                                </div>
-                                {% endfor %}
+
+                <div class="login-container">
+                    <div class="login-right">
+                        <h2 class="login-title animate__animated animate__fadeIn">Sign In</h2>
+                        <p class="login-subtitle animate__animated animate__fadeIn">Enter your credentials to access
+                            your account</p>
+
+                        <!-- Role Selection -->
+                        <div class="role-selection animate__animated animate__fadeIn">
+                            <div class="role-btn student active" data-role="student">
+                                <i class="fas fa-user-graduate"></i>
+                                <span>Student</span>
                             </div>
-                            {% endif %}
-                            
-                            <!-- Role Selection -->
-                            <div class="role-selection animate__animated animate__fadeIn">
-                                <div class="role-btn student active" data-role="student">
-                                    <i class="fas fa-user-graduate"></i>
-                                    <span>Student</span>
-                                </div>
-                                <div class="role-btn faculty" data-role="faculty">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                    <span>Faculty</span>
-                                </div>
-                                <div class="role-btn admin" data-role="admin">
-                                    <i class="fas fa-user-cog"></i>
-                                    <span>Admin</span>
-                                </div>
+                            <div class="role-btn faculty" data-role="faculty">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>Faculty</span>
                             </div>
-                            
-                            <!-- Login Form -->
-                            <form method="POST" id="loginForm" action="{% url 'login' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="role" id="role" value="student">
-                                
-                                <div class="mb-3 animate__animated animate__fadeIn">
-                                    <label for="id_username" class="form-label">Username</label>
-                                    <div class="input-group">
-                                        <input type="text" name="username" id="id_username" 
-                                               class="form-control"
-                                               placeholder="Enter your username" required>
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3 animate__animated animate__fadeIn">
-                                    <label for="id_user" class="form-label">User ID</label>
-                                    <div class="input-group">
-                                        <input type="text" name="userId" id="id_user" 
-                                               class="form-control"
-                                               placeholder="Enter your user ID" required>
-                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3 animate__animated animate__fadeIn">
-                                    <label for="id_password" class="form-label">Password</label>
-                                    <div class="input-group">
-                                        <input type="password" name="password" id="id_password" 
-                                               class="form-control"
-                                               placeholder="Enter your password" required>
-                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    </div>
-                                </div>
-                                
-                                <div class="mb-3 form-check animate__animated animate__fadeIn">
-                                    <input type="checkbox" class="form-check-input" id="rememberMe">
-                                    <label class="form-check-label" for="rememberMe">Remember me</label>
-                                    <a href="#" class="float-end" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot password?</a>
-                                </div>
-                                
-                                <button type="submit" class="login-btn student animate__animated animate__fadeIn">
-                                    <i class="fas fa-sign-in-alt me-2"></i> Sign In
-                                </button>
-                            </form>
-                            
-                            <div class="text-center mt-4 animate__animated animate__fadeIn">
-                                <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your institution</a></p>
+                            <div class="role-btn admin" data-role="admin">
+                                <i class="fas fa-user-cog"></i>
+                                <span>Admin</span>
                             </div>
                         </div>
+
+                        <!-- Login Form -->
+                        <form method="POST" id="loginForm" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="role" id="role" value="student">
+
+                            <div class="mb-3 animate__animated animate__fadeIn">
+                                <label for="id_username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <input type="text" name="username" id="id_username" class="form-control"
+                                        placeholder="Enter your username" required>
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 animate__animated animate__fadeIn">
+                                <label for="id_password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <input type="password" name="password" id="id_password" class="form-control"
+                                        placeholder="Enter your password" required>
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 form-check animate__animated animate__fadeIn">
+                                <input type="checkbox" class="form-check-input" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">Remember me</label>
+                                <a href="#" class="float-end" data-bs-toggle="modal"
+                                    data-bs-target="#forgotPasswordModal">Forgot password?</a>
+                            </div>
+
+                            <button type="submit" class="login-btn student animate__animated animate__fadeIn">
+                                <i class="fas fa-sign-in-alt me-2"></i> Sign In
+                            </button>
+                        </form>
+
+                        <div class="text-center mt-4 animate__animated animate__fadeIn">
+                            <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your
+                                    institution</a></p>
+                        </div>
                     </div>
-                
+                </div>
+
             </div>
         </div>
     </section>
@@ -572,7 +188,8 @@
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <h4 class="footer-title">Edutrack</h4>
-                    <p>Comprehensive education management system designed to streamline operations and enhance learning outcomes.</p>
+                    <p>Comprehensive education management system designed to streamline operations and enhance learning
+                        outcomes.</p>
                     <div class="footer-social">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -629,7 +246,8 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="collegeId" class="form-label">College ID</label>
-                            <input type="text" class="form-control" id="collegeId" placeholder="Enter your college ID" required>
+                            <input type="text" class="form-control" id="collegeId" placeholder="Enter your college ID"
+                                required>
                         </div>
                     </form>
                     <div id="recoveryResult" class="mt-3" style="display: none;">
@@ -658,18 +276,22 @@
                     </div>
                     <div class="mb-3">
                         <h6><i class="fas fa-user me-2 text-primary"></i>Username</h6>
-                        <p class="text-muted">Your username is your email address registered with the college (e.g., john.doe@college.edu)</p>
+                        <p class="text-muted">Your username is your email address registered with the college (e.g.,
+                            john.doe@college.edu)</p>
                     </div>
                     <div class="mb-3">
                         <h6><i class="fas fa-id-card me-2 text-primary"></i>User ID</h6>
-                        <p class="text-muted">Your User ID is your college registration ID provided by the institution (e.g., CO123456)</p>
+                        <p class="text-muted">Your User ID is your college registration ID provided by the institution
+                            (e.g., CO123456)</p>
                     </div>
                     <div class="mb-3">
                         <h6><i class="fas fa-lock me-2 text-primary"></i>Password</h6>
-                        <p class="text-muted">Your password is your registered phone number without country code (e.g., 9876543210)</p>
+                        <p class="text-muted">Your password is your registered phone number without country code (e.g.,
+                            9876543210)</p>
                     </div>
                     <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>If you're still having trouble, please contact your institution's admin department.
+                        <i class="fas fa-exclamation-triangle me-2"></i>If you're still having trouble, please contact
+                        your institution's admin department.
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -679,73 +301,103 @@
         </div>
     </div>
 
+    <!-- templates/common/status_overlay.html -->
+    <div id="overlay" class="overlay" aria-hidden="true">
+        <div id="statusCard" class="status-card" role="status" aria-live="polite">
+            <!-- Animated Background -->
+            <div class="status-bg">
+                <div class="bg-circle bg-circle-1"></div>
+                <div class="bg-circle bg-circle-2"></div>
+                <div class="bg-circle bg-circle-3"></div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="status-content">
+                <div class="circle-wrap">
+                    <div id="dotted" class="dotted-circle">
+                        <div id="dottedRing" class="dotted-ring"></div>
+                        <div id="statusIcon" class="status-icon">
+                            <div class="loading-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="statusTitle" class="status-title">Verifying Account</div>
+                <div id="statusSub" class="status-sub">Please wait while we verify your credentials</div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    // Role selection functionality
-    const roleBtns = document.querySelectorAll('.role-btn');
-    const roleInput = document.getElementById('role');
-    const loginBtn = document.querySelector('.login-btn');
-    
-    roleBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Remove active class from all buttons
-            roleBtns.forEach(b => b.classList.remove('active'));
-            
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            // Update the role value
-            const role = this.getAttribute('data-role');
-            roleInput.value = role;
-            
-            // Update login button style based on role
-            loginBtn.className = 'login-btn';
-            
-            if (role === 'admin') {
-                loginBtn.classList.add('admin');
-            } else if (role === 'faculty') {
-                loginBtn.classList.add('faculty');
-            } else {
-                loginBtn.classList.add('student');
-            }
+        // Role selection functionality
+        const roleBtns = document.querySelectorAll('.role-btn');
+        const roleInput = document.getElementById('role');
+        const loginBtn = document.querySelector('.login-btn');
+
+        roleBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Remove active class from all buttons
+                roleBtns.forEach(b => b.classList.remove('active'));
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Update the role value
+                const role = this.getAttribute('data-role');
+                roleInput.value = role;
+
+                // Update login button style based on role
+                loginBtn.className = 'login-btn';
+
+                if (role === 'admin') {
+                    loginBtn.classList.add('admin');
+                } else if (role === 'faculty') {
+                    loginBtn.classList.add('faculty');
+                } else {
+                    loginBtn.classList.add('student');
+                }
+            });
         });
-    });
-    
-    // Function to get CSRF token from cookies
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
             }
+            return cookieValue;
         }
-        return cookieValue;
-    }
-    
-    // Forgot password functionality
-    document.getElementById('recoverPasswordBtn').addEventListener('click', function() {
-        const collegeId = document.getElementById('collegeId').value;
-        const resultDiv = document.getElementById('recoveryResult');
-        
-        if (!collegeId) {
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `
+
+        // Forgot password functionality
+        document.getElementById('recoverPasswordBtn').addEventListener('click', function () {
+            const collegeId = document.getElementById('collegeId').value;
+            const resultDiv = document.getElementById('recoveryResult');
+
+            if (!collegeId) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-circle me-2"></i>Please enter your College ID
                 </div>
             `;
-            return;
-        }
-        
-        // Show loading state
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = `
+                return;
+            }
+
+            // Show loading state
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
             <div class="text-center py-3">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Loading...</span>
@@ -753,29 +405,29 @@
                 <p class="mt-2">Searching for your account...</p>
             </div>
         `;
-        
-        // Create form data for POST request
-        const formData = new FormData();
-        formData.append('collegeId', collegeId);
-        
-        // Make AJAX call to your Django view
-        fetch('{% url "forgot_password" %}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': getCookie('csrftoken')
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                resultDiv.innerHTML = `
+
+            // Create form data for POST request
+            const formData = new FormData();
+            formData.append('collegeId', collegeId);
+
+            // Make AJAX call to your Django view
+            fetch('{% url "forgot_password" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        resultDiv.innerHTML = `
                     <div class="alert alert-success">
                         <h6><i class="fas fa-check-circle me-2"></i>Account Recovery Information</h6>
                         <p><strong>Username:</strong> ${data.username}</p>
@@ -783,56 +435,148 @@
                         <p><strong>Password:</strong> ${data.password}</p>
                     </div>
                 `;
-            } else {
-                resultDiv.innerHTML = `
+                    } else {
+                        resultDiv.innerHTML = `
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-circle me-2"></i>${data.error || 'No account found with the provided College ID'}
                     </div>
                 `;
-            }
-        })
-        .catch(error => {
-            resultDiv.innerHTML = `
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-circle me-2"></i>An error occurred while processing your request. Please try again.
                 </div>
             `;
-            console.error('Error:', error);
+                    console.error('Error:', error);
+                });
         });
-    });
-    
-    // Toggle password visibility
-    document.querySelectorAll('.input-group-text').forEach(el => {
-        if (el.querySelector('i.fa-lock')) {
-            el.addEventListener('click', function() {
-                const passwordInput = document.getElementById('id_password');
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                
-                // Toggle eye icon
-                this.querySelector('i').classList.toggle('fa-eye');
-                this.querySelector('i').classList.toggle('fa-eye-slash');
+
+        // Toggle password visibility
+        document.querySelectorAll('.input-group-text').forEach(el => {
+            if (el.querySelector('i.fa-lock')) {
+                el.addEventListener('click', function () {
+                    const passwordInput = document.getElementById('id_password');
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+
+                    // Toggle eye icon
+                    this.querySelector('i').classList.toggle('fa-eye');
+                    this.querySelector('i').classList.toggle('fa-eye-slash');
+                });
+            }
+        });
+
+        // Form submission with animation
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            // Show loading animation on button
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+            submitBtn.disabled = true;
+        });
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function () {
+            // Animate elements with delay
+            const animatedElements = document.querySelectorAll('.animate__animated');
+            animatedElements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
             });
-        }
-    });
-    
-    // Form submission with animation
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        // Show loading animation on button
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
-        submitBtn.disabled = true;
-    });
-    
-    // Initialize animations
-    document.addEventListener('DOMContentLoaded', function() {
-        // Animate elements with delay
-        const animatedElements = document.querySelectorAll('.animate__animated');
-        animatedElements.forEach((element, index) => {
-            element.style.animationDelay = `${index * 0.1}s`;
         });
-    });
-</script>
+
+        // for submit the user id to verify
+        const submitIDBtn = document.querySelector('#submitIDBtn');
+        const form = document.querySelector('#userIDForm');
+
+        submitIDBtn.addEventListener('click', () => {
+            const userID = document.querySelector('#userID')
+
+            console.log(userID.value)
+            showOverlay();
+            fetch('/verify_collegeID/', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'userID': userID.value })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const userIDModal = document.querySelector('#userIDModal');
+                    if (data.error) {
+                        form.reset();
+                        showError(data.error);
+                        userIDModal.style.display = 'flex';
+                    } else if (data.success) {
+                        form.reset();
+                        showSuccess(data.success);
+                        userIDModal.style.display = 'none';
+                    }
+                })
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+
+        const overlay = document.getElementById('overlay');
+        const statusCard = document.getElementById('statusCard');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusSub = document.getElementById('statusSub');
+        const statusIcon = document.getElementById('statusIcon');
+        const dottedRing = document.getElementById('dottedRing');
+
+        function showOverlay() {
+            overlay.classList.add('show');
+            overlay.setAttribute('aria-hidden', 'false');
+            statusCard.classList.remove('success', 'error');
+            statusTitle.textContent = 'Verifying Account';
+            statusSub.textContent = 'Please wait while we verify your credentials';
+            statusIcon.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+            dottedRing.style.animation = 'rotate 8s linear infinite';
+        }
+
+        function showSuccess(message) {
+            statusCard.classList.remove('error');
+            statusCard.classList.add('success');
+            statusTitle.textContent = 'Verified Successfully';
+            statusSub.textContent = message || 'Your account has been verified successfully';
+            dottedRing.style.animation = 'none';
+
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+                // if (redirectUrl) window.location.href = redirectUrl;
+            }, 1400);
+        }
+
+        function showError(message) {
+            statusCard.classList.remove('success');
+            statusCard.classList.add('error');
+            statusTitle.textContent = 'Verification Failed';
+            statusSub.textContent = message || 'Unable to verify your account. Please try again.';
+            dottedRing.style.animation = 'none';
+
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+            }, 2500);
+        }
+    </script>
 </body>
+
 </html>

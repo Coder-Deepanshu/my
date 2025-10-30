@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results & Grades | Edutrack - Education Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #f0f2f5;
+            --border-gray: #dee2e6;
+            --student-color: #4361ee;
+            --faculty-color: #f8961e;
+            --admin-color: #e63946;
+            --excellent-grade: #2ecc71;
+            --good-grade: #3498db;
+            --average-grade: #f39c12;
+            --poor-grade: #e74c3c;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--light-gray);
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 40px 0;
+            flex: 1;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .student-info {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 2rem;
+        }
+
+        /* Performance Overview */
+        .performance-overview {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .performance-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .performance-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .performance-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .performance-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Results Tabs */
+        .results-tabs {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .results-nav {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .results-tab {
+            padding: 12px 24px;
+            background: var(--light-gray);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .results-tab:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .results-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+        }
+
+        /* Course Cards */
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .course-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .course-code {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .course-grade {
+            font-size: 1.8rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: var(--light-gray);
+        }
+
+        .grade-excellent {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--excellent-grade);
+        }
+
+        .grade-good {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--good-grade);
+        }
+
+        .grade-average {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--average-grade);
+        }
+
+        .grade-poor {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--poor-grade);
+        }
+
+        /* Progress Bars */
+        .grade-breakdown {
+            margin: 20px 0;
+        }
+
+        .grade-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .grade-label {
+            font-weight: 500;
+            color: var(--dark);
+            min-width: 120px;
+        }
+
+        .grade-bar-container {
+            flex: 1;
+            margin: 0 15px;
+        }
+
+        .grade-bar {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .grade-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+
+        .grade-fill.excellent {
+            background: var(--excellent-grade);
+        }
+
+        .grade-fill.good {
+            background: var(--good-grade);
+        }
+
+        .grade-fill.average {
+            background: var(--average-grade);
+        }
+
+        .grade-fill.poor {
+            background: var(--poor-grade);
+        }
+
+        .grade-value {
+            font-weight: 600;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* Test Results Table */
+        .test-results {
+            margin-top: 25px;
+        }
+
+        .test-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .test-table th {
+            background: var(--light-gray);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--border-gray);
+        }
+
+        .test-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .test-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .test-table tr:hover {
+            background: rgba(67, 97, 238, 0.02);
+        }
+
+        .test-score {
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .score-excellent {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--excellent-grade);
+        }
+
+        .score-good {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--good-grade);
+        }
+
+        .score-average {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--average-grade);
+        }
+
+        .score-poor {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--poor-grade);
+        }
+
+        /* Assignment Grades */
+        .assignment-grades {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .assignment-grade-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .assignment-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .assignment-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .assignment-score {
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+
+        /* Semester GPA */
+        .semester-gpa {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .gpa-chart {
+            display: flex;
+            align-items: end;
+            gap: 15px;
+            height: 200px;
+            margin: 25px 0;
+            padding: 20px;
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .gpa-bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .gpa-bar:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .gpa-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .gpa-value {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--border-gray);
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .course-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .course-grade {
+                align-self: flex-start;
+            }
+
+            .performance-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grade-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .grade-bar-container {
+                margin: 0;
+            }
+
+            .results-nav {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+
+            .assignment-grades {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 20px 0;
+            }
+
+            .student-info {
+                padding: 15px;
+            }
+
+            .student-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .performance-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .test-table {
+                font-size: 0.9rem;
+            }
+
+            .test-table th,
+            .test-table td {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Animations */
+        .animate__animated {
+            animation-duration: 0.6s;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Print Styles */
+        @media print {
+            .header, .results-tabs {
+                display: none;
+            }
+            
+            .course-card, .performance-overview, .semester-gpa {
+                box-shadow: none;
+                border: 1px solid var(--border-gray);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                        </li>
+        
+                    </ul>
+                    <div class="ms-lg-3 mt-3 mt-lg-0">
+                        <a href="{% url 'logoutdoor' %}" class="btn btn-outline-primary">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header animate__animated animate__fadeIn">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="page-title">Results & Grades</h1>
+                        <p class="page-subtitle">Track your academic performance and test results</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="student-info">
+                            <div class="student-avatar">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <h5 class="mb-1">Rahul Sharma</h5>
+                            <p class="mb-0">B.Tech Computer Science • Semester 5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Overview -->
+            <div class="performance-overview animate__animated animate__fadeIn">
+                <h3 class="mb-4">
+                    <i class="fas fa-chart-line me-2 text-primary"></i>
+                    Performance Overview
+                </h3>
+                <div class="performance-cards">
+                    <div class="performance-card">
+                        <div class="performance-value">8.72</div>
+                        <div class="performance-label">Current CGPA</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-value">85.6%</div>
+                        <div class="performance-label">Semester Average</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-value">24/28</div>
+                        <div class="performance-label">Assignments Submitted</div>
+                    </div>
+                    <div class="performance-card">
+                        <div class="performance-value">A</div>
+                        <div class="performance-label">Overall Grade</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Tabs -->
+            <div class="results-tabs animate__animated animate__fadeIn">
+                <div class="results-nav">
+                    <div class="results-tab active" data-tab="current">Current Semester</div>
+                    <div class="results-tab" data-tab="tests">Test Results</div>
+                    <div class="results-tab" data-tab="assignments">Assignment Grades</div>
+                    <div class="results-tab" data-tab="all">All Semesters</div>
+                </div>
+            </div>
+
+            <!-- Results Content -->
+            <div id="resultsContent">
+                <!-- Current Semester Results -->
+                <div class="results-content" id="currentSemester">
+                    <!-- Course 1 -->
+                    <div class="course-card animate__animated animate__fadeIn">
+                        <div class="course-header">
+                            <div>
+                                <h3 class="course-title">Data Structures & Algorithms</h3>
+                                <p class="course-code">CS201 • Dr. Priya Sharma</p>
+                            </div>
+                            <div class="course-grade grade-excellent">A+</div>
+                        </div>
+
+                        <div class="grade-breakdown">
+                            <div class="grade-item">
+                                <span class="grade-label">Assignments</span>
+                                <div class="grade-bar-container">
+                                    <div class="grade-bar">
+                                        <div class="grade-fill excellent" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                                <span class="grade-value">92/100</span>
+                            </div>
+                            <div class="grade-item">
+                                <span class="grade-label">Mid-Term</span>
+                                <div class="grade-bar-container">
+                                    <div class="grade-bar">
+                                        <div class="grade-fill excellent" style="width: 88%"></div>
+                                    </div>
+                                </div>
+                                <span class="grade-value">88/100</span>
+                            </div>
+                            <div class="grade-item">
+                                <span class="grade-label">Final Exam</span>
+                                <div class="grade-bar-container">
+                                    <div class="grade-bar">
+                                        <div class="grade-fill excellent" style="width: 94%"></div>
+                                    </div>
+                                </div>
+                                <span class="grade-value">94/100</span>
+                            </div>
+                            <div class="grade-item">
+                                <span class="grade-label">Lab Work</span>
+                                <div class="grade-bar-container">
+                                    <div class="grade-bar">
+                                        <div class="grade-fill excellent" style="width: 96%"></div>
+                                    </div>
+                                </div>
+                                <span class="grade-value">96/100</span>
+                            </div>
+                        </div>
+
+                        <div class="test-results">
+                            <h6 class="mb-3">Test Results:</h6>
+                            <table class="test-table">
+                                <thead>
+                                    <tr>
+                                        <th>Test Name</th>
+                                        <th>Date</th>
+                                        <th>Score</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Quiz 1 - Arrays</td>
+                                        <td>15 Sep 2023</td>
+                                        <td><span class="test-score score-excellent">18/20</span></td>
+                                        <td>A</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quiz 2 - Linked Lists</td>
+                                        <td>30 Sep 2023</td>
+                                        <td><span class="test-score score-good">16/20</span></td>
+                                        <td>B+</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mid-Term Exam</td>
+                                        <td>15 Oct 2023</td>
+                                        <td><span class="test-score score-excellent">88/100</span></td>
+                                        <td>A</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quiz 3 - Trees</td>
+                                        <td>5 Nov 2023</td>
+                                        <td><span class="test-score score-excellent">19/20</span></td>
+                                        <td>A+</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Course 2 -->
+                    <div class="course-card animate__animated animate__fadeIn">
+                        <div class="course-header">
+                            <div>
+                                <h3 class="course-title">Database Management Systems</h3>
+                                <p class="course-code">CS301 • Dr. Rajesh Kumar</p>
+                            </div>
+                            <div class="course-grade grade-good">A-</div>
+                        </div>
+
+                        <div class="grade-breakdown">
+                            <div class="grade-item">
+                                <span class="grade-label">Assignments</span>
+                                <div class="grade-bar-container">
+                                    <div class="grade-bar">
+                                        <div class="grade-fill good" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <span class="grade-value">85/100</span>
+                            </div>
+                            <div class="grade-item">
+                                <span class="grade-label">Mid-Term</span>
+                                <div class="grade-bar-container">
+                                    <div class="grade-bar">
+                                        <div class="grade-fill average" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                                <span class="grade-value">78/100</span>
+                            </div>
+                            <div class="grade-item">
+                                <span class="grade-label">Final Exam</span>
+                                <div class="grade-bar-container">
+                                    <div class="grade-bar">
+                                        <div class="grade-fill good" style="width: 82%"></div>
+                                    </div>
+                                </div>
+                                <span class="grade-value">82/100</span>
+                            </div>
+                            <div class="grade-item">
+                                <span class="grade-label">Project</span>
+                                <div class="grade-bar-container">
+                                    <div class="grade-bar">
+                                        <div class="grade-fill excellent" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                                <span class="grade-value">92/100</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assignment Grades Section -->
+            <div class="assignment-grades-section animate__animated animate__fadeIn" style="display: none;" id="assignmentGrades">
+                <div class="course-card">
+                    <h3 class="mb-4">
+                        <i class="fas fa-tasks me-2 text-primary"></i>
+                        Assignment Grades
+                    </h3>
+                    <div class="assignment-grades">
+                        <div class="assignment-grade-card">
+                            <div class="assignment-name">DS Project - Binary Trees</div>
+                            <div class="assignment-meta">
+                                <span>Submitted: 15 Nov</span>
+                                <span>Weight: 15%</span>
+                            </div>
+                            <div class="assignment-score score-excellent">28/30</div>
+                        </div>
+                        <div class="assignment-grade-card">
+                            <div class="assignment-name">SQL Queries Assignment</div>
+                            <div class="assignment-meta">
+                                <span>Submitted: 8 Nov</span>
+                                <span>Weight: 10%</span>
+                            </div>
+                            <div class="assignment-score score-good">17/20</div>
+                        </div>
+                        <div class="assignment-grade-card">
+                            <div class="assignment-name">ER Diagram Design</div>
+                            <div class="assignment-meta">
+                                <span>Submitted: 25 Oct</span>
+                                <span>Weight: 12%</span>
+                            </div>
+                            <div class="assignment-score score-excellent">35/40</div>
+                        </div>
+                        <div class="assignment-grade-card">
+                            <div class="assignment-name">Normalization Assignment</div>
+                            <div class="assignment-meta">
+                                <span>Submitted: 18 Oct</span>
+                                <span>Weight: 8%</span>
+                            </div>
+                            <div class="assignment-score score-average">14/20</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Semester GPA Chart -->
+            <div class="semester-gpa animate__animated animate__fadeIn">
+                <h3 class="mb-4">
+                    <i class="fas fa-chart-bar me-2 text-primary"></i>
+                    Semester-wise Performance
+                </h3>
+                <div class="gpa-chart">
+                    <div class="gpa-bar" style="height: 70%;">
+                        <div class="gpa-value">7.8</div>
+                        <div class="gpa-label">Sem 1</div>
+                    </div>
+                    <div class="gpa-bar" style="height: 80%;">
+                        <div class="gpa-value">8.2</div>
+                        <div class="gpa-label">Sem 2</div>
+                    </div>
+                    <div class="gpa-bar" style="height: 85%;">
+                        <div class="gpa-value">8.5</div>
+                        <div class="gpa-label">Sem 3</div>
+                    </div>
+                    <div class="gpa-bar" style="height: 82%;">
+                        <div class="gpa-value">8.2</div>
+                        <div class="gpa-label">Sem 4</div>
+                    </div>
+                    <div class="gpa-bar" style="height: 87%;">
+                        <div class="gpa-value">8.7</div>
+                        <div class="gpa-label">Sem 5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab Functionality
+            const resultsTabs = document.querySelectorAll('.results-tab');
+            
+            resultsTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    resultsTabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    const tabType = this.getAttribute('data-tab');
+                    showResultsContent(tabType);
+                });
+            });
+
+            function showResultsContent(tabType) {
+                const contentDiv = document.getElementById('resultsContent');
+                const assignmentGrades = document.getElementById('assignmentGrades');
+                
+                // Show loading animation
+                contentDiv.innerHTML = `
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3">Loading ${tabType} results...</p>
+                    </div>
+                `;
+
+                // Hide assignment grades section by default
+                assignmentGrades.style.display = 'none';
+
+                setTimeout(() => {
+                    if (tabType === 'tests') {
+                        contentDiv.innerHTML = `
+                            <div class="course-card animate__animated animate__fadeIn">
+                                <h3 class="mb-4">All Test Results</h3>
+                                <table class="test-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course</th>
+                                            <th>Test</th>
+                                            <th>Date</th>
+                                            <th>Score</th>
+                                            <th>Grade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Data Structures</td>
+                                            <td>Mid-Term Exam</td>
+                                            <td>15 Oct 2023</td>
+                                            <td><span class="test-score score-excellent">88/100</span></td>
+                                            <td>A</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Database Systems</td>
+                                            <td>Quiz 1</td>
+                                            <td>20 Sep 2023</td>
+                                            <td><span class="test-score score-good">17/20</span></td>
+                                            <td>B+</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Operating Systems</td>
+                                            <td>Final Exam</td>
+                                            <td>5 Dec 2023</td>
+                                            <td><span class="test-score score-excellent">91/100</span></td>
+                                            <td>A+</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    } else if (tabType === 'assignments') {
+                        contentDiv.innerHTML = '';
+                        assignmentGrades.style.display = 'block';
+                    } else if (tabType === 'all') {
+                        contentDiv.innerHTML = `
+                            <div class="course-card animate__animated animate__fadeIn">
+                                <h3 class="mb-4">All Semester Results</h3>
+                                <p class="text-muted">Complete academic history across all semesters.</p>
+                                <p class="text-muted">This would display results from Semester 1 to current semester.</p>
+                            </div>
+                        `;
+                    } else {
+                        // Current semester (default)
+                        contentDiv.innerHTML = document.getElementById('currentSemester').innerHTML;
+                    }
+                }, 1000);
+            }
+
+            // Animate grade bars on load
+            function animateGradeBars() {
+                const gradeFills = document.querySelectorAll('.grade-fill');
+                gradeFills.forEach(fill => {
+                    const width = fill.style.width;
+                    fill.style.width = '0%';
+                    setTimeout(() => {
+                        fill.style.width = width;
+                    }, 500);
+                });
+            }
+
+            // Initialize animations
+            const animatedElements = document.querySelectorAll('.animate__animated');
+            animatedElements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Animate grade bars after a short delay
+            setTimeout(animateGradeBars, 1000);
+
+            // GPA bar hover effects
+            const gpaBars = document.querySelectorAll('.gpa-bar');
+            gpaBars.forEach(bar => {
+                bar.addEventListener('mouseenter', function() {
+                    this.style.opacity = '0.8';
+                    this.style.transform = 'scale(1.05)';
+                });
+                
+                bar.addEventListener('mouseleave', function() {
+                    this.style.opacity = '1';
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

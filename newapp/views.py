@@ -33,88 +33,130 @@ def enroll(request):
 def new_enroll(request):
     return render(request,'Home/new_enroll.html')
 
+def verify_collegeID(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            userID = data.get('userID')
+            prefix = userID[:2]
+            if prefix == 'AD':
+                admin = Admin.objects.filter(college_id = userID)
+                if admin.exists():
+                    request.session['userID'] = userID
+                    return JsonResponse({'success':"Verified"})
+                else:
+                    return JsonResponse({'error':'ID not exists'}) 
+                
+            elif prefix == 'GK':
+                faculty = Faculty.objects.filter(college_id = userID)
+                if faculty.exists():
+                    request.session['userID'] = userID
+                    return JsonResponse({'success':"Verified"})
+                else:
+                    return JsonResponse({'error':'ID not exists'}) 
+
+            elif prefix == 'ST':
+                student = Student.objects.filter(college_id = userID)
+                if student.exists():
+                    request.session['userID'] = userID
+                    return JsonResponse({'success':"Verified"})
+                else:
+                    return JsonResponse({'error':'ID not exists'})     
+                    
+        except Exception as e :
+            return JsonResponse({'error': f'An error Occured: {str(e)}'})
+    else:
+        return JsonResponse({'error': f'Method Not Found'})
+        
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user_id=request.POST.get('userId')
+        user_id = request.session.get('userID')
         role = request.POST.get('role')
        
-        if not username or not password or not role or not user_id:
+        if not username or not password or not role :
             messages.error(request, "Please fill all the fields")
             return redirect('login')
         
         if role == 'admin':
             try:
-                
-             admin_email = Admin.objects.all().values_list('email',flat=True)
-             if (username in admin_email) :
-                admin_detail = Admin.objects.get(email=username)
-                user_id = admin_detail.college_id
-                admin_phone = admin_detail.phone
-                
-                if (password==admin_phone and user_id == user_id):
-                    request.session['username1'] =  str(admin_detail.name) + " " + str(admin_detail.last_name)
-                    request.session['admin_college_id']= user_id 
-                    request.session['role'] = role
-                    return redirect('dashboard')
-                 
+                admin = Admin.objects.filter(email = username)
+                if admin.exists() :
+                    admin_detail = Admin.objects.get(email = username)
+                     # checking with user id 
+                    filter_user_id = admin.first().college_id
+                    
+                    if user_id == filter_user_id:
+                        filter_password = admin.first().phone
+                        if filter_password == password:
+                            request.session['username1'] =  str(admin_detail.name) + " " + str(admin_detail.last_name)
+                            request.session['admin_college_id']= user_id 
+                            request.session['role'] = role
+                            return redirect('dashboard')
+                        else:
+                            messages.error(request, 'Invalid Password')
+                            return redirect('login')    
+                    else:
+                        messages.error(request, 'Invalid Username')
+                        return redirect('login')
                 else:
-                  messages.error(request, "Invalid admin credentials")
-                  return redirect('login')
+                     messages.error(request, 'Invalid Credential')
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
                 return redirect('login')
-                
-                
+                     
         elif role == 'faculty':
             try:
-                faculty_email = Faculty.objects.all().values_list('email', flat=True)
-                if username in faculty_email:
-                    faculty_detail=Faculty.objects.get(email=username)
-                    faculty_college_id=faculty_detail.college_id
-                    faculty_phone=faculty_detail.phone
-                    if password==faculty_phone and user_id == faculty_college_id:
-                       request.session['username2'] =  faculty_detail.name
-                       request.session['faculty_college_id']= faculty_college_id
-                       request.session['role'] = role
-                       return redirect('dashboard1')
-                    else:
-                       messages.error(request, "Invalid faculty credentials")
-                       return redirect('login')
-                else:
-                    messages.error(request, "Invalid faculty credentials")
-                    return redirect('login')
+                faculty = Faculty.objects.filter(email = username)
+                if faculty.exists() :
+                    faculty_detail = Faculty.objects.get(email = username)
+                     # checking with user id 
+                    filter_user_id = faculty.first().college_id
                     
-            except Student.DoesNotExist:
-                messages.error(request, "Faculty not found")
-                return redirect('login')
+                    if user_id == filter_user_id:
+                        filter_password = faculty.first().phone
+                        if filter_password == password:
+                            request.session['username2'] =  str(faculty_detail.name) + " " + str(faculty_detail.last_name)
+                            request.session['faculty_college_id']= user_id 
+                            request.session['role'] = role
+                            return redirect('dashboard1')
+                        else:
+                            messages.error(request, 'Invalid Password')
+                            return redirect('login')    
+                    else:
+                        messages.error(request, 'Invalid Username')
+                        return redirect('login')
+                else:
+                     messages.error(request, 'Invalid Credential')
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
                 return redirect('login')
-                
+            
         elif role == 'student':
             try:
-                student_emails = Student.objects.all().values_list('email', flat=True)
-                if username in student_emails:
-                    student_detail=Student.objects.get(email=username)
-                    student_phone=student_detail.phone
-                    student_college_id=student_detail.college_id
-                    if password == student_phone and user_id == student_college_id:
-                      request.session['username3'] = student_detail.name
-                      request.session['student_college_id'] = student_college_id
-                      request.session['role'] = role
-                      return redirect('dashboard2')
-                    else:
-                      messages.error(request, "Invalid student credentials")
-                      return redirect('login')
-                else:
-                    messages.error(request, "Invalid student credentials")
-                    return redirect('login')
+                student = Student.objects.filter(email = username)
+                if student.exists() :
+                    student_detail = Student.objects.get(email = username)
+                     # checking with user id 
+                    filter_user_id = student.first().college_id
                     
-            except Student.DoesNotExist:
-                messages.error(request, "Student not found")
-                return redirect('login')
+                    if user_id == filter_user_id:
+                        filter_password = student.first().phone
+                        if filter_password == password:
+                            request.session['username3'] =  str(student_detail.name) + " " + str(student_detail.last_name)
+                            request.session['student_college_id']= user_id 
+                            request.session['role'] = role
+                            return redirect('dashboard2')
+                        else:
+                            messages.error(request, 'Invalid Password')
+                            return redirect('login')    
+                    else:
+                        messages.error(request, 'Invalid Username')
+                        return redirect('login')
+                else:
+                     messages.error(request, 'Invalid Credential')
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
                 return redirect('login')
@@ -705,13 +747,10 @@ def course_details(request, template):
     try:
         # Get all courses from Course model (not from Student records)
         if template != 'chat/page2.html':
-            courses = Course.objects.all().values_list('name', 'level__name', 'course_id')
+            courses = Course.objects.all().values_list('name', flat=True)
             students = Student.objects.all()
             page_obj = None
-            data = []
-            # for fit the course in data
-            for i in courses:
-                data.append({'name': str(i[0]) + ' with ' + str(i[1]), 'course_id':i[2]})
+            
                 
             if template == 'feeStructureCreation.html':
                 values = FeeStructure.objects.all().order_by("structure_id")
@@ -741,7 +780,7 @@ def course_details(request, template):
                     })
                     
             return render(request, template, {
-                'data': data, 
+                'courses':courses, 
                 'students': students, 
                 'role': role, 
                 'page_obj': page_obj
@@ -1228,7 +1267,6 @@ def get_student_attendance(request):
 
 # FOR FEES MANAGEMENT OF STUDENT
 
-#  for student, for viewing fees
 # for student, for viewing fees
 def student_fees_view(request, college_id, number):
     role = request.session.get('role')
@@ -1252,8 +1290,10 @@ def student_fees_view(request, college_id, number):
         pending = 0 # (if any pending payment), in starting pending payment is zero
         advance = 0 #(if student paid extra payment)
         percent = 0 # payment percentage
+        paymentDetails = None
+        adj_year = [0]
+        adj_sem = [0]
         
-
         data = [] # for showing year seperately
         s = 0 # starting point
         e = 2 # ending point
@@ -1261,28 +1301,37 @@ def student_fees_view(request, college_id, number):
             for j in range(s+i, e+i):
                 feeStructure = FeeStructure.objects.filter(course = course, batch = str(batch), year = str(i), semester = str(j))
                 dic1 = {'year':i, 'semester':j, }
+                
                 if feeStructure.exists():
                     payment = FeePayment.objects.filter(student = student, fee_structure = feeStructure.first())
                     dueDate = feeStructure.first().due_date # due date for fee payment
                     if payment.exists():
                         # render payment history
                         paymentDetails = FeePayment.objects.filter(student = student).order_by('payment_date')
+                        adj_val_year = int(payment.first().adjusted_in_year)
+                        adj_val_sem = int(payment.first().adjusted_in_semester)
+                        
                         if value == 'tem1':
                             dic1['singlePayment'] = payment
+                            
                         # calculate amount1 and amount2
                         amount1 = float(feeStructure.first().amount) # structure amount access
                         amount2 = float(payment.first().amount_paid) # payment amount access
                         extra = float(payment.first().extra)
+                        
                         # calculate the total paid amount
                         fee += amount1
                         paid += amount2
                         percent = (amount2/amount1)*100
                         amount2 = amount2 + extra
+                       
                         if amount1 == amount2 :
                             dic1['status'] = 'Paid'
                             dic1['feeAmt'] = amount1
                             if value == 'tem1':
                                 dic1['paid'] = amount2
+                                dic1['showBtn'] = 'No'
+                                
                         elif amount1 != amount2:
                             if amount1 > amount2 :
                                 due = amount1 - amount2
@@ -1293,6 +1342,20 @@ def student_fees_view(request, college_id, number):
                                 dic1['feeAmt'] = amount1
                                 if value == 'tem1':
                                     dic1['paid'] = amount2
+                                    
+                                    if adj_val_year == i and adj_val_sem == j:
+                                        dic1['showBtn'] = 'Yes'
+                                        
+                                    else:
+                                        if adj_year[0] == i and adj_sem[0] == j :
+                                            dic1['showBtn'] = 'Yes'
+                                            adj_year[0] = adj_val_year
+                                            adj_sem[0] = adj_val_sem
+                                        else:
+                                            dic1['showBtn'] = 'No'
+                                            adj_year[0] = adj_val_year
+                                            adj_sem[0] = adj_val_sem
+                                                  
                             elif amount2 > amount1 :
                                 overdue = amount2 - amount1
                                 advance += overdue
@@ -1302,12 +1365,19 @@ def student_fees_view(request, college_id, number):
                                 dic1['feeAmt'] = amount1
                                 if value == 'tem1':
                                     dic1['paid'] = amount2
+                                    dic1['showBtn'] = 'No'
                     else:
                         dic1['status'] = 'Pending'           
                         dic1['dueDate'] = dueDate
-                        dic1['feeAmt'] = amount1
+                        dic1['feeAmt'] = float(feeStructure.first().amount)
+                        dic1['showBtn'] = 'Yes'
+                        adj_year[0] = 0
+                        adj_sem[0] = 0
+                        
                 else:
                     dic1['status'] = "No-fee"
+                    dic1['showBtn'] = 'No'
+                    
                 data.append(dic1)
             s+=1
             e+=1 
@@ -1316,14 +1386,15 @@ def student_fees_view(request, college_id, number):
                  
     except Student.DoesNotExist:
         messages.error(request, "Student not found")
-        # YEH LINE ADD KARO
-        return render(request, 'error.html', {'message': 'Student not found'})
-    
+        return render(request, 'main/error.html', {
+        'message': 'Student not found with the provided ID.'
+    })
+
     except Exception as e:
         messages.error(request, f"An error occurred: {str(e)}")
-        # YEH LINE ADD KARO  
-        return render(request, 'error.html', {'message': f'An error occurred: {str(e)}'})
-
+        return render(request, 'main/error.html', {
+        'message': f'An unexpected error occurred while processing your request: {str(e)}'
+    })
 # for admin - for payment of fees
 def feePayment(request):
        
@@ -1381,111 +1452,217 @@ def feePayment(request):
             return render(request, 'admin/admin_fee_management.html',{'data':data})
 
 from datetime import datetime
-def payNow(request, college_id):
+import json
+from django.http import JsonResponse
+from django.db.models import Max
+from .models import Student, FeeStructure, FeePayment  # Replace your_app with your actual app name
+
+def payNow(request):
     if request.method == 'POST':
         try:
             info = json.loads(request.body)
             college_id = info.get('college_id')
-            S_year = info.get('year')
-            S_sem = info.get('semester')
-            student = Student.objects.get(college_id = college_id)
+            S_year = str(info.get('year'))
+            S_sem = str(info.get('semester'))
+            
+            student = Student.objects.get(college_id=college_id)
+            course = Course.objects.get(course_id = student.course.course_id)
             year = student.course.no_of_years
+            batch = student.date_of_joining.year
             s = 0
             e = 2 
+            due = 0
+            extra = 0
             data = []
-            for i in range(1, year + 1 ):   
-                for j in range(s + i, e + i):
-                    feeStructure = FeeStructure.objects.filter(year = str(i), semester = str(j), student = student)
-                    if feeStructure.exists():
-                        feePayment = FeePayment.objects.filter(fee_structure = feeStructure.first(), student = student.college_id)
-                        if not feePayment.exists() and (i, j) == (S_year, S_sem):
-                            feeShow = float(feeStructure.first().amount)
-                            status = 'New'
-                            # Generate receipt no
-                            current_year = str(datetime.now().year)
-                            max_receipt_no = FeePayment.objects.aggregate(max_id=models.Max('receipt_number'))['max_receipt_no']
+            
+            for i in range(1, year + 1):   
+                for j in range(s + i, e + i):   
+                    feeStructure = FeeStructure.objects.filter(year=str(i), semester=str(j), course = course, batch = str(batch)) 
+                    # Generate receipt no
+                    current_year = str(datetime.now().year)
+                    max_receipt_result = FeePayment.objects.aggregate(max_receipt_no=Max('receipt_number'))
+                    max_receipt_no = max_receipt_result['max_receipt_no']
                             
-                            if max_receipt_no is None:
-                                receipt_no = 'GK' + current_year + 'RC1'  # Initial ID
-                            else:
-                                try:
-                                # Extract numeric part and increment
-                                    numeric_part = int(max_receipt_no[8:])  # Remove 'ST' prefix
-                                    receipt_no = f'GK{current_year}RC{numeric_part + 1}'
-                                except (ValueError, IndexError):
-                                    receipt_no = 'GK' + current_year + 'RC1'  # Fallback if format is wrong
+                    if max_receipt_no is None:
+                        receipt_no = 'GK' + current_year + 'RC1'
+                    else:
+                        try:
+                            numeric_part = int(max_receipt_no[8:])
+                            receipt_no = f'GK{current_year}RC{numeric_part + 1}'
+                        except (ValueError, IndexError):
+                            receipt_no = 'GK' + current_year + 'RC1'
 
-                            # generate transaction id
-                            max_TR_id = FeePayment.objects.aggregate(max_id=models.Max('transaction_id'))['max_TR_id']
+                            # Generate transaction id
+                    max_tr_result = FeePayment.objects.aggregate(max_tr_id=Max('transaction_id'))
+                    max_tr_id = max_tr_result['max_tr_id']
                             
-                            if max_TR_id is None:
-                                TR_id = 'GK' + current_year + 'TR1'  # Initial ID
+                    if max_tr_id is None:
+                        TR_id = 'GK' + current_year + 'TR1'
+                    else:
+                        try:
+                            numeric_part = int(max_tr_id[8:])
+                            TR_id = f'GK{current_year}TR{numeric_part + 1}'
+                        except (ValueError, IndexError):
+                            TR_id = 'GK' + current_year + 'TR1'
+                    
+                    if feeStructure.exists(): 
+                        feeShow = float(feeStructure.first().amount) 
+                        feePayment = FeePayment.objects.filter(fee_structure=feeStructure.first(), student=student)
+                        
+                        if feePayment.exists():
+                            amount1 = feeStructure.first().amount
+                            amount2 = feePayment.first().amount_paid
+                            ex = feePayment.first().extra
+                            amount2 = amount2 + ex
+                            if amount1 == amount2 :
+                                if S_year == str(i) and S_sem == str(j):
+                                    data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Paid'})
+                                    break        
                             else:
-                                try:
-                                # Extract numeric part and increment
-                                    numeric_part = int(max_receipt_no[8:])  # Remove 'ST' prefix
-                                    TR_id = f'GK{current_year}TR{numeric_part + 1}'
-                                except (ValueError, IndexError):
-                                    TR_id = 'GK' + current_year + 'TR1'  # Fallback if format is wrong
-
-                            data.append({'feeShow':feeShow, 'TR_id': TR_id, 'receipt_no':receipt_no, 'status':status})                                           
+                                if amount1 > amount2:
+                                    pending = amount1 - amount2
+                                    due += pending
+                                    if S_year == str(i) and S_sem == str(j):
+                                        data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Due', 'due':due, 'extra':extra})
+                                        break
+                                
+                                elif amount2 > amount1:
+                                    extra += ex
+                                    if S_year == str(i) and S_sem == str(j):
+                                        data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Overdue', 'extra':extra, 'due':due})
+                                        break
+                                
+                        elif not feePayment.exists() and str(i) == S_year and str(j) == S_sem:
+                            data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Pending','due':due, 'extra':extra})
+                            break
+                        
+                        elif not feePayment.exists() and ((str(i) and S_year) == str(1)) and ((str(j) and S_sem) == str(1)):
+                            data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'New', 'due':due, 'extra':extra})
+                            break
                 s += 1
-                e += 1
-            return JsonResponse({'data':data})
+                e += 1        
+            return JsonResponse({'data': data})
+            
+        except Student.DoesNotExist:
+            return JsonResponse({'error': 'Student not found'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
         except Exception as e:
             return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
     else:
         return JsonResponse({'error': 'Invalid Method'}, status=400)
-
     
-# def payNow(request, college_id):
-#     if request.method == 'POST':
-#         try:
-#             student = Student.objects.get(college_id = college_id)
-#             year = student.course.no_of_years
-#             s = 0
-#             e = 2 
-#             for i in range(1, year + 1 ):   
-#                 for j in range(s + i, e + i):
-#                     feeStructure = FeeStructure.objects.filter(year = str(i), semester = str(j), student = student)
-#                     if feeStructure.exists():
-#                         feePayment = FeePayment.objects.filter(fee_structure = feeStructure.first(), student = student.college_id)
-#                         if feePayment.exists():
-#                             amount1 = feeStructure.first().amount # actually payment call
-#                             amount2 = feePayment.first().amount_paid # payment paid by student
-#                             extra = feePayment.first().extra # extra payment
-#                             amount2  = amount2 + extra
-#                             if amount1 == amount2:
-#                                 print("paid")
-#                             else:
-#                                 if amount1 > amount2 :
-#                                     print("due")
-#                                 elif amount2 > amount1:
-#                                     print("overdue")
-#                         else:
-#                             print("pending")
-#                     else:
-#                         print("nofee")                      
-#                 s += 1
-#                 e += 1
-#         except Exception as e:
-#             return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
-#     else:
-#         return JsonResponse({'error': 'Invalid Method'}, status=400)
+# for submit the fee form:
+def submitFee(request):
+    admin_college_id = request.session.get('admin_college_id')
+    if request.method == 'POST':
+        try:
+            # Check content type to handle both FormData and JSON
+            if request.content_type == 'application/json':
+                data = json.loads(request.body)
+            else:
+                # Handle form data
+                data = {
+                    'clickedSem':request.POST.get('clickedSem'),
+                    'clickedYear':request.POST.get('clickedYear'),
+                    'college_id':request.POST.get('college_id'),
+                    'totalFee': request.POST.get('totalFee'),
+                    'paidFee': request.POST.get('paidFee'),
+                    'receipt_no': request.POST.get('receipt_no'),
+                    'transaction_id': request.POST.get('transaction_id'),
+                    'method': request.POST.get('method'),
+                    'extra_amount': request.POST.get('extra_amount'),
+                    'due_amount': request.POST.get('due_amount'),
+                    'remark': request.POST.get('remark'),
+                    'checkbox': request.POST.get('checkbox')
+                    }
+            
+            # Validate required fields
+            required_fields = ['totalFee', 'paidFee', 'receipt_no', 'transaction_id', 'method', 'extra_amount', 'due_amount']
+            
+            for field in required_fields:
+                if not data.get(field):
+                    return JsonResponse({'error': f'An error occured {field} is required!'}, status=400)
+            s = 0
+            e = 2
+            college_id = data.get('college_id')
+            student = Student.objects.get(college_id = college_id)
 
-    
-
-        
- 
-         
-        
-      
-
-
-
-
-
-
+            year = student.course.no_of_years
+            sem = student.course.no_of_semesters
+            course = student.course
+            batch = student.date_of_joining.year
+            actualFee = float(data.get('totalFee'))
+            amount_paid = float(data.get('paidFee'))
+            clickedYear = data.get('clickedYear')
+            clickedSem = data.get('clickedSem')
+            checkbox = data.get('checkbox')
+            payment_method = data.get('method')
+            transaction_id = data.get('transaction_id')
+            receipt_number = data.get('receipt_no')
+            remark = data.get('remark')
+            adj_year = 0
+            adj_sem = 0
+            due = 0
+            extra = 0
+            for i in range(1, year+1):
+                for j in range(s+i, e+i):
+                    feeStructure = FeeStructure.objects.filter(year=str(i), semester=str(j), course = course, batch = str(batch)) 
+                    if feeStructure.exists():
+                        feePayment = FeePayment.objects.filter(fee_structure=feeStructure.first(), student=student)
+                        if feePayment.exists() and checkbox==True:
+                            amount1 = feeStructure.first().amount
+                            amount2 = feePayment.first().amount_paid
+                            if amount1 == amount2:
+                                amount_paid +=0
+                            else:
+                                if amount1 > amount2:
+                                    due += (amount1 - amount2)
+                                    if amount_paid > due:
+                                        amount_paid -= due
+                                        FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = due,
+                                                    payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
+                                                    remarks = 'Due Amount is Paid', verified_by = admin_college_id, due_amount = float(0), extra = float(0))
+                                        due = 0
+                                    else:
+                                        due -= amount_paid
+                                        if (j%2)==0:
+                                            adj_year = i+1
+                                        else:
+                                            adj_year = i
+                                        FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = amount_paid,
+                                                    payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
+                                                    remarks = 'Due Amount is Pending', verified_by = admin_college_id, due_amount = float(due), extra = float(0),
+                                                    adjusted_in_year = str(adj_year), adjusted_in_semester = str(j))
+                                elif amount2 > amount1:
+                                    extra += (amount2 - amount1)
+                                    
+                        elif i == int(clickedYear) and j == int(clickedSem):
+                            if amount_paid > actualFee:
+                                extra += (amount_paid - actualFee)
+                                amount_paid -= extra
+                            else:
+                                due += (actualFee - amount_paid)
+                                if (j%2)==0:
+                                    adj_year = i+1
+                                    adj_sem = j
+                                else:
+                                    adj_year = i
+                                    adj_sem = j
+                            FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = amount_paid,
+                                            payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
+                                            remarks = remark, verified_by = admin_college_id, due_amount = float(due), extra = float(extra),
+                                            adjusted_in_year = str(adj_year), adjusted_in_semester = str(adj_sem))
+                            return JsonResponse({'success': 'Fee Submitted Successfully!'})
+                s += 1
+                e += 1
+                
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data!'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error':f'An error occured {str(e)}!'}, status = 500)
+    else:
+        return JsonResponse({'error':'Invalid Method!'}, status = 400)
 
 # for fee structure creation
 # [[[[[[[[[[[[[Send Batch Details]]]]]]]]]]]]]
@@ -2919,3 +3096,18 @@ def delete_students(request):
 
 
     
+
+def demo2(request):
+    return render(request, 'demo2.html')
+
+def studentCourseDetailView(request):
+    return render(request, 'student/studentCourseDetailView.html')
+
+def studentAssignment(request):
+    return render(request,'student/studentAssignment.html')
+
+def studentSchedule(request):
+    return render(request, 'student/studentSchedule.html')
+
+def studentResultView(request):
+    return render(request,'student/studentResultView.html')

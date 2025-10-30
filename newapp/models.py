@@ -415,14 +415,7 @@ class FeeStructure(models.Model):
     def __str__(self):
         return f"{self.course} - {self.batch}"
     
-class FeePayment(models.Model):
-    PAYMENT_TYPES = [
-        ('REGULAR', 'Regular Payment'),
-        ('EXTRA', 'Extra Payment'),
-        ('ADVANCE', 'Advance Payment'),
-        ('ADJUSTMENT', 'Adjustment Payment'),
-    ]
-    
+class FeePayment(models.Model):    
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     fee_structure = models.ForeignKey(FeeStructure, on_delete=models.SET_NULL, null=True, blank=True)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
@@ -435,22 +428,15 @@ class FeePayment(models.Model):
     ])
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     receipt_number = models.CharField(max_length=50, unique=True)
-    payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPES, default='REGULAR')
-    status = models.CharField(max_length=20, default='Paid', choices=[
-        ('Paid', 'Paid'),
-        ('Pending', 'Pending'),
-        ('Overdue', 'Overdue'),
-        ('Partial', 'Partial Payment')
-    ])
     remarks = models.TextField(blank=True, null=True)
     verified_by = models.CharField(max_length=100, blank=True, null=True)
-    adjusted_in_year = models.CharField(max_length=5,null=True, blank=True)
-    adjusted_in_semester = models.CharField(max_length=5,null=True, blank=True)
+    adjusted_in_year = models.CharField(max_length=5,default='0')
+    adjusted_in_semester = models.CharField(max_length=5,default='0')
     extra = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     due_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
 
     def __str__(self):
-        return f"{self.student.name} - {self.amount_paid} ({self.payment_type})"
+        return f"{self.student.name} - {self.amount_paid}"
 
 class StudentBalance(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE)

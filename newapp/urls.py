@@ -3,10 +3,7 @@ from django.urls import path
 from newapp import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import (
-   
-    DepartmentUpdateView, DepartmentDeleteView
-)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -20,6 +17,7 @@ urlpatterns = [
     path('Enroll/', views.enroll, name='enroll'),
     path('Home/Enroll/', views.new_enroll, name='new_enroll'),
     path('Home/Login-In/', views.login_view, name='login'),
+    path('verify_collegeID/', views.verify_collegeID, name='verify_collegeID'),
     path('Log-Out/', views.logout_view, name='logoutdoor'),
 
     # urls for dashboards
@@ -53,6 +51,7 @@ urlpatterns = [
     path('Admin-Dashboard/Student/Fee-Payment/',views.feePayment, name='feePayment'),
     path('Admin-Dashboard/Student/Fee-Detail/<str:college_id>/<str:number>/',views.student_fees_view, name='feeDetail'),
     path('payNow/', views.payNow, name='payNow'),
+    path('submitFee/', views.submitFee, name= 'submitFee'),
   
 # for chatting management between faculty and student
     path('chat_home/', views.chat_home, name='chat_home'),
@@ -104,6 +103,10 @@ urlpatterns = [
     path('Dashboard-Student/Notice-Management/', views.studentSendNotice, name='studentSendNotice'),
     path('Dashboard-Student/Notes-Management/', views.studentNotes, name='studentNotes'),
     path('Dashboard-Student/Chat-Management/', views.chatHistory, name='chatHistory'), 
+    path('Dashboard-Student/Course-Management/', views.studentCourseDetailView, name='studentCourseDetailView'), 
+    path('Dashboard-Student/Assignment-Management/', views.studentAssignment, name='studentAssignment'),
+    path('Dashboard-Student/Schedule-Management/', views.studentSchedule, name='studentSchedule'),
+    path('Dashboard-Student/Result-Management/', views.studentResultView, name='studentResultView'),
     
     # for history feature
     path('Dashboard-Admin/Student-History-Management', lambda request : views.historySender(request,"Student"), name='studentHistoryManagement'),
@@ -121,7 +124,8 @@ urlpatterns = [
     path('Dashboard-Admin/View-Documents/<str:college_id>/<str:documentid>/',views.viewDocuments,name='viewDocuments'),
     
 
- 
+   
+    path('demo2/', views.demo2, name='demo2'),
     
     
     # ajax practise urls

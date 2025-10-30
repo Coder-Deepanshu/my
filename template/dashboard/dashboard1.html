@@ -5,9 +5,9 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Student Management System</title>
+    <title>Faculty Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/dashboard/adminDashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard/facultyDashboard.css' %}">
 </head>
 
 <body>
@@ -37,7 +37,7 @@
                 <h3 class="menu-title">Main</h3>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="#" class="menu-link active" data-tab="dashboard-tab">
+                        <a href="{% url 'dashboard1' %}" class="menu-link active" data-tab="dashboard-tab">
                             <i class="fas fa-tachometer-alt menu-icon"></i>
                             <span class="menu-text">Dashboard</span>
                         </a>
@@ -47,9 +47,15 @@
                 <h3 class="menu-title">Personal</h3>
                 <ul class="menu-list">
                     <li class="menu-item">
+                        <a href="{% url 'profile_details' %}" class="menu-link" data-tab="myDetails-tab">
+                            <i class="fas fa-id-badge menu-icon"></i>
+                            <span class="menu-text">My Profile</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
                         <a href="#" class="menu-link" data-tab="myDetails-tab">
                             <i class="fas fa-id-badge menu-icon"></i>
-                            <span class="menu-text">My Details</span>
+                            <span class="menu-text">My Attendance</span>
                         </a>
                     </li>
                 </ul>
@@ -57,58 +63,72 @@
                 <h3 class="menu-title">Management</h3>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="students-tab">
+                        <a href="{% url 'chat_home' %}" class="menu-link" data-tab="students-tab">
                             <i class="fas fa-user-graduate menu-icon"></i>
-                            <span class="menu-text">Students</span>
+                            <span class="menu-text">Chat with Students</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
                         <a href="#" class="menu-link" data-tab="faculty-tab">
                             <i class="fas fa-chalkboard-teacher menu-icon"></i>
-                            <span class="menu-text">Faculty</span>
+                            <span class="menu-text">Chat with Faculty</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
                         <a href="#" class="menu-link" data-tab="admin-tab">
                             <i class="fas fa-tools menu-icon"></i>
-                            <span class="menu-text">Admin</span>
+                            <span class="menu-text">Salary</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
                         <a href="#" class="menu-link" data-tab="result-tab">
                             <i class="fas fa-poll menu-icon"></i>
-                            <span class="menu-text">Results</span>
+                            <span class="menu-text">Student Assignment</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
                         <a href="#" class="menu-link" data-tab="facultySetting-tab">
                             <i class="fas fa-cogs menu-icon"></i>
-                            <span class="menu-text">Faculty Setting</span>
+                            <span class="menu-text">Faculty Assignment</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="studentSetting-tab">
+                        <a href="{% url 'studentAttendance_management' %}" class="menu-link" data-tab="studentSetting-tab">
                             <i class="fas fa-user-edit menu-icon"></i>
-                            <span class="menu-text">Student Setting</span>
+                            <span class="menu-text">Student Attendance</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="facultySetting-tab">
+                            <i class="fas fa-cogs menu-icon"></i>
+                            <span class="menu-text">Upload Test Result</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="#" class="menu-link" data-tab="facultySetting-tab">
+                            <i class="fas fa-cogs menu-icon"></i>
+                            <span class="menu-text">Upload Grade</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
                         <a href="#" class="menu-link" data-tab="schedule-tab">
                             <i class="fas fa-calendar-alt menu-icon"></i>
-                            <span class="menu-text">Schedule</span>
+                            <span class="menu-text">Bonus</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
                         <a href="#" class="menu-link" data-tab="payment-tab">
                             <i class="fas fa-money-check-alt menu-icon"></i>
-                            <span class="menu-text">Payment</span>
+                            <span class="menu-text">Schedule</span>
                         </a>
                     </li>
                 </ul>
@@ -116,23 +136,23 @@
                 <h3 class="menu-title">System</h3>
                 <ul class="menu-list">
                     <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="setting-tab">
+                        <a href="{% url 'facultyDocumentManagement' %}" class="menu-link" data-tab="setting-tab">
                             <i class="fas fa-sliders-h menu-icon"></i>
-                            <span class="menu-text">Settings</span>
+                            <span class="menu-text">Document</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="grade-tab">
+                        <a href="{% url 'chatHistory' %}" class="menu-link" data-tab="grade-tab">
                             <i class="fas fa-chart-bar menu-icon"></i>
-                            <span class="menu-text">Grade</span>
+                            <span class="menu-text">Chat History</span>
                         </a>
                     </li>
 
                     <li class="menu-item">
-                        <a href="#" class="menu-link" data-tab="notification-tab">
+                        <a href="{% url 'id_card' %}" class="menu-link" data-tab="notification-tab">
                             <i class="fas fa-comment-alt menu-icon"></i>
-                            <span class="menu-text">Notifications</span>
+                            <span class="menu-text">ID Card</span>
                         </a>
                     </li>
                 </ul>
@@ -142,9 +162,9 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="user-avatar">
                 <div class="user-info">
                     <div class="user-name">Dr. {{ username }}</div>
-                    <div class="user-role">Administrator</div>
+                    <div class="user-role">Faculty</div>
                 </div>
-                <a href="#">
+                <a href="{% url 'logoutdoor' %}">
                     <button class="logout-btn">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
@@ -175,7 +195,7 @@
                     <div class="user-dropdown">
                         <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User"
                             class="user-dropdown-avatar">
-                        <span class="user-dropdown-name">Admin User</span>
+                        <span class="user-dropdown-name">Faculty</span>
                         <div class="user-dropdown-menu">
                             <a href="#" class="dropdown-item">
                                 <i class="fas fa-user"></i> Profile
@@ -382,58 +402,6 @@
             sidebarOverlay.classList.remove('active');
         });
 
-        // Tab Switching Functionality
-        document.querySelectorAll('[data-tab]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tabId = link.getAttribute('data-tab');
-
-                // Hide all tab contents
-                document.querySelectorAll('.tab-content').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-
-                // Show selected tab
-                const selectedTab = document.getElementById(tabId);
-                if (selectedTab) {
-                    selectedTab.classList.add('active');
-                }
-
-                // Update active menu item
-                document.querySelectorAll('.menu-link').forEach(menuLink => {
-                    menuLink.classList.remove('active');
-                });
-                link.classList.add('active');
-
-                // Update page title
-                const pageTitle = document.querySelector('.page-title h3');
-                const tabTitles = {
-                    'dashboard-tab': 'Dashboard',
-                    'myDetails-tab': 'My Details',
-                    'students-tab': 'Students',
-                    'faculty-tab': 'Faculty',
-                    'admin-tab': 'Admin',
-                    'result-tab': 'Results',
-                    'facultySetting-tab': 'Faculty Setting',
-                    'studentSetting-tab': 'Student Setting',
-                    'schedule-tab': 'Schedule',
-                    'payment-tab': 'Payment',
-                    'setting-tab': 'Settings',
-                    'grade-tab': 'Grades',
-                    'notification-tab': 'Notifications'
-                };
-
-                if (pageTitle && tabTitles[tabId]) {
-                    pageTitle.textContent = tabTitles[tabId];
-                }
-
-                // Close sidebar on mobile
-                if (window.innerWidth < 1200) {
-                    sidebar.classList.remove('active');
-                    sidebarOverlay.classList.remove('active');
-                }
-            });
-        });
 
         // Add hover effects to action cards
         document.querySelectorAll('.action-card').forEach(card => {
