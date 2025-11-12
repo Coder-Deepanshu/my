@@ -16,8 +16,9 @@ urlpatterns = [
     path('Demo-Book/', views.demo, name='demo'),
     path('Enroll/', views.enroll, name='enroll'),
     path('Home/Enroll/', views.new_enroll, name='new_enroll'),
-    path('Home/Login-In/', views.login_view, name='login'),
+    path('login/', views.login_view, name='login'),
     path('verify_collegeID/', views.verify_collegeID, name='verify_collegeID'),
+    path('verify_otp/', views.verify_otp_view, name='verify_otp'),
     path('Log-Out/', views.logout_view, name='logoutdoor'),
 
     # urls for dashboards

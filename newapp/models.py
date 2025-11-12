@@ -499,3 +499,45 @@ class Students(models.Model):
 
     def _str_(self):
         return self.name
+
+# User 
+class UserDetail(models.Model):
+    username = models.CharField(max_length=50, unique=True)
+    user_id = models.CharField(max_length=50, unique=True)
+    password = models.CharField(max_length=50, unique = True)
+
+    def _str_(self):
+        return f"{self.username} - {self.user_id}"
+
+# FOR Apply Ai on login page 
+from django.db import models
+from django.contrib.auth.models import User
+
+class DeviceFingerprint(models.Model):
+    user = models.ForeignKey(UserDetail, on_delete=models.CASCADE)
+    fingerprint = models.CharField(max_length=256)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    last_login = models.DateTimeField(auto_now=True)
+    is_suspicious = models.BooleanField(default=False)
+
+    def _str_(self):
+        return f"{self.user.username} - {self.fingerprint[:10]}..."
+
+
+import random
+from django.utils import timezone
+from datetime import timedelta
+
+class OTPVerification(models.Model):
+    user = models.ForeignKey(UserDetail, on_delete=models.CASCADE)
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(minutes=5)  # 5 min expiry
+
+    def __str__(self):
+        return f"{self.user.username} - {self.otp_code}"
+
+

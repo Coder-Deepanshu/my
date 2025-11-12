@@ -1,6 +1,24 @@
 from django.contrib import admin
 from .models import Student,subject,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin,StudentBalance
 from .models import Department,Level,Position, StudentDocuments,AdminDocuments, FacultyDocuments
+
+from .models import DeviceFingerprint, UserDetail, OTPVerification
+
+@admin.register(OTPVerification)
+class OTPVerification(admin.ModelAdmin):
+    list_display = ('user', 'otp_code')
+    search_fields = ('user',)
+
+@admin.register(UserDetail)
+class UserDetail(admin.ModelAdmin):
+    list_display = ('username', 'user_id')
+    search_fields = ('username',)
+
+@admin.register(DeviceFingerprint)
+class DeviceFingerprint(admin.ModelAdmin):
+    list_display = ('user', 'fingerprint')
+    search_fields = ('user',)
+
 @admin.register(StudentBalance)
 class StudentAddAdmin(admin.ModelAdmin):
     list_display = ('student', 'extra_amount')

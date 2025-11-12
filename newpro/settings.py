@@ -161,3 +161,16 @@ DATE_INPUT_FORMATS = [
     '%Y-%m-%d',  # '2023-10-25'
     '%m/%d/%Y',  # '10/25/2023'
 ]
+
+# settings.py - Add these lines at the top
+
+
+# Email Configuration for Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False  # ✅ Important
+EMAIL_HOST_USER = 'edutrack496@gmail.com'
+EMAIL_HOST_PASSWORD = 'xqvw xgmf xfix lyks'
+DEFAULT_FROM_EMAIL = 'edutrack496@gmail.com'

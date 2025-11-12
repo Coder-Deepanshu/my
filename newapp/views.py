@@ -7,6 +7,11 @@ import json # For handling JSON data from AJAX requests
 from django.db.models.functions import Coalesce
 from django.db.models import DecimalField
 from decimal import Decimal
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from .models import DeviceFingerprint, UserDetail
+from django.utils import timezone
 
 # function of front page 
 def home(request):
@@ -33,135 +38,448 @@ def enroll(request):
 def new_enroll(request):
     return render(request,'Home/new_enroll.html')
 
+import random
+from .models import *
+import json
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.contrib import messages
+from django.utils import timezone
+from .models import Admin, Faculty, Student, UserDetail, DeviceFingerprint, OTPVerification
+
 def verify_collegeID(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         try:
             userID = data.get('userID')
             prefix = userID[:2]
+            
             if prefix == 'AD':
-                admin = Admin.objects.filter(college_id = userID)
+                admin = Admin.objects.filter(college_id=userID)
                 if admin.exists():
                     request.session['userID'] = userID
-                    return JsonResponse({'success':"Verified"})
+                    return JsonResponse({'success': "Verified"})
                 else:
-                    return JsonResponse({'error':'ID not exists'}) 
+                    return JsonResponse({'error': 'ID not exists'}) 
                 
             elif prefix == 'GK':
-                faculty = Faculty.objects.filter(college_id = userID)
+                faculty = Faculty.objects.filter(college_id=userID)
                 if faculty.exists():
                     request.session['userID'] = userID
-                    return JsonResponse({'success':"Verified"})
+                    return JsonResponse({'success': "Verified"})
                 else:
-                    return JsonResponse({'error':'ID not exists'}) 
+                    return JsonResponse({'error': 'ID not exists'}) 
 
             elif prefix == 'ST':
-                student = Student.objects.filter(college_id = userID)
+                student = Student.objects.filter(college_id=userID)
                 if student.exists():
                     request.session['userID'] = userID
-                    return JsonResponse({'success':"Verified"})
+                    return JsonResponse({'success': "Verified"})
                 else:
-                    return JsonResponse({'error':'ID not exists'})     
+                    return JsonResponse({'error': 'ID not exists'})   
+            else:
+                return JsonResponse({'error': 'Invalid College ID'})  
                     
-        except Exception as e :
-            return JsonResponse({'error': f'An error Occured: {str(e)}'})
+        except Exception as e:
+            return JsonResponse({'error': f'An error Occurred: {str(e)}'})
     else:
-        return JsonResponse({'error': f'Method Not Found'})
+        return JsonResponse({'error': 'Method Not Found'})
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def send_otp_email(user_email, otp):
+    # OTP log file mein save karo
+    import datetime
+    with open('otp_debug.log', 'a') as f:
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        f.write(f"[{timestamp}] {user_email} | OTP: {otp}\n")
+    
+    # Optional: Try to send email (agar app password kaam kare toh)
+    try:
+        import smtplib
+        from django.conf import settings
         
+        # Simple email
+        subject = "EduTrack OTP Verification"
+        body = f"Your OTP code is: {otp}\nThis code expires in 5 minutes. \n Don't Share OTP with anyone."
+        message = f"Subject: {subject}\n\n{body}"
+        
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+        server.sendmail(settings.EMAIL_HOST_USER, user_email, message)
+        server.quit()
+        
+    except Exception as e:
+        print(f"📧 Email skipped: {str(e)}")
+    return True
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user_id = request.session.get('userID')
-        role = request.POST.get('role')
-       
-        if not username or not password or not role :
-            messages.error(request, "Please fill all the fields")
-            return redirect('login')
-        
-        if role == 'admin':
-            try:
-                admin = Admin.objects.filter(email = username)
-                if admin.exists() :
-                    admin_detail = Admin.objects.get(email = username)
-                     # checking with user id 
-                    filter_user_id = admin.first().college_id
-                    
-                    if user_id == filter_user_id:
-                        filter_password = admin.first().phone
-                        if filter_password == password:
-                            request.session['username1'] =  str(admin_detail.name) + " " + str(admin_detail.last_name)
-                            request.session['admin_college_id']= user_id 
-                            request.session['role'] = role
-                            return redirect('dashboard')
-                        else:
-                            messages.error(request, 'Invalid Password')
-                            return redirect('login')    
-                    else:
-                        messages.error(request, 'Invalid Username')
-                        return redirect('login')
-                else:
-                     messages.error(request, 'Invalid Credential')
-            except Exception as e:
-                messages.error(request, f"An error occurred: {str(e)}")
-                return redirect('login')
-                     
-        elif role == 'faculty':
-            try:
-                faculty = Faculty.objects.filter(email = username)
-                if faculty.exists() :
-                    faculty_detail = Faculty.objects.get(email = username)
-                     # checking with user id 
-                    filter_user_id = faculty.first().college_id
-                    
-                    if user_id == filter_user_id:
-                        filter_password = faculty.first().phone
-                        if filter_password == password:
-                            request.session['username2'] =  str(faculty_detail.name) + " " + str(faculty_detail.last_name)
-                            request.session['faculty_college_id']= user_id 
-                            request.session['role'] = role
-                            return redirect('dashboard1')
-                        else:
-                            messages.error(request, 'Invalid Password')
-                            return redirect('login')    
-                    else:
-                        messages.error(request, 'Invalid Username')
-                        return redirect('login')
-                else:
-                     messages.error(request, 'Invalid Credential')
-            except Exception as e:
-                messages.error(request, f"An error occurred: {str(e)}")
-                return redirect('login')
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user_id = request.session.get('userID')
+            fingerprint_id = request.POST.get('fingerprint')
+            role = request.POST.get('role')
+            ip = get_client_ip(request)
             
-        elif role == 'student':
+            if not username or not password :
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Please fill all the fields'
+                })
+            
             try:
-                student = Student.objects.filter(email = username)
-                if student.exists() :
-                    student_detail = Student.objects.get(email = username)
-                     # checking with user id 
-                    filter_user_id = student.first().college_id
-                    
-                    if user_id == filter_user_id:
-                        filter_password = student.first().phone
-                        if filter_password == password:
-                            request.session['username3'] =  str(student_detail.name) + " " + str(student_detail.last_name)
-                            request.session['student_college_id']= user_id 
-                            request.session['role'] = role
-                            return redirect('dashboard2')
+                if role == 'admin':
+                    admin = Admin.objects.filter(email=username)
+                    if admin.exists():
+                        admin_detail = admin.first()
+                        filter_user_id = admin_detail.college_id
+                        
+                        if user_id == filter_user_id:
+                            filter_password = admin_detail.phone
+                            if filter_password == password:
+                                # Get or create UserDetail object
+                                user_detail, created = UserDetail.objects.get_or_create(
+                                    username=username,
+                                    defaults={
+                                        'user_id': user_id,
+                                        'password': password,
+                                        'email': username
+                                    }
+                                )
+                                
+                                # Check device fingerprint
+                                existing_fp = DeviceFingerprint.objects.filter(
+                                    user=user_detail,
+                                    fingerprint=fingerprint_id
+                                ).first()
+                                
+                                if existing_fp:
+                                    # Normal login - trusted device
+                                    existing_fp.ip_address = ip
+                                    existing_fp.last_login = timezone.now()
+                                    existing_fp.is_suspicious = False
+                                    existing_fp.save()
+                                    
+                                    # Set session data
+                                    request.session['username1'] = f"{admin_detail.name} {admin_detail.last_name}"
+                                    request.session['admin_college_id'] = user_id 
+                                    request.session['role'] = role
+                                    
+                                    return JsonResponse({
+                                        'success': True,
+                                        'message': f'Welcome {admin_detail.name} {admin_detail.last_name}!',
+                                        'redirect_url': '/Admin/Dashboard/',
+                                        'otp_required': False
+                                    })
+                                else:
+                                    # New/suspicious device - send OTP
+                                    otp = str(random.randint(100000, 999999))
+                                    
+                                    # Create OTP with UserDetail object
+                                    OTPVerification.objects.create(
+                                        user=user_detail,
+                                        otp_code=otp,
+                                        is_verified=False
+                                    )
+                                    
+                                    # Send OTP email with SSL fix
+                                    email_sent = send_otp_email(username, otp)
+                                    
+                                    if email_sent:
+                                        # Store verification data in session
+                                        request.session['verify_user'] = username
+                                        request.session['verify_role'] = role
+                                        request.session['verify_fingerprint'] = fingerprint_id
+                                        request.session['verify_ip'] = ip
+                                        
+                                        return JsonResponse({
+                                            'success': True,
+                                            'message': 'OTP sent to your email',
+                                            'redirect_url': '/verify_otp/',
+                                            'otp_required': True
+                                        })
+                                    else:
+                                        return JsonResponse({
+                                            'success': False,
+                                            'error': 'Failed to send OTP. Please try again.'
+                                        })
+                            else:
+                                return JsonResponse({
+                                    'success': False,
+                                    'error': 'Invalid Password'
+                                })
                         else:
-                            messages.error(request, 'Invalid Password')
-                            return redirect('login')    
+                            return JsonResponse({
+                                'success': False,
+                                'error': 'Invalid College ID'
+                            })
                     else:
-                        messages.error(request, 'Invalid Username')
-                        return redirect('login')
-                else:
-                     messages.error(request, 'Invalid Credential')
+                        return JsonResponse({
+                            'success': False,
+                            'error': 'Invalid Credentials'
+                        })
+                
+                # Faculty and student roles same structure mein rahenge
+                elif role == 'faculty':
+                    faculty = Faculty.objects.filter(email=username)
+                    if faculty.exists():
+                        faculty_detail = faculty.first()
+                        filter_user_id = faculty_detail.college_id
+                        
+                        if user_id == filter_user_id:
+                            filter_password = faculty_detail.phone
+                            if filter_password == password:
+                                user_detail, created = UserDetail.objects.get_or_create(
+                                    username=username,
+                                    defaults={
+                                        'user_id': user_id,
+                                        'password': password,
+                                        'email': username
+                                    }
+                                )
+                                
+                                existing_fp = DeviceFingerprint.objects.filter(
+                                    user=user_detail,
+                                    fingerprint=fingerprint_id
+                                ).first()
+                                
+                                if existing_fp:
+                                    request.session['username2'] = f"{faculty_detail.name} {faculty_detail.last_name}"
+                                    request.session['faculty_college_id'] = user_id 
+                                    request.session['role'] = role
+                                    
+                                    return JsonResponse({
+                                        'success': True,
+                                        'message': f'Welcome {faculty_detail.name} {faculty_detail.last_name}!',
+                                        'redirect_url': '/Faculty/Dashboard/',
+                                        'otp_required': False
+                                    })
+                                else:
+                                    otp = str(random.randint(100000, 999999))
+                                    OTPVerification.objects.create(
+                                        user=user_detail,
+                                        otp_code=otp,
+                                        is_verified=False
+                                    )
+                                    
+                                    email_sent = send_otp_email(username, otp)
+                                    
+                                    if email_sent:
+                                        request.session['verify_user'] = username
+                                        request.session['verify_role'] = role
+                                        request.session['verify_fingerprint'] = fingerprint_id
+                                        request.session['verify_ip'] = ip
+                                        
+                                        return JsonResponse({
+                                            'success': True,
+                                            'message': 'OTP sent to your email',
+                                            'redirect_url': '/verify_otp/',
+                                            'otp_required': True
+                                        })
+                                    else:
+                                        return JsonResponse({
+                                            'success': False,
+                                            'error': 'Failed to send OTP. Please try again.'
+                                        })
+                            else:
+                                return JsonResponse({
+                                    'success': False,
+                                    'error': 'Invalid Password'
+                                })
+                        else:
+                            return JsonResponse({
+                                'success': False,
+                                'error': 'Invalid College ID'
+                            })
+                    else:
+                        return JsonResponse({
+                            'success': False,
+                            'error': 'Invalid Credentials'
+                        })
+                
+                elif role == 'student':
+                    student = Student.objects.filter(email=username)
+                    if student.exists():
+                        student_detail = student.first()
+                        filter_user_id = student_detail.college_id
+                        
+                        if user_id == filter_user_id:
+                            filter_password = student_detail.phone
+                            if filter_password == password:
+                                user_detail, created = UserDetail.objects.get_or_create(
+                                    username=username,
+                                    defaults={
+                                        'user_id': user_id,
+                                        'password': password,
+                                        'email': username
+                                    }
+                                )
+                                
+                                existing_fp = DeviceFingerprint.objects.filter(
+                                    user=user_detail,
+                                    fingerprint=fingerprint_id
+                                ).first()
+                                
+                                if existing_fp:
+                                    request.session['username3'] = f"{student_detail.name} {student_detail.last_name}"
+                                    request.session['student_college_id'] = user_id 
+                                    request.session['role'] = role
+                                    
+                                    return JsonResponse({
+                                        'success': True,
+                                        'message': f'Welcome {student_detail.name} {student_detail.last_name}!',
+                                        'redirect_url': '/Student/Dashboard/',
+                                        'otp_required': False
+                                    })
+                                else:
+                                    otp = str(random.randint(100000, 999999))
+                                    OTPVerification.objects.create(
+                                        user=user_detail,
+                                        otp_code=otp,
+                                        is_verified=False
+                                    )
+                                    
+                                    email_sent = send_otp_email(username, otp)
+                                    
+                                    if email_sent:
+                                        request.session['verify_user'] = username
+                                        request.session['verify_role'] = role
+                                        request.session['verify_fingerprint'] = fingerprint_id
+                                        request.session['verify_ip'] = ip
+                                        
+                                        return JsonResponse({
+                                            'success': True,
+                                            'message': 'OTP sent to your email',
+                                            'redirect_url': '/verify_otp/',
+                                            'otp_required': True
+                                        })
+                                    else:
+                                        return JsonResponse({
+                                            'success': False,
+                                            'error': 'Failed to send OTP. Please try again.'
+                                        })
+                            else:
+                                return JsonResponse({
+                                    'success': False,
+                                    'error': 'Invalid Password'
+                                })
+                        else:
+                            return JsonResponse({
+                                'success': False,
+                                'error': 'Invalid College ID'
+                            })
+                    else:
+                        return JsonResponse({
+                            'success': False,
+                            'error': 'Invalid Credentials'
+                        })
+                
             except Exception as e:
-                messages.error(request, f"An error occurred: {str(e)}")
-                return redirect('login')
+                return JsonResponse({
+                    'success': False,
+                    'error': f'An error occurred: {str(e)}'
+                })
+        
+        else:
+            messages.error(request, "Invalid request method")
+            return redirect('login')
     
     return render(request, 'Home/login.html')
+
+def verify_otp_view(request):
+    if request.method == 'GET':
+        username = request.session.get('verify_user')
+        return render(request, 'verify_otp.html', {'user_email': username})
+    
+    elif request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        username = request.session.get('verify_user')
+        role = request.session.get('verify_role')
+        fingerprint = request.session.get('verify_fingerprint')
+        ip = request.session.get('verify_ip')
+        
+        if not username or not entered_otp:
+            messages.error(request, "Invalid OTP verification request")
+            return redirect('login')
+        
+        try:
+            print(f"Verifying OTP: {entered_otp} for user: {username}")
+            
+            user_detail = UserDetail.objects.get(username=username)
+            
+            otp_record = OTPVerification.objects.filter(
+                user=user_detail,
+                otp_code=entered_otp, 
+                is_verified=False
+            ).order_by('-created_at').first()
+            
+            print(f"OTP record found: {otp_record}")
+            
+            if otp_record:
+                if not otp_record.is_expired():
+                    otp_record.is_verified = True
+                    otp_record.save()
+                    
+                    DeviceFingerprint.objects.create(
+                        user=user_detail,
+                        fingerprint=fingerprint,
+                        ip_address=ip,
+                        last_login=timezone.now(),
+                        is_suspicious=False
+                    )
+                    
+                    if role == 'admin':
+                        admin = Admin.objects.get(email=username)
+                        request.session['username1'] = f"{admin.name} {admin.last_name}"
+                        request.session['admin_college_id'] = request.session.get('userID')
+                        request.session['role'] = role
+                        redirect_url = '/Admin/Dashboard/'
+                        
+                    elif role == 'faculty':
+                        faculty = Faculty.objects.get(email=username)
+                        request.session['username2'] = f"{faculty.name} {faculty.last_name}"
+                        request.session['faculty_college_id'] = request.session.get('userID')
+                        request.session['role'] = role
+                        redirect_url = '/Faculty/Dashboard/'
+                        
+                    elif role == 'student':
+                        student = Student.objects.get(email=username)
+                        request.session['username3'] = f"{student.name} {student.last_name}"
+                        request.session['student_college_id'] = request.session.get('userID')
+                        request.session['role'] = role
+                        redirect_url = '/Student/Dashboard/'
+                    
+                    request.session.pop('verify_user', None)
+                    request.session.pop('verify_role', None)
+                    request.session.pop('verify_fingerprint', None)
+                    request.session.pop('verify_ip', None)
+                    
+                    messages.success(request, "OTP verified successfully!")
+                    return redirect(redirect_url)
+                    
+                else:
+                    messages.error(request, "OTP has expired. Please login again.")
+                    otp_record.delete()
+                    return redirect('login')
+            else:
+                messages.error(request, "Invalid OTP. Please try again.")
+                return render(request, 'verify_otp.html', {'user_email': username})
+                
+        except UserDetail.DoesNotExist:
+            messages.error(request, "User not found. Please login again.")
+            return redirect('login')
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+            return redirect('login')
 
 
 from django.views.decorators.csrf import csrf_exempt

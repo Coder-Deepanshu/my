@@ -64,8 +64,10 @@
                 {% if messages %}
                 <div class="messages">
                     {% for message in messages %}
-                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn">
-                        <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{ message }}
+                    <div
+                        class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn">
+                        <i
+                            class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{ message }}
                     </div>
                     {% endfor %}
                 </div>
@@ -93,6 +95,10 @@
                             </div>
                         </div>
                     </form>
+                    <div class="text-center mt-4 animate__animated animate__fadeIn">
+                            <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your
+                                    institution</a></p>
+                        </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="submitIDBtn">
@@ -153,6 +159,9 @@
                                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                 </div>
                             </div>
+                            
+                            <!-- fingerprint device id value input -->
+                            <input type="hidden" id="fingerprint" name="fingerprint">
 
                             <div class="mb-3 form-check animate__animated animate__fadeIn">
                                 <input type="checkbox" class="form-check-input" id="rememberMe">
@@ -165,11 +174,6 @@
                                 <i class="fas fa-sign-in-alt me-2"></i> Sign In
                             </button>
                         </form>
-
-                        <div class="text-center mt-4 animate__animated animate__fadeIn">
-                            <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your
-                                    institution</a></p>
-                        </div>
                     </div>
                 </div>
 
@@ -227,7 +231,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2023 Edutrack. All rights reserved.</p>
+                <p>&copy; 2025 Edutrack. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -280,11 +284,6 @@
                             john.doe@college.edu)</p>
                     </div>
                     <div class="mb-3">
-                        <h6><i class="fas fa-id-card me-2 text-primary"></i>User ID</h6>
-                        <p class="text-muted">Your User ID is your college registration ID provided by the institution
-                            (e.g., CO123456)</p>
-                    </div>
-                    <div class="mb-3">
                         <h6><i class="fas fa-lock me-2 text-primary"></i>Password</h6>
                         <p class="text-muted">Your password is your registered phone number without country code (e.g.,
                             9876543210)</p>
@@ -302,6 +301,7 @@
     </div>
 
     <!-- templates/common/status_overlay.html -->
+
     <div id="overlay" class="overlay" aria-hidden="true">
         <div id="statusCard" class="status-card" role="status" aria-live="polite">
             <!-- Animated Background -->
@@ -470,12 +470,116 @@
 
         // Form submission with animation
         document.getElementById('loginForm').addEventListener('submit', function (e) {
-            // Show loading animation on button
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
-            submitBtn.disabled = true;
+            e.preventDefault();
+
+            // Show loading animation
+            showLoginOverlay();
+
+            // Form data collect karein
+            const formData = new FormData(this);
+
+            // AJAX request bhejein
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        if (data.otp_required) {
+                            // OTP required - redirect to OTP page
+                            showLoginSuccess(data.message || 'OTP sent to your email');
+                            setTimeout(() => {
+                                window.location.href = data.redirect_url;
+                            }, 3000);
+                        } else {
+                            // Direct login successful
+                            showLoginSuccess(data.message || 'Login successful!');
+                            setTimeout(() => {
+                                window.location.href = data.redirect_url;
+                            }, 3000);
+                        }
+                    } else {
+                        showLoginError(data.error || 'Login failed!');
+                    }
+                })
+                .catch(error => {
+                    showLoginError('An error occurred. Please try again.');
+                    console.error('Error:', error);
+                });
         });
+
+        // Updated overlay functions
+        function showLoginOverlay() {
+            const overlay = document.getElementById('overlay');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusSub = document.getElementById('statusSub');
+            const statusIcon = document.getElementById('statusIcon');
+            const dottedRing = document.getElementById('dottedRing');
+
+            overlay.style.display = 'flex';
+            overlay.classList.add('show');
+            overlay.setAttribute('aria-hidden', 'false');
+
+            statusCard.classList.remove('success', 'error');
+            statusTitle.textContent = 'Signing In';
+            statusSub.textContent = 'Please wait while we authenticate your credentials';
+            statusIcon.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+            dottedRing.style.animation = 'rotate 8s linear infinite';
+        }
+
+        function showLoginSuccess(message) {
+            const statusCard = document.getElementById('statusCard');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusSub = document.getElementById('statusSub');
+            const statusIcon = document.getElementById('statusIcon');
+            const dottedRing = document.getElementById('dottedRing');
+
+            statusCard.classList.remove('error');
+            statusCard.classList.add('success');
+            statusTitle.textContent = 'Success';
+            statusSub.textContent = message;
+            statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            dottedRing.style.animation = 'none';
+        }
+
+        function showLoginError(message) {
+            const statusCard = document.getElementById('statusCard');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusSub = document.getElementById('statusSub');
+            const statusIcon = document.getElementById('statusIcon');
+            const dottedRing = document.getElementById('dottedRing');
+
+            statusCard.classList.remove('success');
+            statusCard.classList.add('error');
+            statusTitle.textContent = 'Login Failed';
+            statusSub.textContent = message;
+            statusIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+            dottedRing.style.animation = 'none';
+
+            // Reset login button
+            const submitBtn = document.querySelector('#loginForm button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Sign In';
+            submitBtn.disabled = false;
+
+            setTimeout(() => {
+                const overlay = document.getElementById('overlay');
+                overlay.classList.remove('show');
+                overlay.setAttribute('aria-hidden', 'true');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
 
         // Initialize animations
         document.addEventListener('DOMContentLoaded', function () {
@@ -576,6 +680,36 @@
                 overlay.setAttribute('aria-hidden', 'true');
             }, 2500);
         }
+
+
+
+
+        // ---------------------------------
+        // GENERATE finger print
+        async function generateFingerprint() {
+            const data = [
+                navigator.userAgent,
+                navigator.language,
+                screen.width,
+                screen.height,
+                new Date().getTimezoneOffset(),
+                navigator.platform,
+                navigator.hardwareConcurrency || 'unknown',
+            ].join('-');
+
+            // create hash (simple SHA-256)
+            const encoder = new TextEncoder();
+            const dataBuffer = encoder.encode(data);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        generateFingerprint().then(fp => {
+            document.getElementById('fingerprint').value = fp;
+            console.log("Device Fingerprint:", fp);
+        });
     </script>
 </body>
 
