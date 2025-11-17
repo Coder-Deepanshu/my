@@ -139,10 +139,11 @@ MEDIA_ROOT = BASE_DIR/"media"
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    BASE_DIR / "static",       # इस static folder को PythonAnywhere पर मौजूद होना चाहिए
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 
 # Media files (Uploaded files)
