@@ -1,0 +1,1013 @@
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #f0f2f5;
+            --border-gray: #dee2e6;
+            --student-color: #4361ee;
+            --faculty-color: #f8961e;
+            --admin-color: #e63946;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--light-gray);
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--dark);
+            font-weight: 500;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Login Section */
+        .login-section {
+            padding: 60px 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+
+            max-width: 700px;
+        }
+
+        .login-right {
+            padding: 40px;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .login-subtitle {
+            color: var(--gray);
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            padding: 14px 16px;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--student-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+        }
+
+        .input-group-text {
+            background: white;
+            border: 1px solid var(--border-gray);
+            border-left: none;
+        }
+
+        .role-selection {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .role-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px 8px;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .role-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .role-btn.active {
+            border-color: var(--student-color);
+            background: rgba(67, 97, 238, 0.05);
+            color: var(--student-color);
+        }
+
+        .role-btn.active.student {
+            border-color: var(--student-color);
+            background: rgba(67, 97, 238, 0.05);
+            color: var(--student-color);
+        }
+
+        .role-btn.active.faculty {
+            border-color: var(--faculty-color);
+            background: rgba(248, 150, 30, 0.05);
+            color: var(--faculty-color);
+        }
+
+        .role-btn.active.admin {
+            border-color: var(--admin-color);
+            background: rgba(230, 57, 70, 0.05);
+            color: var(--admin-color);
+        }
+
+        .role-btn i {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .login-btn {
+            background: var(--student-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 100%;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        .login-btn.student {
+            background: var(--student-color);
+        }
+
+        .login-btn.faculty {
+            background: var(--faculty-color);
+        }
+
+        .login-btn.admin {
+            background: var(--admin-color);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-gray);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--student-color);
+            border-color: var(--student-color);
+        }
+
+        /* Alert Messages */
+        .alert {
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .alert-danger {
+            background: rgba(230, 57, 70, 0.1);
+            color: #e63946;
+        }
+
+        .alert-success {
+            background: rgba(76, 201, 240, 0.1);
+            color: #4cc9f0;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(33, 37, 41, 0.95);
+            color: white;
+            padding: 30px 0 15px;
+        }
+
+        .footer-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 8px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .footer-social a {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 25px;
+            margin-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-gray);
+            padding: 20px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-gray);
+            padding: 15px 20px;
+        }
+
+        /* Help Button */
+        .help-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+            z-index: 100;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .help-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .login-right {
+                padding: 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 20px;
+            }
+
+            .login-right {
+                padding: 30px;
+            }
+
+            .login-title {
+                font-size: 1.7rem;
+            }
+
+            .role-selection {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .login-right {
+                padding: 25px 20px;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+
+            .help-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+
+            .footer {
+                padding: 25px 0 10px;
+            }
+        }
+
+        /* 🔹 Background Overlay (Blur + Dark) */
+        .userIDModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 15, 0.6);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1050;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            padding: 15px;
+        }
+
+        /* 🔹 When active (show modal) */
+        .userIDModal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 🔹 Modal content styling */
+        .userIDModal .modal-content {
+            background: white;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            color: var(--dark);
+            width: 100%;
+            max-width: 450px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* 🔹 When modal becomes visible */
+        .userIDModal.show .modal-content {
+            transform: scale(1);
+        }
+
+        /* 🔹 Modal Header */
+        .userIDModal .modal-header {
+            border-bottom: none;
+            padding: 25px 25px 0;
+            position: relative;
+        }
+
+        .userIDModal .modal-title {
+            font-weight: 600;
+            color: var(--dark);
+            text-align: center;
+            font-size: 1.4rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .userIDModal .btn-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background-size: 12px;
+            opacity: 0.7;
+        }
+
+        .userIDModal .btn-close:hover {
+            opacity: 1;
+        }
+
+        /* 🔹 Modal Body */
+        .userIDModal .modal-body {
+            padding: 20px 25px 25px;
+            text-align: center;
+        }
+
+        /* 🔹 Professional Note Styling */
+        .userIDModal .info-note {
+            background: linear-gradient(135deg, #fff9e6, #fff3d1);
+            border-left: 4px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .userIDModal .info-note i {
+            color: #ffc107;
+            font-size: 1.2rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .userIDModal .info-note p {
+            font-size: 14px;
+            color: #856404;
+            margin: 0;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* 🔹 Input Styling */
+        .userIDModal .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            text-align: left;
+            display: block;
+            font-size: 1rem;
+        }
+
+        .userIDModal .input-group {
+            position: relative;
+        }
+
+        .userIDModal input.form-control {
+            background-color: white;
+            border: 2px solid var(--border-gray);
+            color: var(--dark);
+            border-radius: 8px;
+            padding: 14px 16px 14px 45px;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            height: 50px;
+        }
+
+        .userIDModal input.form-control:focus {
+            border-color: var(--student-color);
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+            background-color: white;
+        }
+
+        .userIDModal input.form-control::placeholder {
+            color: var(--gray);
+            opacity: 0.7;
+        }
+
+        /* 🔹 Button Styling */
+        .userIDModal .btn-primary {
+            background: var(--student-color);
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            width: 100%;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 50px;
+        }
+
+        .userIDModal .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        .userIDModal .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* 🔹 Modal Footer */
+        .userIDModal .modal-footer {
+            border-top: 1px solid var(--border-gray);
+            padding: 20px 25px 25px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 🔹 Responsive Design */
+        @media (max-width: 576px) {
+            .userIDModal {
+                padding: 10px;
+            }
+
+            .userIDModal .modal-content {
+                max-width: 100%;
+            }
+
+            .userIDModal .modal-header {
+                padding: 20px 20px 0;
+            }
+
+            .userIDModal .modal-body {
+                padding: 15px 20px 20px;
+            }
+
+            .userIDModal .modal-footer {
+                padding: 15px 20px 20px;
+            }
+
+            .userIDModal .modal-title {
+                font-size: 1.3rem;
+            }
+
+            .userIDModal .info-note {
+                padding: 12px 15px;
+            }
+        }
+
+        /* 🔹 Animation for modal appearance */
+        @keyframes modalAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .userIDModal.show .modal-content {
+            animation: modalAppear 0.3s ease-out;
+        }
+
+        /* Overlay Styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 0 60px rgba(67, 97, 238, 0.15);
+            position: relative;
+            overflow: hidden;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .overlay.show .status-card {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Animated Background */
+        .status-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            opacity: 0.03;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bg-circle-1 {
+            width: 120px;
+            height: 120px;
+            top: -40px;
+            right: -40px;
+            animation-delay: 0s;
+        }
+
+        .bg-circle-2 {
+            width: 80px;
+            height: 80px;
+            bottom: -20px;
+            left: 20px;
+            animation-delay: 2s;
+        }
+
+        .bg-circle-3 {
+            width: 60px;
+            height: 60px;
+            top: 50%;
+            right: 30px;
+            animation-delay: 4s;
+        }
+
+        /* Content */
+        .status-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        /* Circle Animation */
+        .circle-wrap {
+            margin: 0 auto 30px;
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .dotted-circle {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dotted-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px dashed var(--primary);
+            border-radius: 50%;
+            animation: rotate 8s linear infinite;
+            opacity: 0.3;
+        }
+
+        .status-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow:
+                0 8px 20px rgba(67, 97, 238, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Loading Dots */
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: white;
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0s;
+        }
+
+        /* Status Text */
+        .status-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .status-sub {
+            font-size: 1rem;
+            color: var(--gray);
+            line-height: 1.5;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        /* Success State */
+        .status-card.success .dotted-ring {
+            border: 3px solid #10b981;
+            animation: none;
+            opacity: 1;
+        }
+
+        .status-card.success .status-icon {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            animation: successPop 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .status-card.success .status-icon::before {
+            content: '✓';
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .status-card.success .loading-dots {
+            display: none;
+        }
+
+        /* Error State */
+        .status-card.error .dotted-ring {
+            border: 3px solid #ef4444;
+            animation: none;
+            opacity: 1;
+        }
+
+        .status-card.error .status-icon {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            animation: errorShake 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .status-card.error .status-icon::before {
+            content: '✕';
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .status-card.error .loading-dots {
+            display: none;
+        }
+
+        /* Animations */
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) scale(1);
+            }
+
+            50% {
+                transform: translateY(-10px) scale(1.05);
+            }
+        }
+
+        @keyframes successPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes errorShake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-4px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(4px);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 576px) {
+            .status-card {
+                padding: 30px 25px;
+                margin: 20px;
+            }
+
+            .circle-wrap {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 25px;
+            }
+
+            .status-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            .status-title {
+                font-size: 1.3rem;
+            }
+
+            .status-sub {
+                font-size: 0.9rem;
+            }
+
+            .bg-circle-1 {
+                width: 80px;
+                height: 80px;
+            }
+
+            .bg-circle-2 {
+                width: 60px;
+                height: 60px;
+            }
+
+            .bg-circle-3 {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+
+            .dotted-ring,
+            .bg-circle,
+            .loading-dots span {
+                animation: none;
+            }
+
+            .overlay,
+            .status-card {
+                transition: none;
+            }
+        }
+        

@@ -1,0 +1,428 @@
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 60px 0 30px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        /* Main Container */
+        .f-container {
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            padding: 0 15px;
+        }
+
+        .enroll-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .enroll-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .enroll-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .enroll-header p {
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        /* Alert Messages */
+        #alertContainer {
+            padding: 20px 30px 0;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            border: none;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Student Info Cards */
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .info-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-card h3 i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .info-card p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0;
+            color: var(--dark);
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-card h3 {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .summary-card h3 i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
+        .summary-card p {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--light);
+            padding: 30px;
+            border-top: 1px solid var(--light-gray);
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        #filterForm {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            margin-bottom: 0;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-group label i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        .btn-filter {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 28px;
+        }
+
+        .btn-filter:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--secondary));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Attendance Table */
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .attendance-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        .attendance-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        /* Status Badges */
+        .status-present {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .status-absent {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .status-halfday {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .status-leave {
+            color: var(--info);
+            font-weight: 600;
+        }
+
+        .status-holiday {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* No Records */
+        .no-records {
+            padding: 50px 20px;
+            color: var(--gray);
+        }
+
+        .no-records i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--light-gray);
+        }
+
+        .no-records p {
+            font-size: 1.2rem;
+            margin-bottom: 0;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .step-links {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .step-links a {
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .step-links a:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .current {
+            padding: 8px 15px;
+            background: var(--light);
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .f-container {
+                margin: 0 15px 40px;
+            }
+            
+            #filterForm {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .student-info,
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .attendance-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .student-info,
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            #filterForm {
+                grid-template-columns: 1fr;
+            }
+            
+            .enroll-header,
+            .student-info,
+            .filter-section {
+                padding: 20px;
+            }
+            
+            .step-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
