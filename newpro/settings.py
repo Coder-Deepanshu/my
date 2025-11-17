@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-&5$your_secret_key_here$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'Edutrack.pythonanywhere.com']
 
@@ -136,13 +136,18 @@ USE_TZ = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR/"media"
 
+import os
+
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 
+# Development में static files के locations
 STATICFILES_DIRS = [
-    BASE_DIR / "static",       # इस static folder को PythonAnywhere पर मौजूद होना चाहिए
+    os.path.join(BASE_DIR, 'static'),
 ]
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# Production के लिए collectstatic का location
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 
