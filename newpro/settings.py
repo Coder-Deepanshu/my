@@ -39,9 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'newapp',
+    'rest_framework'
 
 ]
 
+# REST Framework settings add kare
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # Sabhi access kar sakte hain
+    ]
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

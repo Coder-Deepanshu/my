@@ -3,7 +3,7 @@ from django.urls import path
 from newapp import views
 from django.conf import settings
 from django.conf.urls.static import static
-
+# from .views import ProductListView, ProductDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -134,6 +134,10 @@ urlpatterns = [
     path("students/", views.students_list, name="students_list"),
     path("students/<int:roll_no>/", views.student_detail, name="student_detail"),
     path("students/delete_bulk/", views.delete_students, name="delete_students"),
+
+
+    # path('products/', ProductListView.as_view(), name='product-list'),
+    # path('products/<int:product_id>/', ProductDetailView.as_view(), name='product-detail'),
 ]
 
 

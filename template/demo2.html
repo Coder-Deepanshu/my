@@ -1,52 +1,273 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Login</title>
-</head>
-<body>
-  <h2>Login Page</h2>
-  
-  <form id="loginForm" method="POST">
-    {% csrf_token %}
-    <label>Email:</label>
-    <input type="text" name="email"><br><br>
-
-    <label>Password:</label>
-    <input type="password" name="password"><br><br>
-
-    <input type="hidden" id="fingerprint" name="fingerprint">
-
-    <button type="submit">Login</button>
-  </form>
-   <div id="deviceFingerprint">hello</div>
-  <script>
-    async function generateFingerprint() {
-      const data = [
-        navigator.userAgent,
-        navigator.language,
-        screen.width,
-        screen.height,
-        new Date().getTimezoneOffset(),
-        navigator.platform,
-        navigator.hardwareConcurrency || 'unknown',
-      ].join('-');
-
-      // create hash (simple SHA-256)
-      const encoder = new TextEncoder();
-      const dataBuffer = encoder.encode(data);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex;
-    }
-
-    generateFingerprint().then(fp => {
-      document.getElementById('fingerprint').value = fp;
-      console.log("Device Fingerprint:", fp);
-      const deviceFingerprint = document.querySelector("#deviceFingerprint")
-      deviceFingerprint.innerHTML = fp;
+<script>
+// Device Fingerprint Generation Function
+function generateDeviceFingerprint() {
+    return new Promise((resolve) => {
+        try {
+            const components = [];
+            
+            // Basic browser information
+            components.push(navigator.userAgent);
+            components.push(navigator.language);
+            components.push(navigator.languages ? navigator.languages.join(',') : '');
+            components.push(navigator.platform);
+            components.push(screen.width + 'x' + screen.height);
+            components.push(screen.colorDepth);
+            components.push(new Date().getTimezoneOffset());
+            
+            // Hardware information
+            components.push(navigator.hardwareConcurrency || 'unknown');
+            components.push(navigator.deviceMemory || 'unknown');
+            components.push(navigator.maxTouchPoints || 'unknown');
+            
+            // WebGL fingerprint
+            const webglInfo = getWebGLFingerprint();
+            components.push(webglInfo);
+            
+            // Canvas fingerprint
+            const canvasFingerprint = getCanvasFingerprint();
+            components.push(canvasFingerprint);
+            
+            // Audio fingerprint
+            getAudioFingerprint().then(audioFp => {
+                components.push(audioFp);
+                
+                // Fonts detection
+                detectFonts().then(fonts => {
+                    components.push(fonts);
+                    
+                    // Create final fingerprint
+                    const fingerprintString = components.join('|');
+                    const fingerprintHash = hashString(fingerprintString);
+                    
+                    resolve(fingerprintHash);
+                });
+            });
+            
+        } catch (error) {
+            console.error('Fingerprint generation error:', error);
+            // Fallback fingerprint
+            const fallbackFingerprint = hashString(
+                navigator.userAgent + 
+                screen.width + 'x' + screen.height + 
+                navigator.language +
+                new Date().getTimezoneOffset()
+            );
+            resolve(fallbackFingerprint);
+        }
     });
-  </script>
+}
 
-</body>
-</html>
+// WebGL Fingerprint
+function getWebGLFingerprint() {
+    try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        
+        if (!gl) return 'no-webgl';
+        
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        const vendor = gl.getParameter(debugInfo ? debugInfo.UNMASKED_VENDOR_WEBGL : gl.VENDOR);
+        const renderer = gl.getParameter(debugInfo ? debugInfo.UNMASKED_RENDERER_WEBGL : gl.RENDERER);
+        
+        return vendor + '|' + renderer;
+    } catch (e) {
+        return 'webgl-error';
+    }
+}
+
+// Canvas Fingerprint
+function getCanvasFingerprint() {
+    try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = 200;
+        canvas.height = 50;
+        
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillStyle = '#f60';
+        ctx.fillRect(125, 1, 62, 20);
+        ctx.fillStyle = '#069';
+        ctx.fillText('Hello, world!', 2, 15);
+        ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+        ctx.fillText('Hello, world!', 4, 17);
+        
+        return canvas.toDataURL();
+    } catch (e) {
+        return 'canvas-error';
+    }
+}
+
+// Audio Fingerprint
+function getAudioFingerprint() {
+    return new Promise((resolve) => {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const compressor = audioContext.createDynamicsCompressor();
+            
+            oscillator.type = 'triangle';
+            oscillator.frequency.setValueAtTime(10000, audioContext.currentTime);
+            
+            compressor.threshold.setValueAtTime(-50, audioContext.currentTime);
+            compressor.knee.setValueAtTime(40, audioContext.currentTime);
+            compressor.ratio.setValueAtTime(12, audioContext.currentTime);
+            compressor.attack.setValueAtTime(0, audioContext.currentTime);
+            compressor.release.setValueAtTime(0.25, audioContext.currentTime);
+            
+            oscillator.connect(compressor);
+            compressor.connect(audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.01);
+            
+            setTimeout(() => {
+                audioContext.close();
+                resolve('audio-processed');
+            }, 100);
+            
+        } catch (e) {
+            resolve('audio-error');
+        }
+    });
+}
+
+// Font Detection
+function detectFonts() {
+    return new Promise((resolve) => {
+        const fonts = [
+            'Arial', 'Arial Black', 'Arial Narrow', 'Times New Roman',
+            'Courier New', 'Verdana', 'Georgia', 'Palatino',
+            'Garamond', 'Bookman', 'Comic Sans MS', 'Trebuchet MS',
+            'Impact', 'Lucida Console'
+        ];
+        
+        const availableFonts = [];
+        const testString = "mmmmmmmmmmlli";
+        const testSize = '72px';
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        
+        context.textBaseline = "top";
+        context.font = testSize + " monospace";
+        
+        const referenceWidth = context.measureText(testString).width;
+        
+        function checkFont(font, callback) {
+            let matched = false;
+            context.font = testSize + '"' + font + '",monospace';
+            const width = context.measureText(testString).width;
+            
+            if (width !== referenceWidth) {
+                matched = true;
+                availableFonts.push(font);
+            }
+            
+            callback();
+        }
+        
+        let checked = 0;
+        fonts.forEach(font => {
+            checkFont(font, () => {
+                checked++;
+                if (checked === fonts.length) {
+                    resolve(availableFonts.join(','));
+                }
+            });
+        });
+    });
+}
+
+// Hash function for fingerprint
+function hashString(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash).toString(16);
+}
+
+// Collect Device Information for Form Submission
+function collectDeviceInfo() {
+    const deviceInfo = {
+        screen_resolution: screen.width + 'x' + screen.height,
+        color_depth: screen.colorDepth,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language,
+        platform: navigator.platform,
+        hardware_concurrency: navigator.hardwareConcurrency || 'unknown',
+        device_memory: navigator.deviceMemory || 'unknown',
+        user_agent: navigator.userAgent,
+        cookie_enabled: navigator.cookieEnabled,
+        java_enabled: navigator.javaEnabled ? navigator.javaEnabled() : false,
+        touch_support: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+        pixel_ratio: window.devicePixelRatio || 1
+    };
+    
+    // Hidden fields me add karo
+    const form = document.getElementById('loginForm');
+    
+    // Pehle existing device info fields remove karo
+    const existingFields = form.querySelectorAll('input[name^="screen_"], input[name^="color_"], input[name^="timezone"], input[name^="language"], input[name^="platform"], input[name^="hardware_"], input[name^="device_"], input[name^="user_"], input[name^="cookie_"], input[name^="java_"], input[name^="touch_"], input[name^="pixel_"]');
+    existingFields.forEach(field => field.remove());
+    
+    // New fields add karo
+    for (const [key, value] of Object.entries(deviceInfo)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `device_${key}`;
+        input.value = value;
+        form.appendChild(input);
+    }
+}
+
+// Main Function - Page Load pe fingerprint generate karo
+document.addEventListener('DOMContentLoaded', function() {
+    generateDeviceFingerprint().then(fp => {
+        document.getElementById('fingerprint').value = fp;
+        console.log("Device Fingerprint Generated:", fp);
+        
+        // Store in localStorage for future use
+        localStorage.setItem('device_fingerprint', fp);
+    }).catch(error => {
+        console.error('Fingerprint generation failed:', error);
+        // Fallback
+        const fallbackFP = hashString(
+            navigator.userAgent + 
+            screen.width + 'x' + screen.height + 
+            navigator.language
+        );
+        document.getElementById('fingerprint').value = fallbackFP;
+    });
+});
+
+// Form submit se pehle device info collect karo
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    // Pehle device info collect karo
+    collectDeviceInfo();
+    
+    // Fingerprint verify karo
+    const fingerprint = document.getElementById('fingerprint').value;
+    if (!fingerprint) {
+        // Agar fingerprint nahi hai to generate karo
+        generateDeviceFingerprint().then(fp => {
+            document.getElementById('fingerprint').value = fp;
+            // Form submit karo
+            this.submit();
+        });
+        e.preventDefault();
+    }
+});
+
+// Existing code ke saath integrate
+const existingSubmitHandler = document.getElementById('loginForm').onsubmit;
+document.getElementById('loginForm').onsubmit = function(e) {
+    collectDeviceInfo();
+    if (existingSubmitHandler) {
+        return existingSubmitHandler.call(this, e);
+    }
+};
+</script>

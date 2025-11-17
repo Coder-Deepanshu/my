@@ -9,9 +9,13 @@ from django.db.models import DecimalField
 from decimal import Decimal
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
-from django.contrib import messages
 from .models import DeviceFingerprint, UserDetail
 from django.utils import timezone
+import hashlib
+import platform
+import socket
+import uuid
+import json
 
 # function of front page 
 def home(request):
@@ -40,12 +44,7 @@ def new_enroll(request):
 
 import random
 from .models import *
-import json
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.contrib import messages
-from django.utils import timezone
-from .models import Admin, Faculty, Student, UserDetail, DeviceFingerprint, OTPVerification
+from .models import  OTPVerification
 
 def verify_collegeID(request):
     if request.method == 'POST':
@@ -85,6 +84,51 @@ def verify_collegeID(request):
     else:
         return JsonResponse({'error': 'Method Not Found'})
 
+def generate_device_fingerprint(request):
+    # Collect various device information
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
+    accept_encoding = request.META.get('HTTP_ACCEPT_ENCODING', '')
+    
+    # Screen resolution (client side se milega)
+    screen_resolution = request.POST.get('screen_res', '')  # JavaScript se bhejna hoga
+    
+    # Timezone
+    timezone = request.POST.get('timezone', '')  # JavaScript se bhejna hoga
+    
+    # Platform information
+    platform_info = {
+        'system': platform.system(),
+        'release': platform.release(),
+        'version': platform.version(),
+        'architecture': platform.architecture()[0],
+        'processor': platform.processor(),
+    }
+    
+    # Network information
+    hostname = socket.gethostname()
+    mac_address = ':'.join(['{:02x}'.format((uuid.getnode() >> elements) & 0xff) 
+                           for elements in range(0,8*6,8)][::-1])
+    
+    # Combine all data
+    fingerprint_data = {
+        'user_agent': user_agent,
+        'accept_language': accept_language,
+        'accept_encoding': accept_encoding,
+        'screen_resolution': screen_resolution,
+        'timezone': timezone,
+        'platform': platform_info,
+        'hostname': hostname,
+        'mac_address': mac_address,
+    }
+    
+    # Create hash
+    fingerprint_string = json.dumps(fingerprint_data, sort_keys=True)
+    device_id = hashlib.sha256(fingerprint_string.encode()).hexdigest()
+    
+    return device_id
+
+# get client_ip address
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -3429,3 +3473,36 @@ def studentSchedule(request):
 
 def studentResultView(request):
     return render(request,'student/studentResultView.html')
+
+
+
+
+# # from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from .models import Product
+# from .serializers import ProductSerializer
+
+# # Yeh view sabhi products dikhaye
+# class ProductListView(APIView):
+#     def get(self, request):
+#         # Database se saare products lao
+#         products = Product.objects.all()
+        
+#         # Products ko JSON format mein convert karo
+#         # 'many=True' because multiple products hain
+#         serializer = ProductSerializer(products, many=True)
+        
+#         # JSON response bhejo
+#         return Response(serializer.data)
+
+# # Yeh view single product dikhayega
+# class ProductDetailView(APIView):
+#     def get(self, request, product_id):
+#         # Specific product database se lao
+#         product = Product.objects.get(id=product_id)
+        
+#         # Product ko JSON format mein convert karo
+#         serializer = ProductSerializer(product)
+        
+#         # JSON response bhejo
+#         return Response(serializer.data)

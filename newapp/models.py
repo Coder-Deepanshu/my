@@ -511,7 +511,6 @@ class UserDetail(models.Model):
 
 # FOR Apply Ai on login page 
 from django.db import models
-from django.contrib.auth.models import User
 
 class DeviceFingerprint(models.Model):
     user = models.ForeignKey(UserDetail, on_delete=models.CASCADE)
@@ -522,9 +521,7 @@ class DeviceFingerprint(models.Model):
 
     def _str_(self):
         return f"{self.user.username} - {self.fingerprint[:10]}..."
-
-
-import random
+    
 from django.utils import timezone
 from datetime import timedelta
 
@@ -539,5 +536,19 @@ class OTPVerification(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.otp_code}"
+
+
+
+from django.db import models
+
+# Yeh hamara product ka database table hoga
+class Product(models.Model):
+    name = models.CharField(max_length=100)        # Product ka naam
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Price
+    description = models.TextField()               # Description
+    created_at = models.DateTimeField(auto_now_add=True)  # Automatic date
+    
+    def __str__(self):
+        return self.name
 
 

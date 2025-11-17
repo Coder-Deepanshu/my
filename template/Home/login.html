@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="{% static 'css/main/login.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"> -->
+
 </head>
 
 <body>
@@ -67,9 +70,9 @@
                     <div
                         class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn">
                         <i
-                            class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{ message }}
+                            class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{message }}
                     </div>
-                    {% endfor %}
+                    {% endfor %} 
                 </div>
                 {% endif %}
                 <div class="modal-body">
@@ -96,9 +99,9 @@
                         </div>
                     </form>
                     <div class="text-center mt-4 animate__animated animate__fadeIn">
-                            <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your
-                                    institution</a></p>
-                        </div>
+                        <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your
+                                institution</a></p>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="submitIDBtn">
@@ -159,7 +162,7 @@
                                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                 </div>
                             </div>
-                            
+
                             <!-- fingerprint device id value input -->
                             <input type="hidden" id="fingerprint" name="fingerprint">
 
@@ -497,23 +500,23 @@
                     if (data.success) {
                         if (data.otp_required) {
                             // OTP required - redirect to OTP page
-                            showLoginSuccess(data.message || 'OTP sent to your email');
+                            showSuccess(data.message || 'OTP sent to your email');
                             setTimeout(() => {
                                 window.location.href = data.redirect_url;
                             }, 3000);
                         } else {
                             // Direct login successful
-                            showLoginSuccess(data.message || 'Login successful!');
+                            showSuccess(data.message || 'Login successful!');
                             setTimeout(() => {
                                 window.location.href = data.redirect_url;
                             }, 3000);
                         }
                     } else {
-                        showLoginError(data.error || 'Login failed!');
+                        showError(data.error || 'Login failed!');
                     }
                 })
                 .catch(error => {
-                    showLoginError('An error occurred. Please try again.');
+                    showError('An error occurred. Please try again.');
                     console.error('Error:', error);
                 });
         });
@@ -537,49 +540,49 @@
             dottedRing.style.animation = 'rotate 8s linear infinite';
         }
 
-        function showLoginSuccess(message) {
-            const statusCard = document.getElementById('statusCard');
-            const statusTitle = document.getElementById('statusTitle');
-            const statusSub = document.getElementById('statusSub');
-            const statusIcon = document.getElementById('statusIcon');
-            const dottedRing = document.getElementById('dottedRing');
+        // function showLoginSuccess(message) {
+        //     const statusCard = document.getElementById('statusCard');
+        //     const statusTitle = document.getElementById('statusTitle');
+        //     const statusSub = document.getElementById('statusSub');
+        //     const statusIcon = document.getElementById('statusIcon');
+        //     const dottedRing = document.getElementById('dottedRing');
 
-            statusCard.classList.remove('error');
-            statusCard.classList.add('success');
-            statusTitle.textContent = 'Success';
-            statusSub.textContent = message;
-            statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
-            dottedRing.style.animation = 'none';
-        }
+        //     statusCard.classList.remove('error');
+        //     statusCard.classList.add('success');
+        //     statusTitle.textContent = 'Success';
+        //     statusSub.textContent = message;
+        //     statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+        //     dottedRing.style.animation = 'none';
+        // }
 
-        function showLoginError(message) {
-            const statusCard = document.getElementById('statusCard');
-            const statusTitle = document.getElementById('statusTitle');
-            const statusSub = document.getElementById('statusSub');
-            const statusIcon = document.getElementById('statusIcon');
-            const dottedRing = document.getElementById('dottedRing');
+        // function showLoginError(message) {
+        //     const statusCard = document.getElementById('statusCard');
+        //     const statusTitle = document.getElementById('statusTitle');
+        //     const statusSub = document.getElementById('statusSub');
+        //     const statusIcon = document.getElementById('statusIcon');
+        //     const dottedRing = document.getElementById('dottedRing');
 
-            statusCard.classList.remove('success');
-            statusCard.classList.add('error');
-            statusTitle.textContent = 'Login Failed';
-            statusSub.textContent = message;
-            statusIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
-            dottedRing.style.animation = 'none';
+        //     statusCard.classList.remove('success');
+        //     statusCard.classList.add('error');
+        //     statusTitle.textContent = 'Login Failed';
+        //     statusSub.textContent = message;
+        //     statusIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+        //     dottedRing.style.animation = 'none';
 
-            // Reset login button
-            const submitBtn = document.querySelector('#loginForm button[type="submit"]');
-            submitBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Sign In';
-            submitBtn.disabled = false;
+        //     // Reset login button
+        //     const submitBtn = document.querySelector('#loginForm button[type="submit"]');
+        //     submitBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Sign In';
+        //     submitBtn.disabled = false;
 
-            setTimeout(() => {
-                const overlay = document.getElementById('overlay');
-                overlay.classList.remove('show');
-                overlay.setAttribute('aria-hidden', 'true');
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                }, 500);
-            }, 3000);
-        }
+        //     setTimeout(() => {
+        //         const overlay = document.getElementById('overlay');
+        //         overlay.classList.remove('show');
+        //         overlay.setAttribute('aria-hidden', 'true');
+        //         setTimeout(() => {
+        //             overlay.style.display = 'none';
+        //         }, 500);
+        //     }, 3000);
+        // }
 
         // Initialize animations
         document.addEventListener('DOMContentLoaded', function () {
@@ -665,7 +668,7 @@
                 overlay.classList.remove('show');
                 overlay.setAttribute('aria-hidden', 'true');
                 // if (redirectUrl) window.location.href = redirectUrl;
-            }, 1400);
+            }, 3000);
         }
 
         function showError(message) {
@@ -678,38 +681,328 @@
             setTimeout(() => {
                 overlay.classList.remove('show');
                 overlay.setAttribute('aria-hidden', 'true');
-            }, 2500);
+            }, 3000);
         }
 
+        // STABLE DEVICE FINGERPRINT SYSTEM
+        // Persistent Storage Key
+        const FINGERPRINT_STORAGE_KEY = 'edutrack_device_fingerprint_v2';
 
+        // Main Stable Fingerprint Generator
+        async function generateStableFingerprint() {
+            try {
+                // Pehle localStorage se check karo
+                let storedFingerprint = localStorage.getItem(FINGERPRINT_STORAGE_KEY);
 
+                if (storedFingerprint) {
+                    console.log("Using stored fingerprint:", storedFingerprint);
+                    return storedFingerprint;
+                }
 
-        // ---------------------------------
-        // GENERATE finger print
-        async function generateFingerprint() {
-            const data = [
-                navigator.userAgent,
-                navigator.language,
-                screen.width,
-                screen.height,
-                new Date().getTimezoneOffset(),
-                navigator.platform,
-                navigator.hardwareConcurrency || 'unknown',
-            ].join('-');
+                // Naya fingerprint generate karo
+                console.log("Generating new stable fingerprint...");
 
-            // create hash (simple SHA-256)
-            const encoder = new TextEncoder();
-            const dataBuffer = encoder.encode(data);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
+                const fingerprintComponents = await Promise.all([
+                    getHardwareFingerprint(),
+                    getCanvasFingerprint(),
+                    getWebGLFingerprint(),
+                    getSystemFingerprint(),
+                    generatePersistentUUID()
+                ]);
+
+                const combinedString = fingerprintComponents.join('|');
+                const finalFingerprint = hashSHA256(combinedString);
+
+                // localStorage me save karo (10 years ke liye)
+                localStorage.setItem(FINGERPRINT_STORAGE_KEY, finalFingerprint);
+
+                console.log("New fingerprint generated:", finalFingerprint);
+                return finalFingerprint;
+
+            } catch (error) {
+                console.error("Fingerprint generation failed:", error);
+                return generateFallbackFingerprint();
+            }
         }
 
-        generateFingerprint().then(fp => {
-            document.getElementById('fingerprint').value = fp;
-            console.log("Device Fingerprint:", fp);
+        // Hardware-based Fingerprint (Most Stable)
+        async function getHardwareFingerprint() {
+            const components = [];
+
+            // CPU Cores (rarely changes)
+            components.push('cpu_cores:' + (navigator.hardwareConcurrency || 'unknown'));
+
+            // Device Memory (rarely changes)
+            components.push('ram:' + (navigator.deviceMemory || 'unknown'));
+
+            // Architecture
+            components.push('platform:' + (navigator.platform || 'unknown'));
+
+            // Max Touch Points
+            components.push('touch_points:' + (navigator.maxTouchPoints || 'unknown'));
+
+            return components.join('|');
+        }
+
+        // Advanced Canvas Fingerprint (Very Stable)
+        function getCanvasFingerprint() {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = 240;
+                canvas.height = 60;
+
+                // Complex drawing for stability
+                ctx.textBaseline = 'alphabetic';
+                ctx.font = '14px "Arial", "Helvetica", sans-serif';
+
+                // Background gradient
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, '#ff0000');
+                gradient.addColorStop(0.5, '#00ff00');
+                gradient.addColorStop(1, '#0000ff');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Complex text rendering
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText('BrowserFingerprintStable2024', 10, 20);
+
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.7)';
+                ctx.fillText('EdutrackDeviceID', 15, 40);
+
+                // Shapes and paths
+                ctx.beginPath();
+                ctx.arc(200, 30, 15, 0, Math.PI * 2);
+                ctx.strokeStyle = '#ff00ff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                return canvas.toDataURL();
+
+            } catch (error) {
+                return 'canvas_fallback_' + Math.random().toString(36).substr(2, 9);
+            }
+        }
+
+        // WebGL Fingerprint (Hardware Specific - Very Stable)
+        function getWebGLFingerprint() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+                if (!gl) return 'webgl_not_supported';
+
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                const vendor = gl.getParameter(debugInfo ? debugInfo.UNMASKED_VENDOR_WEBGL : gl.VENDOR);
+                const renderer = gl.getParameter(debugInfo ? debugInfo.UNMASKED_RENDERER_WEBGL : gl.RENDERER);
+
+                // Additional WebGL parameters for stability
+                const version = gl.getParameter(gl.VERSION);
+                const shadingLanguageVersion = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
+
+                return `webgl:${vendor}|${renderer}|${version}|${shadingLanguageVersion}`;
+
+            } catch (error) {
+                return 'webgl_error';
+            }
+        }
+
+        // System Information (Relatively Stable)
+        function getSystemFingerprint() {
+            const components = [];
+
+            // Timezone (rarely changes for same location)
+            components.push('timezone:' + Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+            // Language (rarely changes)
+            components.push('language:' + navigator.language);
+
+            // Screen properties (relatively stable)
+            components.push('color_depth:' + screen.colorDepth);
+            components.push('pixel_ratio:' + (window.devicePixelRatio || 1));
+
+            // Browser features (stable)
+            components.push('cookies:' + navigator.cookieEnabled);
+            components.push('java:' + (navigator.javaEnabled ? navigator.javaEnabled() : false));
+
+            return components.join('|');
+        }
+
+        // Generate Persistent UUID (Fallback)
+        function generatePersistentUUID() {
+            let uuid = localStorage.getItem('edutrack_persistent_uuid');
+
+            if (!uuid) {
+                // Cryptographically strong UUID generate karo
+                uuid = 'edutrack_' +
+                    Date.now().toString(36) +
+                    Math.random().toString(36).substr(2, 9) +
+                    performance.now().toString(36).replace('.', '');
+
+                localStorage.setItem('edutrack_persistent_uuid', uuid);
+            }
+
+            return uuid;
+        }
+
+        // Advanced Hash Function (SHA-256 simulation)
+        function hashSHA256(str) {
+            // Simple SHA-256 simulation for fingerprint
+            // Production me proper crypto library use karo
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+
+            // Additional processing for better distribution
+            const baseHash = Math.abs(hash).toString(16);
+            const timestamp = Date.now().toString(36);
+
+            return 'edt_' + baseHash + '_' + timestamp;
+        }
+
+        // Fallback Fingerprint
+        function generateFallbackFingerprint() {
+            let fallbackId = localStorage.getItem('edutrack_fallback_id');
+
+            if (!fallbackId) {
+                fallbackId = 'fallback_' +
+                    navigator.platform + '_' +
+                    navigator.hardwareConcurrency + '_' +
+                    Date.now().toString(36);
+
+                localStorage.setItem('edutrack_fallback_id', fallbackId);
+            }
+
+            return fallbackId;
+        }
+
+        // Collect Additional Device Info for Server
+        function collectDeviceInfo() {
+            const deviceInfo = {
+                screen_resolution: screen.width + 'x' + screen.height,
+                user_agent: navigator.userAgent,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                language: navigator.language,
+                platform: navigator.platform,
+                hardware_concurrency: navigator.hardwareConcurrency || 'unknown',
+                device_memory: navigator.deviceMemory || 'unknown',
+                cookie_enabled: navigator.cookieEnabled,
+                touch_support: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+                pixel_ratio: window.devicePixelRatio || 1,
+                localStorage_support: !!window.localStorage,
+                session_storage_support: !!window.sessionStorage,
+                timestamp: new Date().toISOString()
+            };
+
+            // Hidden fields me add karo
+            const form = document.getElementById('loginForm');
+
+            // Pehle existing device info fields remove karo
+            const existingFields = form.querySelectorAll('input[name^="device_"]');
+            existingFields.forEach(field => field.remove());
+
+            // New fields add karo
+            for (const [key, value] of Object.entries(deviceInfo)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `device_${key}`;
+                input.value = value;
+                form.appendChild(input);
+            }
+        }
+
+        // Initialize Fingerprint on Page Load
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("Initializing stable device fingerprint...");
+
+            generateStableFingerprint().then(fp => {
+                document.getElementById('fingerprint').value = fp;
+                console.log("Stable Device Fingerprint Ready:", fp);
+
+                // Additional backup storage
+                sessionStorage.setItem('current_fingerprint', fp);
+
+            }).catch(error => {
+                console.error("Fingerprint initialization failed:", error);
+                document.getElementById('fingerprint').value = generateFallbackFingerprint();
+            });
         });
+
+        // Form Submission Handler
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            // Device info collect karo
+            collectDeviceInfo();
+
+            // Fingerprint verify karo
+            const fingerprint = document.getElementById('fingerprint').value;
+            if (!fingerprint) {
+                console.warn("No fingerprint found, generating...");
+                generateStableFingerprint().then(fp => {
+                    document.getElementById('fingerprint').value = fp;
+                    console.log("Fingerprint generated for submission:", fp);
+                });
+            }
+
+            console.log("Submitting login with fingerprint:", fingerprint);
+        });
+
+        // Recovery Mechanism - Agar fingerprint lost ho jaye
+        function recoverFingerprint() {
+            const storedFP = localStorage.getItem(FINGERPRINT_STORAGE_KEY);
+            const persistentUUID = localStorage.getItem('edutrack_persistent_uuid');
+            const fallbackID = localStorage.getItem('edutrack_fallback_id');
+
+            if (storedFP) {
+                return storedFP;
+            } else if (persistentUUID) {
+                return hashSHA256(persistentUUID + '|' + getSystemFingerprint());
+            } else if (fallbackID) {
+                return fallbackID;
+            } else {
+                return generateStableFingerprint();
+            }
+        }
+
+        // Periodic Fingerprint Validation (Optional)
+        setInterval(() => {
+            const currentFP = document.getElementById('fingerprint').value;
+            const storedFP = localStorage.getItem(FINGERPRINT_STORAGE_KEY);
+
+            if (currentFP !== storedFP && storedFP) {
+                console.warn("Fingerprint mismatch detected, recovering...");
+                document.getElementById('fingerprint').value = storedFP;
+            }
+        }, 30000); // Every 30 seconds check karo
+
+        // Existing form submission handler ko modify karo
+        const originalFormSubmit = document.getElementById('loginForm').onsubmit;
+        document.getElementById('loginForm').onsubmit = function (e) {
+            // Pehle device info collect karo
+            collectDeviceInfo();
+
+            // Fingerprint ensure karo
+            if (!document.getElementById('fingerprint').value) {
+                generateStableFingerprint().then(fp => {
+                    document.getElementById('fingerprint').value = fp;
+                    // Form submit karo
+                    if (originalFormSubmit) {
+                        originalFormSubmit.call(this, e);
+                    } else {
+                        this.submit();
+                    }
+                });
+                return false;
+            }
+
+            if (originalFormSubmit) {
+                return originalFormSubmit.call(this, e);
+            }
+        };
     </script>
 </body>
 
