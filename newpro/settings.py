@@ -136,18 +136,17 @@ USE_TZ = True
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR/"media"
 
-
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Static files (CSS, JS)
 STATIC_URL = '/static/'
 
-# Development ke liye
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'newapp/static'),  # tumhare app ke static folder
+    os.path.join(BASE_DIR, "newapp", "static"),
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+
 
 # Production ke liye collectstatic
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
