@@ -87,17 +87,6 @@ urlpatterns = [
     path('get-courses-details/', views.get_courses_details, name='getCourseDetails'),
     path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents'),
     path('Faculty-Dashboard/Filtered-Student-Chat-Management', lambda request: views.filtered_students(request, "chat/student_list_partial.html"), name='filteredFollowedStudents'),
-
-# for Bulk Actions
-    # for student bulk management
-    path('Admin-Dashboard/Student-Bulk-Management',lambda request: views.course_details(request,"bulkActions/student/studentActions.html"),name='studentBulkManagement'),
-    path('Dashboard-Admin/BulkAction-Student-Management',lambda request : views.filtered_students(request,"bulkActions/student/studentFilterResult.html"), name='bulkStudentFiltering'),
-    path('get-student-details/', views.get_student_details, name='get_student_details'),
-    path('update-student/', views.update_student, name='update_student'),
-    path('bulk-update-students/', views.bulk_update_students, name='bulk_update_students'),
-    path('delete-student/', views.delete_student, name='delete_student'),
-    path('bulk-delete-students/', views.bulk_delete_students, name='bulk_delete_students'),
-    path('export-students/', views.export_students, name='export_students'),
     
     # for other features
     path('Dashboard-Student/Fine-Management/', views.studentFine, name='studentFine'),
@@ -127,17 +116,11 @@ urlpatterns = [
 
    
     path('demo2/', views.demo2, name='demo2'),
-    
-    
-    # ajax practise urls
-    path("get-data1/", views.get_data_fetch, name="get_fetch"),
-    path("students/", views.students_list, name="students_list"),
-    path("students/<int:roll_no>/", views.student_detail, name="student_detail"),
-    path("students/delete_bulk/", views.delete_students, name="delete_students"),
-
-
-    # path('products/', ProductListView.as_view(), name='product-list'),
-    # path('products/<int:product_id>/', ProductDetailView.as_view(), name='product-detail'),
+    # for bulk Management
+    # 1}..For students
+    path('semester&year/',views.semester_and_year,name='semester_and_year'),
+    path('SelectedEditData/', views.SelectedEditData, name='SelectedEditData'),
+    path('Dashboard/Admin/BulkManagement/Students/',views.BulkStudentManagement, name='bulkStudentManagement'),
 ]
 
 

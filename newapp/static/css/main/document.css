@@ -10,6 +10,7 @@
             --transition: all 0.3s ease;
             --warning-dark: #ff9f1c;
             --warning: #faae42;
+            --danger: #e63946;
         }
 
         body {
@@ -195,6 +196,10 @@
             background: #f8d7da;
             color: #721c24;
         }
+        .status-update {
+            background: #ead6b9;
+            color: #faae42;
+        }
 
         .file-input {
             display: none;
@@ -216,6 +221,24 @@
 
         .upload-btn:hover {
             background: var(--primary-dark);
+        }
+
+        .update-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+         .update-btn:hover {
+            background: #e31728;
         }
 
         .view-btn {
@@ -381,3 +404,5 @@
             margin-right: 10px;
             font-size: 18px;
         }
+
+        

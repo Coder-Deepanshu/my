@@ -31,7 +31,8 @@
                 <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
                     role="alert" id="alertMessage">
                     {{ message }}
-                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert"
+                        aria-label="Close"></button>
                 </div>
                 {% endfor %}
             </div>
@@ -40,225 +41,300 @@
             <!-- Document Upload Tab -->
             <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
                 <div class="form-container">
-                <form method="POST" enctype="multipart/form-data" >
-                    {% csrf_token %}
-                    <h3 class="mb-4"><i class="fas fa-file-upload"></i> Upload Student Documents</h3>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <h3 class="mb-4"><i class="fas fa-file-upload"></i> Upload Student Documents</h3>
 
-                    <div class="student-info">
-                        {% if detail %}
-                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Avatar"
-                            class="student-avatar">
-                        <div class="student-details">
-                            <h4>{{ detail.name }} {{ detail.last_name }}</h4>
-                            <p id="{{ detail.college_id }}" class="college_id"><strong>ID:</strong> {{ detail.college_id }}</p>
-                            {% if type == 'Student' %}
-                            <p><strong>Course:</strong> {{ detail.course.name }} - {{ detail.course.level }}</p>
-                            <p><strong>Batch:</strong> {{ batch }}</p>
-                            {% else %}
-                            <p><strong>Position:</strong> {{ detail.position.name }} - {{ detail.department.name }}</p>
+                        <div class="student-info">
+                            {% if detail %}
+                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Avatar"
+                                class="student-avatar">
+                            <div class="student-details">
+                                <h4>{{ detail.name }} {{ detail.last_name }}</h4>
+                                <p id="{{ detail.college_id }}" class="college_id"><strong>ID:</strong> {{ detail.college_id }}</p>
+                                {% if type == 'Student' %}
+                                <p><strong>Course:</strong> {{ detail.course.name }} - {{ detail.course.level }}</p>
+                                <p><strong>Batch:</strong> {{ batch }}</p>
+                                {% else %}
+                                <p><strong>Position:</strong> {{ detail.position.name }} - {{ detail.department.name }}
+                                </p>
+                                {% endif %}
+
+                            </div>
                             {% endif %}
-
                         </div>
-                        {% endif %}
-                    </div>
 
-                    <div class="upload-section">
-                        <h4 class="section-title"><i class="fas fa-file-medical"></i> Required Documents</h4>
-                        <div class="document-grid">
-                            {% if type != 'Student' %}
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-file-alt"></i>
+                        <div class="upload-section">
+                            <h4 class="section-title"><i class="fas fa-file-medical"></i> Required Documents</h4>
+                            <div class="document-grid">
+                                {% if type != 'Student' %}
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <h5 class="document-name">Last Qualifiaction</h5>
+
+                                    {% if documents.pic5 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic5">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic5" name="pic5"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" id="pic5" name="pic5"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
                                 </div>
-                                <h5 class="document-name">Last Qualifiaction</h5>
-                                
-                                {% if documents.pic5 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic5">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" id="pic5" name="pic5"
-                                    accept=".pdf,.jpg,.jpeg,.png , image/*" >
-                                <label for="pic5" class="upload-btn">Select File</label>
-                                {% endif %}
-                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
-                            </div>
-                            {% endif %}
-
-                            <!-- Document Card 3 -->
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-id-card"></i>
-                                </div>
-                                <h5 class="document-name">Adhar Card</h5>
-
-                                {% if documents.pic1 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic1">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>   
-                                <input type="file" class="file-input" id="pic1" name="pic1"  accept=".jpg,.jpeg,.png,image/*">
-                                <label for="pic1" class="upload-btn">Select File</label>
-                                {% endif %}
-                                <div class="file-info">Accepted formats: JPG, PNG (Max 2MB)</div>
-                            </div>
-
-                            <!-- Document Card 4 -->
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-credit-card"></i>
-                                </div>
-                                <h5 class="document-name">PAN Card</h5>
-
-                                {% if documents.pic2 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic2">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" name="pic2" id="pic2" accept=".pdf,image/*" >
-                                <label for="pic2" class="upload-btn">Select File</label>
-                                {% endif %}
-                                <div class="file-info">Accepted formats: PDF (Max 5MB)</div>
-                            </div>
-
-                            <!-- Document Card 5 -->
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-users-cog"></i>
-                                </div>
-                                <h5 class="document-name">Caste Certificate</h5>
-
-                                {% if documents.pic3 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic3">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" name="pic3" id="pic3"
-                                    accept=".pdf,.jpg,.jpeg,.png,image/*" >
-                                <label for="pic3" class="upload-btn">Select File</label>
-                                {% endif %}
-                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
-                            </div>
-
-                            <!-- Document Card 6 -->
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-home"></i>
-                                </div>
-                                <h5 class="document-name">Residence Certificate</h5>
-
-                                {% if documents.pic4 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic4">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" id="pic4"
-                                   name="pic4" accept=".pdf,.jpg,.jpeg,.png,image/*">
-                                <label for="pic4" class="upload-btn">Select File</label>
-                                {% endif %}
-                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
-                            </div>
-
-                            {% if type == 'Student' %}
-
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-certificate"></i>
-                                </div>
-                                <h5 class="document-name">Character Certificate</h5>
-
-                                {% if documents.pic5 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic5">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" id="pic5" name="pic5"
-                                    accept=".pdf,.jpg,.jpeg,.png,image/*" >
-                                <label for="pic5" class="upload-btn">Select File</label>
-                                {% endif %}
-                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
-                            </div>
-
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-hand-holding-usd"></i>
-                                </div>
-                                <h5 class="document-name">Income Certificate</h5>
-
-                                {% if documents.pic6 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic6">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" id="pic6" name="pic6"
-                                    accept=".pdf,.jpg,.jpeg,.png,image/*">
-                                <label for="pic6" class="upload-btn">Select File</label>
-                                {% endif %}
-                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
-                            </div>
-
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <h5 class="document-name">Family ID</h5>
-
-                                {% if documents.pic7 %}
-                                <span class="document-status status-uploaded" data-id="pic7">Uploaded</span>
-                                <button type="button" class="view-btn">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" id="pic7" name="pic7" accept=".pdf,.jpg,.jpeg,.png,image/*">
-                                <label for="pic7" class="upload-btn">Select File</label>
-                                {% endif %}
-                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
-                            </div>
-
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-file-alt"></i>
-                                </div>
-                                <h5 class="document-name">10th DMC</h5>
-
-                                {% if documents.pic8 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic8">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" id="pic8" name="pic8" accept=".pdf,.jpg,.jpeg,.png,image/*">
-                                <label for="pic8" class="upload-btn">Select File</label>
                                 {% endif %}
 
-                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
-                            </div>
+                                <!-- Document Card 3 -->
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-id-card"></i>
+                                    </div>
+                                    <h5 class="document-name">Adhar Card</h5>
 
-                            <!-- Document Card 2 -->
-                            <div class="document-card">
-                                <div class="document-icon">
-                                    <i class="fas fa-file-invoice"></i>
+                                    {% if documents.pic1 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic1">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic1" name="pic1"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" id="pic1" name="pic1"
+                                        accept=".jpg,.jpeg,.png,image/*">
+                                    <label for="pic1" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: JPG, PNG (Max 2MB)</div>
                                 </div>
-                                <h5 class="document-name">12th DMC</h5>
 
-                                {% if documents.pic9 %}
-                                <span class="document-status status-uploaded">Uploaded</span>
-                                <button type="button" class="view-btn" data-id="pic9">View File</button>
-                                {% else %}
-                                <span class="document-status status-required">Pending</span>
-                                <input type="file" class="file-input" id="pic9" name="pic9" accept=".pdf,.jpg,.jpeg,.png,image/*" >
-                                <label for="pic9" class="upload-btn">Select File</label>
+                                <!-- Document Card 4 -->
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <h5 class="document-name">PAN Card</h5>
+
+                                    {% if documents.pic2 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic2">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic2" name="pic2"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" name="pic2" id="pic2" accept=".pdf,image/*">
+                                    <label for="pic2" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: PDF (Max 5MB)</div>
+                                </div>
+
+                                <!-- Document Card 5 -->
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-users-cog"></i>
+                                    </div>
+                                    <h5 class="document-name">Caste Certificate</h5>
+
+                                    {% if documents.pic3 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic3">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic3" name="pic3"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" name="pic3" id="pic3"
+                                        accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                    <label for="pic3" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                                </div>
+
+                                <!-- Document Card 6 -->
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <h5 class="document-name">Residence Certificate</h5>
+
+                                    {% if documents.pic4 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic4">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic4" name="pic4"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" id="pic4" name="pic4"
+                                        accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                    <label for="pic4" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                                </div>
+
+                                {% if type == 'Student' %}
+
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-certificate"></i>
+                                    </div>
+                                    <h5 class="document-name">Character Certificate</h5>
+
+                                    {% if documents.pic5 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic5">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic5" name="pic5"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" id="pic5" name="pic5"
+                                        accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                    <label for="pic5" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                                </div>
+
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-hand-holding-usd"></i>
+                                    </div>
+                                    <h5 class="document-name">Income Certificate</h5>
+
+                                    {% if documents.pic6 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic6">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic6" name="pic6"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" id="pic6" name="pic6"
+                                        accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                    <label for="pic6" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                                </div>
+
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <h5 class="document-name">Family ID</h5>
+
+                                    {% if documents.pic7 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic7">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic7" name="pic7"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic5" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" id="pic7" name="pic7"
+                                        accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                    <label for="pic7" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                                </div>
+
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <h5 class="document-name">10th DMC</h5>
+
+                                    {% if documents.pic8 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic8">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic8" name="pic8"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic8" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" id="pic8" name="pic8"
+                                        accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                    <label for="pic8" class="upload-btn">Select File</label>
+                                    {% endif %}
+
+                                    <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                                </div>
+
+                                <!-- Document Card 2 -->
+                                <div class="document-card">
+                                    <div class="document-icon">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </div>
+                                    <h5 class="document-name">12th DMC</h5>
+
+                                    {% if documents.pic9 %}
+                                    {% if permission == False %}
+                                    <span class="document-status status-uploaded">Uploaded</span>
+                                    <button type="button" class="view-btn" data-id="pic9">View File</button>
+                                    {% elif permission == True %}
+                                    <span class="document-status status-update">Update</span>
+                                    <input type="file" class="file-input" id="pic9" name="pic9"
+                                        accept=".pdf,.jpg,.jpeg,.png , image/*">
+                                    <label for="pic9" class="update-btn">Edit File</label>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="document-status status-required">Pending</span>
+                                    <input type="file" class="file-input" id="pic9" name="pic9"
+                                        accept=".pdf,.jpg,.jpeg,.png,image/*">
+                                    <label for="pic9" class="upload-btn">Select File</label>
+                                    {% endif %}
+                                    <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+                                </div>
                                 {% endif %}
-                                <div class="file-info">Accepted formats: PDF, JPG, PNG (Max 5MB)</div>
+
                             </div>
-                            {% endif %}
-                       
                         </div>
-                    </div>
 
-                    <div class="action-buttons">
-                        <button type="button" id="resetBtn" class="btn-reset">Reset</button>
-                        <button  type="submit" class="btn-submit">Submit All Documents</button>
-                    </div>
-                </form>
+                        <div class="action-buttons">
+                            <button type="button" id="resetBtn" class="btn-reset">Reset</button>
+                            <button type="submit" class="btn-submit">Submit All Documents</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -272,76 +348,76 @@
         const element = document.querySelector(".college_id")
         const college_id = element.id;
 
-       
-        viewBtn.forEach((pic)=>{
-            pic.addEventListener('click',(event)=>{
+
+        viewBtn.forEach((pic) => {
+            pic.addEventListener('click', (event) => {
                 const value = event.target.getAttribute('data-id');
-                viewDocument(college_id,value);
+                viewDocument(college_id, value);
             })
         })
 
-        function viewDocument(college_id, value){
-    fetch("/Dashboard-Admin/Get-Documents/", {  // Added leading slash
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCookie("csrftoken")
-        },
-        body: JSON.stringify({'college_id': college_id, 'documentid': value})
-    })
-    .then(res => res.json())
-    .then(data => { 
-        if(data.success){
-            window.location.href = `/Dashboard-Admin/View-Documents/${college_id}/${value}/`;  // Added slashes
-        } else {
-            alert('Document Detail Not Found!');
+        function viewDocument(college_id, value) {
+            fetch("/Dashboard-Admin/Get-Documents/", {  // Added leading slash
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'college_id': college_id, 'documentid': value })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = `/Dashboard-Admin/View-Documents/${college_id}/${value}/`;  // Added slashes
+                    } else {
+                        alert('Document Detail Not Found!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error checking document');
+                });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error checking document');
-    });
-}
 
-    function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Check if this cookie string begins with the name we want
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the name we want
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
             }
+            return cookieValue;
         }
-    }
-    return cookieValue;
-}
-// Simple reset with message
-document.querySelector("#resetBtn").addEventListener('click', function() {
-    // Form reset
-    document.querySelector('form').reset();
-    
-    // File inputs clear
-    document.querySelectorAll('input[type="file"]').forEach(input => {
-        input.value = '';
-    });
-    
-    // Success message existing messages container mein
-    const messagesContainer = document.querySelector('.container.mt-4');
-    if (messagesContainer) {
-        messagesContainer.innerHTML = `
+        // Simple reset with message
+        document.querySelector("#resetBtn").addEventListener('click', function () {
+            // Form reset
+            document.querySelector('form').reset();
+
+            // File inputs clear
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.value = '';
+            });
+
+            // Success message existing messages container mein
+            const messagesContainer = document.querySelector('.container.mt-4');
+            if (messagesContainer) {
+                messagesContainer.innerHTML = `
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 Form reset successfully!
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         ` + messagesContainer.innerHTML;
-    }
-});
+            }
+        });
 
 
-    // Auto-hide messages after 5 seconds
+        // Auto-hide messages after 5 seconds
         setTimeout(function () {
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(function (alert) {
@@ -349,10 +425,21 @@ document.querySelector("#resetBtn").addEventListener('click', function() {
             });
         }, 5000);
 
-        closeBtn.addEventListener('click',()=>{
+        closeBtn.addEventListener('click', () => {
             alertMessage.style.display = 'none';
         })
-       
+        const fileInput = document.querySelectorAll('.file-input')
+        const uploadBtn = document.querySelectorAll('.upload-btn')
+
+        fileInput.forEach(each=>{
+           each.addEventListener('click',()=>{
+            if (each.files.length >0){
+                alert('filled')
+            }
+           })
+            
+        })
+        
     </script>
 </body>
 

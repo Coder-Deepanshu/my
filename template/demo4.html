@@ -1,992 +1,408 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timetable | Edutrack - Education Management System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Student Table Container</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --accent: #7209b7;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --light-gray: #f0f2f5;
-            --border-gray: #dee2e6;
-            --student-color: #4361ee;
-            --faculty-color: #f8961e;
-            --admin-color: #e63946;
-            --lecture-color: #4361ee;
-            --lab-color: #2ecc71;
-            --tutorial-color: #e74c3c;
-            --seminar-color: #f39c12;
-            --break-color: #95a5a6;
-            --transition: all 0.3s ease;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: var(--light-gray);
-            color: var(--dark);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 20px;
         }
 
-        /* Header Styles */
-        .header {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        .student-table-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.8rem;
-        }
-
-        .nav-link {
-            color: var(--dark);
-            font-weight: 500;
-            margin: 0 10px;
-            transition: var(--transition);
-        }
-
-        .nav-link:hover {
-            color: var(--primary);
-        }
-
-        .nav-link.active {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            padding: 8px 20px;
-            border-radius: 6px;
-            transition: var(--transition);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 40px 0;
-            flex: 1;
-        }
-
-        /* Page Header */
-        .page-header {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .page-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        .page-subtitle {
-            color: var(--gray);
-            font-size: 1.1rem;
-            margin-bottom: 0;
-        }
-
-        .student-info {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .container-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .student-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 20px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 2rem;
-        }
-
-        /* Timetable Controls */
-        .timetable-controls {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .controls-row {
-            display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
+            align-items: center;
         }
 
-        .view-options {
-            display: flex;
-            gap: 10px;
+        .container-header h2 {
+            font-weight: 500;
+            font-size: 1.5rem;
         }
 
-        .view-btn {
-            padding: 10px 20px;
-            background: var(--light-gray);
-            border: 2px solid transparent;
-            border-radius: 8px;
-            font-weight: 600;
-            color: var(--gray);
-            cursor: pointer;
-            transition: var(--transition);
+        .container-content {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 0 10px;
         }
 
-        .view-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .view-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary-dark);
-        }
-
-        .current-week {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        /* Timetable Container */
-        .timetable-container {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        .table-responsive {
+            width: 100%;
             overflow-x: auto;
         }
 
-        /* Timetable Styles */
-        .timetable {
+        .student-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px;
+            min-width: 1000px;
         }
 
-        .timetable th {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 15px;
-            text-align: center;
+        .student-table th {
+            background-color: #f1f5f9;
+            padding: 12px 15px;
+            text-align: left;
             font-weight: 600;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+        }
+
+        .student-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .student-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-view {
+            background-color: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .btn-edit {
+            background-color: #f0fdf4;
+            color: #22c55e;
+        }
+
+        .btn-delete {
+            background-color: #fef2f2;
+            color: #ef4444;
             border: none;
-        }
-
-        .timetable th:first-child {
-            border-radius: 8px 0 0 0;
-        }
-
-        .timetable th:last-child {
-            border-radius: 0 8px 0 0;
-        }
-
-        .timetable td {
-            padding: 12px;
-            border: 1px solid var(--border-gray);
-            text-align: center;
-            vertical-align: top;
-            transition: var(--transition);
-        }
-
-        .time-slot {
-            background: var(--light-gray);
-            font-weight: 600;
-            color: var(--dark);
-            width: 100px;
-        }
-
-        .current-time {
-            background: rgba(67, 97, 238, 0.1) !important;
-            border: 2px solid var(--primary) !important;
-        }
-
-        /* Class Card Styles */
-        .class-card {
-            background: white;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid var(--lecture-color);
-            transition: var(--transition);
             cursor: pointer;
         }
 
-        .class-card:hover {
+        .btn-action:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .class-card.lecture {
-            border-left-color: var(--lecture-color);
-            background: linear-gradient(135deg, #f0f4ff, #e6eeff);
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-top: 1px solid #e2e8f0;
+            background-color: #f8fafc;
         }
 
-        .class-card.lab {
-            border-left-color: var(--lab-color);
-            background: linear-gradient(135deg, #f0fff4, #e6ffe6);
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #cbd5e1;
+            background-color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .class-card.tutorial {
-            border-left-color: var(--tutorial-color);
-            background: linear-gradient(135deg, #fff0f0, #ffe6e6);
-        }
-
-        .class-card.seminar {
-            border-left-color: var(--seminar-color);
-            background: linear-gradient(135deg, #fff8f0, #fff2e6);
-        }
-
-        .class-card.break {
-            border-left-color: var(--break-color);
-            background: linear-gradient(135deg, #f8f9fa, #f1f3f4);
-        }
-
-        .class-subject {
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 0.9rem;
-            margin-bottom: 4px;
-        }
-
-        .class-type {
-            font-size: 0.75rem;
-            font-weight: 600;
+        .pagination button:hover:not(:disabled) {
+            background-color: #3b82f6;
             color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-bottom: 4px;
+            border-color: #3b82f6;
         }
 
-        .class-type.lecture {
-            background: var(--lecture-color);
+        .pagination button:disabled {
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
         }
 
-        .class-type.lab {
-            background: var(--lab-color);
+        .submit-section {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid #e2e8f0;
         }
 
-        .class-type.tutorial {
-            background: var(--tutorial-color);
-        }
-
-        .class-type.seminar {
-            background: var(--seminar-color);
-        }
-
-        .class-type.break {
-            background: var(--break-color);
-        }
-
-        .class-details {
-            font-size: 0.8rem;
-            color: var(--gray);
-            margin-bottom: 2px;
-        }
-
-        .class-room {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        /* Today Highlight */
-        .today {
-            background: rgba(67, 97, 238, 0.05) !important;
-            position: relative;
-        }
-
-        .today::after {
-            content: "Today";
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--primary);
+        .submit-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-
-        /* Legend */
-        .legend {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .legend-title {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 15px;
-        }
-
-        .legend-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-        }
-
-        .legend-item {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 117, 252, 0.3);
         }
 
-        .legend-color.lecture {
-            background: var(--lecture-color);
+        .checkbox-cell {
+            text-align: center;
         }
 
-        .legend-color.lab {
-            background: var(--lab-color);
+        .student-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
         }
 
-        .legend-color.tutorial {
-            background: var(--tutorial-color);
-        }
-
-        .legend-color.seminar {
-            background: var(--seminar-color);
-        }
-
-        .legend-color.break {
-            background: var(--break-color);
-        }
-
-        /* Empty Slot */
-        .empty-slot {
-            color: var(--gray);
-            font-style: italic;
-            font-size: 0.9rem;
-        }
-
-        /* Responsive */
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .page-header {
-                padding: 20px;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .controls-row {
+            .container-header {
                 flex-direction: column;
-                align-items: stretch;
-            }
-
-            .view-options {
-                justify-content: center;
-            }
-
-            .timetable-container {
-                padding: 15px;
-            }
-
-            .timetable {
-                font-size: 0.9rem;
-            }
-
-            .class-card {
-                padding: 8px;
-            }
-
-            .class-subject {
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .main-content {
-                padding: 20px 0;
-            }
-
-            .student-info {
-                padding: 15px;
-            }
-
-            .student-avatar {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
-            }
-
-            .timetable th,
-            .timetable td {
-                padding: 8px 4px;
-            }
-
-            .time-slot {
-                width: 80px;
-            }
-        }
-
-        /* Animations */
-        .animate__animated {
-            animation-duration: 0.6s;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Print Styles */
-        @media print {
-            .header, .timetable-controls, .legend {
-                display: none;
+                gap: 10px;
+                align-items: flex-start;
             }
             
-            .timetable-container {
-                box-shadow: none;
-                padding: 0;
-            }
-            
-            .timetable {
-                box-shadow: none;
+            .pagination {
+                flex-direction: column;
+                gap: 10px;
             }
         }
     </style>
 </head>
-
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-light py-3">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'my_courses' %}">My Courses</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'assignments' %}">Assignments</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'timetable' %}">Timetable</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'grades' %}">Grades</a>
-                        </li>
-                    </ul>
-                    <div class="ms-lg-3 mt-3 mt-lg-0">
-                        <a href="{% url 'logout' %}" class="btn btn-outline-primary">Logout</a>
-                    </div>
-                </div>
+    <div class="student-table-container">
+        <div class="container-header">
+            <h2>Student Management</h2>
+            <div class="header-actions">
+                <!-- You can add additional header actions here -->
             </div>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Page Header -->
-            <div class="page-header animate__animated animate__fadeIn">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h1 class="page-title">My Timetable</h1>
-                        <p class="page-subtitle">Weekly class schedule for Semester 5</p>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="student-info">
-                            <div class="student-avatar">
-                                <i class="fas fa-user-graduate"></i>
-                            </div>
-                            <h5 class="mb-1">Rahul Sharma</h5>
-                            <p class="mb-0">B.Tech Computer Science • Roll No: CS2023001</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Timetable Controls -->
-            <div class="timetable-controls animate__animated animate__fadeIn">
-                <div class="controls-row">
-                    <div class="view-options">
-                        <button class="view-btn active" data-view="weekly">
-                            <i class="fas fa-calendar-week me-2"></i>Weekly View
-                        </button>
-                        <button class="view-btn" data-view="daily">
-                            <i class="fas fa-calendar-day me-2"></i>Daily View
-                        </button>
-                    </div>
-                    <div class="current-week">
-                        <i class="fas fa-calendar me-2 text-primary"></i>
-                        Week: 11 Dec - 17 Dec 2023
-                    </div>
-                    <div class="navigation-buttons">
-                        <button class="btn btn-outline-primary me-2">
-                            <i class="fas fa-chevron-left me-2"></i>Previous
-                        </button>
-                        <button class="btn btn-outline-primary">
-                            Next<i class="fas fa-chevron-right ms-2"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Timetable Container -->
-            <div class="timetable-container animate__animated animate__fadeIn">
-                <table class="timetable">
+        </div>
+        
+        <div class="container-content">
+            <div class="table-responsive">
+                <table class="student-table" id="student-table">
                     <thead>
                         <tr>
-                            <th>Time</th>
-                            <th>Monday</th>
-                            <th>Tuesday</th>
-                            <th>Wednesday</th>
-                            <th>Thursday</th>
-                            <th>Friday</th>
-                            <th>Saturday</th>
+                            <th class="checkbox-cell">Select</th>
+                            <th>Profile</th>
+                            <th>College ID</th>
+                            <th>Name</th>
+                            <th>Father's Name</th>
+                            <th>Course</th>
+                            <th>Year/Semester</th>
+                            <th>Phone 1</th>
+                            <th>Phone 2</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- 8:00 - 9:00 -->
-                        <tr>
-                            <td class="time-slot">8:00 - 9:00</td>
+                    <tbody id="studentTableBody">
+                        <!-- Sample data - replace with your actual data -->
+                        <tr id="student-001">
+                            <td class="checkbox-cell"><input type="checkbox" class="student-checkbox" data-id="001"></td>
                             <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Data Structures</div>
-                                    <div class="class-details">Dr. Priya Sharma</div>
-                                    <div class="class-room">Room: LT-101</div>
-                                </div>
+                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar" alt="Student">
                             </td>
-                            <td></td>
-                            <td>
-                                <div class="class-card lab">
-                                    <span class="class-type lab">Lab</span>
-                                    <div class="class-subject">Web Development</div>
-                                    <div class="class-details">Prof. Anjali Mehta</div>
-                                    <div class="class-room">Lab: C-201</div>
-                                </div>
-                            </td>
-                            <td></td>
-                            <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Database Systems</div>
-                                    <div class="class-details">Dr. Rajesh Kumar</div>
-                                    <div class="class-room">Room: LT-103</div>
-                                </div>
-                            </td>
-                            <td></td>
-                        </tr>
-
-                        <!-- 9:00 - 10:00 -->
-                        <tr>
-                            <td class="time-slot">9:00 - 10:00</td>
-                            <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Data Structures</div>
-                                    <div class="class-details">Dr. Priya Sharma</div>
-                                    <div class="class-room">Room: LT-101</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card tutorial">
-                                    <span class="class-type tutorial">Tutorial</span>
-                                    <div class="class-subject">Mathematics III</div>
-                                    <div class="class-details">Dr. Neha Gupta</div>
-                                    <div class="class-room">Room: T-205</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card lab">
-                                    <span class="class-type lab">Lab</span>
-                                    <div class="class-subject">Web Development</div>
-                                    <div class="class-details">Prof. Anjali Mehta</div>
-                                    <div class="class-room">Lab: C-201</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Operating Systems</div>
-                                    <div class="class-details">Prof. Sanjay Verma</div>
-                                    <div class="class-room">Room: LT-102</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Database Systems</div>
-                                    <div class="class-details">Dr. Rajesh Kumar</div>
-                                    <div class="class-room">Room: LT-103</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card seminar">
-                                    <span class="class-type seminar">Seminar</span>
-                                    <div class="class-subject">AI & ML</div>
-                                    <div class="class-details">Dr. Amit Patel</div>
-                                    <div class="class-room">Auditorium</div>
-                                </div>
+                            <td>001</td>
+                            <td>Rahul Sharma</td>
+                            <td>Rajesh Sharma</td>
+                            <td>CS101 - Bachelor</td>
+                            <td>2 Year / 3 Sem</td>
+                            <td>9876543210</td>
+                            <td>9876543211</td>
+                            <td class="action-buttons">
+                                <a href="#" class="btn-action btn-view" data-id="001">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a class="btn-action btn-edit" data-id="001">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn-action btn-delete" data-id="001">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
-
-                        <!-- 10:00 - 11:00 -->
-                        <tr>
-                            <td class="time-slot">10:00 - 11:00</td>
-                            <td class="current-time">
-                                <div class="class-card break">
-                                    <span class="class-type break">Break</span>
-                                    <div class="class-subject">Short Break</div>
-                                    <div class="class-details">Refreshments</div>
-                                </div>
-                            </td>
+                        <tr id="student-002">
+                            <td class="checkbox-cell"><input type="checkbox" class="student-checkbox" data-id="002"></td>
                             <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Computer Networks</div>
-                                    <div class="class-details">Dr. Sunil Rao</div>
-                                    <div class="class-room">Room: LT-104</div>
-                                </div>
+                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar" alt="Student">
                             </td>
-                            <td class="current-time">
-                                <div class="class-card break">
-                                    <span class="class-type break">Break</span>
-                                    <div class="class-subject">Short Break</div>
-                                    <div class="class-details">Refreshments</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Operating Systems</div>
-                                    <div class="class-details">Prof. Sanjay Verma</div>
-                                    <div class="class-room">Room: LT-102</div>
-                                </div>
-                            </td>
-                            <td class="current-time">
-                                <div class="class-card break">
-                                    <span class="class-type break">Break</span>
-                                    <div class="class-subject">Short Break</div>
-                                    <div class="class-details">Refreshments</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card seminar">
-                                    <span class="class-type seminar">Seminar</span>
-                                    <div class="class-subject">AI & ML</div>
-                                    <div class="class-details">Dr. Amit Patel</div>
-                                    <div class="class-room">Auditorium</div>
-                                </div>
+                            <td>002</td>
+                            <td>Priya Patel</td>
+                            <td>Sanjay Patel</td>
+                            <td>ME201 - Master</td>
+                            <td>1 Year / 2 Sem</td>
+                            <td>9876543212</td>
+                            <td>9876543213</td>
+                            <td class="action-buttons">
+                                <a href="#" class="btn-action btn-view" data-id="002">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a class="btn-action btn-edit" data-id="002">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn-action btn-delete" data-id="002">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
-
-                        <!-- 11:00 - 12:00 -->
-                        <tr>
-                            <td class="time-slot">11:00 - 12:00</td>
+                        <tr id="student-003">
+                            <td class="checkbox-cell"><input type="checkbox" class="student-checkbox" data-id="003"></td>
                             <td>
-                                <div class="class-card lab">
-                                    <span class="class-type lab">Lab</span>
-                                    <div class="class-subject">Data Structures</div>
-                                    <div class="class-details">Dr. Priya Sharma</div>
-                                    <div class="class-room">Lab: C-102</div>
-                                </div>
+                                <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar" alt="Student">
                             </td>
-                            <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Computer Networks</div>
-                                    <div class="class-details">Dr. Sunil Rao</div>
-                                    <div class="class-room">Room: LT-104</div>
-                                </div>
+                            <td>003</td>
+                            <td>Amit Kumar</td>
+                            <td>Vikash Kumar</td>
+                            <td>EC301 - Bachelor</td>
+                            <td>3 Year / 5 Sem</td>
+                            <td>9876543214</td>
+                            <td>9876543215</td>
+                            <td class="action-buttons">
+                                <a href="#" class="btn-action btn-view" data-id="003">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a class="btn-action btn-edit" data-id="003">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn-action btn-delete" data-id="003">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
-                            <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Software Engineering</div>
-                                    <div class="class-details">Prof. Ravi Menon</div>
-                                    <div class="class-room">Room: LT-105</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card tutorial">
-                                    <span class="class-type tutorial">Tutorial</span>
-                                    <div class="class-subject">Database Systems</div>
-                                    <div class="class-details">Dr. Rajesh Kumar</div>
-                                    <div class="class-room">Room: T-206</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card lab">
-                                    <span class="class-type lab">Lab</span>
-                                    <div class="class-subject">Operating Systems</div>
-                                    <div class="class-details">Prof. Sanjay Verma</div>
-                                    <div class="class-room">Lab: C-103</div>
-                                </div>
-                            </td>
-                            <td class="empty-slot">No Classes</td>
                         </tr>
-
-                        <!-- 12:00 - 1:00 -->
-                        <tr>
-                            <td class="time-slot">12:00 - 1:00</td>
-                            <td>
-                                <div class="class-card lab">
-                                    <span class="class-type lab">Lab</span>
-                                    <div class="class-subject">Data Structures</div>
-                                    <div class="class-details">Dr. Priya Sharma</div>
-                                    <div class="class-room">Lab: C-102</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card break">
-                                    <span class="class-type break">Lunch Break</span>
-                                    <div class="class-subject">Lunch Time</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card lecture">
-                                    <span class="class-type lecture">Lecture</span>
-                                    <div class="class-subject">Software Engineering</div>
-                                    <div class="class-details">Prof. Ravi Menon</div>
-                                    <div class="class-room">Room: LT-105</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card tutorial">
-                                    <span class="class-type tutorial">Tutorial</span>
-                                    <div class="class-subject">Database Systems</div>
-                                    <div class="class-details">Dr. Rajesh Kumar</div>
-                                    <div class="class-room">Room: T-206</div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="class-card lab">
-                                    <span class="class-type lab">Lab</span>
-                                    <div class="class-subject">Operating Systems</div>
-                                    <div class="class-details">Prof. Sanjay Verma</div>
-                                    <div class="class-room">Lab: C-103</div>
-                                </div>
-                            </td>
-                            <td class="empty-slot">No Classes</td>
-                        </tr>
-
-                        <!-- 1:00 - 2:00 -->
-                        <tr>
-                            <td class="time-slot">1:00 - 2:00</td>
-                            <td class="empty-slot">No Classes</td>
-                            <td>
-                                <div class="class-card break">
-                                    <span class="class-type break">Lunch Break</span>
-                                    <div class="class-subject">Lunch Time</div>
-                                </div>
-                            </td>
-                            <td class="empty-slot">No Classes</td>
-                            <td class="empty-slot">No Classes</td>
-                            <td class="empty-slot">No Classes</td>
-                            <td class="empty-slot">No Classes</td>
-                        </tr>
+                        <!-- Add more rows as needed -->
                     </tbody>
                 </table>
             </div>
-
-            <!-- Legend -->
-            <div class="legend animate__animated animate__fadeIn">
-                <h6 class="legend-title">Class Type Legend</h6>
-                <div class="legend-items">
-                    <div class="legend-item">
-                        <div class="legend-color lecture"></div>
-                        <span>Lecture</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color lab"></div>
-                        <span>Laboratory</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color tutorial"></div>
-                        <span>Tutorial</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color seminar"></div>
-                        <span>Seminar</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color break"></div>
-                        <span>Break</span>
-                    </div>
-                </div>
-            </div>
         </div>
-    </main>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="pagination" id="pagination">
+            <button id="prev-btn" data-page="1" disabled>Previous</button>
+            <span>Page 1 of 3</span>
+            <button id="next-btn" data-page="2">Next</button>
+        </div>
+
+        <div class="submit-section">
+            <button class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Selected
+            </button>
+        </div>
+    </div>
+
     <script>
+        // Sample JavaScript for interactivity
         document.addEventListener('DOMContentLoaded', function() {
-            // View Toggle Functionality
-            const viewButtons = document.querySelectorAll('.view-btn');
-            
-            viewButtons.forEach(button => {
+            // Delete button functionality
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            deleteButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // Remove active class from all buttons
-                    viewButtons.forEach(btn => btn.classList.remove('active'));
-                    
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
-                    const viewType = this.getAttribute('data-view');
-                    toggleView(viewType);
+                    const studentId = this.getAttribute('data-id');
+                    if (confirm(`Are you sure you want to delete student ${studentId}?`)) {
+                        // In a real application, you would make an AJAX request here
+                        document.getElementById(`student-${studentId}`).remove();
+                        console.log(`Student ${studentId} deleted`);
+                    }
                 });
             });
 
-            function toggleView(viewType) {
-                // In real implementation, this would switch between weekly and daily views
-                if (viewType === 'daily') {
-                    alert('Daily view would be implemented here. For demo, showing weekly view.');
-                }
-                // Weekly view is default
-            }
+            // View button functionality
+            const viewButtons = document.querySelectorAll('.btn-view');
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const studentId = this.getAttribute('data-id');
+                    alert(`View details for student ${studentId}`);
+                    // In a real application, you would navigate to the student details page
+                });
+            });
 
-            // Highlight current day
-            const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-            const dayColumns = document.querySelectorAll('tbody td');
+            // Edit button functionality
+            const editButtons = document.querySelectorAll('.btn-edit');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    alert(`Edit student ${studentId}`);
+                    // In a real application, you would open an edit form/modal
+                });
+            });
+
+            // Pagination functionality
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
             
-            // Adjust for our table structure (Monday = index 1, Tuesday = index 2, etc.)
-            if (today >= 1 && today <= 6) {
-                const dayIndex = today; // Monday = 1, Tuesday = 2, etc.
-                dayColumns.forEach((cell, index) => {
-                    if ((index % 7) === dayIndex) {
-                        cell.classList.add('today');
-                    }
-                });
-            }
-
-            // Highlight current time slot
-            function highlightCurrentTime() {
-                const now = new Date();
-                const currentHour = now.getHours();
-                const currentMinutes = now.getMinutes();
-                const totalMinutes = currentHour * 60 + currentMinutes;
-
-                // Define time slots (in minutes)
-                const timeSlots = [
-                    { start: 8 * 60, end: 9 * 60 },   // 8:00 - 9:00
-                    { start: 9 * 60, end: 10 * 60 },  // 9:00 - 10:00
-                    { start: 10 * 60, end: 11 * 60 }, // 10:00 - 11:00
-                    { start: 11 * 60, end: 12 * 60 }, // 11:00 - 12:00
-                    { start: 12 * 60, end: 13 * 60 }, // 12:00 - 1:00
-                    { start: 13 * 60, end: 14 * 60 }  // 1:00 - 2:00
-                ];
-
-                // Find current time slot
-                let currentSlot = -1;
-                timeSlots.forEach((slot, index) => {
-                    if (totalMinutes >= slot.start && totalMinutes < slot.end) {
-                        currentSlot = index;
-                    }
-                });
-
-                // Highlight current time slot
-                if (currentSlot !== -1) {
-                    const rows = document.querySelectorAll('tbody tr');
-                    if (rows[currentSlot]) {
-                        const cells = rows[currentSlot].querySelectorAll('td');
-                        cells.forEach(cell => {
-                            cell.classList.add('current-time');
-                        });
-                    }
-                }
-            }
-
-            // Initialize current time highlighting
-            highlightCurrentTime();
-            setInterval(highlightCurrentTime, 60000); // Update every minute
-
-            // Class card click handler
-            const classCards = document.querySelectorAll('.class-card');
-            classCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const subject = this.querySelector('.class-subject').textContent;
-                    const type = this.querySelector('.class-type').textContent;
-                    const details = this.querySelector('.class-details').textContent;
-                    const room = this.querySelector('.class-room').textContent;
-                    
-                    alert(`Class Details:\n\nSubject: ${subject}\nType: ${type}\nInstructor: ${details}\n${room}`);
-                });
-            });
-
-            // Navigation buttons
-            const prevBtn = document.querySelector('.btn-outline-primary:first-child');
-            const nextBtn = document.querySelector('.btn-outline-primary:last-child');
-
             prevBtn.addEventListener('click', function() {
-                alert('Previous week would be loaded here.');
+                const page = this.getAttribute('data-page');
+                loadPage(page);
             });
-
+            
             nextBtn.addEventListener('click', function() {
-                alert('Next week would be loaded here.');
+                const page = this.getAttribute('data-page');
+                loadPage(page);
             });
 
-            // Initialize animations
-            const animatedElements = document.querySelectorAll('.animate__animated');
-            animatedElements.forEach((element, index) => {
-                element.style.animationDelay = `${index * 0.1}s`;
+            function loadPage(page) {
+                // In a real application, you would make an AJAX request here
+                console.log(`Loading page ${page}`);
+                // Update pagination buttons and table content
+            }
+
+            // Submit button functionality
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.addEventListener('click', function() {
+                const selectedStudents = [];
+                const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+                
+                checkboxes.forEach(checkbox => {
+                    selectedStudents.push(checkbox.getAttribute('data-id'));
+                });
+                
+                if (selectedStudents.length === 0) {
+                    alert('Please select at least one student');
+                    return;
+                }
+                
+                alert(`Submitting data for students: ${selectedStudents.join(', ')}`);
+                // In a real application, you would submit the form data
             });
         });
     </script>
 </body>
-
 </html>

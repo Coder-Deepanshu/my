@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -11,7 +12,7 @@
     <link rel="stylesheet" href="{% static 'css/bulkActions/student.css' %}">
 </head>
 
-<body>
+<div>
     {% include "header.html" %}
     <!-- Page Header -->
     <section class="page-header">
@@ -50,34 +51,24 @@
                     <select id="course" class="form-select">
                         <option value="all" selected>All Courses</option>
                         {% for course in courses %}
-                        <option value="{{ course }}">{{ course }}</option>
+                        <option value="{{ course.course_id }}">{{ course.name }} with {{ course.level.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <label for="year"><i class="fas fa-calendar-alt"></i> Year:</label>
-                    <select id="year" class="form-select">
+                    <select id="year" class="form-select" disabled>
                         <option value="all" selected>All Years</option>
-                        <option value="1">1st Year</option>
-                        <option value="2">2nd Year</option>
-                        <option value="3">3rd Year</option>
-                        <option value="4">4th Year</option>
+                        <!-- result will loaded here -->
                     </select>
                 </div>
 
                 <div class="filter-group">
                     <label for="semester"><i class="fas fa-calendar-check"></i> Semester:</label>
-                    <select id="semester" class="form-select">
+                    <select id="semester" class="form-select" disabled>
                         <option value="all" selected>All Semesters</option>
-                        <option value="1">Semester 1</option>
-                        <option value="2">Semester 2</option>
-                        <option value="3">Semester 3</option>
-                        <option value="4">Semester 4</option>
-                        <option value="5">Semester 5</option>
-                        <option value="6">Semester 6</option>
-                        <option value="7">Semester 7</option>
-                        <option value="8">Semester 8</option>
+                        <!-- result will loaded here -->
                     </select>
                 </div>
 
@@ -115,10 +106,10 @@
                     </div>
                     <p>Loading student data...</p>
                 </div>
-
+                <!--  Ajax Pagination -->
                 <div id="results">
                     <div class="table-responsive">
-                        <table class="student-table">
+                        <table class="student-table" id="student-table">
                             <thead>
                                 <tr>
                                     <th>Select</th>
@@ -134,9 +125,10 @@
                                 </tr>
                             </thead>
                             <tbody id="studentTableBody">
-                                {% for student in students %}
+                                {% for student in page_obj %}
                                 <tr id="student-{{ student.college_id }}">
-                                    <td><input type="checkbox" class="student-checkbox" data-id="{{ student.college_id }}"></td>
+                                    <td><input type="checkbox" class="student-checkbox"
+                                            data-id="{{ student.college_id }}"></td>
                                     <td>
                                         {% if student.profile_picture %}
                                         <img src="{{ student.profile_picture.url }}" class="avatar" alt="Student">
@@ -149,7 +141,8 @@
                                     <td>{{ student.name }} {{ student.last_name }}</td>
                                     <td>{{ student.father_name }}</td>
                                     <td>{{ student.course.code }} - {{ student.course.level }}</td>
-                                    <td>{{ student.year }} Year / {{ student.semester }} Sem</td>
+                                    <td>{{ student.year }} Year / {{ student.semester }} Sem
+                                    </td>
                                     <td>{{ student.phone }}</td>
                                     <td>{{ student.other_phone_no }}</td>
                                     <td class="action-buttons">
@@ -171,198 +164,58 @@
 
                     <!-- Pagination will be handled via AJAX -->
                     <div class="pagination" id="pagination">
-                        <!-- Pagination will be dynamically generated -->
+                        <button id="prev-btn"
+                            data-page="{% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}"
+                            {% if not page_obj.has_previous %}disabled{% endif %}>Previous</button>
+                        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                        <button id="next-btn"
+                            data-page="{% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}"
+                            {% if not page_obj.has_next %}disabled{% endif %}>Next</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- View Student Modal -->
-    <div class="modal fade" id="viewStudentModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <!-- Selected Students Modal -->
+    <div class="modal-overlay" id="selectedStudentsModal" style="display: none;">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Student Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    <h5 class="modal-title">Selected Students</h5>
+                    <button type="button" id="closeBtn" class="btn-close btn-close-white close-selected-modal"
                         aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="viewStudentModalBody">
-                    <!-- Content will be loaded via AJAX -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="editFromViewBtn">Edit Details</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Student Modal -->
-    <div class="modal fade" id="editStudentModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Student Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
                 <div class="modal-body">
-                    <form id="editStudentForm" method="post" action="{% url 'update_student' %}">
-                        {% csrf_token %}
-                        <input type="hidden" id="editCollegeId" name="college_id">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editName" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="editName" name="name" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editLastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="editLastName" name="last_name" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editFather" class="form-label">Father's Name</label>
-                                <input type="text" class="form-control" id="editFather" name="father_name" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editMother" class="form-label">Mother's Name</label>
-                                <input type="text" class="form-control" id="editMother" name="mother_name" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="editCourse" class="form-label">Course</label>
-                                <select class="form-select" id="editCourse" name="course" required>
-                                    {% for course in courses %}
-                                    <option value="{{ course }}">{{ course }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="editYear" class="form-label">Year</label>
-                                <select class="form-select" id="editYear" name="year" required>
-                                    <option value="1">1st Year</option>
-                                    <option value="2">2nd Year</option>
-                                    <option value="3">3rd Year</option>
-                                    <option value="4">4th Year</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="editSemester" class="form-label">Semester</label>
-                                <select class="form-select" id="editSemester" name="semester" required>
-                                    <option value="1">Semester 1</option>
-                                    <option value="2">Semester 2</option>
-                                    <option value="3">Semester 3</option>
-                                    <option value="4">Semester 4</option>
-                                    <option value="5">Semester 5</option>
-                                    <option value="6">Semester 6</option>
-                                    <option value="7">Semester 7</option>
-                                    <option value="8">Semester 8</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="editEmail" name="email" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editPhone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="editPhone" name="phone" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editAddress" class="form-label">Address</label>
-                            <textarea class="form-control" id="editAddress" name="address" rows="3" required></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveStudentBtn">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <div class="student-table-container">
+                        <div class="container-content">
+                            <div class="table-responsive">
+                                <table class="student-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Profile</th>
+                                            <th>College ID</th>
+                                            <th>Name</th>
+                                            <th>Father's Name</th>
+                                            <th>Course</th>
+                                            <th>Document</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="selectedStudentsTableBody">
+                                        <!-- Selected students will appear here -->
 
-    <!-- Bulk Edit Modal -->
-    <div class="modal fade" id="bulkEditModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Bulk Edit Students</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="bulkEditForm" method="post" action="{% url 'bulk_update_students' %}">
-                        {% csrf_token %}
-                        <input type="hidden" id="bulkEditIds" name="student_ids">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> Only fields with changes will be updated for selected students.
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="bulkEditCourse" class="form-label">Course</label>
-                                <select class="form-select" id="bulkEditCourse" name="course">
-                                    <option value="">-- No Change --</option>
-                                    {% for course in courses %}
-                                    <option value="{{ course }}">{{ course }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="bulkEditYear" class="form-label">Year</label>
-                                <select class="form-select" id="bulkEditYear" name="year">
-                                    <option value="">-- No Change --</option>
-                                    <option value="1">1st Year</option>
-                                    <option value="2">2nd Year</option>
-                                    <option value="3">3rd Year</option>
-                                    <option value="4">4th Year</option>
-                                </select>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="bulkEditSemester" class="form-label">Semester</label>
-                                <select class="form-select" id="bulkEditSemester" name="semester">
-                                    <option value="">-- No Change --</option>
-                                    <option value="1">Semester 1</option>
-                                    <option value="2">Semester 2</option>
-                                    <option value="3">Semester 3</option>
-                                    <option value="4">Semester 4</option>
-                                    <option value="5">Semester 5</option>
-                                    <option value="6">Semester 6</option>
-                                    <option value="7">Semester 7</option>
-                                    <option value="8">Semester 8</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveBulkEditBtn">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete the selected student(s)? This action cannot be undone.</p>
-                    <div id="deleteStudentsList"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                    <button type="button" class="btn btn-secondary close-selected-modal" id="closeBtn"
+                        style="margin-right: 5px;">Close</button>
+                    <button type="button" class="btn btn-primary submit-selected-btn">
+                        <i class="fas fa-paper-plane"></i> Submit Selected
+                    </button>
                 </div>
             </div>
         </div>
@@ -371,401 +224,308 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        $(document).ready(function () {
-            var currentPage = 1;
-            var totalPages = 1;
-            
-            // Function to load students with filters and pagination
-function loadStudents(page = 1) {
-    const course = $('#course').val();
-    const year = $('#year').val();
-    const semester = $('#semester').val();
-    const collegeId = $('#college_id').val();
-    
-    $('#loading').show();
-    $('#results').hide();
-    
-    $.ajax({
-        url: "{% url 'bulkStudentFiltering' %}",
-        type: "GET",
-        data: {
-            course: course,
-            year: year,
-            semester: semester,
-            college_id: collegeId,
-            page: page
-        },
-        success: function(response) {
-            $('#studentTableBody').html(response.html);
-            if (response.pagination) {
-                $('#pagination').html(response.pagination);
-                currentPage = page;
-                totalPages = response.total_pages;
+        const course = document.querySelector('#course');
+        const year = document.querySelector('#year');
+        const semester = document.querySelector('#semester');
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            function loadPage(page) {
+                const college_id = document.getElementById("college_id").value;
+                console.log({ course, year, semester, college_id })
+                fetch(`?page=${page}&course=${course.value}&year=${year.value}&semester=${semester.value}&college_id=${college_id}`, {
+                    headers: {
+                        "x-requested-with": "XMLHttpRequest"
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+
+                        let table = document.getElementById("studentTableBody");
+                        table.innerHTML = "";  // CLEAR previous rows
+
+                        data.students.forEach(detail => {
+                            table.innerHTML += `
+                <tr id="student-${detail.college_id}">
+                    <td><input type="checkbox" class="student-checkbox" data-id="${detail.college_id}"></td>
+                    <td>
+                        ${detail.image ?
+                                    `<img src="${detail.image}" class="avatar">` :
+                                    `<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar">`}
+                    </td>
+                    <td>${detail.college_id}</td>
+                    <td>${detail.name}</td>
+                    <td>${detail.father_name}</td>
+                    <td>${detail.course}</td>
+                    <td>${detail.class}</td>
+                    <td>${detail.phone1}</td>
+                    <td>${detail.phone2}</td>
+                    <td class="action-buttons">
+                        <a href="#" class="btn-action btn-view" data-id="${detail.college_id}">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a class="btn-action btn-edit" data-id="${detail.college_id}">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="btn-action btn-delete" data-id="${detail.college_id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+
+                        });
+
+                        // year.innerHTML = `<option value="all" selected disabled>All Years</option>`;
+                        // semester.innerHTML = `<option value="all" selected disabled>All Semester</option>`;
+
+                        // pagination update
+                        let prev = document.getElementById("prev-btn");
+                        let next = document.getElementById("next-btn");
+
+                        prev.dataset.page = data.page_number - 1;
+                        next.dataset.page = data.page_number + 1;
+
+                        prev.disabled = !data.has_prev;
+                        next.disabled = !data.has_next;
+
+                        document.querySelector("#pagination span").innerText =
+                            `Page ${data.page_number} of ${data.total_page}`;
+                    })
             }
-            $('#loading').hide();
-            $('#results').show();
-        },
-        error: function(xhr, status, error) {
-            $('#loading').hide();
-            showMessage('Error loading students: ' + error, 'error');
-        }
-    });
-}
-            
-            // Filter students
-            $('#filterBtn').click(function () {
-                loadStudents(1);
-            });
-            
-            // Pagination click handler
-            $(document).on('click', '.page-link', function(e) {
-                e.preventDefault();
-                const page = $(this).data('page');
-                if (page && page !== currentPage) {
-                    loadStudents(page);
-                }
-            });
-            
-            // View student details
-            $(document).on('click', '.btn-view', function () {
-                const studentId = $(this).data('id');
-                
-                $.ajax({
-                    url: "{% url 'get_student_details' %}",
-                    type: "GET",
-                    data: { college_id: studentId },
-                    success: function(response) {
-                        if (response.success) {
-                            const student = response.student;
-                            const modalContent = `
-                                <div class="row">
-                                    <div class="col-md-4 text-center">
-                                        ${student.profile_picture ? 
-                                            `<img src="${student.profile_picture}" class="img-fluid rounded-circle mb-3" alt="Student">` : 
-                                            `<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="img-fluid rounded-circle mb-3" alt="Student">`
-                                        }
-                                        <h4>${student.name} ${student.last_name}</h4>
-                                        <p class="text-muted">${student.course} - ${student.level}</p>
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <strong>College ID:</strong> <span>${student.college_id}</span>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <strong>Email:</strong> <span>${student.email}</span>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <strong>Father's Name:</strong> <span>${student.father_name}</span>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <strong>Mother's Name:</strong> <span>${student.mother_name}</span>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-md-6">
-                                                <strong>Year/Semester:</strong> <span>${student.year} Year / ${student.semester} Semester</span>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <strong>Date of Birth:</strong> <span>${student.birthday}</span>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-3">
-                                            <div class="col-12">
-                                                <strong>Address:</strong>
-                                                <span>${student.address}, ${student.city}, ${student.state}, India - ${student.state_code}</span>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <strong>Phone:</strong> <span>+91 ${student.phone}</span>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <strong>Joined:</strong> <span>${student.date_of_joining}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                            $('#viewStudentModalBody').html(modalContent);
-                            $('#viewStudentModal').data('id', studentId);
-                            $('#viewStudentModal').modal('show');
-                        } else {
-                            showMessage(response.error, 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showMessage('Error loading student details: ' + error, 'error');
-                    }
-                });
-            });
-            
-            // Edit student from view modal
-            $('#editFromViewBtn').click(function() {
-                const studentId = $('#viewStudentModal').data('id');
-                $('#viewStudentModal').modal('hide');
-                loadStudentForEdit(studentId);
-            });
-            
-            // Edit student
-            $(document).on('click', '.btn-edit', function () {
-                const studentId = $(this).data('id');
-                loadStudentForEdit(studentId);
-            });
-            
-            function loadStudentForEdit(studentId) {
-                $.ajax({
-                    url: "{% url 'get_student_details' %}",
-                    type: "GET",
-                    data: { college_id: studentId },
-                    success: function(response) {
-                        if (response.success) {
-                            const student = response.student;
-                            $('#editCollegeId').val(student.college_id);
-                            $('#editName').val(student.name);
-                            $('#editLastName').val(student.last_name);
-                            $('#editFather').val(student.father_name);
-                            $('#editMother').val(student.mother_name);
-                            $('#editCourse').val(student.course);
-                            $('#editYear').val(student.year);
-                            $('#editSemester').val(student.semester);
-                            $('#editEmail').val(student.email);
-                            $('#editPhone').val(student.phone);
-                            $('#editAddress').val(student.address);
-                            
-                            $('#editStudentModal').data('id', studentId);
-                            $('#editStudentModal').modal('show');
-                        } else {
-                            showMessage(response.error, 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showMessage('Error loading student details: ' + error, 'error');
-                    }
-                });
-            }
-            
-            // Save edited student
-            $('#saveStudentBtn').click(function () {
-                const formData = $('#editStudentForm').serialize();
-                
-                $.ajax({
-                    url: "{% url 'update_student' %}",
-                    type: "POST",
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
-                            $('#editStudentModal').modal('hide');
-                            showMessage(response.message, 'success');
-                            loadStudents(currentPage);
-                        } else {
-                            showMessage(response.error, 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showMessage('Error updating student: ' + error, 'error');
-                    }
-                });
-            });
-            
-            // Delete student
-            $(document).on('click', '.btn-delete', function () {
-                const studentId = $(this).data('id');
-                const studentName = $(this).closest('tr').find('td:eq(3)').text();
 
-                $('#deleteStudentsList').html(`<p><strong>${studentName}</strong> (ID: ${studentId})</p>`);
-                $('#deleteConfirmModal').data('id', studentId);
-                $('#deleteConfirmModal').modal('show');
+            // Events
+            document.getElementById("prev-btn").addEventListener("click", function () {
+                loadPage(this.dataset.page);
             });
-            
-            // Confirm delete single student
-            $('#confirmDeleteBtn').click(function () {
-                const studentId = $('#deleteConfirmModal').data('id');
-                
-                $.ajax({
-                    url: "{% url 'delete_student' %}",
-                    type: "POST",
-                    data: {
-                        college_id: studentId,
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            $('#deleteConfirmModal').modal('hide');
-                            showMessage(response.message, 'success');
-                            // Remove the student row from table
-                            $(`#student-${studentId}`).remove();
-                        } else {
-                            showMessage(response.error, 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showMessage('Error deleting student: ' + error, 'error');
-                    }
-                });
+
+            document.getElementById("next-btn").addEventListener("click", function () {
+                loadPage(this.dataset.page);
             });
-            
-            // Select all checkbox
-            $('#selectAll').change(function () {
-                $('.student-checkbox').prop('checked', this.checked);
+
+            document.getElementById("filterBtn").addEventListener("click", function () {
+                loadPage(1);
             });
-            
-            // Edit selected students
-            $('#editSelected').click(function () {
-                const selectedIds = [];
-                $('.student-checkbox:checked').each(function () {
-                    selectedIds.push($(this).data('id'));
-                });
 
-                if (selectedIds.length === 0) {
-                    showMessage('Please select at least one student to edit.', 'warning');
-                    return;
-                }
-                
-                $('#bulkEditIds').val(selectedIds.join(','));
-                $('#bulkEditModal').modal('show');
-            });
-            
-            // Save bulk edit
-            $('#saveBulkEditBtn').click(function() {
-                const formData = $('#bulkEditForm').serialize();
-                
-                $.ajax({
-                    url: "{% url 'bulk_update_students' %}",
-                    type: "POST",
-                    data: formData,
-                    success: function(response) {
-                        if (response.success) {
-                            $('#bulkEditModal').modal('hide');
-                            showMessage(response.message, 'success');
-                            loadStudents(currentPage);
-                        } else {
-                            showMessage(response.error, 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showMessage('Error updating students: ' + error, 'error');
-                    }
-                });
-            });
-            
-            // Delete selected students
-            $('#deleteSelected').click(function () {
-                const selectedIds = [];
-                const selectedNames = [];
-
-                $('.student-checkbox:checked').each(function () {
-                    const id = $(this).data('id');
-                    const name = $(this).closest('tr').find('td:eq(3)').text();
-                    selectedIds.push(id);
-                    selectedNames.push(name);
-                });
-
-                if (selectedIds.length === 0) {
-                    showMessage('Please select at least one student to delete.', 'warning');
-                    return;
-                }
-
-                let deleteListHtml = '<ul>';
-                selectedNames.forEach(name => {
-                    deleteListHtml += `<li>${name}</li>`;
-                });
-                deleteListHtml += '</ul>';
-
-                $('#deleteStudentsList').html(deleteListHtml);
-                $('#deleteConfirmModal').data('ids', selectedIds);
-                $('#deleteConfirmModal').modal('show');
-            });
-            
-            // Confirm bulk delete
-            $(document).on('click', '#confirmDeleteBtn', function() {
-                const studentIds = $('#deleteConfirmModal').data('ids');
-                
-                $.ajax({
-                    url: "{% url 'bulk_delete_students' %}",
-                    type: "POST",
-                    data: {
-                        student_ids: studentIds.join(','),
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            $('#deleteConfirmModal').modal('hide');
-                            showMessage(response.message, 'success');
-                            // Remove deleted students from table
-                            studentIds.forEach(id => {
-                                $(`#student-${id}`).remove();
-                            });
-                        } else {
-                            showMessage(response.error, 'error');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showMessage('Error deleting students: ' + error, 'error');
-                    }
-                });
-            });
-            
-            // Export selected students
-            $('#exportSelected').click(function () {
-                const selectedIds = [];
-                $('.student-checkbox:checked').each(function () {
-                    selectedIds.push($(this).data('id'));
-                });
-
-                if (selectedIds.length === 0) {
-                    showMessage('Please select at least one student to export.', 'warning');
-                    return;
-                }
-                
-                // Create a form and submit it to trigger download
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = "{% url 'export_students' %}";
-                
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = 'csrfmiddlewaretoken';
-                csrfInput.value = '{{ csrf_token }}';
-                form.appendChild(csrfInput);
-                
-                const idsInput = document.createElement('input');
-                idsInput.type = 'hidden';
-                idsInput.name = 'student_ids';
-                idsInput.value = selectedIds.join(',');
-                form.appendChild(idsInput);
-                
-                document.body.appendChild(form);
-                form.submit();
-                document.body.removeChild(form);
-            });
-            
-            // Show message function
-            function showMessage(message, type) {
-                const alertClass = type === 'success' ? 'alert-success' :
-                    type === 'warning' ? 'alert-warning' :
-                    type === 'info' ? 'alert-info' : 'alert-danger';
-
-                const alertHtml = `
-                    <div class="alert ${alertClass} alert-dismissible fade show">
-                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                      type === 'warning' ? 'fa-exclamation-triangle' : 
-                                      type === 'info' ? 'fa-info-circle' : 'fa-exclamation-circle'}"></i>
-                        ${message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-
-                $('#messageContainer').html(alertHtml);
-
-                // Auto dismiss after 5 seconds
-                setTimeout(() => {
-                    $('.alert').alert('close');
-                }, 5000);
-            }
         });
+
+        // for adding option semster and year
+        course.addEventListener('change', function () {
+            courseHandler.call(this, year, semester);
+        });
+
+        function courseHandler(yearEl, semesterEl) {
+            const course_id = this.value;
+            if (course_id !== "") {
+                yearEl.disabled = false;
+                semesterEl.disabled = false;
+                semesterYear(course_id, yearEl, semesterEl);
+                // Reset batch and fees when course changes
+            } else {
+                yearEl.disabled = true;
+                semesterEl.disabled = true;
+                yearEl.innerHTML = "<option value='all' selected disabled>Select Year</option>";
+                semesterEl.innerHTML = "<option value='all' selected disabled>Select Semester</option>";
+            }
+            console.log(course_id)
+        }
+
+        function semesterYear(course_id, yearEl, semesterEl) {
+            fetch("/semester&year/", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'course_id': course_id })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    // if(data.success){
+                    //     console.log(data.success)
+                    // }
+                    if (data.error) {
+                        // showMessage(data.error, 'danger');
+                        console.log(data.error)
+                    } else {
+                        console.log(data.success)
+                        // Populate Year options
+                        let yearOptions = "<option value='all' selected>Select Year</option>";
+                        data.year.forEach(value => {
+                            yearOptions += `<option value="${value}">${value} Year</option>`;
+                        });
+                        yearEl.innerHTML = yearOptions;
+
+                        // Populate Semester options
+                        let semOptions = "<option value='all' selected>Select Semester</option>";
+                        data.semester.forEach(value => {
+                            semOptions += `<option value="${value}">${value} Semester</option>`;
+                        });
+                        semesterEl.innerHTML = semOptions;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching course details:", err);
+                    // showMessage("Error fetching course details", 'danger');
+                });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // for selecting checkboxes
+        let selectAll = document.querySelector('#selectAll');
+        let studentcheckbox = document.querySelectorAll('.student-checkbox');
+        let list = [];
+        selectAll.addEventListener('change', function () {
+            list = []
+            if (selectAll.checked) {
+                studentcheckbox.forEach(one => {
+                    let checked_college_id = one.getAttribute('data-id')
+                    one.checked = true;
+                    one.disabled = true;
+                    list.push(checked_college_id);
+                });
+            } else {
+                studentcheckbox.forEach(one => {
+                    let checked_college_id = one.getAttribute('data-id')
+                    one.checked = false;
+                    one.disabled = false;
+                    list = list.filter(x => x !== checked_college_id)
+                });
+            }
+            console.log(list);
+        });
+
+        // for sending selected students
+
+        studentcheckbox.forEach(one => {
+            one.addEventListener('change', function () {
+                let checked_college_id = one.getAttribute('data-id');
+                if (one.checked) {
+                    list.push(checked_college_id)
+                } else {
+                    list = list.filter(x => x !== checked_college_id)
+                }
+                console.log(list)
+            })
+        })
+
+        // for take data of checked students
+        const editSelected = document.querySelector('#editSelected');
+        const selectedStudentsModal = document.querySelector('#selectedStudentsModal');
+
+        editSelected.addEventListener('click', () => {
+            fetch("/SelectedEditData/", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'SelectedList': list })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        console.log(data.error)
+                    } else {
+                        selectedStudentsModal.style.display = 'block';
+                        const selectedStudentsTableBody = document.querySelector('#selectedStudentsTableBody');
+                        selectedStudentsTableBody.innerHTML = '';
+                        data.data.forEach(one => {
+                            selectedStudentsTableBody.innerHTML += `
+    <tr data-id="${one.college_id}">
+        <td>
+            ${one.profile ?
+                                    `<img src="${one.profile}" class="avatar" alt="Student">` :
+                                    `<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar" alt="Student">`
+                                }
+        </td>
+
+        <!-- College ID (DISABLED INPUT) -->
+        <td>
+            <input type="text" value="${one.college_id}" disabled>
+        </td>
+
+        <!-- Name (EDITABLE) -->
+        <td>
+            <input type="text" value="${one.name}">
+        </td>
+
+        <!-- Father Name (EDITABLE) -->
+        <td>
+            <input type="text" value="${one.father_name}">
+        </td>
+
+        <!-- Course (SELECT DROPDOWN) -->
+        <td>
+            <select>
+                <option value="BCA" ${one.course === "BCA" ? "selected" : ""}>BCA</option>
+                <option value="BBA" ${one.course === "BBA" ? "selected" : ""}>BBA</option>
+                <option value="BA" ${one.course === "BA" ? "selected" : ""}>BA</option>
+                <option value="B.Sc" ${one.course === "B.Sc" ? "selected" : ""}>B.Sc</option>
+                <option value="MBA" ${one.course === "MBA" ? "selected" : ""}>MBA</option>
+            </select>
+        </td>
+
+        <!-- Permission (RADIO BUTTONS) -->
+        <td>
+            <label>
+                <input type="radio" name="permission_${one.college_id}" value="Yes" 
+                    ${one.permission === "Yes" ? "checked" : ""}> Yes
+            </label>
+            <label>
+                <input type="radio" name="permission_${one.college_id}" value="No"
+                    ${one.permission === "No" ? "checked" : ""}> No
+            </label>
+        </td>
+    </tr>`
+                        })
+
+                    }
+                })
+        })
+
+        // for handling close btn 
+        let closeBtn = document.querySelectorAll('#closeBtn');
+        closeBtn.forEach(oneClick => {
+            closeBtnfunction(oneClick);
+        })
+
+        function closeBtnfunction(one) {
+            one.addEventListener('click', () => {
+                selectedStudentsModal.style.display = 'none';
+                disablestudentchecked();
+            })
+        }
+        function disablestudentchecked() {
+            list = []
+            selectAll.checked = false
+            studentcheckbox.forEach(single => {
+                single.disabled = false;
+                single.checked = false;
+            })
+        }
+        selectedStudentsModal.addEventListener('click', (e) => {
+            if (e.target === selectedStudentsModal) {
+                selectedStudentsModal.style.display = 'none';
+                disablestudentchecked();
+            }
+        })
+
+
     </script>
-</body>
+    </body>
+
 </html>
