@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Content | Edutrack - Education Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="{% static 'css/admin/subjectCreation.css' %}">
+</head>
+
+<body>
+    {% include 'header.html' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+
+            <!-- Messages will appear here -->
+            <div id="messageContainer" ></div>
+            <!-- Alert Messages -->
+            {% if messages %}
+            <div id="alertContainer">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                    <i
+                        class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- Page Header -->
+            <div class="page-header animate__animated animate__fadeIn">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="page-title">Create New Content</h1>
+                        <p class="page-subtitle">Add content to your academic curriculum</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="student-info">
+                            <div class="student-avatar">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <h5 class="mb-1">{{ name }}</h5>
+                            <p class="mb-0">{{ position }} • Roll No: {{ admin_id }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Creation Form -->
+            <div class="form-card animate__animated animate__fadeIn">
+                <h3 class="form-section-title">Content Information</h3>
+
+                <form id="subjectForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="course" class="form-label">Course</label>
+                            <select class="form-select" id="course" required>
+                                <option value="all" selected disabled>Select Course</option>
+                                {% for course in courses %}
+                                <option value="{{ course.course_id }}">{{ course.name }} {{ course.level.name }}
+                                </option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="level" class="form-label">Level</label>
+                            <input type="text" class="form-control" id="level" placeholder="Enter Level of Course"
+                                required disabled>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="semester" class="form-label">Semester</label>
+                            <select class="form-select" id="semester" required disabled>
+                                <option value="" selected disabled>Select Semester</option>
+                                <!-- result loaded here -->
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="subject" class="form-label">Subject</label>
+                            <select class="form-select" id="subject" required disabled>
+                                <option value="" selected disabled>Select Subject</option>
+                                <!-- result loaded here -->
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="contentCount" class="form-label">Number of Content</label>
+                            <input type="number" class="form-control" id="contentCount" min="1" max="10"
+                                placeholder="Enter number of content" required disabled>
+                        </div>
+                        
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="button" class="btn btn-primary" id="generateSubjectsBtn">
+                            <i class="fas fa-plus-circle me-2"></i>Generate Content Fields
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Dynamic Subject Inputs Container -->
+            <div class="subjects-container" id="subjectsContainer">
+                <div class="form-card">
+                    <h3 class="form-section-title">Content Details</h3>
+                    <div id="subjectInputs">
+                        <!-- Content input fields will be generated here -->
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-submit" id="submitBtn">
+                            <i class="fas fa-save me-2"></i>Create Content
+                        </button>
+                        <button type="button" class="btn btn-reset" id="resetBtn">
+                            <i class="fas fa-redo me-2"></i>Reset Form
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const form = document.querySelector('#subjectForm');
+        document.addEventListener('DOMContentLoaded', function () {
+            const generateBtn = document.getElementById('generateSubjectsBtn');
+            const contentCountInput = document.getElementById('contentCount');
+            const subjectsContainer = document.getElementById('subjectsContainer');
+            const subjectInputs = document.getElementById('subjectInputs');
+            const submitBtn = document.getElementById('submitBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+
+            // Generate subject input fields
+            generateBtn.addEventListener('click', function () {
+                const contentCount = parseInt(contentCountInput.value);
+
+                if (isNaN(contentCount) || contentCount < 10 || contentCount > 50) {
+                    // alert('Please enter a valid number between 1 and 10');
+                    showMessage('Please enter a valid number between 10 and 50', 'danger')
+                    return;
+                }
+
+                // Clear previous inputs
+                subjectInputs.innerHTML = '';
+
+                // Create subject input fields
+                for (let i = 1; i <= contentCount; i++) {
+                    const subjectCard = document.createElement('div');
+                    subjectCard.className = 'subject-input-card animate__animated animate__fadeIn';
+                    subjectCard.style.animationDelay = `${i * 0.1}s`;
+
+                    subjectCard.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-12 mb-6">
+                                <label for="contentName${i}" class="form-label">Content-${i}</label>
+                                <input type="text" class="form-control" id="contentName${i}"  placeholder="Enter content name" required>
+                            </div>
+                        </div>
+                    `;
+
+                    subjectInputs.appendChild(subjectCard);
+                }
+
+                // Show the subjects container
+                subjectsContainer.style.display = 'block';
+
+
+            });
+        });
+
+        // Submit form
+        submitBtn.addEventListener('click', function () {
+            // Validate form
+            // if (!form.checkValidity()) {
+            //     showMessage('Please fill all required fields', 'danger')
+            //     // alert('Please fill all required fields');
+            //     return;
+            // }
+
+            // Collect form data
+            const courseData = {
+                course: document.getElementById('course').value,
+                level: document.getElementById('level').value,
+                semester: document.getElementById('semester').value,
+                subject : document.getElementById('subject').value,
+                contents: []
+            };
+
+            // Collect subject data
+            const subjectCards = document.querySelectorAll('.subject-input-card');
+            subjectCards.forEach((card, index) => {
+                const content = {
+                    name: document.getElementById(`contentName${index + 1}`).value,
+                };
+
+                courseData.contents.push(content);
+            });
+            console.log(courseData)
+
+            // In a real application, you would send this data to the server
+            console.log('Course Data:', courseData);
+            fetch(`?courseData=${encodeURIComponent(JSON.stringify(courseData))}`, {
+                method: "GET",
+                headers: { "x-requested-with": "XMLHttpRequest" }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage(data.success, 'success')
+                        semester.disabled = true;
+                        subject.disabled = true;
+                        contentCount.disabled = true;
+                    } else {
+                        showMessage(data.error, 'danger')
+                    }
+                })
+
+            // // Show success message
+            // alert('Subjects created successfully!');
+
+            // Reset form
+            resetForm();
+        });
+
+        // Reset form
+        resetBtn.addEventListener('click', function () {
+            resetForm();
+        });
+
+        // Reset form function
+        function resetForm() {
+            form.reset();
+            subjectsContainer.style.display = 'none';
+            subjectInputs.innerHTML = '';
+        }
+        // for changing semester
+        const course = document.querySelector('#course');
+        const level = document.querySelector('#level')
+        const semester = document.querySelector('#semester');
+        const contentCount = document.querySelector('#contentCount');
+
+        function semesterYear(course_id) {
+            fetch("/semester&year/", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'course_id': course_id })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        showMessage(data.error, 'danger')
+
+                    } else {
+                        semester.disabled = false;
+                
+                        // Populate Semester options
+                        let semOptions = "<option value='all' selected>Select Semester</option>";
+                        data.semester.forEach(value => {
+                            semOptions += `<option value="${value}">${value} Semester</option>`;
+                        });
+                        semester.innerHTML = semOptions;
+                        level.value = data.level;
+                        console.log(data.success)
+                    }
+                })
+                .catch(err => {
+                    showMessage(err, 'danger')
+                });
+        }
+        course.addEventListener('change', () => {
+            semesterYear(course.value)
+        })
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        // for showing messages:
+        let messageShow = document.querySelector('#messageContainer')
+        function showMessage(message, type) {
+            // Additional check - if message is null/empty, don't show
+            if (!message || message === 'null' || message.trim() === '') {
+                if (messageShow) {
+                    messageShow.innerHTML = '';
+                }
+                return;
+            }
+
+            const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+            if (messageShow !== null) {
+                messageShow.innerHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert" id="alertMessage">
+                ${message}
+                <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+            };
+
+            // Auto-remove message after 5 seconds
+            setTimeout(() => {
+                if (messageShow) {
+                    messageShow.innerHTML = '';
+                }
+            }, 5000);
+        };
+
+        // for subject showing
+        const subject = document.querySelector('#subject');
+        semester.addEventListener('change',()=>{
+            const courseValue = course.value;
+            const semesterValue = semester.value;
+            console.log(courseValue, semesterValue)
+            fetch("/SubjectFilter/", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'course': courseValue, 'semester' : semesterValue })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        showMessage(data.error, 'danger')
+                        resetForm();
+
+                    } else {
+                        subject.disabled = false;
+                        showMessage(data.success, 'success')
+                        console.log(data.data)
+                        semester.disabled = false;
+                
+                        // Populate Semester options
+                        let subjectOptions = "<option value='' selected>Select Subject</option>";
+                        data.data.forEach(value => {
+                            subjectOptions += `<option value="${value.name}">${value.name}</option>`;
+                        });
+                        subject.innerHTML = subjectOptions;
+                    }
+                })
+                .catch(err => {
+                    showMessage(err, 'danger')
+            });
+        })
+        subject.addEventListener('change',()=>{
+            contentCount.disabled = false;
+        })
+    </script>
+</body>
+
+</html>

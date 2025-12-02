@@ -120,7 +120,17 @@ urlpatterns = [
     # 1}..For students
     path('semester&year/',views.semester_and_year,name='semester_and_year'),
     path('SelectedEditData/', views.SelectedEditData, name='SelectedEditData'),
+    path('EditSelectedSubmit/', views.EditSelectedSubmit, name='EditSelectedSubmit'),
     path('Dashboard/Admin/BulkManagement/Students/',views.BulkStudentManagement, name='bulkStudentManagement'),
+
+    # for subject creation
+    path('Dashboard/Admin/Subject/Creations/', views.subjectCreation, name='subjectCreation'),
+    # for content Creation
+    path('Dashboard/Admin/Subject/Content/Creations/', views.contentCreation, name='contentCreation'),
+    path('SubjectFilter/',views.subjectFilter,name='subjectFilter'),
+    
+    path('input/', views.input_form, name='input_form'),
+    path('success/', views.success, name='success'),
 ]
 
 

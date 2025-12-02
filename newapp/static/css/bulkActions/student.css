@@ -601,7 +601,14 @@ body {
     z-index: 10;
 }
 
-.container-content .student-table input,
+.container-content .student-table input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--light-gray);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
 .container-content .student-table select {
     width: 100%;
     padding: 8px 12px;
@@ -826,4 +833,220 @@ body {
 
 .bg-success {
     background-color: var(--success) !important;
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 34px;
+    cursor: pointer;
+}
+
+.toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #dc3545;
+    border-radius: 34px;
+    transition: all 0.3s ease;
+    border: 2px solid #ccc;
+}
+
+.toggle-slider:before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked+.toggle-slider {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.toggle-input:checked+.toggle-slider:before {
+    transform: translateX(44px);
+}
+
+.toggle-labels {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    pointer-events: none;
+}
+
+.toggle-on {
+    opacity: 0;
+}
+
+.toggle-off {
+    opacity: 1;
+}
+
+.toggle-input:checked+.toggle-slider .toggle-on {
+    opacity: 1;
+}
+
+.toggle-input:checked+.toggle-slider .toggle-off {
+    opacity: 0;
+}
+
+/* Hover Effects */
+.toggle-switch:hover .toggle-slider {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-input:focus+.toggle-slider {
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.25);
+}
+
+/* Active State */
+.toggle-input:active+.toggle-slider:before {
+    width: 30px;
+}
+/* Delete Confirmation Modal Specific Styles */
+.modal-confirm {
+    max-width: 400px;
+}
+
+.modal-confirm .modal-content {
+    border-radius: 15px;
+    border: none;
+    text-align: center;
+    animation: modalAppear 0.3s ease;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-confirm .modal-header {
+    border-bottom: none;
+    position: relative;
+    padding: 30px 20px 0;
+    flex-direction: column;
+    background: transparent;
+}
+
+.modal-confirm .icon-box {
+    color: #fff;
+    margin: 0 auto;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    text-align: center;
+    border: 3px solid #f15e5e;
+    background: #f15e5e;
+    margin-bottom: 20px;
+}
+
+.modal-confirm .icon-box i {
+    font-size: 46px;
+    line-height: 74px;
+}
+
+.modal-confirm .modal-title {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #dc3545;
+    margin-bottom: 10px;
+}
+
+.modal-confirm .modal-body {
+    padding: 20px 30px;
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.modal-confirm .modal-footer {
+    border-top: none;
+    background: transparent;
+    padding: 20px 30px 30px;
+    justify-content: center;
+    gap: 15px;
+}
+
+.modal-confirm .btn {
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.modal-confirm .btn-danger {
+    background: #dc3545;
+    border: none;
+}
+
+.modal-confirm .btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.modal-confirm .btn-secondary {
+    background: #6c757d;
+    border: none;
+}
+
+.modal-confirm .btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.modal-confirm .btn-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.modal-confirm .btn-close:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+/* Blur Background Effect */
+.modal-overlay {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.5);
 }

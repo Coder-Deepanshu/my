@@ -16,8 +16,17 @@
             <i class="fas fa-book-open"></i>
         </div>
         <h3 class="action-title">Subjects</h3>
-        <p class="action-desc">Create and Enter Subjects for the courses firstly</p>
-        <a href="#" class="action-btn">Open</a>
+        <p class="action-desc">Create Subjects for the courses firstly</p>
+        <a href="{% url 'subjectCreation' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
+        <div class="action-icon assignment">
+            <i class="fas fa-file-alt"></i>
+        </div>
+        <h3 class="action-title">Content</h3>
+        <p class="action-desc">Create the content of Subjects</p>
+        <a href="{% url 'contentCreation' %}" class="action-btn">Open</a>
     </div>
 
     <div class="action-card">

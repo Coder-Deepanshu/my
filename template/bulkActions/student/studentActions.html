@@ -31,7 +31,7 @@
             </div>
 
             <!-- Messages will appear here -->
-            <div id="messageContainer"></div>
+            <div id="messageContainer" style="display: none;"></div>
             <!-- Alert Messages -->
             {% if messages %}
             <div id="alertContainer">
@@ -127,7 +127,7 @@
                             <tbody id="studentTableBody">
                                 {% for student in page_obj %}
                                 <tr id="student-{{ student.college_id }}">
-                                    <td><input type="checkbox" class="student-checkbox"
+                                    <td><input type="checkbox" id="student-checkbox" class="student-checkbox"
                                             data-id="{{ student.college_id }}"></td>
                                     <td>
                                         {% if student.profile_picture %}
@@ -197,7 +197,6 @@
                                             <th>College ID</th>
                                             <th>Name</th>
                                             <th>Father's Name</th>
-                                            <th>Course</th>
                                             <th>Document</th>
                                         </tr>
                                     </thead>
@@ -213,8 +212,34 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close-selected-modal" id="closeBtn"
                         style="margin-right: 5px;">Close</button>
-                    <button type="button" class="btn btn-primary submit-selected-btn">
+                    <button type="button" id="submit-selected-btn" class="btn btn-primary submit-selected-btn">
                         <i class="fas fa-paper-plane"></i> Submit Selected
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmationModal" class="modal-overlay" style="display: none;">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="icon-box">
+                        <i class="fas fa-exclamation"></i>
+                    </div>
+                    <h4 class="modal-title">Are you sure?</h4>
+                    <button type="button" class="btn-close close-delete-modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Do you really want to delete this record? This process cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary cancel-delete">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger confirm-delete">
+                        <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>
             </div>
@@ -224,15 +249,67 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const course = document.querySelector('#course');
-        const year = document.querySelector('#year');
-        const semester = document.querySelector('#semester');
+        // for selecting checkboxes
+        let selectAll = document.querySelector('#selectAll');
+        let list = [];
 
+        // Function to refresh student checkboxes reference
+        function refreshStudentCheckboxes() {
+            studentcheckbox = document.querySelectorAll('.student-checkbox');
+            attachCheckboxEvents();
+        }
+
+        // Function to attach events to checkboxes
+        function attachCheckboxEvents() {
+            studentcheckbox.forEach(one => {
+                // Remove existing event listeners to avoid duplicates
+                one.replaceWith(one.cloneNode(true));
+            });
+
+            // Refresh reference after cloning
+            studentcheckbox = document.querySelectorAll('.student-checkbox');
+
+            studentcheckbox.forEach(one => {
+                one.addEventListener('change', function () {
+                    let checked_college_id = this.getAttribute('data-id');
+                    if (this.checked) {
+                        list.push(checked_college_id);
+                    } else {
+                        list = list.filter(x => x !== checked_college_id);
+                    }
+                    console.log("Updated list:", list);
+                });
+            });
+        }
+
+        // Select All functionality
+        selectAll.addEventListener('change', function () {
+            refreshStudentCheckboxes(); // Refresh reference
+
+            if (selectAll.checked) {
+                list = [];
+                studentcheckbox.forEach(one => {
+                    let checked_college_id = one.getAttribute('data-id');
+                    one.checked = true;
+                    list.push(checked_college_id);
+                });
+            } else {
+                studentcheckbox.forEach(one => {
+                    one.checked = false;
+                });
+                list = [];
+            }
+            console.log("Select All list:", list);
+        });
+
+        // Initial attachment of events
         document.addEventListener("DOMContentLoaded", function () {
+            refreshStudentCheckboxes();
 
             function loadPage(page) {
                 const college_id = document.getElementById("college_id").value;
-                console.log({ course, year, semester, college_id })
+                console.log({ course: course.value, year: year.value, semester: semester.value, college_id });
+
                 fetch(`?page=${page}&course=${course.value}&year=${year.value}&semester=${semester.value}&college_id=${college_id}`, {
                     headers: {
                         "x-requested-with": "XMLHttpRequest"
@@ -240,8 +317,7 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-
-                        let table = document.getElementById("studentTableBody");
+                        let table = document.querySelector("#studentTableBody");
                         table.innerHTML = "";  // CLEAR previous rows
 
                         data.students.forEach(detail => {
@@ -272,11 +348,13 @@
                         </button>
                     </td>
                 </tr>`;
-
                         });
 
-                        // year.innerHTML = `<option value="all" selected disabled>All Years</option>`;
-                        // semester.innerHTML = `<option value="all" selected disabled>All Semester</option>`;
+                        // Refresh checkboxes after loading new data
+                        refreshStudentCheckboxes();
+
+                        // Reset select all checkbox
+                        selectAll.checked = false;
 
                         // pagination update
                         let prev = document.getElementById("prev-btn");
@@ -291,6 +369,11 @@
                         document.querySelector("#pagination span").innerText =
                             `Page ${data.page_number} of ${data.total_page}`;
                     })
+                    .catch(error => {
+                        localStorage.setItem('Message', error);
+                        localStorage.setItem('status', 'danger');
+                        location.reload()
+                    });
             }
 
             // Events
@@ -305,7 +388,6 @@
             document.getElementById("filterBtn").addEventListener("click", function () {
                 loadPage(1);
             });
-
         });
 
         // for adding option semster and year
@@ -340,14 +422,11 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    // if(data.success){
-                    //     console.log(data.success)
-                    // }
                     if (data.error) {
-                        // showMessage(data.error, 'danger');
-                        console.log(data.error)
+                        localStorage.setItem('Message', data.error);
+                        localStorage.setItem('status', 'danger');
+                        location.reload()
                     } else {
-                        console.log(data.success)
                         // Populate Year options
                         let yearOptions = "<option value='all' selected>Select Year</option>";
                         data.year.forEach(value => {
@@ -364,8 +443,9 @@
                     }
                 })
                 .catch(err => {
-                    console.error("Error fetching course details:", err);
-                    // showMessage("Error fetching course details", 'danger');
+                    localStorage.setItem('Message', err);
+                    localStorage.setItem('status', 'danger');
+                    location.reload()
                 });
         }
 
@@ -384,44 +464,6 @@
             return cookieValue;
         }
 
-        // for selecting checkboxes
-        let selectAll = document.querySelector('#selectAll');
-        let studentcheckbox = document.querySelectorAll('.student-checkbox');
-        let list = [];
-        selectAll.addEventListener('change', function () {
-            list = []
-            if (selectAll.checked) {
-                studentcheckbox.forEach(one => {
-                    let checked_college_id = one.getAttribute('data-id')
-                    one.checked = true;
-                    one.disabled = true;
-                    list.push(checked_college_id);
-                });
-            } else {
-                studentcheckbox.forEach(one => {
-                    let checked_college_id = one.getAttribute('data-id')
-                    one.checked = false;
-                    one.disabled = false;
-                    list = list.filter(x => x !== checked_college_id)
-                });
-            }
-            console.log(list);
-        });
-
-        // for sending selected students
-
-        studentcheckbox.forEach(one => {
-            one.addEventListener('change', function () {
-                let checked_college_id = one.getAttribute('data-id');
-                if (one.checked) {
-                    list.push(checked_college_id)
-                } else {
-                    list = list.filter(x => x !== checked_college_id)
-                }
-                console.log(list)
-            })
-        })
-
         // for take data of checked students
         const editSelected = document.querySelector('#editSelected');
         const selectedStudentsModal = document.querySelector('#selectedStudentsModal');
@@ -438,12 +480,16 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.error) {
-                        console.log(data.error)
+                        console.log(data.error);
+                        localStorage.setItem('Message', data.error);
+                        localStorage.setItem('status', 'danger');
+                        location.reload()
                     } else {
                         selectedStudentsModal.style.display = 'block';
                         const selectedStudentsTableBody = document.querySelector('#selectedStudentsTableBody');
                         selectedStudentsTableBody.innerHTML = '';
                         data.data.forEach(one => {
+
                             selectedStudentsTableBody.innerHTML += `
     <tr data-id="${one.college_id}">
         <td>
@@ -455,39 +501,29 @@
 
         <!-- College ID (DISABLED INPUT) -->
         <td>
-            <input type="text" value="${one.college_id}" disabled>
+            <input type="text" id='collegeID' value="${one.college_id}" disabled>
         </td>
 
         <!-- Name (EDITABLE) -->
         <td>
-            <input type="text" value="${one.name}">
+            <input type="text"  value="${one.name}" disabled>
         </td>
 
         <!-- Father Name (EDITABLE) -->
         <td>
-            <input type="text" value="${one.father_name}">
+            <input type="text" value="${one.father_name}" disabled>
         </td>
 
-        <!-- Course (SELECT DROPDOWN) -->
+        <!-- Permission (TOGGLE SWITCH) -->
         <td>
-            <select>
-                <option value="BCA" ${one.course === "BCA" ? "selected" : ""}>BCA</option>
-                <option value="BBA" ${one.course === "BBA" ? "selected" : ""}>BBA</option>
-                <option value="BA" ${one.course === "BA" ? "selected" : ""}>BA</option>
-                <option value="B.Sc" ${one.course === "B.Sc" ? "selected" : ""}>B.Sc</option>
-                <option value="MBA" ${one.course === "MBA" ? "selected" : ""}>MBA</option>
-            </select>
-        </td>
-
-        <!-- Permission (RADIO BUTTONS) -->
-        <td>
-            <label>
-                <input type="radio" name="permission_${one.college_id}" value="Yes" 
-                    ${one.permission === "Yes" ? "checked" : ""}> Yes
-            </label>
-            <label>
-                <input type="radio" name="permission_${one.college_id}" value="No"
-                    ${one.permission === "No" ? "checked" : ""}> No
+            <label class="toggle-switch">
+                <input type="checkbox" class="toggle-input" name="permission_${one.college_id}" 
+                    ${one.permission === true ? "checked" : ""}>
+                <span class="toggle-slider"></span>
+                <span class="toggle-labels">
+                    <span class="toggle-on">ON</span>
+                    <span class="toggle-off">OFF</span>
+                </span>
             </label>
         </td>
     </tr>`
@@ -523,8 +559,91 @@
                 disablestudentchecked();
             }
         })
+        // send the input for editselected
+        let editSelectedBtn = document.querySelector('#submit-selected-btn')
 
+        let collegeID = [];
+        let permission = [];
+        editSelectedBtn.addEventListener('click', () => {
+            const collegeIDvalue = document.querySelectorAll('#collegeID');
+            collegeIDvalue.forEach(el1 => {
+                collegeID.push(el1.value);
+            })
+            const isclicked = document.querySelectorAll('.toggle-input');
+            isclicked.forEach(el2 => {
+                permission.push(el2.checked ? 'Yes' : 'No');
+            })
 
+            fetch('/EditSelectedSubmit/', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ 'collegeID': collegeID, 'permission': permission })
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.error) {
+                        console.log(data.error);
+                        localStorage.setItem('Message', data.error);
+                        localStorage.setItem('status', 'danger')
+                        location.reload();
+                    } else {
+                        console.log(data.success)
+                        localStorage.setItem('Message', data.success);
+                        localStorage.setItem('status', 'success')
+                        location.reload();
+                    }
+                })
+        })
+
+        window.onload = function () {
+            let msg = localStorage.getItem('Message');
+            let status = localStorage.getItem('status');
+
+            // YEH CONDITION ADD KARO - Only show message if not null/empty
+            if (msg && msg !== 'null' && msg.trim() !== '') {
+                messageShow.style.display = 'block';
+                showMessage(msg, status);
+            }
+
+            setTimeout(() => {
+                localStorage.removeItem('Message');
+                localStorage.removeItem('status');
+            }, 5000)
+        }
+
+        // for showing messages
+        let messageShow = document.querySelector('#messageContainer')
+        function showMessage(message, type) {
+            // Additional check - if message is null/empty, don't show
+            if (!message || message === 'null' || message.trim() === '') {
+                if (messageShow) {
+                    messageShow.innerHTML = '';
+                    messageShow.style.display = 'none';
+                }
+                return;
+            }
+
+            const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+            if (messageShow !== null) {
+                messageShow.innerHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert" id="alertMessage">
+                ${message}
+                <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+            };
+
+            // Auto-remove message after 5 seconds
+            setTimeout(() => {
+                if (messageShow) {
+                    messageShow.innerHTML = '';
+                    messageShow.style.display = 'none';
+                }
+            }, 5000);
+        };
     </script>
     </body>
 

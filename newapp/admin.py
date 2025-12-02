@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student,subject,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin,StudentBalance
+from .models import Student,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin,StudentBalance, Subject_Details
 from .models import Department,Level,Position, StudentDocuments,AdminDocuments, FacultyDocuments
 
 from .models import DeviceFingerprint, UserDetail, OTPVerification
@@ -69,12 +69,6 @@ class AddAdmin(admin.ModelAdmin):
     list_display = ('name', )
     search_fields = ('name', )
 
-
-@admin.register(subject)
-class subjectadmin(admin.ModelAdmin):
-    list_display=('semester','course','I','II','III','IV','V','VI','VII','VIII')
-    search_fields=('semester','course')
-
 @admin.register(Faculty)
 class facultyadmin(admin.ModelAdmin):
     list_display=('name','college_id','department','qualification','experience','date_of_joining','phone','gender','birthday','address','city','state','state_code')
@@ -122,17 +116,27 @@ class History(admin.ModelAdmin):
     list_display=('content','updatedFrom','updatedTo')
     search_fields=('content',)
 
+@admin.register(Subject_Details)
+class SubjectDetail(admin.ModelAdmin):
+    list_display = ('serial_no', 'course','name','code', 'semester', 'level',)
+    fields=('serial_no', 'course', 'name','code','semester', 'level','content')
+
+
 
 
 
 
 
 from django.contrib import admin
-from .models import Product
+from .models import Product, Number
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'created_at']
+
+@admin.register(Number)
+class NumberAdmin(admin.ModelAdmin):
+    list_display = ['number1', 'number2', 'number3']
 
 
 

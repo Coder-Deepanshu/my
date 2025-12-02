@@ -386,19 +386,6 @@ class Attendance(models.Model):
     def _str_(self):
         return f"{self.student.name} - Lecture {self.lecture_number} - {self.date}"
 
-class subject(models.Model):
-    semester = models.CharField(max_length=200)
-    course = models.CharField(max_length=200)
-    I = models.CharField(max_length=200)
-    II = models.CharField(max_length=200)
-    III = models.CharField(max_length=200)
-    IV = models.CharField(max_length=200)
-    V = models.CharField(max_length=200)
-    VI = models.CharField(max_length=200)
-    VII = models.CharField(max_length=200)
-    VIII = models.CharField(max_length=200)
-
-
 from django.db import models
 from django.core.validators import MinValueValidator
 
@@ -551,4 +538,31 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+class Subject_Details(models.Model):
+    serial_no = models.CharField(max_length=50)
+    course = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=50)
+    semester = models.IntegerField()
+    level = models.CharField(max_length=20 )
+    content = models.JSONField(default=dict,)
+    def __str__(self):
+        return f"{self.serial_no}-{self.course}-{self.level}-Sem:{self.semester}"
 
+
+
+
+
+
+from django.db import models
+
+class Number(models.Model):
+    number1 = models.IntegerField(default=0)  # Default value add karo
+    number2 = models.IntegerField(default=0)
+    number3 = models.IntegerField(default=0)
+    number4 = models.IntegerField(default=0)
+    number5 = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Numbers: {self.number1}, {self.number2}, {self.number3}, {self.number4}, {self.number5}"

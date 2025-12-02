@@ -3192,9 +3192,6 @@ def viewDocuments(request, college_id, documentid):
 def demo2(request):
     return render(request, 'demo2.html')
 
-def studentCourseDetailView(request):
-    return render(request, 'student/studentCourseDetailView.html')
-
 def studentAssignment(request):
     return render(request,'student/studentAssignment.html')
 
@@ -3276,7 +3273,8 @@ def semester_and_year(request):
             course = Course.objects.get(course_id = course_id)
             year = list(range(1,course.no_of_years + 1))
             semester = list(range(1,course.no_of_semesters + 1))
-            return JsonResponse({'year':year, 'semester':semester})
+            level = course.level.name
+            return JsonResponse({'year':year, 'semester':semester ,'success':'work successfully!', 'level':level})
         except Exception as e:
             return JsonResponse({'error':f'An Error Occured {str(e)}!'})
     else:
@@ -3305,4 +3303,234 @@ def SelectedEditData(request):
     else:
         return JsonResponse({'error':'An Error Occured : Invalid Request!'})
 
+def EditSelectedSubmit(request):
+    if request.method == 'POST':
+        try:  
+           data = json.loads(request.body)
+           collegeID = data.get('collegeID')
+           permission = data.get('permission')
+           i_range = len(collegeID)
+           for i in range(i_range):
+               college_id = collegeID[i]
+               student = Student.objects.get(college_id = college_id)
+               student.permission = True if permission[i]=='Yes' else False
+               student.save()
+           return JsonResponse({'success':f'{i_range + 1} Student Edited Successfully!'}) 
+        except Exception as e:
+            return JsonResponse({'error':f'An Error Occured {str(e)}!'})
+    else:
+        return JsonResponse({'error':'An Error Occured : Invalid Request!'})
+
+# FOR creating subjects 
+def subjectCreation(request):
+    role = request.session.get('role')
+    admin_id = request.session.get('admin_college_id')
+    admin = Admin.objects.get(college_id = admin_id)
+    name = f'{admin.name} {admin.last_name}'
+    position = f'{admin.position.name}-{admin.position.level} ({admin.department.name})'
+    courseData = request.GET.get('courseData',None)
+    # AJAX Response
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if courseData:
+            courseData = json.loads(courseData)
+        else:
+            return JsonResponse({"error": "No data received!"})
+
+        course = courseData.get('course')
+        level = courseData.get('level')
+        semester = courseData.get('semester')
+        subject = courseData.get('subjects', [])
+        course_filter = Subject_Details.objects.filter(course = course, level = level, semester = semester)
+        max_id = Subject_Details.objects.aggregate(max_id = models.Max('serial_no'))['max_id']
+        year = datetime.now().year
+        if max_id is None:
+            serial_no = f'SUB-{year}-1'
+        else:
+            try:
+                numeric_part = int(max_id[9:])
+                serial_no = f'SUB-{year}-{numeric_part+1}'
+            except(ValueError, IndexError):
+                serial_no = f'SUB-{year}-1'
+        if not course_filter.exists():
+            try:
+                for i in subject : 
+                    Subject_Details.objects.create(serial_no = serial_no, course = course, semester = semester, name = i['name'], code = i['code'], level = level)
+                    
+                return JsonResponse({'success':f"Subject Submmited Successfully!"})
+            except Exception as e:
+                return JsonResponse({'error':f"An Error Occured: {str(e)}!"})
+        else:
+            return JsonResponse({'error':f"Subjects Already Exists!"})
+        # return JsonResponse({'success':f"Subject Submmited Successfully! {subject}"})
+            
+    courses = Course.objects.all().order_by('course_id')
+
+    return render(request, 'admin/subjectCreation.html', {
+        'courses': courses,
+        'role': role,
+        'name':name,
+        'position':position,
+        'admin_id':admin_id
+    })
+
+def contentCreation(request):
+    role = request.session.get('role')
+    admin_id = request.session.get('admin_college_id')
+    admin = Admin.objects.get(college_id = admin_id)
+    name = f'{admin.name} {admin.last_name}'
+    position = f'{admin.position.name}-{admin.position.level} ({admin.department.name})'
+    contentData = request.GET.get('courseData',None)
+    # AJAX Response
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if contentData:
+            contentData = json.loads(contentData)
+        else:
+            return JsonResponse({"error": "No data received!"})
+
+        course = contentData.get('course')
+        level = contentData.get('level')
+        semester = contentData.get('semester')
+        subject = contentData.get('subject')
+        contents = contentData.get('contents', [])
+        content_filter = Subject_Details.objects.get(course = course, level = level, semester = semester, name = subject)
+        all_content = []
+        for i in contents:
+            all_content.append(i['name'])
+        content_filter.content = all_content
+        content_filter.save()
+        return JsonResponse({'success':f"Subject Submmited Successfully!"})
+            
+    courses = Course.objects.all().order_by('course_id')
+
+    return render(request, 'admin/contentCreation.html', {
+        'courses': courses,
+        'role': role,
+        'name':name,
+        'position':position,
+        'admin_id':admin_id
+    })
+
+def subjectFilter(request):
+    if request.method == 'POST':
+        try:  
+            data = json.loads(request.body) 
+            course = data.get('course')
+            semester = data.get('semester')
+            subjects = Subject_Details.objects.filter(course = course, semester = semester)
+            if subjects.exists():
+                data = []
+                for name in  subjects.values_list('name', flat=True):
+                    data.append({'name':name})
+                    
+                return JsonResponse({'data':data})
+            else:
+                return JsonResponse({'error':'Subject Not Found!'})
+                     
+        except Exception as e:
+            return JsonResponse({'error':f'An Error Occured {str(e)}!'})
+    else:
+        return JsonResponse({'error':'An Error Occured : Invalid Request!'})
+
+def studentCourseDetailView(request):
+    role = request.session.get('role')
+    student_college_id = request.session.get('student_college_id')
+    student = Student.objects.get(college_id = student_college_id)
     
+    name = f'{student.name} {student.last_name}'
+    course = f'{student.course.code}-{student.course.level.name}'
+    no_semester = student.course.no_of_semesters
+
+    subject = Subject_Details.objects.filter(
+        course = student.course.course_id,
+        level = student.course.level.name
+    )
+
+    semester = request.GET.get('semester')
+
+    # AJAX Request
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        semester_subjects = subject.filter(semester = semester)
+        data = []
+
+        for sub in semester_subjects:
+            contents = []
+
+            # Handle Dict type JSON
+            if isinstance(sub.content, dict):
+                for key, value in sub.content.items():
+                    contents.append({'content': value})
+
+            # Handle List type JSON
+            elif isinstance(sub.content, list):
+                for value in sub.content:
+                    contents.append({'content': value})
+
+            data.append({
+            'name': sub.name,
+            'code':sub.code,
+            'contents': contents
+             })
+
+        return JsonResponse({'subject': data})
+
+
+    # First Load -> Default Semester 1
+    subject = subject.filter(semester=1)
+
+    return render(request, 'student/studentCourseDetailView.html', {
+        'college_id': student_college_id,
+        'name': name,
+        'course': course,
+        'year': range(1, no_semester+1),
+        'role': role,
+        'subject': subject
+    })
+
+
+
+
+
+
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Number
+
+def input_form(request):
+    if request.method == 'POST':
+        try:
+            # Get the complete number string from hidden field
+            number_values = request.POST.get('number_values', '')
+            
+            # Debugging ke liye print karo
+            print(f"Received number values: {number_values}")
+            
+            # Check if we have exactly 5 digits
+            if len(number_values) == 5 and number_values.isdigit():
+                # Convert to integers
+                numbers = [int(digit) for digit in number_values]
+                
+                # Create and save the Number object
+                Number.objects.create(
+                    number1=numbers[0],
+                    number2=numbers[1],
+                    number3=numbers[2],
+                    number4=numbers[3],
+                    number5=numbers[4]
+                )
+                
+                messages.success(request, 'Numbers successfully saved!')
+                return redirect('success')
+            else:
+                messages.error(request, 'Please enter exactly 5 numbers')
+                
+        except Exception as e:
+            print(f"Error: {e}")
+            messages.error(request, f'Error saving numbers: {str(e)}')
+    
+    return render(request, 'numbers/input_form.html')
+
+def success(request):
+    return render(request, 'numbers/success.html')
