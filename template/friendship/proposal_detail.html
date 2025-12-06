@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .card { background: #f9f9f9; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .label { font-weight: bold; color: #4a6fa5; }
+        .value { margin-bottom: 15px; }
+        .back-link { display: inline-block; margin: 20px 0; padding: 10px 20px; background: #4a6fa5; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <a href="{% url 'view_proposals' %}" class="back-link">← Back to List</a>
+    
+    <h1>{{ title }}</h1>
+    
+    <div class="card">
+        <div class="value">
+            <span class="label">Decision:</span>
+            {% if proposal.decision == 'yes' %}
+                <span style="color: green;">✓ Accepted</span>
+            {% elif proposal.decision == 'no' %}
+                <span style="color: red;">✗ Rejected</span>
+            {% else %}
+                <span style="color: orange;">⏳ Pending</span>
+            {% endif %}
+        </div>
+        
+        <div class="value">
+            <span class="label">Decision Made At:</span>
+            {{ proposal.decision_made_at|date:"d M Y H:i"|default:"-" }}
+        </div>
+        
+        <div class="value">
+            <span class="label">Contact Choice:</span>
+            {{ proposal.get_contact_choice_display }}
+        </div>
+        
+        <div class="value">
+            <span class="label">Friend Name:</span>
+            {{ proposal.friend_name|default:"Not provided" }}
+        </div>
+        
+        <div class="value">
+            <span class="label">Phone Number:</span>
+            {{ proposal.user_phone|default:"Not provided" }}
+        </div>
+        
+        <div class="value">
+            <span class="label">Email:</span>
+            {{ proposal.user_email|default:"Not provided" }}
+        </div>
+        
+        <div class="value">
+            <span class="label">Contact Shared At:</span>
+            {{ proposal.contact_shared_at|date:"d M Y H:i"|default:"-" }}
+        </div>
+        
+        <div class="value">
+            <span class="label">Created At:</span>
+            {{ proposal.created_at|date:"d M Y H:i" }}
+        </div>
+        
+        <div class="value">
+            <span class="label">Status:</span>
+            {% if proposal.is_active %}
+                <span style="color: green;">Active</span>
+            {% else %}
+                <span style="color: gray;">Inactive</span>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

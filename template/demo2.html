@@ -1,190 +1,784 @@
-<!-- View Student Modal -->
-    <div class="modal fade" id="viewStudentModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Student Details</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friendship Proposal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #4a6fa5;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, #4a6fa5, #6d9dc5);
+            border-radius: 2px;
+        }
+        
+        .step-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            margin-bottom: 30px;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeIn 0.6s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4a6fa5, #6d9dc5);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 20px;
+            box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
+        }
+        
+        .step-title {
+            font-size: 1.8rem;
+            color: #4a6fa5;
+        }
+        
+        .step-content {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 160px;
+        }
+        
+        .btn-yes {
+            background: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-yes:hover {
+            background: linear-gradient(to right, #45a049, #3d8b40);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-no {
+            background: linear-gradient(to right, #f44336, #d32f2f);
+            color: white;
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
+        
+        .btn-no:hover {
+            background: linear-gradient(to right, #d32f2f, #b71c1c);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
+        }
+        
+        .btn-next {
+            background: linear-gradient(to right, #4a6fa5, #6d9dc5);
+            color: white;
+            box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
+        }
+        
+        .btn-next:hover {
+            background: linear-gradient(to right, #3a5f95, #5d8db5);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 111, 165, 0.4);
+        }
+        
+        .input-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #4a6fa5;
+            font-weight: 600;
+        }
+        
+        .phone-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin: 0 auto;
+            display: block;
+            transition: all 0.3s;
+        }
+        
+        .phone-input:focus {
+            border-color: #4a6fa5;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+        
+        .contact-display {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+            font-size: 1.3rem;
+            color: #333;
+            border-left: 5px solid #4a6fa5;
+        }
+        
+        .contact-display strong {
+            color: #4a6fa5;
+            font-size: 1.5rem;
+        }
+        
+        .final-message {
+            text-align: center;
+            font-size: 1.4rem;
+            line-height: 1.7;
+            margin: 30px 0;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-top: 5px solid #4a6fa5;
+        }
+        
+        .final-message i {
+            color: #4a6fa5;
+            margin-right: 10px;
+        }
+        
+        .heart {
+            color: #f44336;
+            animation: heartbeat 1.5s infinite;
+            display: inline-block;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            5% { transform: scale(1.2); }
+            10% { transform: scale(1.1); }
+            15% { transform: scale(1.3); }
+            50% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        
+        .progress-step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin: 0 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active {
+            background-color: #4a6fa5;
+            transform: scale(1.2);
+        }
+        
+        .progress-step.completed {
+            background-color: #4CAF50;
+        }
+        
+        .progress-step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -30px;
+            width: 30px;
+            height: 3px;
+            background-color: #ddd;
+            transform: translateY(-50%);
+        }
+        
+        .progress-step.completed:not(:last-child):after {
+            background-color: #4CAF50;
+        }
+        
+        .emoji {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        /* New styles for form */
+        .error-message {
+            color: #f44336;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #4CAF50;
+            font-size: 1.1rem;
+            padding: 10px;
+            background-color: #f0f9f0;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .step-container {
+                padding: 30px 20px;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .step-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Friendship Proposal</h1>
+            <p>A journey to start something beautiful</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-step active" id="step1-progress"></div>
+            <div class="progress-step" id="step2-progress"></div>
+            <div class="progress-step" id="step3-progress"></div>
+            <div class="progress-step" id="step4-progress"></div>
+        </div>
+        
+        <!-- Step 1: Introduction -->
+        <div class="step-container active" id="step1">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <h2 class="step-title">Introduction</h2>
+            </div>
+            <div class="step-content">
+                <p>Hello! I'm Deepanshu. We've shared some good moments together, and I truly value our connection. I believe we have a good understanding and compatibility that could form the foundation of a great friendship.</p>
+                <p>Friendship is a special bond that brings joy, support, and shared experiences into our lives. It's about having someone to laugh with, talk to, and rely on.</p>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-next" id="next1">
+                    <i class="fas fa-arrow-right"></i> Continue
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 2: Friendship Question -->
+        <div class="step-container" id="step2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <h2 class="step-title">The Question</h2>
+            </div>
+            <div class="step-content">
+                <p>I appreciate our interactions and believe we could have a wonderful friendship. So I have a simple but important question for you:</p>
+                <div class="final-message">
+                    <i class="fas fa-quote-left"></i>
+                    Can we become best friends?
+                    <i class="fas fa-quote-right"></i>
                 </div>
-                <div class="modal-body" id="viewStudentModalBody">
-                    <!-- Content will be loaded via AJAX -->
+                <p>If you feel we can build a genuine friendship and share a good connection, please consider saying yes. If not, that's completely okay too.</p>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-yes" id="yes2">
+                    <i class="fas fa-check-circle"></i> Yes, Let's Be Friends
+                </button>
+                <button class="btn btn-no" id="no2">
+                    <i class="fas fa-times-circle"></i> No, Thank You
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 3: If No Response -->
+        <div class="step-container" id="step3-no">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <h2 class="step-title">Respecting Your Decision</h2>
+            </div>
+            <div class="emoji">🙏</div>
+            <div class="step-content">
+                <p>I completely respect your decision and truly appreciate your honesty. It takes courage to be upfront about your feelings.</p>
+                <p>Even though we may not become best friends, I want you to know that I value the moments we've shared and will always remember them fondly.</p>
+                <div class="final-message">
+                    <i class="fas fa-heart heart"></i>
+                    <p>Thank you for being a wonderful person. I wish you all the happiness, success, and beautiful friendships in your life journey.</p>
+                    <p>May you always find reasons to smile and people who appreciate you for who you are!</p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="editFromViewBtn">Edit Details</button>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-next" id="restart-no">
+                    <i class="fas fa-redo"></i> Start Again
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 3: If Yes Response - Contact Question -->
+        <div class="step-container" id="step3-yes">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <h2 class="step-title">Staying Connected</h2>
+            </div>
+            <div class="emoji">🤝</div>
+            <div class="step-content">
+                <p>That's wonderful! I'm so happy you've agreed to be friends. This is the beginning of a beautiful friendship.</p>
+                <p>Since we're becoming friends, it would be great to stay in touch. We can share thoughts, plan meetups, or just check on each other.</p>
+                <div class="final-message">
+                    <p>Would you like to share your contact information with me, or would you prefer to have my contact details instead?</p>
                 </div>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-yes" id="yes-contact">
+                    <i class="fas fa-mobile-alt"></i> Share My Contact
+                </button>
+                <button class="btn btn-no" id="no-contact">
+                    <i class="fas fa-address-book"></i> Get Deepanshu's Contact
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 4: If they want to share their contact -->
+        <div class="step-container" id="step4-share">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <h2 class="step-title">Share Your Contact</h2>
+            </div>
+            <div class="emoji">📱</div>
+            <div class="step-content">
+                <p>Thank you for trusting me with your contact information. I promise to respect your privacy and use it only to stay in touch as friends.</p>
+                <p>Please enter your details below. I'll save it and reach out soon to plan our first friend activity!</p>
+            </div>
+            
+            <div class="input-container">
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label class="input-label" for="friend_name">Your Name (Optional):</label>
+                        <input type="text" id="friend_name" class="phone-input" placeholder="Enter your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="input-label" for="user_phone">Your Phone Number *:</label>
+                        <input type="tel" id="user_phone" class="phone-input" placeholder="Enter your phone number" required>
+                        <div class="error-message" id="phone-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="input-label" for="user_email">Your Email (Optional):</label>
+                        <input type="email" id="user_email" class="phone-input" placeholder="Enter your email">
+                        <div class="error-message" id="email-error"></div>
+                    </div>
+                    
+                    <div class="success-message" id="form-success"></div>
+                </form>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn btn-yes" id="submit-contact">
+                    <i class="fas fa-paper-plane"></i> Submit & Complete
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 4: If they want Deepanshu's contact -->
+        <div class="step-container" id="step4-get">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <h2 class="step-title">Deepanshu's Contact</h2>
+            </div>
+            <div class="emoji">📞</div>
+            <div class="step-content">
+                <p>Here's my contact information. Feel free to save it and reach out whenever you'd like to talk, share something, or plan to meet up!</p>
+                <div class="contact-display">
+                    <p><strong>Deepanshu</strong></p>
+                    <p><i class="fas fa-phone"></i> Phone: +91 98765 43210</p>
+                    <p><i class="fas fa-envelope"></i> Email: deepanshu.friend@example.com</p>
+                    <p><i class="fab fa-whatsapp"></i> WhatsApp: Available on same number</p>
+                </div>
+                <p>I'm really looking forward to our friendship and the wonderful moments we'll share together!</p>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-yes" id="final-complete">
+                    <i class="fas fa-heart"></i> Friendship Confirmed!
+                </button>
+            </div>
+        </div>
+        
+        <!-- Final Step: After submitting contact -->
+        <div class="step-container" id="final-step">
+            <div class="step-header">
+                <div class="step-number"><i class="fas fa-check"></i></div>
+                <h2 class="step-title">Friendship Confirmed!</h2>
+            </div>
+            <div class="emoji">🎉</div>
+            <div class="step-content">
+                <p>Thank you for sharing your contact information! I've saved it and will reach out soon.</p>
+                <div class="final-message">
+                    <i class="fas fa-heart heart"></i>
+                    <p>Our friendship journey begins now! I'm excited about all the conversations, laughter, and memories we'll create together.</p>
+                    <p>Remember, a good friend is like a four-leaf clover: hard to find and lucky to have. I feel lucky to have you as a friend!</p>
+                </div>
+                <p>Looking forward to our first friend chat soon!</p>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-next" id="restart-yes">
+                    <i class="fas fa-redo"></i> Start Again
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Edit Student Modal -->
-    <div class="modal fade" id="editStudentModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Student Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editStudentForm" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" id="editCollegeId" name="college_id">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editName" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="editName" name="name" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editLastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="editLastName" name="last_name" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editFather" class="form-label">Father's Name</label>
-                                <input type="text" class="form-control" id="editFather" name="father_name" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editMother" class="form-label">Mother's Name</label>
-                                <input type="text" class="form-control" id="editMother" name="mother_name" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="editCourse" class="form-label">Course</label>
-                                <select class="form-select" id="editCourse" name="course" required>
-                                    {% for course in courses %}
-                                    <option value="{{ course }}">{{ course }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="editYear" class="form-label">Year</label>
-                                <select class="form-select" id="editYear" name="year" required>
-                                    <option value="1">1st Year</option>
-                                    <option value="2">2nd Year</option>
-                                    <option value="3">3rd Year</option>
-                                    <option value="4">4th Year</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="editSemester" class="form-label">Semester</label>
-                                <select class="form-select" id="editSemester" name="semester" required>
-                                    <option value="1">Semester 1</option>
-                                    <option value="2">Semester 2</option>
-                                    <option value="3">Semester 3</option>
-                                    <option value="4">Semester 4</option>
-                                    <option value="5">Semester 5</option>
-                                    <option value="6">Semester 6</option>
-                                    <option value="7">Semester 7</option>
-                                    <option value="8">Semester 8</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="editEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="editEmail" name="email" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="editPhone" class="form-label">Phone</label>
-                                <input type="tel" class="form-control" id="editPhone" name="phone" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editAddress" class="form-label">Address</label>
-                            <textarea class="form-control" id="editAddress" name="address" rows="3" required></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveStudentBtn">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bulk Edit Modal -->
-    <div class="modal fade" id="bulkEditModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Bulk Edit Students</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="bulkEditForm" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" id="bulkEditIds" name="student_ids">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> Only fields with changes will be updated for selected
-                            students.
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="bulkEditCourse" class="form-label">Course</label>
-                                <select class="form-select" id="bulkEditCourse" name="course">
-                                    <option value="">-- No Change --</option>
-                                    {% for course in courses %}
-                                    <option value="{{ course }}">{{ course }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="bulkEditYear" class="form-label">Year</label>
-                                <select class="form-select" id="bulkEditYear" name="year">
-                                    <option value="">-- No Change --</option>
-                                    <option value="1">1st Year</option>
-                                    <option value="2">2nd Year</option>
-                                    <option value="3">3rd Year</option>
-                                    <option value="4">4th Year</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="bulkEditSemester" class="form-label">Semester</label>
-                                <select class="form-select" id="bulkEditSemester" name="semester">
-                                    <option value="">-- No Change --</option>
-                                    <option value="1">Semester 1</option>
-                                    <option value="2">Semester 2</option>
-                                    <option value="3">Semester 3</option>
-                                    <option value="4">Semester 4</option>
-                                    <option value="5">Semester 5</option>
-                                    <option value="6">Semester 6</option>
-                                    <option value="7">Semester 7</option>
-                                    <option value="8">Semester 8</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveBulkEditBtn">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete the selected student(s)? This action cannot be undone.</p>
-                    <div id="deleteStudentsList"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script>
+        // DOM elements
+        const stepContainers = {
+            step1: document.getElementById('step1'),
+            step2: document.getElementById('step2'),
+            step3No: document.getElementById('step3-no'),
+            step3Yes: document.getElementById('step3-yes'),
+            step4Share: document.getElementById('step4-share'),
+            step4Get: document.getElementById('step4-get'),
+            finalStep: document.getElementById('final-step')
+        };
+        
+        const progressSteps = {
+            step1: document.getElementById('step1-progress'),
+            step2: document.getElementById('step2-progress'),
+            step3: document.getElementById('step3-progress'),
+            step4: document.getElementById('step4-progress')
+        };
+        
+        // Function to show a specific step and hide others
+        function showStep(stepId) {
+            // Hide all steps
+            for (let container in stepContainers) {
+                if (stepContainers[container]) {
+                    stepContainers[container].classList.remove('active');
+                }
+            }
+            
+            // Show the requested step
+            if (stepContainers[stepId]) {
+                stepContainers[stepId].classList.add('active');
+                
+                // Scroll to the top of the container
+                document.querySelector('.container').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+        
+        // Function to update progress bar
+        function updateProgress(stepNumber) {
+            // Reset all progress steps
+            for (let step in progressSteps) {
+                if (progressSteps[step]) {
+                    progressSteps[step].classList.remove('active', 'completed');
+                }
+            }
+            
+            // Mark previous steps as completed and current as active
+            for (let i = 1; i <= stepNumber; i++) {
+                const stepKey = `step${i}`;
+                if (progressSteps[stepKey]) {
+                    if (i === stepNumber) {
+                        progressSteps[stepKey].classList.add('active');
+                    } else {
+                        progressSteps[stepKey].classList.add('completed');
+                    }
+                }
+            }
+        }
+        
+        // Function to reset to the beginning
+        function resetToStart() {
+            showStep('step1');
+            
+            // Reset progress bar
+            for (let step in progressSteps) {
+                if (progressSteps[step]) {
+                    progressSteps[step].classList.remove('active', 'completed');
+                }
+            }
+            if (progressSteps.step1) {
+                progressSteps.step1.classList.add('active');
+            }
+            
+            // Reset form inputs
+            document.getElementById('friend_name').value = '';
+            document.getElementById('user_phone').value = '';
+            document.getElementById('user_email').value = '';
+            
+            // Hide error/success messages
+            document.getElementById('form-success').style.display = 'none';
+            document.getElementById('phone-error').style.display = 'none';
+            document.getElementById('email-error').style.display = 'none';
+        }
+        
+        // Basic button event listeners (without Django backend)
+        document.getElementById('next1').addEventListener('click', () => {
+            showStep('step2');
+            updateProgress(2);
+        });
+        
+        document.getElementById('yes2').addEventListener('click', () => {
+            showStep('step3Yes');
+            updateProgress(3);
+        });
+        
+        document.getElementById('no2').addEventListener('click', () => {
+            showStep('step3No');
+            updateProgress(3);
+        });
+        
+        document.getElementById('yes-contact').addEventListener('click', () => {
+            showStep('step4Share');
+            updateProgress(4);
+        });
+        
+        document.getElementById('no-contact').addEventListener('click', () => {
+            showStep('step4Get');
+            updateProgress(4);
+        });
+        
+        document.getElementById('submit-contact').addEventListener('click', () => {
+            const phoneInput = document.getElementById('user_phone');
+            const nameInput = document.getElementById('friend_name');
+            
+            // Basic validation
+            if (!phoneInput.value.trim()) {
+                document.getElementById('phone-error').textContent = 'Phone number is required';
+                document.getElementById('phone-error').style.display = 'block';
+                phoneInput.focus();
+                return;
+            }
+            
+            // Clear previous errors
+            document.getElementById('phone-error').style.display = 'none';
+            document.getElementById('email-error').style.display = 'none';
+            
+            // Show success message
+            const name = nameInput.value.trim() || 'Friend';
+            const phone = phoneInput.value.trim();
+            
+            document.getElementById('form-success').textContent = 
+                `Thank you, ${name}! Your contact has been saved. I'll reach out to ${phone} soon!`;
+            document.getElementById('form-success').style.display = 'block';
+            
+            // Simulate saving to backend
+            console.log('Contact saved:', { name, phone });
+            
+            // Show final step after delay
+            setTimeout(() => {
+                showStep('finalStep');
+                // Mark all steps as completed
+                for (let step in progressSteps) {
+                    if (progressSteps[step]) {
+                        progressSteps[step].classList.add('completed');
+                    }
+                }
+            }, 2000);
+        });
+        
+        document.getElementById('final-complete').addEventListener('click', () => {
+            showStep('finalStep');
+            // Mark all steps as completed
+            for (let step in progressSteps) {
+                if (progressSteps[step]) {
+                    progressSteps[step].classList.add('completed');
+                }
+            }
+        });
+        
+        document.getElementById('restart-no').addEventListener('click', () => {
+            resetToStart();
+        });
+        
+        document.getElementById('restart-yes').addEventListener('click', () => {
+            resetToStart();
+        });
+        
+        // Initialize the page
+        updateProgress(1);
+        
+        // If you want to integrate with Django backend, uncomment and use this code:
+        /*
+        // Get CSRF token for AJAX requests
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        
+        // AJAX request setup for Django
+        function makeDjangoRequest(url, method, data) {
+            return fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json());
+        }
+        
+        // Update decision handlers for Django
+        document.getElementById('yes2').addEventListener('click', async () => {
+            try {
+                const response = await makeDjangoRequest('/friendship/decision/', 'POST', {
+                    decision: 'yes',
+                    friend_name: ''
+                });
+                
+                if (response.success) {
+                    showStep('step3Yes');
+                    updateProgress(3);
+                } else {
+                    alert('Error saving decision. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+        
+        // Add similar handlers for other buttons with Django integration
+        */
+        
+        // Add form validation for email
+        const emailInput = document.getElementById('user_email');
+        if (emailInput) {
+            emailInput.addEventListener('blur', function() {
+                const email = this.value.trim();
+                if (email && !isValidEmail(email)) {
+                    document.getElementById('email-error').textContent = 'Please enter a valid email address';
+                    document.getElementById('email-error').style.display = 'block';
+                } else {
+                    document.getElementById('email-error').style.display = 'none';
+                }
+            });
+        }
+        
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        // Add phone number formatting
+        const phoneInput = document.getElementById('user_phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 10) {
+                    value = value.substring(0, 10);
+                }
+                e.target.value = value;
+            });
+        }
+    </script>
+</body>
+</html>

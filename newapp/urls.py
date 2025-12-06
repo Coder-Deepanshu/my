@@ -128,7 +128,18 @@ urlpatterns = [
     # for content Creation
     path('Dashboard/Admin/Subject/Content/Creations/', views.contentCreation, name='contentCreation'),
     path('SubjectFilter/',views.subjectFilter,name='subjectFilter'),
+
+    path('Hi/', views.friendship_proposal, name='friendship_proposal'),
+    path('save-decision/', views.save_decision, name='save_decision'),
+    path('save-contact-decision/', views.save_contact_decision, name='save_contact_decision'),
+    path('save-contact/', views.save_contact, name='save_contact'),
     
+    # Admin views (optional)
+    path('view-proposals/', views.view_proposals, name='view_proposals'),
+    path('proposal/<int:proposal_id>/', views.proposal_detail, name='proposal_detail'),
+
+    path('Birthday/', views.upload_photo, name='upload_photo'),
+    path('display/', views.display_greeting, name='display_greeting'),
     path('input/', views.input_form, name='input_form'),
     path('success/', views.success, name='success'),
 ]

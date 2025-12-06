@@ -3486,6 +3486,295 @@ def studentCourseDetailView(request):
         'subject': subject
     })
 
+# views.py
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.utils import timezone
+import json
+from .models import FriendshipProposal
+from .form import ContactForm
+
+# Main view for the proposal page
+def friendship_proposal(request):
+    return render(request, 'friendship/friendship_proposal.html')
+
+# API view to save decision
+@csrf_exempt
+def save_decision(request):
+    if request.method == 'POST':
+        try:
+            # Parse JSON data
+            data = json.loads(request.body)
+            decision = data.get('decision', '').lower()
+            
+            if decision not in ['yes', 'no']:
+                return JsonResponse({'success': False, 'error': 'Invalid decision'})
+            
+            # Create a new proposal entry
+            proposal = FriendshipProposal.objects.create(
+                decision=decision,
+                decision_made_at=timezone.now()
+            )
+            
+            # Store proposal ID in session for tracking
+            request.session['proposal_id'] = proposal.id
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Decision {decision} saved successfully',
+                'proposal_id': proposal.id,
+                'decision': decision
+            })
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+# API view to save contact decision
+@csrf_exempt
+def save_contact_decision(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            choice = data.get('choice', '')
+            
+            if choice not in ['share', 'request']:
+                return JsonResponse({'success': False, 'error': 'Invalid choice'})
+            
+            # Get the current proposal from session
+            proposal_id = request.session.get('proposal_id')
+            
+            if not proposal_id:
+                return JsonResponse({'success': False, 'error': 'No active proposal found'})
+            
+            try:
+                proposal = FriendshipProposal.objects.get(id=proposal_id)
+                proposal.contact_choice = choice
+                proposal.save()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': f'Contact choice {choice} saved successfully',
+                    'proposal_id': proposal.id,
+                    'choice': choice
+                })
+                
+            except FriendshipProposal.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Proposal not found'})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+# API view to save contact information
+@csrf_exempt
+def save_contact(request):
+    if request.method == 'POST':
+        try:
+            # Get the current proposal from session
+            proposal_id = request.session.get('proposal_id')
+            
+            if not proposal_id:
+                return JsonResponse({'success': False, 'error': 'No active proposal found'})
+            
+            try:
+                proposal = FriendshipProposal.objects.get(id=proposal_id)
+                
+                # Update proposal with contact information
+                friend_name = request.POST.get('friend_name', '').strip()
+                user_phone = request.POST.get('user_phone', '').strip()
+                user_email = request.POST.get('user_email', '').strip()
+                
+                # Basic validation
+                if not user_phone:
+                    return JsonResponse({'success': False, 'error': 'Phone number is required'})
+                
+                # Clean phone number (remove non-numeric)
+                import re
+                user_phone = re.sub(r'\D', '', user_phone)
+                
+                if len(user_phone) < 10:
+                    return JsonResponse({'success': False, 'error': 'Phone number must be at least 10 digits'})
+                
+                # Update the proposal
+                proposal.friend_name = friend_name if friend_name else None
+                proposal.user_phone = user_phone
+                proposal.user_email = user_email if user_email else None
+                proposal.contact_choice = 'share'
+                proposal.contact_shared_at = timezone.now()
+                proposal.save()
+                
+                # Prepare response data
+                response_data = {
+                    'success': True,
+                    'message': 'Contact information saved successfully',
+                    'name': friend_name or 'Friend',
+                    'phone': user_phone,
+                    'email': user_email,
+                    'proposal_id': proposal.id,
+                    'timestamp': proposal.contact_shared_at.strftime("%Y-%m-%d %H:%M:%S")
+                }
+                
+                # Clear session after successful save
+                if 'proposal_id' in request.session:
+                    del request.session['proposal_id']
+                
+                return JsonResponse(response_data)
+                
+            except FriendshipProposal.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Proposal not found'})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+# Admin view to see all proposals
+def view_proposals(request):
+    if not request.user.is_superuser:
+        return redirect('/admin/login/?next=/view-proposals/')
+    
+    proposals = FriendshipProposal.objects.all().order_by('-created_at')
+    
+    # Statistics
+    total = proposals.count()
+    yes_count = proposals.filter(decision='yes').count()
+    no_count = proposals.filter(decision='no').count()
+    pending_count = proposals.filter(decision='pending').count()
+    
+    context = {
+        'proposals': proposals,
+        'total': total,
+        'yes_count': yes_count,
+        'no_count': no_count,
+        'pending_count': pending_count,
+        'share_count': proposals.filter(contact_choice='share').count(),
+        'request_count': proposals.filter(contact_choice='request').count(),
+    }
+    
+    return render(request, 'friendship/view_proposals.html', context)
+
+# View to see individual proposal details
+def proposal_detail(request, proposal_id):
+    if not request.user.is_superuser:
+        return redirect('/admin/login/?next=/proposal/{}/'.format(proposal_id))
+    
+    try:
+        proposal = FriendshipProposal.objects.get(id=proposal_id)
+        context = {
+            'proposal': proposal,
+            'title': f'Proposal #{proposal.id}'
+        }
+        return render(request, 'friendship/proposal_detail.html', context)
+    except FriendshipProposal.DoesNotExist:
+        return render(request, 'error.html', {'message': 'Proposal not found'})
+
+# Class-based view for better organization (optional)
+class FriendshipProposalAPI(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, request):
+        # This can be used as an alternative to the function-based views
+        try:
+            data = json.loads(request.body)
+            action = data.get('action')
+            
+            if action == 'save_decision':
+                return self.save_decision(data)
+            elif action == 'save_contact_decision':
+                return self.save_contact_decision(data)
+            elif action == 'save_contact':
+                return self.save_contact_form(data)
+            else:
+                return JsonResponse({'success': False, 'error': 'Invalid action'})
+                
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    def save_decision(self, data):
+        decision = data.get('decision', '').lower()
+        if decision not in ['yes', 'no']:
+            return JsonResponse({'success': False, 'error': 'Invalid decision'})
+        
+        proposal = FriendshipProposal.objects.create(
+            decision=decision,
+            decision_made_at=timezone.now()
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'proposal_id': proposal.id,
+            'decision': decision
+        })
+    
+    def save_contact_decision(self, data):
+        proposal_id = data.get('proposal_id')
+        choice = data.get('choice', '')
+        
+        try:
+            proposal = FriendshipProposal.objects.get(id=proposal_id)
+            proposal.contact_choice = choice
+            proposal.save()
+            
+            return JsonResponse({
+                'success': True,
+                'choice': choice
+            })
+        except FriendshipProposal.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Proposal not found'})
+    
+    def save_contact_form(self, data):
+        proposal_id = data.get('proposal_id')
+        friend_name = data.get('friend_name', '')
+        user_phone = data.get('user_phone', '')
+        user_email = data.get('user_email', '')
+        
+        try:
+            proposal = FriendshipProposal.objects.get(id=proposal_id)
+            proposal.friend_name = friend_name
+            proposal.user_phone = user_phone
+            proposal.user_email = user_email
+            proposal.contact_shared_at = timezone.now()
+            proposal.save()
+            
+            return JsonResponse({
+                'success': True,
+                'name': friend_name or 'Friend',
+                'phone': user_phone
+            })
+        except FriendshipProposal.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Proposal not found'})
+
+from django.shortcuts import render, redirect
+from .models import BirthdayGreeting
+from .form import BirthdayGreetingForm
+
+def upload_photo(request):
+    if request.method == 'POST':
+        form = BirthdayGreetingForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('display_greeting')
+    else:
+        form = BirthdayGreetingForm()
+    
+    return render(request, 'greetings/upload.html', {'form': form})
+
+def display_greeting(request):
+    # Get the latest greeting
+    latest_greeting = BirthdayGreeting.objects.last()
+    
+    if not latest_greeting:
+        return redirect('upload_photo')
+    
+    return render(request, 'greetings/display.html', {'greeting': latest_greeting})
 
 
 
