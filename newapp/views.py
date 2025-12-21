@@ -3823,3 +3823,382 @@ def input_form(request):
 
 def success(request):
     return render(request, 'numbers/success.html')
+
+
+
+
+
+# -----------------------demo for attendance
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, authenticate
+from django.utils import timezone
+from django.db.models import Q
+from datetime import datetime, timedelta
+import json
+import hashlib
+import secrets
+
+from .models import Employee, AttendanceLog, BiometricData
+from .form import CollegeIDForm, PINForm, EmployeeRegistrationForm
+
+# Home page
+def home(request):
+    return render(request, 'attendance/home.html')
+
+# College ID verification page
+def verify_college_id(request):
+    if request.method == 'POST':
+        form = CollegeIDForm(request.POST)
+        if form.is_valid():
+            college_id = form.cleaned_data['college_id']
+            try:
+                employee = Employee.objects.get(college_id=college_id)
+                
+                # Check for pending attendance with 1-hour rule
+                pending_logs = AttendanceLog.objects.filter(
+                    employee=employee,
+                    status='pending',
+                    verification_fail_time__isnull=False
+                )
+                
+                for log in pending_logs:
+                    if log.mark_absent_if_expired():
+                        # Already marked absent
+                        pass
+                
+                # Store college_id in session
+                request.session['verifying_college_id'] = college_id
+                request.session['verification_start_time'] = timezone.now().isoformat()
+                
+                # Determine device type
+                user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
+                is_mobile = any(device in user_agent for device in ['mobile', 'android', 'iphone'])
+                
+                if is_mobile:
+                    return redirect('mobile_biometric_verification')
+                else:
+                    return redirect('laptop_pin_verification')
+                    
+            except Employee.DoesNotExist:
+                form.add_error('college_id', 'Invalid College ID')
+    else:
+        form = CollegeIDForm()
+    
+    return render(request, 'attendance/login1.html', {'form': form})
+
+# Laptop PIN verification
+def laptop_pin_verification(request):
+    college_id = request.session.get('verifying_college_id')
+    if not college_id:
+        return redirect('verify_college_id')
+    
+    employee = get_object_or_404(Employee, college_id=college_id)
+    
+    if request.method == 'POST':
+        form = PINForm(request.POST)
+        if form.is_valid():
+            pin = form.cleaned_data['pin']
+            
+            if employee.verify_pin(pin):
+                # PIN verified - mark attendance
+                attendance_log = AttendanceLog.objects.create(
+                    employee=employee,
+                    status='present',
+                    login_mode='laptop_pin',
+                    ip_address=request.META.get('REMOTE_ADDR'),
+                    user_agent=request.META.get('HTTP_USER_AGENT', '')
+                )
+                
+                # Clear session
+                request.session.pop('verifying_college_id', None)
+                request.session.pop('verification_start_time', None)
+                
+                return render(request, 'attendance/success.html', {
+                    'message': 'Attendance marked successfully!',
+                    'employee': employee,
+                    'timestamp': attendance_log.timestamp
+                })
+            else:
+                # PIN verification failed
+                attendance_log = AttendanceLog.objects.create(
+                    employee=employee,
+                    status='pending',
+                    login_mode='laptop_pin',
+                    verification_fail_time=timezone.now(),
+                    verification_attempts=1,
+                    ip_address=request.META.get('REMOTE_ADDR'),
+                    user_agent=request.META.get('HTTP_USER_AGENT', '')
+                )
+                
+                form.add_error('pin', 'Invalid PIN. You can retry within 1 hour.')
+    
+    else:
+        form = PINForm()
+    
+    return render(request, 'attendance/pin_verification.html', {
+        'form': form,
+        'employee': employee
+    })
+
+# Mobile biometric verification page
+def mobile_biometric_verification(request):
+    college_id = request.session.get('verifying_college_id')
+    if not college_id:
+        return redirect('verify_college_id')
+    
+    employee = get_object_or_404(Employee, college_id=college_id)
+    
+    return render(request, 'attendance/mobile_biometric.html', {
+        'employee': employee,
+        'college_id': college_id
+    })
+
+# API for mobile biometric verification
+@csrf_exempt
+def api_mobile_verify(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            college_id = data.get('college_id')
+            biometric_token = data.get('biometric_token')
+            device_id = data.get('device_id')
+            
+            employee = Employee.objects.get(college_id=college_id)
+            
+            # In real implementation, verify biometric_token with stored template
+            # For demo, we'll simulate verification
+            
+            # Check if biometric enrolled
+            if not employee.fingerprint_enrolled:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Fingerprint not enrolled. Please enroll first.'
+                })
+            
+            # Simulate biometric verification (replace with actual biometric check)
+            # Here you would compare biometric_token with stored encrypted template
+            
+            attendance_log = AttendanceLog.objects.create(
+                employee=employee,
+                status='present',
+                login_mode='mobile_fingerprint',
+                ip_address=request.META.get('REMOTE_ADDR'),
+                user_agent=request.META.get('HTTP_USER_AGENT', '')
+            )
+            
+            # Clear session if exists
+            if 'verifying_college_id' in request.session:
+                request.session.pop('verifying_college_id', None)
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Attendance marked successfully!',
+                'timestamp': attendance_log.timestamp.isoformat()
+            })
+            
+        except Employee.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid College ID'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Error: {str(e)}'
+            })
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+# Employee registration/enrollment
+def employee_enroll(request):
+    if request.method == 'POST':
+        form = EmployeeRegistrationForm(request.POST)
+        if form.is_valid():
+            employee = form.save(commit=False)
+            
+            # Set PIN
+            pin = form.cleaned_data['pin']
+            employee.set_pin(pin)
+            
+            # Set fingerprint enrolled status (will be true after mobile enrollment)
+            employee.fingerprint_enrolled = False
+            employee.save()
+            
+            request.session['new_employee_id'] = employee.id
+            return redirect('enroll_biometric')
+    else:
+        form = EmployeeRegistrationForm()
+    
+    return render(request, 'attendance/enroll.html', {'form': form})
+
+# Biometric enrollment page
+def enroll_biometric(request):
+    employee_id = request.session.get('new_employee_id')
+    if not employee_id:
+        return redirect('employee_enroll')
+    
+    employee = get_object_or_404(Employee, id=employee_id)
+    
+    return render(request, 'attendance/enroll_biometric.html', {
+        'employee': employee,
+        'college_id': employee.college_id
+    })
+
+# API for biometric enrollment from mobile
+@csrf_exempt
+def api_enroll_biometric(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            college_id = data.get('college_id')
+            biometric_data = data.get('biometric_data')
+            device_id = data.get('device_id')
+            public_key = data.get('public_key')
+            
+            employee = Employee.objects.get(college_id=college_id)
+            
+            # Store biometric data (encrypted)
+            BiometricData.objects.create(
+                employee=employee,
+                device_id=device_id,
+                encrypted_template=biometric_data,
+                public_key=public_key
+            )
+            
+            # Update employee status
+            employee.fingerprint_enrolled = True
+            employee.enrollment_date = timezone.now()
+            employee.save()
+            
+            # Clear session
+            if 'new_employee_id' in request.session:
+                request.session.pop('new_employee_id', None)
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Fingerprint enrolled successfully!'
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'Error: {str(e)}'
+            })
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+# Admin dashboard
+@login_required
+def dashboard(request):
+    if not request.user.is_staff:
+        return redirect('home')
+    
+    today = timezone.now().date()
+    today_attendance = AttendanceLog.objects.filter(
+        timestamp__date=today
+    ).select_related('employee')
+    
+    total_employees = Employee.objects.count()
+    present_today = today_attendance.filter(status='present').count()
+    absent_today = total_employees - present_today
+    
+    context = {
+        'today_attendance': today_attendance,
+        'total_employees': total_employees,
+        'present_today': present_today,
+        'absent_today': absent_today,
+        'attendance_logs': AttendanceLog.objects.all()[:50]
+    }
+    
+    return render(request, 'attendance/dashboard.html', context)
+
+# Check attendance status
+from datetime import datetime, timedelta
+from django.utils import timezone
+
+def check_status(request, college_id):
+    employee = get_object_or_404(Employee, college_id=college_id)
+    
+    today = timezone.now().date()
+    attendance_today = AttendanceLog.objects.filter(
+        employee=employee,
+        timestamp__date=today,
+        status='present'
+    ).first()
+    
+    # Get pending logs
+    pending_logs = AttendanceLog.objects.filter(
+        employee=employee,
+        status='pending',
+        verification_fail_time__isnull=False
+    )
+    
+    # Check if any pending logs expired
+    for log in pending_logs:
+        log.mark_absent_if_expired()
+    
+    # Get weekly summary
+    week_ago = today - timedelta(days=7)
+    week_attendance = AttendanceLog.objects.filter(
+        employee=employee,
+        timestamp__date__gte=week_ago,
+        status='present'
+    ).values_list('timestamp__date', flat=True)
+    
+    # Create week summary
+    week_summary = []
+    present_dates = set(week_attendance)
+    
+    for i in range(7):
+        day_date = today - timedelta(days=6-i)
+        week_summary.append({
+            'date': day_date,
+            'name': day_date.strftime('%A'),
+            'present': day_date in present_dates
+        })
+    
+    # Monthly stats
+    month_start = today.replace(day=1)
+    monthly_present = AttendanceLog.objects.filter(
+        employee=employee,
+        timestamp__date__gte=month_start,
+        status='present'
+    ).count()
+    
+    monthly_absent = AttendanceLog.objects.filter(
+        employee=employee,
+        timestamp__date__gte=month_start,
+        status='absent'
+    ).count()
+    
+    total_days = (today - month_start).days + 1
+    attendance_percentage = round((monthly_present / total_days * 100)) if total_days > 0 else 0
+    
+    # Recent logs (last 5)
+    recent_logs = AttendanceLog.objects.filter(
+        employee=employee
+    ).order_by('-timestamp')[:5]
+    
+    context = {
+        'employee': employee,
+        'attendance_today': attendance_today,
+        'is_present': attendance_today is not None,
+        'pending_logs': pending_logs,
+        'week_summary': week_summary,
+        'present_count': len(present_dates),
+        'absent_count': 7 - len(present_dates),
+        'monthly_stats': {
+            'present': monthly_present,
+            'absent': monthly_absent,
+            'total': total_days
+        },
+        'attendance_percentage': attendance_percentage,
+        'recent_logs': recent_logs,
+        'today': today,
+    }
+    
+    return render(request, 'attendance/status.html', context)

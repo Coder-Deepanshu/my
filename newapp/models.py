@@ -625,3 +625,94 @@ class BirthdayGreeting(models.Model):
     
     def __str__(self):
         return f"Birthday Greeting - {self.created_at}"
+
+
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+import hashlib
+import base64
+
+class Employee(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    college_id = models.CharField(max_length=50, unique=True)
+    full_name = models.CharField(max_length=100)
+    department = models.CharField(max_length=100)
+    
+    # PIN for laptop login
+    pin_hash = models.CharField(max_length=255, blank=True, null=True)
+    pin_salt = models.CharField(max_length=50, blank=True, null=True)
+    
+    # Biometric status
+    fingerprint_enrolled = models.BooleanField(default=False)
+    biometric_data = models.TextField(blank=True, null=True)  # Encrypted fingerprint reference
+    enrollment_date = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def set_pin(self, pin):
+        """Hash PIN before storing"""
+        import secrets
+        salt = secrets.token_hex(16)
+        hash_obj = hashlib.sha256(f"{pin}{salt}".encode())
+        self.pin_hash = hash_obj.hexdigest()
+        self.pin_salt = salt
+        self.save()
+    
+    def verify_pin(self, pin):
+        if not self.pin_salt or not self.pin_hash:
+            return False
+        hash_obj = hashlib.sha256(f"{pin}{self.pin_salt}".encode())
+        return hash_obj.hexdigest() == self.pin_hash
+    
+    def __str__(self):
+        return f"{self.college_id} - {self.full_name}"
+
+class AttendanceLog(models.Model):
+    STATUS_CHOICES = [
+        ('present', 'Present'),
+        ('absent', 'Absent'),
+        ('pending', 'Pending Retry'),
+        ('late', 'Late'),
+    ]
+    
+    MODE_CHOICES = [
+        ('mobile_fingerprint', 'Mobile Fingerprint'),
+        ('laptop_pin', 'Laptop PIN'),
+    ]
+    
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    login_mode = models.CharField(max_length=20, choices=MODE_CHOICES, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True, null=True)
+    
+    # For retry logic
+    verification_fail_time = models.DateTimeField(null=True, blank=True)
+    verification_attempts = models.IntegerField(default=0)
+    
+    def mark_absent_if_expired(self):
+        """Check if 1 hour passed since failed verification"""
+        if self.status == 'pending' and self.verification_fail_time:
+            time_diff = timezone.now() - self.verification_fail_time
+            if time_diff.total_seconds() > 3600:  # 1 hour
+                self.status = 'absent'
+                self.save()
+                return True
+        return False
+    
+    class Meta:
+        ordering = ['-timestamp']
+
+class BiometricData(models.Model):
+    """Store encrypted biometric references (for mobile)"""
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    device_id = models.CharField(max_length=255)  # Mobile device unique ID
+    encrypted_template = models.TextField()  # Base64 encoded encrypted data
+    public_key = models.TextField()  # For encryption
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Biometric data for {self.employee.college_id}"

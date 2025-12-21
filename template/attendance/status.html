@@ -1,0 +1,564 @@
+{% extends 'attendance/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <div class="avatar-circle mb-3">
+                <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+            </div>
+            <h1 class="display-5 fw-bold text-primary">Attendance Status</h1>
+            <p class="lead text-muted">Track your attendance records and history</p>
+        </div>
+
+        <!-- Employee Info Card -->
+        <div class="card border-0 shadow-lg mb-4">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <div class="icon-wrapper me-4">
+                                <i class="bi bi-person-badge" style="font-size: 2.5rem; color: #667eea;"></i>
+                            </div>
+                            <div>
+                                <h3 class="mb-1">{{ employee.full_name }}</h3>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-id-card"></i> {{ employee.college_id }}
+                                    </span>
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-building"></i> {{ employee.department }}
+                                    </span>
+                                    <span class="badge {% if employee.fingerprint_enrolled %}bg-success{% else %}bg-warning{% endif %}">
+                                        <i class="bi bi-fingerprint"></i> 
+                                        {% if employee.fingerprint_enrolled %}Fingerprint Enrolled{% else %}PIN Only{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <a href="{% url 'verify_college_id' %}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-plus-circle"></i> Mark Today
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Status -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calendar-day"></i>
+                            Today's Attendance Status
+                            <span class="float-end">{{ today|date:"d M Y" }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if is_present %}
+                        <div class="alert alert-success border-0">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-check-circle-fill fs-1"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="alert-heading">PRESENT <span class="badge bg-success">Marked</span></h4>
+                                    <p class="mb-1">
+                                        <strong>Time:</strong> {{ attendance_today.timestamp|date:"h:i A" }}
+                                        | <strong>Mode:</strong> {{ attendance_today.login_mode|title }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <strong>Device:</strong> 
+                                        {% if "mobile" in attendance_today.login_mode %}
+                                        <i class="bi bi-phone"></i> Mobile
+                                        {% else %}
+                                        <i class="bi bi-laptop"></i> Laptop
+                                        {% endif %}
+                                        | <strong>IP:</strong> {{ attendance_today.ip_address|default:"N/A" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning border-0">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="bi bi-clock-history fs-1"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h4 class="alert-heading">NOT MARKED <span class="badge bg-warning">Pending</span></h4>
+                                    <p class="mb-1">Attendance not marked for today yet.</p>
+                                    <p class="mb-0">
+                                        <a href="{% url 'verify_college_id' %}" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-box-arrow-in-right"></i> Mark Now
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Summary -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calendar-week"></i>
+                            This Week's Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            {% for day in week_summary %}
+                            <div class="col">
+                                <div class="day-box {% if day.present %}bg-success text-white{% elif day.date == today %}bg-light{% else %}bg-secondary text-white{% endif %}">
+                                    <div class="day-name">{{ day.name|slice:":3" }}</div>
+                                    <div class="day-date">{{ day.date|date:"d" }}</div>
+                                    <div class="day-status">
+                                        {% if day.present %}
+                                        <i class="bi bi-check-circle"></i>
+                                        {% else %}
+                                        <i class="bi bi-x-circle"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center mt-3">
+                            <span class="badge bg-success me-3">
+                                <i class="bi bi-check-circle"></i> Present: {{ present_count }}/7
+                            </span>
+                            <span class="badge bg-danger">
+                                <i class="bi bi-x-circle"></i> Absent: {{ absent_count }}/7
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Stats -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-bar-chart"></i>
+                            Monthly Statistics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <div class="progress-circle mb-3" data-percent="{{ attendance_percentage }}">
+                                <span class="progress-circle-value">{{ attendance_percentage }}%</span>
+                            </div>
+                            <h4>Attendance Rate</h4>
+                        </div>
+                        <div class="row text-center mt-4">
+                            <div class="col-6">
+                                <div class="stat-box">
+                                    <h2 class="text-success">{{ monthly_stats.present }}</h2>
+                                    <p class="text-muted">Present Days</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-box">
+                                    <h2 class="text-danger">{{ monthly_stats.absent }}</h2>
+                                    <p class="text-muted">Absent Days</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history"></i>
+                            Recent Activity
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            {% for log in recent_logs %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker {% if log.status == 'present' %}bg-success{% else %}bg-danger{% endif %}"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-header">
+                                        <span class="timeline-time">{{ log.timestamp|date:"h:i A" }}</span>
+                                        <span class="badge {% if log.status == 'present' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ log.status|upper }}
+                                        </span>
+                                    </div>
+                                    <p class="timeline-text">
+                                        {{ log.timestamp|date:"d M Y" }} 
+                                        via {{ log.login_mode|title }}
+                                    </p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-4">
+                                <i class="bi bi-inbox fs-1 text-muted"></i>
+                                <p class="text-muted">No attendance records found</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Verifications -->
+        {% if pending_logs %}
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 text-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Pending Verifications
+                            <span class="badge bg-warning">{{ pending_logs|length }}</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Login Mode</th>
+                                        <th>Attempts</th>
+                                        <th>Status</th>
+                                        <th>Time Left</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in pending_logs %}
+                                    <tr>
+                                        <td>
+                                            <i class="bi bi-calendar me-1"></i>
+                                            {{ log.timestamp|date:"d M Y" }}
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                {{ log.timestamp|date:"h:i A" }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            {% if log.login_mode == "mobile_fingerprint" %}
+                                            <span class="badge bg-info">
+                                                <i class="bi bi-phone"></i> Mobile
+                                            </span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-laptop"></i> Laptop
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-dark">{{ log.verification_attempts }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">
+                                                <i class="bi bi-clock"></i> Pending Retry
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="countdown" data-expiry="{{ log.verification_fail_time|date:'c' }}">
+                                                <span class="hours">00</span>:<span class="minutes">00</span>:<span class="seconds">00</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'verify_college_id' %}" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-arrow-repeat"></i> Retry Now
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="alert alert-warning mt-3">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Note:</strong> You have 1 hour from failed attempt to retry. After that, it will be marked as absent automatically.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="text-center mt-4">
+            <div class="btn-group" role="group">
+                <a href="{% url 'home' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-house-door"></i> Home
+                </a>
+                <a href="{% url 'verify_college_id' %}" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-in-right"></i> Mark Attendance
+                </a>
+                <button onclick="window.print()" class="btn btn-outline-secondary">
+                    <i class="bi bi-printer"></i> Print Report
+                </button>
+                <button onclick="downloadReport()" class="btn btn-outline-success">
+                    <i class="bi bi-download"></i> Download
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-5">
+            <small class="text-muted">
+                Last updated: {% now "d M Y, h:i A" %}
+                | System: Biometric Attendance v1.0
+            </small>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto;
+}
+
+.icon-wrapper {
+    width: 70px;
+    height: 70px;
+    background: #f0f4ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.day-box {
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px;
+    transition: all 0.3s;
+}
+
+.day-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.day-name {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.day-date {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.day-status {
+    font-size: 1.2rem;
+}
+
+.progress-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+}
+
+.progress-circle:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 10px solid #f0f0f0;
+}
+
+.progress-circle:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 10px solid;
+    border-color: #28a745 transparent transparent transparent;
+    /* transform: rotate(calc({{ attendance_percentage }} * 3.6deg)); */
+}
+
+.progress-circle-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.stat-box {
+    padding: 15px;
+    border-radius: 10px;
+    background: #f8f9fa;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.timeline-time {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.timeline-text {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+
+.countdown {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    background: #343a40;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    min-width: 100px;
+    text-align: center;
+}
+
+@media print {
+    .btn, .no-print {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+    }
+}
+</style>
+
+<script>
+// Countdown for pending verifications
+document.addEventListener('DOMContentLoaded', function() {
+    const countdowns = document.querySelectorAll('.countdown');
+    
+    countdowns.forEach(countdown => {
+        const expiry = new Date(countdown.dataset.expiry).getTime() + 3600000; // Add 1 hour
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = expiry - now;
+            
+            if (distance < 0) {
+                countdown.innerHTML = "EXPIRED";
+                countdown.classList.add('bg-danger');
+                return;
+            }
+            
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            countdown.querySelector('.hours').textContent = hours.toString().padStart(2, '0');
+            countdown.querySelector('.minutes').textContent = minutes.toString().padStart(2, '0');
+            countdown.querySelector('.seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    });
+});
+
+// Download Report
+function downloadReport() {
+    const reportData = {
+        employee: "{{ employee.full_name }}",
+        college_id: "{{ employee.college_id }}",
+        department: "{{ employee.department }}",
+        today_status: "{% if is_present %}Present at {{ attendance_today.timestamp|date:'h:i A' }}{% else %}Not Marked{% endif %}",
+        generated_at: new Date().toLocaleString()
+    };
+    
+    const blob = new Blob([JSON.stringify(reportData, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'attendance_report_{{ employee.college_id }}.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    // Show download success message
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+    alert.style.zIndex = '9999';
+    alert.innerHTML = `
+        <i class="bi bi-check-circle"></i>
+        Report downloaded successfully!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alert);
+    
+    setTimeout(() => alert.remove(), 3000);
+}
+
+// Auto refresh every 60 seconds (optional)
+setTimeout(() => {
+    window.location.reload();
+}, 60000);
+</script>
+
+{% endblock %}

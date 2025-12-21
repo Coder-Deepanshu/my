@@ -172,4 +172,6 @@ from .models import BirthdayGreeting
 class BirthdayGreetingAdmin(admin.ModelAdmin):
     # Display fields in admin list view
     list_display = ( 'photo', 'greeting_message', 'created_at')
+
+
     
