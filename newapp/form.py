@@ -102,7 +102,7 @@ class BirthdayGreetingForm(forms.ModelForm):
             'class': 'form-control'
         }),
         required=False,
-        initial="Happy Birthday Kunal! Wishing you all the happiness in the world!"
+        initial="Happy Birthday! Wishing you all the happiness in the world!"
     )
     
     class Meta:
