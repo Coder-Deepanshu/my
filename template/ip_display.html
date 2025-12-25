@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network IP Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .ip-info {
+            background: #e8f4fd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+        }
+        .label {
+            font-weight: bold;
+            color: #333;
+        }
+        .value {
+            color: #2196F3;
+            word-break: break-all;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📡 Network IP Information</h1>
+        
+        {% if error %}
+            <div style="color: red; padding: 15px; background: #ffe6e6; border-radius: 5px;">
+                Error: {{ error }}
+            </div>
+        {% endif %}
+        
+        <div class="ip-info">
+            <div class="label">🌐 Server Hostname:</div>
+            <div class="value">{{ hostname }}</div>
+        </div>
+        
+        <div class="ip-info">
+            <div class="label">🏠 Server Local IP:</div>
+            <div class="value">{{ local_ip }}</div>
+        </div>
+        
+        <div class="ip-info">
+            <div class="label">👤 Your IP Address (Client):</div>
+            <div class="value">{{ client_ip }}</div>
+        </div>
+        
+        <div class="ip-info">
+            <div class="label">🌍 Public IP Address:</div>
+            <div class="value">{{ public_ip }}</div>
+        </div>
+        
+        {% if x_forwarded_for %}
+        <div class="ip-info">
+            <div class="label">🔀 X-Forwarded-For:</div>
+            <div class="value">{{ x_forwarded_for }}</div>
+        </div>
+        {% endif %}
+        
+        <div class="ip-info">
+            <div class="label">🖥️ Your Browser:</div>
+            <div class="value">{{ user_agent }}</div>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: center;">
+            <button onclick="copyToClipboard('{{ client_ip }}')" 
+                    style="padding: 10px 20px; background: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                📋 Copy Your IP
+            </button>
+            
+            <button onclick="refreshPage()" 
+                    style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                🔄 Refresh
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('IP address copied to clipboard: ' + text);
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+        
+        function refreshPage() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>

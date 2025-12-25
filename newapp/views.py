@@ -3486,6 +3486,64 @@ def studentCourseDetailView(request):
         'subject': subject
     })
 
+# faculty attendance system 
+def faculty_attendance_system(request):
+    return render(request, 'attendance/distance_calculation.html')
+
+import math
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371000
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    dphi = math.radians(lat2-lat1)
+    dlambda = math.radians(lon2-lon1)
+
+    a = math.sin(dphi/2)**2+\
+        math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
+
+    c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
+    return R*c
+
+Campus_center = [30.347040000000003, 76.98687]
+max_distance = 100
+max_accuracy = 30
+@csrf_exempt
+def save_location(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        lat = data.get('lat')
+        lon = data.get('lon')
+        accuracy = data.get('accuracy')
+
+    if not lat or not lon or not accuracy:
+        return JsonResponse({'error':f"No Data Found!"})
+
+    if accuracy>max_accuracy:
+        return JsonResponse({'error':'GPS accuracy too low!'})
+
+    distance = haversine(lat, lon, Campus_center[0], Campus_center[1])
+
+    if distance:
+        if distance <= max_distance:
+            return JsonResponse({'status':'INSIDE'})
+        else:
+            return JsonResponse({'status':'OUSIDE'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # views.py
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -3846,8 +3904,8 @@ from .models import Employee, AttendanceLog, BiometricData
 from .form import CollegeIDForm, PINForm, EmployeeRegistrationForm
 
 # Home page
-def home(request):
-    return render(request, 'attendance/home.html')
+def home1(request):
+    return render(request, 'attendance/home1.html')
 
 # College ID verification page
 def verify_college_id(request):
@@ -4202,3 +4260,50 @@ def check_status(request, college_id):
     }
     
     return render(request, 'attendance/status.html', context)
+
+
+
+
+# views.py
+from django.shortcuts import render
+import socket
+from django.http import JsonResponse
+
+def get_ip_address(request):
+    # Get server's IP address
+    try:
+        # Get IP from hostname
+        hostname = socket.gethostname()
+        local_ip = socket.gethostbyname(hostname)
+        
+        # Get client's IP address (user accessing the page)
+        client_ip = request.META.get('REMOTE_ADDR')
+        
+        # Get public IP (optional - requires internet)
+        public_ip = None
+        try:
+            import requests
+            response = requests.get('https://api.ipify.org?format=json', timeout=5)
+            if response.status_code == 200:
+                public_ip = response.json()['ip']
+        except:
+            public_ip = "Could not fetch public IP"
+        
+        context = {
+            'hostname': hostname,
+            'local_ip': local_ip,
+            'client_ip': client_ip,
+            'public_ip': public_ip,
+            'x_forwarded_for': request.META.get('HTTP_X_FORWARDED_FOR'),
+            'user_agent': request.META.get('HTTP_USER_AGENT'),
+        }
+        
+        return render(request, 'ip_display.html', context)
+        
+    except Exception as e:
+        return render(request, 'ip_display.html', {'error': str(e)})
+
+def get_ip_api(request):
+    # API endpoint to return IP as JSON
+    ip_address = request.META.get('REMOTE_ADDR')
+    return JsonResponse({'ip': ip_address})

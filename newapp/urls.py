@@ -133,6 +133,17 @@ urlpatterns = [
     path('save-decision/', views.save_decision, name='save_decision'),
     path('save-contact-decision/', views.save_contact_decision, name='save_contact_decision'),
     path('save-contact/', views.save_contact, name='save_contact'),
+
+    # faculty attendance mark system
+    path('Faculty/Attendance/System/', views.faculty_attendance_system, name='faculty_attendance_system'),
+    path('save-location/', views.save_location, name='save_location'),
+
+    path('ip/', views.get_ip_address, name='ip_address'),
+    path('api/ip/', views.get_ip_api, name='ip_api'),
+
+
+
+    
     
     # Admin views (optional)
     path('view-proposals/', views.view_proposals, name='view_proposals'),
@@ -143,7 +154,7 @@ urlpatterns = [
     path('input/', views.input_form, name='input_form'),
     path('success/', views.success, name='success'),
 
-    path('home/', views.home, name='home'),
+    path('home/', views.home1, name='home'),
     path('login-page/', views.verify_college_id, name='verify_college_id'),
     path('pin-verify/', views.laptop_pin_verification, name='laptop_pin_verification'),
     path('mobile-verify/', views.mobile_biometric_verification, name='mobile_biometric_verification'),

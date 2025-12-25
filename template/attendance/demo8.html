@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Location Detector</title>
+</head>
+<body>
+    <h1>Detect Your Current Location</h1>
+    <button onclick="getLocation()">Get My Location</button>
+    <p id="location">Location will appear here.</p>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                // Options for high accuracy
+                const options = {
+                    enableHighAccuracy: true,  // Tries for best accuracy (e.g., GPS)
+                    timeout: 10000,            // Wait up to 10 seconds
+                    maximumAge: 0              // Don't use cached location
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const accuracy = position.coords.accuracy;  // In meters
+                        document.getElementById("location").innerHTML = 
+                            `Latitude: ${lat}<br>Longitude: ${lon}<br>Accuracy: ±${accuracy} meters`;
+                    // Reverse geocoding using Nominatim (free, no API key needed)
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.display_name) {
+                                    console.log(data.display_name)
+                                } else {
+                                    console.log('error')
+                                }
+                            })
+                            .catch(error => {
+                                document.getElementById("output").innerHTML = "Error fetching address.";
+                                console.error(error);
+                            });
+                    },
+                 
+                    (error) => {
+                        document.getElementById("location").innerHTML = 
+                            `Error: ${error.message}`;
+                    },
+                    options
+                );
+            } else {
+                document.getElementById("location").innerHTML = 
+                    "Geolocation is not supported by this browser.";
+            }
+        }
+    </script>
+</body>
+</html>
