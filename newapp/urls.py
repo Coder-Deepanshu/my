@@ -142,6 +142,12 @@ urlpatterns = [
     path('api/ip/', views.get_ip_api, name='ip_api'),
 
 
+    path('home3/', views.home3, name='home3'),
+    path('api/mac/', views.api_mac, name='api_mac'),
+
+  
+
+
 
     
     

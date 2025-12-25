@@ -4307,3 +4307,156 @@ def get_ip_api(request):
     # API endpoint to return IP as JSON
     ip_address = request.META.get('REMOTE_ADDR')
     return JsonResponse({'ip': ip_address})
+
+
+
+# macapp/views.py
+import uuid
+import platform
+import subprocess
+import re
+import socket
+import psutil  # Install karna padega
+from django.shortcuts import render
+from django.http import JsonResponse
+
+def get_mac_address_psutil():
+    """Psutil library se - Best method"""
+    try:
+        for interface, addrs in psutil.net_if_addrs().items():
+            if interface.lower() != 'lo':  # Loopback skip
+                for addr in addrs:
+                    if addr.family == psutil.AF_LINK:
+                        mac = addr.address
+                        if mac and mac != '00:00:00:00:00:00':
+                            return mac, interface
+    except:
+        pass
+    return None, None
+
+def get_mac_address_system():
+    """System commands se"""
+    system = platform.system()
+    
+    if system == "Windows":
+        commands = [
+            ["getmac"],
+            ["ipconfig", "/all"],
+            ["wmic", "nic", "get", "MACAddress"]
+        ]
+    elif system in ["Linux", "Darwin"]:  # Darwin = macOS
+        commands = [
+            ["ifconfig"],
+            ["ip", "link", "show"],
+            ["cat", "/sys/class/net/*/address"]
+        ]
+    else:
+        return None
+    
+    for cmd in commands:
+        try:
+            result = subprocess.check_output(cmd, 
+                                           stderr=subprocess.DEVNULL,
+                                           encoding='utf-8', 
+                                           errors='ignore')
+            
+            # MAC address pattern
+            patterns = [
+                r'([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})',
+                r'ether\s+([0-9a-f:]{17})',
+                r'HWaddr\s+([0-9a-f:]{17})'
+            ]
+            
+            for pattern in patterns:
+                matches = re.findall(pattern, result, re.IGNORECASE)
+                if matches:
+                    # Extract actual MAC from match groups
+                    for match in matches:
+                        if isinstance(match, tuple):
+                            mac = ''.join(match[0:2])
+                        else:
+                            mac = match
+                        
+                        # Validate MAC
+                        if mac and ':' in mac or '-' in mac:
+                            return mac
+        except:
+            continue
+    
+    return None
+
+def get_all_mac_addresses():
+    """Saare network interfaces ke MAC addresses laao"""
+    mac_list = []
+    
+    # Method 1: Psutil se
+    try:
+        import psutil
+        for interface, addrs in psutil.net_if_addrs().items():
+            for addr in addrs:
+                if addr.family == psutil.AF_LINK:
+                    mac = addr.address
+                    if mac and mac != '00:00:00:00:00:00':
+                        mac_list.append({
+                            'interface': interface,
+                            'mac_address': mac,
+                            'method': 'psutil'
+                        })
+    except:
+        pass
+    
+    # Method 2: UUID se
+    try:
+        node_id = uuid.getnode()
+        if node_id != uuid.getnode():
+            mac_uuid = ':'.join(['{:02x}'.format((node_id >> i) & 0xff) 
+                               for i in range(0, 8*6, 8)][::-1])
+            if mac_uuid != "00:00:00:00:00:00":
+                mac_list.append({
+                    'interface': 'UUID_Method',
+                    'mac_address': mac_uuid,
+                    'method': 'uuid'
+                })
+    except:
+        pass
+    
+    return mac_list
+
+def home3(request):
+    """Home page - MAC address show karega"""
+    # Client IP
+    client_ip = request.META.get('HTTP_X_FORWARDED_FOR', 
+                               request.META.get('REMOTE_ADDR', 'Unknown'))
+    
+    # Hostname
+    hostname = socket.gethostname()
+    
+    # All MAC addresses
+    all_macs = get_all_mac_addresses()
+    
+    # Primary MAC
+    primary_mac = all_macs[0]['mac_address'] if all_macs else "Not Found"
+    
+    context = {
+        'client_ip': client_ip,
+        'hostname': hostname,
+        'primary_mac': primary_mac,
+        'all_macs': all_macs,
+        'total_macs': len(all_macs),
+        'platform': platform.system(),
+        'python_version': platform.python_version(),
+    }
+    
+    return render(request, 'index.html', context)
+
+def api_mac(request):
+    """API endpoint for JSON response"""
+    all_macs = get_all_mac_addresses()
+    
+    return JsonResponse({
+        'success': True,
+        'count': len(all_macs),
+        'mac_addresses': all_macs,
+        'platform': platform.system(),
+        'timestamp': str(datetime.now())
+    })
