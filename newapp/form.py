@@ -36,11 +36,6 @@ class DepartmentForm(forms.ModelForm):
         fields = ["name","code","type","programs_count","faculty_count","student_capacity"]
 
 
-
-
-
-
-
 from django import forms
 from .models import FriendshipProposal
 
@@ -112,61 +107,3 @@ class BirthdayGreetingForm(forms.ModelForm):
             'photo': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
-from django import forms
-from .models import Employee
-
-class CollegeIDForm(forms.Form):
-    college_id = forms.CharField(
-        max_length=50,
-        label="College ID",
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter your college ID',
-            'autocomplete': 'off'
-        })
-    )
-
-class PINForm(forms.Form):
-    pin = forms.CharField(
-        max_length=6,
-        min_length=4,
-        label="Enter your PIN",
-        widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Enter 4-6 digit PIN',
-            'autocomplete': 'off'
-        })
-    )
-
-class EmployeeRegistrationForm(forms.ModelForm):
-    pin = forms.CharField(
-        max_length=6,
-        min_length=4,
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-        label="Set PIN (4-6 digits)"
-    )
-    confirm_pin = forms.CharField(
-        max_length=6,
-        min_length=4,
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-        label="Confirm PIN"
-    )
-    
-    class Meta:
-        model = Employee
-        fields = ['college_id', 'full_name', 'department']
-        widgets = {
-            'college_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'full_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'department': forms.TextInput(attrs={'class': 'form-control'}),
-        }
-    
-    def clean(self):
-        cleaned_data = super().clean()
-        pin = cleaned_data.get("pin")
-        confirm_pin = cleaned_data.get("confirm_pin")
-        
-        if pin and confirm_pin and pin != confirm_pin:
-            self.add_error('confirm_pin', "PINs do not match")
-        
-        return cleaned_data

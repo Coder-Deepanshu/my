@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Wi-Fi IP</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+            padding: 40px;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            font-size: 18px;
+        }
+        .ok {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>📡 Network / Wi-Fi IP Check</h2>
+
+    <p><b>Your IP Address:</b></p>
+    <p class="ok">{{ ip }}</p>
+
+    <p><b>Detected IP Range:</b></p>
+    <p class="ok">{{ ip_range }}</p>
+
+    <hr>
+
+    <p>
+        ℹ️ Agar ye IP college Wi-Fi se match karti hai  
+        to attendance allow ki ja sakti hai.
+    </p>
+</div>
+
+</body>
+</html>

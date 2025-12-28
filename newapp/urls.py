@@ -134,22 +134,8 @@ urlpatterns = [
     path('save-contact-decision/', views.save_contact_decision, name='save_contact_decision'),
     path('save-contact/', views.save_contact, name='save_contact'),
 
-    # faculty attendance mark system
-    path('Faculty/Attendance/System/', views.faculty_attendance_system, name='faculty_attendance_system'),
-    path('save-location/', views.save_location, name='save_location'),
 
-    path('ip/', views.get_ip_address, name='ip_address'),
-    path('api/ip/', views.get_ip_api, name='ip_api'),
-
-
-    path('home3/', views.home3, name='home3'),
-    path('api/mac/', views.api_mac, name='api_mac'),
-
-  
-
-
-
-    
+    path("check-wifi/", views.check_wifi_ip, name="check_wifi"),
     
     # Admin views (optional)
     path('view-proposals/', views.view_proposals, name='view_proposals'),
@@ -157,21 +143,7 @@ urlpatterns = [
 
     path('Birthday/', views.upload_photo, name='upload_photo'),
     path('display/', views.display_greeting, name='display_greeting'),
-    path('input/', views.input_form, name='input_form'),
-    path('success/', views.success, name='success'),
 
-    path('home/', views.home1, name='home'),
-    path('login-page/', views.verify_college_id, name='verify_college_id'),
-    path('pin-verify/', views.laptop_pin_verification, name='laptop_pin_verification'),
-    path('mobile-verify/', views.mobile_biometric_verification, name='mobile_biometric_verification'),
-    path('enroll/', views.employee_enroll, name='employee_enroll'),
-    path('enroll-biometric/', views.enroll_biometric, name='enroll_biometric'),
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('status/<str:college_id>/', views.check_status, name='check_status'),
-    
-    # API endpoints
-    path('api/mobile-verify/', views.api_mobile_verify, name='api_mobile_verify'),
-    path('api/enroll-biometric/', views.api_enroll_biometric, name='api_enroll_biometric'),
 ]
 
 

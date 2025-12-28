@@ -123,20 +123,12 @@ class SubjectDetail(admin.ModelAdmin):
 
 
 
-
-
-
-
 from django.contrib import admin
-from .models import Product, Number
+from .models import Product
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'created_at']
-
-@admin.register(Number)
-class NumberAdmin(admin.ModelAdmin):
-    list_display = ['number1', 'number2', 'number3']
 
 
 from django.contrib import admin
