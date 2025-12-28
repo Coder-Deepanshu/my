@@ -4316,26 +4316,33 @@ import platform
 import subprocess
 import re
 import socket
-import psutil  # Install karna padega
+import logging
+from datetime import datetime
 from django.shortcuts import render
 from django.http import JsonResponse
 
+# Set up logging
+logger = logging.getLogger(__name__)
+
 def get_mac_address_psutil():
-    """Psutil library se - Best method"""
+    """Psutil library se - Optional method"""
     try:
+        import psutil
         for interface, addrs in psutil.net_if_addrs().items():
             if interface.lower() != 'lo':  # Loopback skip
                 for addr in addrs:
-                    if addr.family == psutil.AF_LINK:
+                    if hasattr(psutil, 'AF_LINK') and addr.family == psutil.AF_LINK:
                         mac = addr.address
                         if mac and mac != '00:00:00:00:00:00':
                             return mac, interface
-    except:
-        pass
+    except ImportError:
+        logger.info("psutil not installed, using alternative methods")
+    except Exception as e:
+        logger.error(f"Error in psutil method: {e}")
     return None, None
 
 def get_mac_address_system():
-    """System commands se"""
+    """System commands se - Works without psutil"""
     system = platform.system()
     
     if system == "Windows":
@@ -4346,9 +4353,10 @@ def get_mac_address_system():
         ]
     elif system in ["Linux", "Darwin"]:  # Darwin = macOS
         commands = [
-            ["ifconfig"],
+            ["ifconfig", "-a"],
             ["ip", "link", "show"],
-            ["cat", "/sys/class/net/*/address"]
+            ["cat", "/sys/class/net/*/address"],
+            ["netstat", "-i"]
         ]
     else:
         return None
@@ -4360,67 +4368,130 @@ def get_mac_address_system():
                                            encoding='utf-8', 
                                            errors='ignore')
             
-            # MAC address pattern
+            # MAC address patterns
             patterns = [
                 r'([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})',
                 r'ether\s+([0-9a-f:]{17})',
-                r'HWaddr\s+([0-9a-f:]{17})'
+                r'HWaddr\s+([0-9a-f:]{17})',
+                r'address:\s+([0-9a-f:]{17})'
             ]
             
             for pattern in patterns:
                 matches = re.findall(pattern, result, re.IGNORECASE)
                 if matches:
-                    # Extract actual MAC from match groups
                     for match in matches:
                         if isinstance(match, tuple):
-                            mac = ''.join(match[0:2])
+                            # Extract from groups
+                            for item in match:
+                                if len(str(item)) == 2 and ':' not in str(item):
+                                    continue
+                                mac = str(item).strip()
+                                if mac and len(mac) >= 12:
+                                    return mac
                         else:
-                            mac = match
-                        
-                        # Validate MAC
-                        if mac and ':' in mac or '-' in mac:
-                            return mac
-        except:
+                            mac = str(match).strip()
+                            if mac and len(mac) >= 12:
+                                return mac
+        except (subprocess.SubprocessError, FileNotFoundError):
             continue
     
     return None
 
-def get_all_mac_addresses():
-    """Saare network interfaces ke MAC addresses laao"""
-    mac_list = []
-    
-    # Method 1: Psutil se
-    try:
-        import psutil
-        for interface, addrs in psutil.net_if_addrs().items():
-            for addr in addrs:
-                if addr.family == psutil.AF_LINK:
-                    mac = addr.address
-                    if mac and mac != '00:00:00:00:00:00':
-                        mac_list.append({
-                            'interface': interface,
-                            'mac_address': mac,
-                            'method': 'psutil'
-                        })
-    except:
-        pass
-    
-    # Method 2: UUID se
+def get_mac_address_uuid():
+    """UUID module se MAC address"""
     try:
         node_id = uuid.getnode()
-        if node_id != uuid.getnode():
-            mac_uuid = ':'.join(['{:02x}'.format((node_id >> i) & 0xff) 
-                               for i in range(0, 8*6, 8)][::-1])
-            if mac_uuid != "00:00:00:00:00:00":
-                mac_list.append({
-                    'interface': 'UUID_Method',
-                    'mac_address': mac_uuid,
-                    'method': 'uuid'
-                })
-    except:
-        pass
+        if node_id != uuid.getnode():  # Check if it's not the "unknown" MAC
+            mac = ':'.join(['{:02x}'.format((node_id >> i) & 0xff) 
+                           for i in range(0, 8*6, 8)][::-1])
+            if mac and mac != "00:00:00:00:00:00":
+                return mac
+    except Exception as e:
+        logger.error(f"Error in UUID method: {e}")
+    return None
+
+def get_mac_address_socket():
+    """Socket module se"""
+    try:
+        # Get host name
+        host_name = socket.gethostname()
+        
+        # Try to get MAC from network interfaces (Linux/Unix)
+        if platform.system() != "Windows":
+            try:
+                # Read from /sys/class/net/ (Linux specific)
+                import os
+                interfaces = [d for d in os.listdir('/sys/class/net/') 
+                             if not d.startswith('lo')]
+                
+                for interface in interfaces:
+                    try:
+                        with open(f'/sys/class/net/{interface}/address', 'r') as f:
+                            mac = f.read().strip()
+                            if mac and mac != '00:00:00:00:00:00':
+                                return mac, interface
+                    except:
+                        continue
+            except:
+                pass
+        
+        # Try socket method
+        ip_address = socket.gethostbyname(host_name)
+        
+    except Exception as e:
+        logger.error(f"Error in socket method: {e}")
     
-    return mac_list
+    return None, None
+
+def get_all_mac_addresses():
+    """Saare network interfaces ke MAC addresses laao - WITHOUT psutil"""
+    mac_list = []
+    
+    # Method 1: System commands se (works on all platforms)
+    try:
+        system_mac = get_mac_address_system()
+        if system_mac:
+            mac_list.append({
+                'interface': 'System_Command',
+                'mac_address': system_mac,
+                'method': 'system'
+            })
+    except Exception as e:
+        logger.error(f"System command method failed: {e}")
+    
+    # Method 2: UUID se (works on all platforms)
+    try:
+        uuid_mac = get_mac_address_uuid()
+        if uuid_mac:
+            mac_list.append({
+                'interface': 'UUID_Method',
+                'mac_address': uuid_mac,
+                'method': 'uuid'
+            })
+    except Exception as e:
+        logger.error(f"UUID method failed: {e}")
+    
+    # Method 3: Try psutil only if available
+    try:
+        psutil_mac, interface = get_mac_address_psutil()
+        if psutil_mac:
+            mac_list.append({
+                'interface': interface or 'Psutil_Method',
+                'mac_address': psutil_mac,
+                'method': 'psutil'
+            })
+    except Exception as e:
+        logger.info(f"Psutil method skipped or failed: {e}")
+    
+    # Method 4: Remove duplicates
+    unique_macs = []
+    seen = set()
+    for mac_info in mac_list:
+        if mac_info['mac_address'] and mac_info['mac_address'] not in seen:
+            seen.add(mac_info['mac_address'])
+            unique_macs.append(mac_info)
+    
+    return unique_macs
 
 def home3(request):
     """Home page - MAC address show karega"""
@@ -4429,13 +4500,16 @@ def home3(request):
                                request.META.get('REMOTE_ADDR', 'Unknown'))
     
     # Hostname
-    hostname = socket.gethostname()
+    try:
+        hostname = socket.gethostname()
+    except:
+        hostname = "Unknown"
     
     # All MAC addresses
     all_macs = get_all_mac_addresses()
     
-    # Primary MAC
-    primary_mac = all_macs[0]['mac_address'] if all_macs else "Not Found"
+    # Primary MAC (first one or fallback)
+    primary_mac = all_macs[0]['mac_address'] if all_macs else "00:00:00:00:00:00 (Not Detected)"
     
     context = {
         'client_ip': client_ip,
@@ -4460,3 +4534,4 @@ def api_mac(request):
         'platform': platform.system(),
         'timestamp': str(datetime.now())
     })
+
