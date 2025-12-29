@@ -12,6 +12,13 @@ def get_client_ip(request):
 
 def is_college_wifi(ip):
     # College Wi-Fi IP Range
-    college_network = ipaddress.ip_network("152.59.90.0/24")
+    college_network = ipaddress.ip_network("117.237.2.0/24")
     return ipaddress.ip_address(ip) in college_network
+
+def personal_college_pin(order):
+    if order:
+        pin = '9812860172'
+    else:
+        pin = ''
+    return pin
 

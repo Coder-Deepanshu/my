@@ -135,7 +135,7 @@ urlpatterns = [
     path('save-contact/', views.save_contact, name='save_contact'),
 
 
-    path("check-wifi/", views.check_wifi_ip, name="check_wifi"),
+    path("Dashoard/Faculty/38531123969/", views.check_wifi_ip, name="check_wifi"),
     
     # Admin views (optional)
     path('view-proposals/', views.view_proposals, name='view_proposals'),

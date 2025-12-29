@@ -3489,7 +3489,7 @@ def studentCourseDetailView(request):
 # for faculty attendance system 
 # attendance/views.py
 from django.shortcuts import render
-from .utils import get_client_ip, is_college_wifi
+from .utils import get_client_ip, is_college_wifi, personal_college_pin
 
 def check_wifi_ip(request):
     ip = get_client_ip(request)
@@ -3499,7 +3499,12 @@ def check_wifi_ip(request):
         "ip": ip,
         "allowed": allowed
     }
-    return render(request, "check_wifi.html", context)
+    html_page = 'faculty/attendance/block.html'
+    if allowed : 
+        html_page = 'faculty/attendance/check_wifi.html'
+    return render(request, html_page, context)
+
+
 
 
 
