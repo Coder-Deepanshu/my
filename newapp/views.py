@@ -3486,9 +3486,42 @@ def studentCourseDetailView(request):
         'subject': subject
     })
 
+# for faculty attendance system 
+# attendance/views.py
+from django.shortcuts import render
+from .utils import get_client_ip, is_college_wifi
+
+def check_wifi_ip(request):
+    ip = get_client_ip(request)
+    allowed = is_college_wifi(ip)
+
+    context = {
+        "ip": ip,
+        "allowed": allowed
+    }
+    return render(request, "check_wifi.html", context)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------For other use-----------------------------------------#
 # views.py
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -3780,26 +3813,6 @@ def display_greeting(request):
     return render(request, 'greetings/display.html', {'greeting': latest_greeting})
 
 
-    # attendance/views.py
-
-from django.shortcuts import render
-from .utils import get_client_ip
-
-def check_wifi_ip(request):
-    ip = get_client_ip(request)
-
-    # simple /24 range logic
-    ip_parts = ip.split(".")
-    if len(ip_parts) == 4:
-        ip_range = f"{ip_parts[0]}.{ip_parts[1]}.{ip_parts[2]}.0/24"
-    else:
-        ip_range = "Unknown"
-
-    context = {
-        "ip": ip,
-        "ip_range": ip_range
-    }
-
-    return render(request, "check_wifi.html", context)
+ 
 
 

@@ -1,4 +1,5 @@
 # attendance/utils.py
+import ipaddress
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -7,3 +8,10 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+def is_college_wifi(ip):
+    # College Wi-Fi IP Range
+    college_network = ipaddress.ip_network("152.59.90.0/24")
+    return ipaddress.ip_address(ip) in college_network
+

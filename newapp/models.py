@@ -550,7 +550,6 @@ class Subject_Details(models.Model):
         return f"{self.serial_no}-{self.course}-{self.level}-Sem:{self.semester}"
 
 
-
 from django.db import models
 
 class FriendshipProposal(models.Model):
