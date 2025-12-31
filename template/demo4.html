@@ -1,540 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty PIN Verification | Edutrack</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>QR Code Scanner | Simple</title>
     <style>
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --accent: #7209b7;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --success: #2a9d8f;
-            --warning: #f8961e;
-            --danger: #e63946;
-            --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --transition: all 0.3s ease;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f5f7fb 0%, #e9edf7 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-        
-        .pin-container {
-            max-width: 480px;
-            margin: 80px auto;
+
+        .container {
+            width: 100%;
+            max-width: 400px;
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            transition: var(--transition);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease;
         }
-        
-        .pin-container:hover {
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        .pin-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+
+        .header {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
             color: white;
-            padding: 2rem;
+            padding: 25px 20px;
             text-align: center;
         }
-        
-        .pin-icon {
+
+        .header-icon {
             font-size: 3rem;
-            margin-bottom: 1rem;
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            width: 80px;
-            height: 80px;
-            line-height: 80px;
-            border-radius: 50%;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
         }
-        
-        .pin-title {
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .header h1 {
             font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 5px;
         }
-        
-        .pin-subtitle {
+
+        .header p {
             opacity: 0.9;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
-        
-        .pin-body {
-            padding: 2.5rem;
+
+        .scanner-section {
+            padding: 25px 20px;
+            text-align: center;
         }
-        
-        .user-info {
-            background: var(--light-gray);
-            border-radius: 10px;
-            padding: 1.2rem;
-            margin-bottom: 1.5rem;
+
+        .scanner-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px dashed #dee2e6;
+            min-height: 300px;
             display: flex;
-            align-items: center;
-            gap: 15px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        
-        .user-details h6 {
-            margin: 0;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .user-details small {
-            color: var(--gray);
-        }
-        
-        .pin-input-container {
-            margin-bottom: 2rem;
-        }
-        
-        .pin-label {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.8rem;
-            display: block;
-        }
-        
-        .pin-input-group {
+            align-items: center;
             position: relative;
         }
-        
-        .pin-input {
-            text-align: center;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: 12px;
-            padding: 15px 25px;
-            border: 2px solid var(--light-gray);
-            border-radius: 10px;
-            background: #fff;
-            transition: var(--transition);
-            font-family: 'Courier New', monospace;
+
+        #qr-reader {
+            width: 100% !important;
+            border: none !important;
         }
-        
-        .pin-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+
+        .scanner-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
         }
-        
-        .pin-input-icon {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-            font-size: 1.2rem;
+
+        .scanner-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
         }
-        
-        .pin-hint {
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--gray);
+
+        .scanner-placeholder p {
+            font-size: 0.9rem;
         }
-        
-        .btn-primary {
-            background: var(--primary);
+
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
             border: none;
-            padding: 12px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: var(--transition);
-            border-radius: 8px;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            font-weight: 600;
-            padding: 10px 20px;
-            transition: var(--transition);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(67, 97, 238, 0.08);
-        }
-        
-        .security-note {
-            background: #fff8e1;
-            border-left: 4px solid var(--warning);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .pin-footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--light-gray);
-            color: var(--gray);
-        }
-        
-        /* PIN Keypad Styles */
-        .keypad-container {
-            background: var(--light-gray);
             border-radius: 10px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        
-        .keypad-title {
-            font-size: 0.9rem;
-            color: var(--gray);
-            text-align: center;
-            margin-bottom: 1rem;
+            font-size: 1rem;
             font-weight: 600;
-        }
-        
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-        
-        .keypad-btn {
-            background: white;
-            border: 2px solid var(--light-gray);
-            border-radius: 8px;
-            height: 60px;
-            font-size: 1.3rem;
-            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            user-select: none;
+            gap: 8px;
         }
-        
-        .keypad-btn:hover {
-            background: #f0f2ff;
-            border-color: var(--primary);
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            flex: 1;
         }
-        
-        .keypad-btn:active {
-            background: var(--primary);
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(58, 12, 163, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .result-section {
+            background: #e8f5e9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+            border-left: 5px solid #2e7d32;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .result-header i {
+            color: #2e7d32;
+            font-size: 1.5rem;
+        }
+
+        .result-header h3 {
+            color: #1b5e20;
+            margin: 0;
+        }
+
+        .result-content {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #c8e6c9;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .result-actions .btn {
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+        .btn-success {
+            background: #2e7d32;
             color: white;
         }
-        
-        .keypad-btn-clear {
-            color: var(--danger);
-            font-size: 1.1rem;
+
+        .btn-success:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
         }
-        
-        .keypad-btn-backspace {
-            color: var(--warning);
-            font-size: 1.1rem;
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.85rem;
+            border-top: 1px solid #dee2e6;
         }
-        
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4361ee;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Responsive */
-        @media (max-width: 576px) {
-            .pin-container {
-                margin: 40px 20px;
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
             }
             
-            .pin-body {
-                padding: 1.5rem;
-            }
-            
-            .pin-input {
-                font-size: 22px;
-                letter-spacing: 8px;
-                padding: 12px 15px;
-            }
-            
-            .keypad-btn {
-                height: 50px;
-                font-size: 1.1rem;
-            }
-            
-            .pin-title {
+            .header h1 {
                 font-size: 1.5rem;
             }
-        }
-        
-        /* Animation */
-        @keyframes shake {
-            0%, 100% {transform: translateX(0);}
-            10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
-            20%, 40%, 60%, 80% {transform: translateX(5px);}
-        }
-        
-        .shake {
-            animation: shake 0.5s ease-in-out;
+            
+            .scanner-box {
+                min-height: 250px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="pin-container">
-            <!-- Header -->
-            <div class="pin-header">
-                <div class="pin-icon">
-                    <i class="fas fa-lock"></i>
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">
+                <i class="fas fa-qrcode"></i>
+            </div>
+            <h1>QR Code Scanner</h1>
+            <p>Point your camera at a QR code to scan</p>
+        </div>
+        
+        <!-- Scanner Section -->
+        <div class="scanner-section">
+            <div class="scanner-box" id="scannerBox">
+                <div class="scanner-placeholder" id="scannerPlaceholder">
+                    <i class="fas fa-camera"></i>
+                    <p>Camera will start when you click "Start Camera"</p>
                 </div>
-                <h1 class="pin-title">Faculty PIN Verification</h1>
-                <p class="pin-subtitle">Secure Attendance Marking System</p>
+                <div id="qr-reader" style="display: none;"></div>
             </div>
             
-            <!-- Body -->
-            <div class="pin-body">
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show">
-                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                
-                <!-- Faculty Information -->
-                <div class="user-info">
-                    <div class="user-avatar">
-                        {{ faculty_initials|default:"F" }}
-                    </div>
-                    <div class="user-details">
-                        <h6>{{ faculty_name|default:"Faculty Member" }}</h6>
-                        <small>
-                            <i class="fas fa-id-card me-1"></i>
-                            ID: {{ faculty_id|default:"FAC-001" }}
-                        </small>
-                    </div>
+            <div class="camera-controls">
+                <button class="btn btn-primary" onclick="startScanner()" id="startBtn">
+                    <i class="fas fa-play"></i> Start Camera
+                </button>
+                <button class="btn btn-secondary" onclick="stopScanner()" id="stopBtn" style="display: none;">
+                    <i class="fas fa-stop"></i> Stop Camera
+                </button>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing QR code...</p>
+            </div>
+            
+            <!-- Result Section -->
+            <div class="result-section" id="resultSection">
+                <div class="result-header">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>QR Code Scanned Successfully!</h3>
                 </div>
-                
-                <!-- PIN Input Form -->
-                <form method="POST" id="pinForm">
-                    {% csrf_token %}
-                    
-                    <div class="pin-input-container">
-                        <label class="pin-label">
-                            <i class="fas fa-key me-2"></i>
-                            Enter Your 10-Digit PIN
-                        </label>
-                        <div class="pin-input-group">
-                            <input type="password" 
-                                   name="pin" 
-                                   id="pinInput" 
-                                   class="form-control pin-input" 
-                                   maxlength="10" 
-                                   pattern="[0-9]{10}" 
-                                   required 
-                                   placeholder="••••••••••"
-                                   autocomplete="off">
-                            <span class="pin-input-icon">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                        </div>
-                        <div class="pin-hint">
-                            <i class="fas fa-info-circle me-1"></i>
-                            Enter the 10-digit PIN assigned by your institution
-                        </div>
-                    </div>
-                    
-                    <!-- Keypad for PIN Entry -->
-                    <div class="keypad-container">
-                        <div class="keypad-title">
-                            <i class="fas fa-keyboard me-1"></i>
-                            Use Keypad or Type Directly
-                        </div>
-                        <div class="keypad" id="keypad">
-                            <div class="keypad-btn" data-digit="1">1</div>
-                            <div class="keypad-btn" data-digit="2">2</div>
-                            <div class="keypad-btn" data-digit="3">3</div>
-                            <div class="keypad-btn" data-digit="4">4</div>
-                            <div class="keypad-btn" data-digit="5">5</div>
-                            <div class="keypad-btn" data-digit="6">6</div>
-                            <div class="keypad-btn" data-digit="7">7</div>
-                            <div class="keypad-btn" data-digit="8">8</div>
-                            <div class="keypad-btn" data-digit="9">9</div>
-                            <div class="keypad-btn keypad-btn-clear" id="clearBtn">
-                                <i class="fas fa-eraser"></i>
-                            </div>
-                            <div class="keypad-btn" data-digit="0">0</div>
-                            <div class="keypad-btn keypad-btn-backspace" id="backspaceBtn">
-                                <i class="fas fa-backspace"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100 py-3 mt-3">
-                        <i class="fas fa-check-circle me-2"></i>
-                        Verify PIN & Mark Attendance
+                <div class="result-content" id="resultContent">
+                    <!-- Scanned content will appear here -->
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-success" onclick="copyResult()">
+                        <i class="fas fa-copy"></i> Copy
                     </button>
-                </form>
-                
-                <!-- Security Note -->
-                <div class="security-note">
-                    <i class="fas fa-shield-alt me-2 text-warning"></i>
-                    <strong>Security Notice:</strong> Your PIN is confidential. Do not share it with anyone. 
-                    Each PIN is unique and tied to your faculty account.
-                </div>
-                
-                <!-- Footer Links -->
-                <div class="pin-footer">
-                    <a href="{% url 'faculty_dashboard' %}" class="text-decoration-none me-3">
-                        <i class="fas fa-tachometer-alt me-1"></i>
-                        Dashboard
-                    </a>
-                    <a href="{% url 'help' %}" class="text-decoration-none me-3">
-                        <i class="fas fa-question-circle me-1"></i>
-                        Need Help?
-                    </a>
-                    <a href="{% url 'logout' %}" class="text-decoration-none text-danger">
-                        <i class="fas fa-sign-out-alt me-1"></i>
-                        Logout
-                    </a>
+                    <button class="btn btn-primary" onclick="scanAgain()">
+                        <i class="fas fa-redo"></i> Scan Again
+                    </button>
                 </div>
             </div>
         </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Made with <i class="fas fa-heart" style="color: #e63946;"></i> | Simple QR Scanner</p>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Include QR Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const pinInput = document.getElementById('pinInput');
-            const keypad = document.getElementById('keypad');
-            const clearBtn = document.getElementById('clearBtn');
-            const backspaceBtn = document.getElementById('backspaceBtn');
-            const pinForm = document.getElementById('pinForm');
+        let scanner = null;
+        let isScanning = false;
+        
+        // Start scanner function
+        function startScanner() {
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const scannerPlaceholder = document.getElementById('scannerPlaceholder');
+            const qrReader = document.getElementById('qr-reader');
             
-            // Auto-focus on PIN input
-            pinInput.focus();
+            // Show scanner, hide placeholder
+            scannerPlaceholder.style.display = 'none';
+            qrReader.style.display = 'block';
             
-            // Toggle password visibility on click
-            pinInput.addEventListener('click', function() {
-                const type = this.getAttribute('type') === 'password' ? 'text' : 'password';
-                this.setAttribute('type', type);
-                setTimeout(() => {
-                    this.setAttribute('type', 'password');
-                }, 1000);
+            // Toggle buttons
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'flex';
+            
+            // Initialize scanner
+            scanner = new Html5Qrcode("qr-reader");
+            
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 }
+            };
+            
+            // Start scanner
+            scanner.start(
+                { facingMode: "environment" }, // Use back camera
+                config,
+                onScanSuccess,
+                onScanError
+            ).then(() => {
+                isScanning = true;
+                console.log("Scanner started successfully");
+            }).catch(err => {
+                console.error("Unable to start scanner:", err);
+                alert("Unable to access camera. Please check permissions.");
+                stopScanner();
             });
+        }
+        
+        // Stop scanner function
+        function stopScanner() {
+            if (scanner && isScanning) {
+                scanner.stop().then(() => {
+                    isScanning = false;
+                    
+                    // Show placeholder, hide scanner
+                    document.getElementById('scannerPlaceholder').style.display = 'flex';
+                    document.getElementById('qr-reader').style.display = 'none';
+                    
+                    // Toggle buttons
+                    document.getElementById('startBtn').style.display = 'flex';
+                    document.getElementById('stopBtn').style.display = 'none';
+                    
+                    console.log("Scanner stopped");
+                }).catch(err => {
+                    console.error("Failed to stop scanner:", err);
+                });
+            }
+        }
+        
+        // Handle successful scan
+        function onScanSuccess(decodedText, decodedResult) {
+            // Stop scanner temporarily
+            if (scanner && isScanning) {
+                scanner.pause();
+            }
             
-            // Keypad functionality
-            keypad.addEventListener('click', function(e) {
-                if (e.target.classList.contains('keypad-btn') && e.target.hasAttribute('data-digit')) {
-                    const digit = e.target.getAttribute('data-digit');
-                    if (pinInput.value.length < 10) {
-                        pinInput.value += digit;
-                        // Add visual feedback
-                        e.target.style.backgroundColor = 'var(--primary)';
-                        e.target.style.color = 'white';
-                        setTimeout(() => {
-                            e.target.style.backgroundColor = '';
-                            e.target.style.color = '';
-                        }, 150);
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            
+            // Process after short delay (simulate processing)
+            setTimeout(() => {
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                // Show result
+                const resultSection = document.getElementById('resultSection');
+                const resultContent = document.getElementById('resultContent');
+                
+                resultContent.textContent = decodedText;
+                resultSection.style.display = 'block';
+                
+                // Scroll to result
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+                
+                // Log to console
+                console.log("QR Code Scanned:", decodedText);
+                
+                // Check if it's a URL
+                if (isURL(decodedText)) {
+                    // Add link option
+                    const linkBtn = document.createElement('button');
+                    linkBtn.className = 'btn btn-primary';
+                    linkBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> Open Link';
+                    linkBtn.onclick = function() {
+                        window.open(decodedText, '_blank');
+                    };
+                    
+                    const actionsDiv = document.querySelector('.result-actions');
+                    if (!document.getElementById('linkBtn')) {
+                        linkBtn.id = 'linkBtn';
+                        actionsDiv.appendChild(linkBtn);
                     }
                 }
-            });
-            
-            // Clear button
-            clearBtn.addEventListener('click', function() {
-                pinInput.value = '';
-                pinInput.focus();
-            });
-            
-            // Backspace button
-            backspaceBtn.addEventListener('click', function() {
-                pinInput.value = pinInput.value.slice(0, -1);
-                pinInput.focus();
-            });
-            
-            // Form submission validation
-            pinForm.addEventListener('submit', function(e) {
-                if (pinInput.value.length !== 10) {
-                    e.preventDefault();
-                    pinInput.classList.add('shake');
-                    setTimeout(() => {
-                        pinInput.classList.remove('shake');
-                    }, 500);
-                    
-                    // Show error alert
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
-                    alertDiv.innerHTML = `
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        Please enter exactly 10 digits for your PIN.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    `;
-                    pinForm.insertBefore(alertDiv, pinForm.querySelector('.security-note'));
-                    pinInput.focus();
-                }
-            });
-            
-            // Keyboard input handling
-            pinInput.addEventListener('keydown', function(e) {
-                // Allow only numbers and control keys
-                if (!/^\d$/.test(e.key) && 
-                    !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(e.key)) {
-                    e.preventDefault();
-                }
                 
-                // Max length check
-                if (this.value.length >= 10 && /^\d$/.test(e.key)) {
-                    e.preventDefault();
-                }
-            });
+                // Stop scanner completely
+                stopScanner();
+            }, 1000);
+        }
+        
+        // Handle scan error
+        function onScanError(errorMessage) {
+            // Optional: Show error in console
+            console.warn("Scan error:", errorMessage);
+        }
+        
+        // Copy result to clipboard
+        function copyResult() {
+            const resultText = document.getElementById('resultContent').textContent;
             
-            // Auto-submit when 10 digits are entered
-            pinInput.addEventListener('input', function() {
-                if (this.value.length === 10) {
-                    // Optional: Auto-submit after a short delay
-                    // setTimeout(() => {
-                    //     pinForm.submit();
-                    // }, 300);
-                }
-            });
+            navigator.clipboard.writeText(resultText)
+                .then(() => {
+                    alert('Copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy to clipboard');
+                });
+        }
+        
+        // Scan again
+        function scanAgain() {
+            // Hide result section
+            document.getElementById('resultSection').style.display = 'none';
             
-            // Show PIN length indicator
-            const lengthIndicator = document.createElement('div');
-            lengthIndicator.className = 'text-end mt-1';
-            lengthIndicator.style.fontSize = '0.85rem';
-            lengthIndicator.style.color = 'var(--gray)';
-            lengthIndicator.innerHTML = '<span id="pinLength">0</span>/10 digits';
-            pinInput.parentNode.appendChild(lengthIndicator);
+            // Remove link button if exists
+            const linkBtn = document.getElementById('linkBtn');
+            if (linkBtn) {
+                linkBtn.remove();
+            }
             
-            pinInput.addEventListener('input', function() {
-                document.getElementById('pinLength').textContent = this.value.length;
-            });
+            // Clear result
+            document.getElementById('resultContent').textContent = '';
+            
+            // Start scanner again
+            startScanner();
+        }
+        
+        // Check if string is a valid URL
+        function isURL(str) {
+            try {
+                new URL(str);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        // Auto-start scanner on page load (optional)
+        // window.addEventListener('DOMContentLoaded', function() {
+        //     // Uncomment below line to auto-start scanner
+        //     // startScanner();
+        // });
+        
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && scanner && isScanning) {
+                // Page is hidden, stop scanner
+                stopScanner();
+            }
         });
     </script>
 </body>

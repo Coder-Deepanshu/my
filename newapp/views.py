@@ -3549,6 +3549,108 @@ def college_pin_checking(request):
 def scan_qr_Code(request):
     return render(request, 'faculty/attendance/scanning.html')
 
+# for QR Code Creating
+import segno
+import time
+import uuid
+import os
+from django.shortcuts import render
+from django.conf import settings
+from django.http import HttpResponse
+from io import BytesIO
+import base64
+import string
+import secrets
+
+def generate_random_token():
+    digits = string.digits
+    return ''.join(secrets.choice(digits) for _ in range(40))
+
+def generate_QR_code(request):
+    # current timestamp
+    timestamp = int(time.time())
+    
+    # unique token
+    token = uuid.uuid4().hex
+    
+    # QR data (with expiry logic)
+    data = generate_random_token()
+    qr_data = str(data) 
+    # generate QR
+    qr = segno.make(qr_data)
+    
+    # OPTION 1: Save to media folder (better approach)
+    media_dir = os.path.join(settings.MEDIA_ROOT, 'qr_codes')
+    os.makedirs(media_dir, exist_ok=True)
+    
+    qr_filename = f"qr_{timestamp}_{token[:8]}.png"
+    qr_path = os.path.join(media_dir, qr_filename)
+    
+    # Save QR code
+    qr.save(qr_path, scale=6)
+    
+    # OPTION 2: Generate base64 image (no file saving needed)
+    # Create BytesIO buffer
+    buffer = BytesIO()
+    qr.save(buffer, kind='png', scale=6)
+    buffer.seek(0)
+    
+    # Convert to base64 for embedding in HTML
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    qr_data_uri = f"data:image/png;base64,{qr_base64}"
+    
+    # Clean up old QR codes (optional)
+    # You can implement cleanup logic here
+    
+    return render(request, "faculty/attendance/QR_code.html", {
+        "qr_data": qr_data,
+        "generated_time": timestamp,
+        "qr_image": qr_data_uri,  # Pass base64 image
+        "qr_media_url": f"/media/qr_codes/{qr_filename}"  # Or use file path
+    })
+
+
+import json
+import time
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def verify_qr(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        qr_data = data.get("qr_data")
+
+        # Parse QR data
+        params = dict(item.split("=") for item in qr_data.split("&"))
+        ts = int(params.get("ts", 0))
+
+        # Check 2-minute expiry
+        current_time = int(time.time())
+        if current_time - ts > 120:
+            return JsonResponse({
+                "status": "error",
+                "message": "QR Code expired"
+            })
+
+        return JsonResponse({
+            "status": "success",
+            "message": "Attendance marked successfully"
+        })
+
+    return JsonResponse({"error": "Invalid request"})
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
