@@ -3550,7 +3550,6 @@ def scan_qr_Code(request):
     return render(request, 'faculty/attendance/scanning.html')
 
 # for QR Code Creating
-import segno
 import time
 import uuid
 import os
