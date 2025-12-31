@@ -3,782 +3,1241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friendship Proposal</title>
+    <title>CryptoText - Advanced Encryption Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --success: #2a9d8f;
+            --warning: #f8961e;
+            --danger: #e63946;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fb 0%, #e9edf7 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            color: var(--dark);
             padding: 20px;
-            color: #333;
         }
         
-        .container {
-            width: 100%;
-            max-width: 800px;
+        .crypto-container {
+            max-width: 1200px;
             margin: 0 auto;
         }
         
-        .header {
+        /* Header */
+        .crypto-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 2.5rem;
+            padding-top: 1rem;
         }
         
-        .header h1 {
-            color: #4a6fa5;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            position: relative;
-            display: inline-block;
+        .crypto-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 1rem;
         }
         
-        .header h1:after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(to right, #4a6fa5, #6d9dc5);
-            border-radius: 2px;
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: var(--shadow);
         }
         
-        .step-container {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            margin-bottom: 30px;
-            display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-            position: relative;
+        .logo-text h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            /* -webkit-background-clip: text; */
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.2rem;
+        }
+        
+        .logo-text p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        
+        /* Main Crypto Tool */
+        .crypto-tool {
+            background: white;
+            border-radius: 20px;
             overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            margin-bottom: 2rem;
         }
         
-        .step-container.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-            animation: fadeIn 0.6s ease;
+        .crypto-tool:hover {
+            box-shadow: var(--shadow-hover);
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .step-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        
-        .step-number {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #4a6fa5, #6d9dc5);
+        .tool-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            border-radius: 50%;
+            padding: 1.5rem 2rem;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-right: 20px;
-            box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
         }
         
-        .step-title {
+        .tool-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .tool-title h2 {
             font-size: 1.8rem;
-            color: #4a6fa5;
+            font-weight: 700;
+            margin: 0;
         }
         
-        .step-content {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            color: #555;
-        }
-        
-        .btn-container {
+        .tool-actions {
             display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 30px;
+            gap: 10px;
         }
         
-        .btn {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
+        .mode-indicator {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Tool Body */
+        .tool-body {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        @media (min-width: 992px) {
+            .tool-body {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        /* Input/Output Sections */
+        .io-section {
+            background: var(--light-gray);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .io-section:hover {
+            background: #e2e6ea;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            min-width: 160px;
-        }
-        
-        .btn-yes {
-            background: linear-gradient(to right, #4CAF50, #45a049);
-            color: white;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
-        }
-        
-        .btn-yes:hover {
-            background: linear-gradient(to right, #45a049, #3d8b40);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
-        }
-        
-        .btn-no {
-            background: linear-gradient(to right, #f44336, #d32f2f);
-            color: white;
-            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
-        }
-        
-        .btn-no:hover {
-            background: linear-gradient(to right, #d32f2f, #b71c1c);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4);
-        }
-        
-        .btn-next {
-            background: linear-gradient(to right, #4a6fa5, #6d9dc5);
-            color: white;
-            box-shadow: 0 5px 15px rgba(74, 111, 165, 0.3);
-        }
-        
-        .btn-next:hover {
-            background: linear-gradient(to right, #3a5f95, #5d8db5);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(74, 111, 165, 0.4);
-        }
-        
-        .input-container {
-            margin: 30px 0;
-            text-align: center;
-        }
-        
-        .input-label {
-            display: block;
-            margin-bottom: 15px;
+            color: var(--primary);
             font-size: 1.2rem;
-            color: #4a6fa5;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Text Areas */
+        .message-container {
+            position: relative;
+        }
+        
+        .message-input {
+            width: 100%;
+            min-height: 250px;
+            padding: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.6;
+            resize: vertical;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .char-counter {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.85rem;
+            color: var(--gray);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        /* Encryption Options */
+        .options-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .options-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .options-header h3 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .option-card {
+            background: var(--light-gray);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+        
+        .option-card.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(63, 55, 201, 0.1) 100%);
+        }
+        
+        .option-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .option-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--dark);
+        }
+        
+        .option-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .option-strength {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: var(--success);
             font-weight: 600;
         }
         
-        .phone-input {
-            width: 100%;
-            max-width: 400px;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            margin: 0 auto;
-            display: block;
-            transition: all 0.3s;
+        /* Key Input */
+        .key-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
         }
         
-        .phone-input:focus {
-            border-color: #4a6fa5;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
-        }
-        
-        .contact-display {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 25px;
-            border-radius: 10px;
-            margin: 30px 0;
-            text-align: center;
-            font-size: 1.3rem;
-            color: #333;
-            border-left: 5px solid #4a6fa5;
-        }
-        
-        .contact-display strong {
-            color: #4a6fa5;
-            font-size: 1.5rem;
-        }
-        
-        .final-message {
-            text-align: center;
-            font-size: 1.4rem;
-            line-height: 1.7;
-            margin: 30px 0;
-            padding: 25px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            border-top: 5px solid #4a6fa5;
-        }
-        
-        .final-message i {
-            color: #4a6fa5;
-            margin-right: 10px;
-        }
-        
-        .heart {
-            color: #f44336;
-            animation: heartbeat 1.5s infinite;
-            display: inline-block;
-        }
-        
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            5% { transform: scale(1.2); }
-            10% { transform: scale(1.1); }
-            15% { transform: scale(1.3); }
-            50% { transform: scale(1); }
-            100% { transform: scale(1); }
-        }
-        
-        .progress-bar {
+        .key-input-group {
             display: flex;
-            justify-content: center;
-            margin-bottom: 40px;
-        }
-        
-        .progress-step {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #ddd;
-            margin: 0 15px;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        
-        .progress-step.active {
-            background-color: #4a6fa5;
-            transform: scale(1.2);
-        }
-        
-        .progress-step.completed {
-            background-color: #4CAF50;
-        }
-        
-        .progress-step:not(:last-child):after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: -30px;
-            width: 30px;
-            height: 3px;
-            background-color: #ddd;
-            transform: translateY(-50%);
-        }
-        
-        .progress-step.completed:not(:last-child):after {
-            background-color: #4CAF50;
-        }
-        
-        .emoji {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        
-        /* New styles for form */
-        .error-message {
-            color: #f44336;
-            font-size: 0.9rem;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .success-message {
-            color: #4CAF50;
-            font-size: 1.1rem;
-            padding: 10px;
-            background-color: #f0f9f0;
-            border-radius: 5px;
-            margin: 10px 0;
-            display: none;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 1rem;
         }
         
         @media (max-width: 768px) {
-            .step-container {
-                padding: 30px 20px;
-            }
-            
-            .btn-container {
+            .key-input-group {
                 flex-direction: column;
-                align-items: center;
+            }
+        }
+        
+        .key-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .key-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+        
+        .key-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+        
+        .btn-secondary:hover {
+            background: #dee2e6;
+            transform: translateY(-3px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #2a9d8f 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(42, 157, 143, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #c1121f 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(230, 57, 70, 0.3);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
             }
             
             .btn {
                 width: 100%;
-                max-width: 300px;
+            }
+        }
+        
+        /* History Section */
+        .history-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .history-items {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+        
+        .history-item:hover {
+            transform: translateX(5px);
+            background: #e2e6ea;
+        }
+        
+        .history-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .history-action {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .encrypt-action {
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+        
+        .decrypt-action {
+            background: rgba(42, 157, 143, 0.15);
+            color: var(--success);
+        }
+        
+        .history-preview {
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: var(--dark);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* Footer */
+        .crypto-footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--light-gray);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .crypto-header {
+                margin-bottom: 1.5rem;
             }
             
-            .header h1 {
-                font-size: 2rem;
+            .logo-text h1 {
+                font-size: 2.2rem;
             }
             
-            .step-title {
-                font-size: 1.5rem;
+            .tool-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .tool-body, .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .io-section {
+                padding: 1.2rem;
+            }
+            
+            body {
+                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Friendship Proposal</h1>
-            <p>A journey to start something beautiful</p>
-        </div>
-        
-        <div class="progress-bar">
-            <div class="progress-step active" id="step1-progress"></div>
-            <div class="progress-step" id="step2-progress"></div>
-            <div class="progress-step" id="step3-progress"></div>
-            <div class="progress-step" id="step4-progress"></div>
-        </div>
-        
-        <!-- Step 1: Introduction -->
-        <div class="step-container active" id="step1">
-            <div class="step-header">
-                <div class="step-number">1</div>
-                <h2 class="step-title">Introduction</h2>
-            </div>
-            <div class="step-content">
-                <p>Hello! I'm Deepanshu. We've shared some good moments together, and I truly value our connection. I believe we have a good understanding and compatibility that could form the foundation of a great friendship.</p>
-                <p>Friendship is a special bond that brings joy, support, and shared experiences into our lives. It's about having someone to laugh with, talk to, and rely on.</p>
-            </div>
-            <div class="btn-container">
-                <button class="btn btn-next" id="next1">
-                    <i class="fas fa-arrow-right"></i> Continue
-                </button>
-            </div>
-        </div>
-        
-        <!-- Step 2: Friendship Question -->
-        <div class="step-container" id="step2">
-            <div class="step-header">
-                <div class="step-number">2</div>
-                <h2 class="step-title">The Question</h2>
-            </div>
-            <div class="step-content">
-                <p>I appreciate our interactions and believe we could have a wonderful friendship. So I have a simple but important question for you:</p>
-                <div class="final-message">
-                    <i class="fas fa-quote-left"></i>
-                    Can we become best friends?
-                    <i class="fas fa-quote-right"></i>
+    <div class="crypto-container">
+        <!-- Header -->
+        <header class="crypto-header">
+            <div class="crypto-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-lock"></i>
                 </div>
-                <p>If you feel we can build a genuine friendship and share a good connection, please consider saying yes. If not, that's completely okay too.</p>
-            </div>
-            <div class="btn-container">
-                <button class="btn btn-yes" id="yes2">
-                    <i class="fas fa-check-circle"></i> Yes, Let's Be Friends
-                </button>
-                <button class="btn btn-no" id="no2">
-                    <i class="fas fa-times-circle"></i> No, Thank You
-                </button>
-            </div>
-        </div>
-        
-        <!-- Step 3: If No Response -->
-        <div class="step-container" id="step3-no">
-            <div class="step-header">
-                <div class="step-number">3</div>
-                <h2 class="step-title">Respecting Your Decision</h2>
-            </div>
-            <div class="emoji">🙏</div>
-            <div class="step-content">
-                <p>I completely respect your decision and truly appreciate your honesty. It takes courage to be upfront about your feelings.</p>
-                <p>Even though we may not become best friends, I want you to know that I value the moments we've shared and will always remember them fondly.</p>
-                <div class="final-message">
-                    <i class="fas fa-heart heart"></i>
-                    <p>Thank you for being a wonderful person. I wish you all the happiness, success, and beautiful friendships in your life journey.</p>
-                    <p>May you always find reasons to smile and people who appreciate you for who you are!</p>
+                <div class="logo-text">
+                    <h1>CryptoText</h1>
+                    <p>Advanced Message Encryption & Decryption Tool</p>
                 </div>
             </div>
-            <div class="btn-container">
-                <button class="btn btn-next" id="restart-no">
-                    <i class="fas fa-redo"></i> Start Again
-                </button>
-            </div>
-        </div>
+        </header>
         
-        <!-- Step 3: If Yes Response - Contact Question -->
-        <div class="step-container" id="step3-yes">
-            <div class="step-header">
-                <div class="step-number">3</div>
-                <h2 class="step-title">Staying Connected</h2>
-            </div>
-            <div class="emoji">🤝</div>
-            <div class="step-content">
-                <p>That's wonderful! I'm so happy you've agreed to be friends. This is the beginning of a beautiful friendship.</p>
-                <p>Since we're becoming friends, it would be great to stay in touch. We can share thoughts, plan meetups, or just check on each other.</p>
-                <div class="final-message">
-                    <p>Would you like to share your contact information with me, or would you prefer to have my contact details instead?</p>
+        <!-- Main Tool -->
+        <main class="crypto-tool">
+            <div class="tool-header">
+                <div class="tool-title">
+                    <i class="fas fa-code"></i>
+                    <h2>Encryption/Decryption Tool</h2>
                 </div>
-            </div>
-            <div class="btn-container">
-                <button class="btn btn-yes" id="yes-contact">
-                    <i class="fas fa-mobile-alt"></i> Share My Contact
-                </button>
-                <button class="btn btn-no" id="no-contact">
-                    <i class="fas fa-address-book"></i> Get Deepanshu's Contact
-                </button>
-            </div>
-        </div>
-        
-        <!-- Step 4: If they want to share their contact -->
-        <div class="step-container" id="step4-share">
-            <div class="step-header">
-                <div class="step-number">4</div>
-                <h2 class="step-title">Share Your Contact</h2>
-            </div>
-            <div class="emoji">📱</div>
-            <div class="step-content">
-                <p>Thank you for trusting me with your contact information. I promise to respect your privacy and use it only to stay in touch as friends.</p>
-                <p>Please enter your details below. I'll save it and reach out soon to plan our first friend activity!</p>
+                <div class="mode-indicator" id="modeIndicator">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Ready for Input</span>
+                </div>
             </div>
             
-            <div class="input-container">
-                <form id="contact-form">
-                    <div class="form-group">
-                        <label class="input-label" for="friend_name">Your Name (Optional):</label>
-                        <input type="text" id="friend_name" class="phone-input" placeholder="Enter your name">
+            <div class="tool-body">
+                <!-- Input Section -->
+                <div class="io-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-keyboard"></i>
+                            </div>
+                            <span>Input Message</span>
+                        </div>
+                        <div class="btn btn-secondary" onclick="clearInput()">
+                            <i class="fas fa-trash"></i> Clear
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="input-label" for="user_phone">Your Phone Number *:</label>
-                        <input type="tel" id="user_phone" class="phone-input" placeholder="Enter your phone number" required>
-                        <div class="error-message" id="phone-error"></div>
+                    <div class="message-container">
+                        <textarea class="message-input" id="inputText" 
+                                  placeholder="Type or paste your message here..." 
+                                  oninput="updateCharCount()"></textarea>
+                        <div class="char-counter" id="inputCharCount">0 characters</div>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="input-label" for="user_email">Your Email (Optional):</label>
-                        <input type="email" id="user_email" class="phone-input" placeholder="Enter your email">
-                        <div class="error-message" id="email-error"></div>
+                    <div class="mt-3">
+                        <button class="btn btn-secondary w-100" onclick="pasteFromClipboard()">
+                            <i class="fas fa-paste"></i> Paste from Clipboard
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Output Section -->
+                <div class="io-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-file-code"></i>
+                            </div>
+                            <span>Output Result</span>
+                        </div>
+                        <div class="btn btn-secondary" onclick="copyToClipboard()">
+                            <i class="fas fa-copy"></i> Copy
+                        </div>
                     </div>
                     
-                    <div class="success-message" id="form-success"></div>
-                </form>
+                    <div class="message-container">
+                        <textarea class="message-input" id="outputText" 
+                                  placeholder="Encrypted/Decrypted result will appear here..." 
+                                  readonly></textarea>
+                        <div class="char-counter" id="outputCharCount">0 characters</div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button class="btn btn-success w-100" onclick="downloadResult()">
+                            <i class="fas fa-download"></i> Download Result
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Encryption Options -->
+        <section class="options-section">
+            <div class="options-header">
+                <h3>Select Encryption Method</h3>
+                <p class="text-muted">Choose your preferred encryption algorithm</p>
             </div>
             
-            <div class="btn-container">
-                <button class="btn btn-yes" id="submit-contact">
-                    <i class="fas fa-paper-plane"></i> Submit & Complete
-                </button>
+            <div class="options-grid">
+                <!-- Caesar Cipher -->
+                <div class="option-card active" data-algorithm="caesar" onclick="selectAlgorithm('caesar')">
+                    <div class="option-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h4>Caesar Cipher</h4>
+                    <p>Simple letter shifting encryption. Fast and easy to use.</p>
+                    <div class="option-strength">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Basic Security</span>
+                    </div>
+                </div>
+                
+                <!-- Base64 -->
+                <div class="option-card" data-algorithm="base64" onclick="selectAlgorithm('base64')">
+                    <div class="option-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h4>Base64 Encoding</h4>
+                    <p>Convert text to base64 format. Not encryption but encoding.</p>
+                    <div class="option-strength">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>No Security</span>
+                    </div>
+                </div>
+                
+                <!-- XOR Cipher -->
+                <div class="option-card" data-algorithm="xor" onclick="selectAlgorithm('xor')">
+                    <div class="option-icon">
+                        <i class="fas fa-random"></i>
+                    </div>
+                    <h4>XOR Cipher</h4>
+                    <p>Bitwise XOR encryption with a key. Reversible with same key.</p>
+                    <div class="option-strength">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Medium Security</span>
+                    </div>
+                </div>
+                
+                <!-- Custom Algorithm -->
+                <div class="option-card" data-algorithm="custom" onclick="selectAlgorithm('custom')">
+                    <div class="option-icon">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <h4>Custom Algorithm</h4>
+                    <p>Combination of multiple encryption techniques for maximum security.</p>
+                    <div class="option-strength">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>High Security</span>
+                    </div>
+                </div>
             </div>
+        </section>
+        
+        <!-- Key Input -->
+        <section class="key-section">
+            <h3 class="mb-3"><i class="fas fa-key me-2"></i>Encryption Key</h3>
+            <div class="key-input-group">
+                <input type="text" class="key-input" id="encryptionKey" 
+                       placeholder="Enter your encryption key (leave empty for default)">
+                <div class="key-actions">
+                    <button class="btn btn-secondary" onclick="generateRandomKey()">
+                        <i class="fas fa-dice"></i> Random
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleKeyVisibility()">
+                        <i class="fas fa-eye" id="keyVisibilityIcon"></i>
+                    </button>
+                </div>
+            </div>
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Use the same key for encryption and decryption. Keep it secret!
+            </small>
+            
+            <!-- Additional Options -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="autoDetect">
+                        <label class="form-check-label" for="autoDetect">
+                            Auto-detect encryption type
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="preserveFormat" checked>
+                        <label class="form-check-label" for="preserveFormat">
+                            Preserve formatting (spaces, line breaks)
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary btn-lg" onclick="encryptMessage()" id="encryptBtn">
+                <i class="fas fa-lock"></i> Encrypt Message
+            </button>
+            <button class="btn btn-success btn-lg" onclick="decryptMessage()" id="decryptBtn">
+                <i class="fas fa-unlock"></i> Decrypt Message
+            </button>
+            <button class="btn btn-danger btn-lg" onclick="resetAll()">
+                <i class="fas fa-redo"></i> Reset All
+            </button>
         </div>
         
-        <!-- Step 4: If they want Deepanshu's contact -->
-        <div class="step-container" id="step4-get">
-            <div class="step-header">
-                <div class="step-number">4</div>
-                <h2 class="step-title">Deepanshu's Contact</h2>
-            </div>
-            <div class="emoji">📞</div>
-            <div class="step-content">
-                <p>Here's my contact information. Feel free to save it and reach out whenever you'd like to talk, share something, or plan to meet up!</p>
-                <div class="contact-display">
-                    <p><strong>Deepanshu</strong></p>
-                    <p><i class="fas fa-phone"></i> Phone: +91 98765 43210</p>
-                    <p><i class="fas fa-envelope"></i> Email: deepanshu.friend@example.com</p>
-                    <p><i class="fab fa-whatsapp"></i> WhatsApp: Available on same number</p>
-                </div>
-                <p>I'm really looking forward to our friendship and the wonderful moments we'll share together!</p>
-            </div>
-            <div class="btn-container">
-                <button class="btn btn-yes" id="final-complete">
-                    <i class="fas fa-heart"></i> Friendship Confirmed!
+        <!-- History -->
+        <section class="history-section">
+            <div class="history-header">
+                <h3><i class="fas fa-history me-2"></i>Recent Operations</h3>
+                <button class="btn btn-secondary" onclick="clearHistory()">
+                    <i class="fas fa-trash"></i> Clear History
                 </button>
             </div>
-        </div>
+            
+            <div class="history-items" id="historyList">
+                <!-- History items will be added here dynamically -->
+                <div class="history-item">
+                    <div class="history-meta">
+                        <span>
+                            <span class="history-action encrypt-action">ENCRYPTED</span>
+                            <i class="far fa-clock me-1"></i>Just now
+                        </span>
+                        <span>Caesar Cipher</span>
+                    </div>
+                    <div class="history-preview">Welcome to CryptoText!</div>
+                </div>
+            </div>
+        </section>
         
-        <!-- Final Step: After submitting contact -->
-        <div class="step-container" id="final-step">
-            <div class="step-header">
-                <div class="step-number"><i class="fas fa-check"></i></div>
-                <h2 class="step-title">Friendship Confirmed!</h2>
-            </div>
-            <div class="emoji">🎉</div>
-            <div class="step-content">
-                <p>Thank you for sharing your contact information! I've saved it and will reach out soon.</p>
-                <div class="final-message">
-                    <i class="fas fa-heart heart"></i>
-                    <p>Our friendship journey begins now! I'm excited about all the conversations, laughter, and memories we'll create together.</p>
-                    <p>Remember, a good friend is like a four-leaf clover: hard to find and lucky to have. I feel lucky to have you as a friend!</p>
-                </div>
-                <p>Looking forward to our first friend chat soon!</p>
-            </div>
-            <div class="btn-container">
-                <button class="btn btn-next" id="restart-yes">
-                    <i class="fas fa-redo"></i> Start Again
-                </button>
-            </div>
-        </div>
+        <!-- Footer -->
+        <footer class="crypto-footer">
+            <p>
+                <i class="fas fa-shield-alt me-1"></i>
+                <strong>CryptoText v1.0</strong> | Secure Message Encryption Tool | 
+                All encryption is performed locally in your browser
+            </p>
+            <p class="mt-2">
+                <i class="fas fa-info-circle me-1"></i>
+                Note: This tool is for educational purposes. For highly sensitive data, use professional encryption software.
+            </p>
+        </footer>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // DOM elements
-        const stepContainers = {
-            step1: document.getElementById('step1'),
-            step2: document.getElementById('step2'),
-            step3No: document.getElementById('step3-no'),
-            step3Yes: document.getElementById('step3-yes'),
-            step4Share: document.getElementById('step4-share'),
-            step4Get: document.getElementById('step4-get'),
-            finalStep: document.getElementById('final-step')
-        };
+        // Global variables
+        let currentAlgorithm = 'caesar';
+        let operationHistory = [];
+        let isKeyVisible = false;
         
-        const progressSteps = {
-            step1: document.getElementById('step1-progress'),
-            step2: document.getElementById('step2-progress'),
-            step3: document.getElementById('step3-progress'),
-            step4: document.getElementById('step4-progress')
-        };
-        
-        // Function to show a specific step and hide others
-        function showStep(stepId) {
-            // Hide all steps
-            for (let container in stepContainers) {
-                if (stepContainers[container]) {
-                    stepContainers[container].classList.remove('active');
-                }
-            }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCharCount();
+            loadHistory();
             
-            // Show the requested step
-            if (stepContainers[stepId]) {
-                stepContainers[stepId].classList.add('active');
+            // Add sample history item
+            addToHistory('Welcome to CryptoText!', 'Khoor#wr#FubswWhaw!', 'encrypt', 'caesar');
+        });
+        
+        // Algorithm selection
+        function selectAlgorithm(algorithm) {
+            currentAlgorithm = algorithm;
+            
+            // Update UI
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`.option-card[data-algorithm="${algorithm}"]`).classList.add('active');
+            
+            // Update mode indicator
+            const indicator = document.getElementById('modeIndicator');
+            indicator.innerHTML = `<i class="fas fa-${getAlgorithmIcon(algorithm)}"></i> <span>${getAlgorithmName(algorithm)} Selected</span>`;
+            indicator.classList.add('pulse');
+            
+            setTimeout(() => {
+                indicator.classList.remove('pulse');
+            }, 500);
+        }
+        
+        function getAlgorithmIcon(algorithm) {
+            const icons = {
+                'caesar': 'exchange-alt',
+                'base64': 'layer-group',
+                'xor': 'random',
+                'custom': 'user-secret'
+            };
+            return icons[algorithm] || 'lock';
+        }
+        
+        function getAlgorithmName(algorithm) {
+            const names = {
+                'caesar': 'Caesar Cipher',
+                'base64': 'Base64',
+                'xor': 'XOR Cipher',
+                'custom': 'Custom Algorithm'
+            };
+            return names[algorithm] || 'Unknown';
+        }
+        
+        // Character counter
+        function updateCharCount() {
+            const inputText = document.getElementById('inputText').value;
+            const outputText = document.getElementById('outputText').value;
+            
+            document.getElementById('inputCharCount').textContent = `${inputText.length} characters`;
+            document.getElementById('outputCharCount').textContent = `${outputText.length} characters`;
+        }
+        
+        // Encryption functions
+        function caesarCipher(text, shift = 3, encrypt = true) {
+            if (!encrypt) shift = -shift;
+            
+            return text.split('').map(char => {
+                const code = char.charCodeAt(0);
                 
-                // Scroll to the top of the container
-                document.querySelector('.container').scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                // Uppercase letters
+                if (code >= 65 && code <= 90) {
+                    return String.fromCharCode(((code - 65 + shift + 26) % 26) + 65);
+                }
+                // Lowercase letters
+                else if (code >= 97 && code <= 122) {
+                    return String.fromCharCode(((code - 97 + shift + 26) % 26) + 97);
+                }
+                // Numbers
+                else if (code >= 48 && code <= 57) {
+                    return String.fromCharCode(((code - 48 + shift + 10) % 10) + 48);
+                }
+                // Special characters - shift within printable ASCII range
+                else if (code >= 32 && code <= 126) {
+                    return String.fromCharCode(((code - 32 + shift + 95) % 95) + 32);
+                }
+                // Keep other characters as is
+                return char;
+            }).join('');
+        }
+        
+        function base64Encode(text) {
+            return btoa(unescape(encodeURIComponent(text)));
+        }
+        
+        function base64Decode(text) {
+            try {
+                return decodeURIComponent(escape(atob(text)));
+            } catch (e) {
+                return "Invalid Base64 string";
             }
         }
         
-        // Function to update progress bar
-        function updateProgress(stepNumber) {
-            // Reset all progress steps
-            for (let step in progressSteps) {
-                if (progressSteps[step]) {
-                    progressSteps[step].classList.remove('active', 'completed');
-                }
+        function xorCipher(text, key, encrypt = true) {
+            if (!key) key = 'secret';
+            
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+                result += String.fromCharCode(charCode);
             }
             
-            // Mark previous steps as completed and current as active
-            for (let i = 1; i <= stepNumber; i++) {
-                const stepKey = `step${i}`;
-                if (progressSteps[stepKey]) {
-                    if (i === stepNumber) {
-                        progressSteps[stepKey].classList.add('active');
-                    } else {
-                        progressSteps[stepKey].classList.add('completed');
-                    }
-                }
-            }
+            // For XOR, encryption and decryption are the same operation
+            return result;
         }
         
-        // Function to reset to the beginning
-        function resetToStart() {
-            showStep('step1');
+        function customEncrypt(text, key, encrypt = true) {
+            if (!key) key = 'crypto123';
             
-            // Reset progress bar
-            for (let step in progressSteps) {
-                if (progressSteps[step]) {
-                    progressSteps[step].classList.remove('active', 'completed');
+            let result = text;
+            
+            // Step 1: Reverse string if encrypting
+            if (encrypt) {
+                result = result.split('').reverse().join('');
+            }
+            
+            // Step 2: XOR with key
+            result = xorCipher(result, key, true);
+            
+            // Step 3: Caesar cipher with key length as shift
+            const shift = key.length % 26;
+            result = caesarCipher(result, shift, encrypt);
+            
+            // Step 4: Convert to hex if encrypting
+            if (encrypt) {
+                result = result.split('').map(c => {
+                    return c.charCodeAt(0).toString(16).padStart(2, '0');
+                }).join('');
+            } else {
+                // If decrypting, convert from hex
+                try {
+                    result = result.match(/.{1,2}/g).map(hex => {
+                        return String.fromCharCode(parseInt(hex, 16));
+                    }).join('');
+                } catch (e) {
+                    return "Invalid encrypted text for custom algorithm";
                 }
             }
-            if (progressSteps.step1) {
-                progressSteps.step1.classList.add('active');
+            
+            // Step 5: Reverse if decrypting
+            if (!encrypt) {
+                result = result.split('').reverse().join('');
             }
             
-            // Reset form inputs
-            document.getElementById('friend_name').value = '';
-            document.getElementById('user_phone').value = '';
-            document.getElementById('user_email').value = '';
-            
-            // Hide error/success messages
-            document.getElementById('form-success').style.display = 'none';
-            document.getElementById('phone-error').style.display = 'none';
-            document.getElementById('email-error').style.display = 'none';
+            return result;
         }
         
-        // Basic button event listeners (without Django backend)
-        document.getElementById('next1').addEventListener('click', () => {
-            showStep('step2');
-            updateProgress(2);
-        });
-        
-        document.getElementById('yes2').addEventListener('click', () => {
-            showStep('step3Yes');
-            updateProgress(3);
-        });
-        
-        document.getElementById('no2').addEventListener('click', () => {
-            showStep('step3No');
-            updateProgress(3);
-        });
-        
-        document.getElementById('yes-contact').addEventListener('click', () => {
-            showStep('step4Share');
-            updateProgress(4);
-        });
-        
-        document.getElementById('no-contact').addEventListener('click', () => {
-            showStep('step4Get');
-            updateProgress(4);
-        });
-        
-        document.getElementById('submit-contact').addEventListener('click', () => {
-            const phoneInput = document.getElementById('user_phone');
-            const nameInput = document.getElementById('friend_name');
+        // Main encryption/decryption functions
+        function encryptMessage() {
+            const input = document.getElementById('inputText').value;
+            const key = document.getElementById('encryptionKey').value;
             
-            // Basic validation
-            if (!phoneInput.value.trim()) {
-                document.getElementById('phone-error').textContent = 'Phone number is required';
-                document.getElementById('phone-error').style.display = 'block';
-                phoneInput.focus();
+            if (!input.trim()) {
+                alert('Please enter a message to encrypt');
+                document.getElementById('inputText').focus();
                 return;
             }
             
-            // Clear previous errors
-            document.getElementById('phone-error').style.display = 'none';
-            document.getElementById('email-error').style.display = 'none';
+            let encrypted;
             
-            // Show success message
-            const name = nameInput.value.trim() || 'Friend';
-            const phone = phoneInput.value.trim();
-            
-            document.getElementById('form-success').textContent = 
-                `Thank you, ${name}! Your contact has been saved. I'll reach out to ${phone} soon!`;
-            document.getElementById('form-success').style.display = 'block';
-            
-            // Simulate saving to backend
-            console.log('Contact saved:', { name, phone });
-            
-            // Show final step after delay
-            setTimeout(() => {
-                showStep('finalStep');
-                // Mark all steps as completed
-                for (let step in progressSteps) {
-                    if (progressSteps[step]) {
-                        progressSteps[step].classList.add('completed');
-                    }
-                }
-            }, 2000);
-        });
-        
-        document.getElementById('final-complete').addEventListener('click', () => {
-            showStep('finalStep');
-            // Mark all steps as completed
-            for (let step in progressSteps) {
-                if (progressSteps[step]) {
-                    progressSteps[step].classList.add('completed');
-                }
+            switch(currentAlgorithm) {
+                case 'caesar':
+                    const shift = key ? parseInt(key) || 3 : 3;
+                    encrypted = caesarCipher(input, shift, true);
+                    break;
+                case 'base64':
+                    encrypted = base64Encode(input);
+                    break;
+                case 'xor':
+                    encrypted = xorCipher(input, key, true);
+                    break;
+                case 'custom':
+                    encrypted = customEncrypt(input, key, true);
+                    break;
+                default:
+                    encrypted = caesarCipher(input, 3, true);
             }
-        });
-        
-        document.getElementById('restart-no').addEventListener('click', () => {
-            resetToStart();
-        });
-        
-        document.getElementById('restart-yes').addEventListener('click', () => {
-            resetToStart();
-        });
-        
-        // Initialize the page
-        updateProgress(1);
-        
-        // If you want to integrate with Django backend, uncomment and use this code:
-        /*
-        // Get CSRF token for AJAX requests
-        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-        
-        // AJAX request setup for Django
-        function makeDjangoRequest(url, method, data) {
-            return fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json());
+            
+            // Display result
+            document.getElementById('outputText').value = encrypted;
+            updateCharCount();
+            
+            // Add to history
+            addToHistory(input, encrypted, 'encrypt', currentAlgorithm);
+            
+            // Visual feedback
+            document.getElementById('encryptBtn').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('encryptBtn').classList.remove('pulse');
+            }, 500);
         }
         
-        // Update decision handlers for Django
-        document.getElementById('yes2').addEventListener('click', async () => {
+        function decryptMessage() {
+            const input = document.getElementById('inputText').value;
+            const key = document.getElementById('encryptionKey').value;
+            
+            if (!input.trim()) {
+                alert('Please enter a message to decrypt');
+                document.getElementById('inputText').focus();
+                return;
+            }
+            
+            let decrypted;
+            
             try {
-                const response = await makeDjangoRequest('/friendship/decision/', 'POST', {
-                    decision: 'yes',
-                    friend_name: ''
+                switch(currentAlgorithm) {
+                    case 'caesar':
+                        const shift = key ? parseInt(key) || 3 : 3;
+                        decrypted = caesarCipher(input, shift, false);
+                        break;
+                    case 'base64':
+                        decrypted = base64Decode(input);
+                        break;
+                    case 'xor':
+                        decrypted = xorCipher(input, key, false);
+                        break;
+                    case 'custom':
+                        decrypted = customEncrypt(input, key, false);
+                        break;
+                    default:
+                        decrypted = "Unable to decrypt with selected algorithm";
+                }
+                
+                // Check if decryption produced an error message
+                if (decrypted.includes("Invalid")) {
+                    throw new Error(decrypted);
+                }
+                
+            } catch (error) {
+                decrypted = `Decryption failed: ${error.message}`;
+            }
+            
+            // Display result
+            document.getElementById('outputText').value = decrypted;
+            updateCharCount();
+            
+            // Add to history
+            addToHistory(input, decrypted, 'decrypt', currentAlgorithm);
+            
+            // Visual feedback
+            document.getElementById('decryptBtn').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('decryptBtn').classList.remove('pulse');
+            }, 500);
+        }
+        
+        // Utility functions
+        function clearInput() {
+            document.getElementById('inputText').value = '';
+            updateCharCount();
+        }
+        
+        function copyToClipboard() {
+            const output = document.getElementById('outputText');
+            if (!output.value.trim()) {
+                alert('No result to copy');
+                return;
+            }
+            
+            output.select();
+            output.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                navigator.clipboard.writeText(output.value);
+                alert('Result copied to clipboard!');
+            } catch (err) {
+                // Fallback for older browsers
+                document.execCommand('copy');
+                alert('Result copied to clipboard!');
+            }
+        }
+        
+        function pasteFromClipboard() {
+            navigator.clipboard.readText()
+                .then(text => {
+                    document.getElementById('inputText').value = text;
+                    updateCharCount();
+                })
+                .catch(err => {
+                    alert('Failed to read from clipboard. Please paste manually.');
+                });
+        }
+        
+        function generateRandomKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let key = '';
+            for (let i = 0; i < 16; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('encryptionKey').value = key;
+        }
+        
+        function toggleKeyVisibility() {
+            const keyInput = document.getElementById('encryptionKey');
+            const icon = document.getElementById('keyVisibilityIcon');
+            
+            isKeyVisible = !isKeyVisible;
+            keyInput.type = isKeyVisible ? 'text' : 'password';
+            icon.className = isKeyVisible ? 'fas fa-eye-slash' : 'fas fa-eye';
+        }
+        
+        function downloadResult() {
+            const output = document.getElementById('outputText').value;
+            if (!output.trim()) {
+                alert('No result to download');
+                return;
+            }
+            
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cryptotext_${new Date().getTime()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function resetAll() {
+            if (confirm('Are you sure you want to reset everything?')) {
+                document.getElementById('inputText').value = '';
+                document.getElementById('outputText').value = '';
+                document.getElementById('encryptionKey').value = '';
+                selectAlgorithm('caesar');
+                updateCharCount();
+            }
+        }
+        
+        // History functions
+        function addToHistory(original, result, action, algorithm) {
+            const historyItem = {
+                id: Date.now(),
+                original: original.length > 50 ? original.substring(0, 50) + '...' : original,
+                result: result.length > 50 ? result.substring(0, 50) + '...' : result,
+                action: action,
+                algorithm: algorithm,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            operationHistory.unshift(historyItem);
+            if (operationHistory.length > 10) {
+                operationHistory.pop();
+            }
+            
+            saveHistory();
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            operationHistory.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item fade-in';
+                historyItem.innerHTML = `
+                    <div class="history-meta">
+                        <span>
+                            <span class="history-action ${item.action === 'encrypt' ? 'encrypt-action' : 'decrypt-action'}">
+                                ${item.action.toUpperCase()}ED
+                            </span>
+                            <i class="far fa-clock me-1"></i>${item.timestamp}
+                        </span>
+                        <span>${getAlgorithmName(item.algorithm)}</span>
+                    </div>
+                    <div class="history-preview">${item.original}</div>
+                `;
+                
+                // Click to load into input
+                historyItem.addEventListener('click', () => {
+                    document.getElementById('inputText').value = item.original.length > 50 ? 
+                        operationHistory.find(h => h.id === item.id).original : item.original;
+                    updateCharCount();
+                    selectAlgorithm(item.algorithm);
                 });
                 
-                if (response.success) {
-                    showStep('step3Yes');
-                    updateProgress(3);
-                } else {
-                    alert('Error saving decision. Please try again.');
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        function saveHistory() {
+            localStorage.setItem('cryptotext_history', JSON.stringify(operationHistory));
+        }
+        
+        function loadHistory() {
+            const saved = localStorage.getItem('cryptotext_history');
+            if (saved) {
+                operationHistory = JSON.parse(saved);
+                renderHistory();
+            }
+        }
+        
+        function clearHistory() {
+            if (confirm('Clear all history?')) {
+                operationHistory = [];
+                saveHistory();
+                renderHistory();
+            }
+        }
+        
+        // Auto-detect encryption type (simple detection)
+        function autoDetectEncryption(text) {
+            // Check if it's Base64
+            const base64Regex = /^[A-Za-z0-9+/]+=*$/;
+            if (base64Regex.test(text) && text.length % 4 === 0) {
+                try {
+                    atob(text);
+                    return 'base64';
+                } catch (e) {}
+            }
+            
+            // Check if it's hex (custom encryption)
+            const hexRegex = /^[0-9a-fA-F]+$/;
+            if (hexRegex.test(text)) {
+                return 'custom';
+            }
+            
+            // Default to caesar
+            return 'caesar';
+        }
+        
+        // Auto-detect on input if checkbox is checked
+        document.getElementById('inputText').addEventListener('input', function() {
+            if (document.getElementById('autoDetect').checked) {
+                const text = this.value;
+                if (text.trim().length > 10) { // Only detect for longer texts
+                    const detected = autoDetectEncryption(text);
+                    if (detected && detected !== currentAlgorithm) {
+                        selectAlgorithm(detected);
+                    }
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
             }
         });
-        
-        // Add similar handlers for other buttons with Django integration
-        */
-        
-        // Add form validation for email
-        const emailInput = document.getElementById('user_email');
-        if (emailInput) {
-            emailInput.addEventListener('blur', function() {
-                const email = this.value.trim();
-                if (email && !isValidEmail(email)) {
-                    document.getElementById('email-error').textContent = 'Please enter a valid email address';
-                    document.getElementById('email-error').style.display = 'block';
-                } else {
-                    document.getElementById('email-error').style.display = 'none';
-                }
-            });
-        }
-        
-        function isValidEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-        
-        // Add phone number formatting
-        const phoneInput = document.getElementById('user_phone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 10) {
-                    value = value.substring(0, 10);
-                }
-                e.target.value = value;
-            });
-        }
     </script>
 </body>
 </html>

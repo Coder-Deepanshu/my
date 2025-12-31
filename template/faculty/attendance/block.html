@@ -477,14 +477,13 @@
 
 <body>
     <!-- Header -->
+     {{ ip }}
     <header class="header">
         <div class="logo-container">
             <i class="fas fa-graduation-cap logo-icon"></i>
             <div class="logo-text">Edu<span>Track</span></div>
         </div>
-        <div class="header-info">
-            <span class="system-name">Attendance Management System</span>
-        </div>
+
     </header>
 
     <!-- Main Content -->
@@ -503,7 +502,7 @@
             <div class="error-body">
                 <div class="error-visual">
                     <!-- Replace with your actual image path -->
-                    <img src="{% static 'images/error.png' %}" alt="Access Restricted" class="error-image" onerror="this.onerror=null; this.parentElement.classList.add('fallback'); this.remove();">
+                    <img src="{% static 'images/error.png' %}" alt="Access Restricted" class="error-image" onerror="this.onerror=null; this.parentElement.classList.add('fallback'); this.remove();" loading="lazy">
                     
                     <!-- Fallback content if image doesn't load -->
                     <div class="fallback-content" style="display: none;">

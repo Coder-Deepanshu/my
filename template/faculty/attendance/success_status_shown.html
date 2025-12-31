@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Status | Edutrack Faculty</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --success: #2a9d8f;
+            --warning: #f8961e;
+            --danger: #e63946;
+            --info: #4cc9f0;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fb 0%, #e9edf7 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+        
+        /* Header */
+        .dashboard-header {
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .logo-text p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin: 0;
+        }
+        
+        .faculty-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-left: 20px;
+            border-left: 2px solid var(--light-gray);
+        }
+        
+        .faculty-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .faculty-details h5 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .faculty-details small {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 20px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Main Container */
+        .dashboard-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Stats Overview Cards */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card.present {
+            border-left-color: var(--success);
+        }
+        
+        .stat-card.absent {
+            border-left-color: var(--danger);
+        }
+        
+        .stat-card.late {
+            border-left-color: var(--warning);
+        }
+        
+        .stat-card.leave {
+            border-left-color: var(--info);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-card.present .stat-icon {
+            background: rgba(42, 157, 143, 0.15);
+            color: var(--success);
+        }
+        
+        .stat-card.absent .stat-icon {
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--danger);
+        }
+        
+        .stat-card.late .stat-icon {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+        }
+        
+        .stat-card.leave .stat-icon {
+            background: rgba(76, 201, 240, 0.15);
+            color: var(--info);
+        }
+        
+        .stat-trend {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 15px;
+        }
+        
+        .trend-up {
+            background: rgba(42, 157, 143, 0.15);
+            color: var(--success);
+        }
+        
+        .trend-down {
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--danger);
+        }
+        
+        .stat-content h3 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .stat-content p {
+            color: var(--gray);
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (min-width: 992px) {
+            .charts-section {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-header h4 {
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-period {
+            display: flex;
+            background: var(--light-gray);
+            border-radius: 10px;
+            padding: 5px;
+        }
+        
+        .period-btn {
+            padding: 6px 15px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .period-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Today's Classes */
+        .classes-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title h3 {
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .class-card {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .class-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .class-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .class-code {
+            background: var(--primary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .class-time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .class-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .class-details {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray);
+        }
+        
+        .attendance-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-present {
+            background: rgba(42, 157, 143, 0.15);
+            color: var(--success);
+        }
+        
+        .status-absent {
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--danger);
+        }
+        
+        .status-pending {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+        }
+        
+        .attendance-count {
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        /* Recent Activity */
+        .activity-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+        
+        .activity-item:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .activity-present .activity-icon {
+            background: rgba(42, 157, 143, 0.15);
+            color: var(--success);
+        }
+        
+        .activity-absent .activity-icon {
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--danger);
+        }
+        
+        .activity-late .activity-icon {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+        }
+        
+        .activity-content h5 {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--dark);
+        }
+        
+        .activity-content p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        /* Quick Actions */
+        .actions-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            color: white;
+        }
+        
+        .actions-title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .actions-title h3 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .actions-title p {
+            opacity: 0.9;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        
+        .action-btn span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--light-gray);
+            margin-top: 2rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .header-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .faculty-info {
+                border-left: none;
+                padding-left: 0;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .dashboard-container {
+                padding: 1rem;
+            }
+            
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h3>Edutrack</h3>
+                        <p>Faculty Attendance Dashboard</p>
+                    </div>
+                </a>
+                
+                <div class="faculty-info">
+                    <div class="faculty-avatar">
+                        JD
+                    </div>
+                    <div class="faculty-details">
+                        <h5>Prof. John Doe</h5>
+                        <small>Computer Science • ID: FAC-2023-001</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>System Active</span>
+                </div>
+                <div class="status-indicator">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate">{{ current_date|date:"F d, Y" }}</span>
+                </div>
+                <div class="status-indicator">
+                    <i class="fas fa-clock"></i>
+                    <span id="currentTime">{{ current_time|date:"h:i A" }}</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <!-- Stats Overview -->
+        <div class="stats-overview">
+            <div class="stat-card present fade-in-up">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 5%
+                    </div>
+                </div>
+                <div class="stat-content">
+                    <h3>85%</h3>
+                    <p>Attendance Rate</p>
+                    <small>125 out of 147 students present</small>
+                </div>
+            </div>
+            
+            <div class="stat-card absent fade-in-up">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-times"></i>
+                    </div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i> 3%
+                    </div>
+                </div>
+                <div class="stat-content">
+                    <h3>8%</h3>
+                    <p>Absent Today</p>
+                    <small>12 students absent across all classes</small>
+                </div>
+            </div>
+            
+            <div class="stat-card late fade-in-up">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 2%
+                    </div>
+                </div>
+                <div class="stat-content">
+                    <h3>7%</h3>
+                    <p>Late Arrivals</p>
+                    <small>10 students arrived late today</small>
+                </div>
+            </div>
+            
+            <div class="stat-card leave fade-in-up">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i> 1%
+                    </div>
+                </div>
+                <div class="stat-content">
+                    <h3>5</h3>
+                    <p>Leave Applications</p>
+                    <small>Pending approval for 5 students</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <!-- Main Chart -->
+            <div class="chart-card fade-in-up">
+                <div class="chart-header">
+                    <h4><i class="fas fa-chart-line me-2"></i>Attendance Trend (Last 7 Days)</h4>
+                    <div class="chart-period">
+                        <button class="period-btn active" onclick="changePeriod('week')">Week</button>
+                        <button class="period-btn" onclick="changePeriod('month')">Month</button>
+                        <button class="period-btn" onclick="changePeriod('semester')">Semester</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div id="attendanceChart"></div>
+                </div>
+            </div>
+            
+            <!-- Pie Chart -->
+            <div class="chart-card fade-in-up">
+                <div class="chart-header">
+                    <h4><i class="fas fa-chart-pie me-2"></i>Today's Distribution</h4>
+                </div>
+                <div class="chart-container">
+                    <div id="distributionChart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Today's Classes -->
+        <div class="classes-section fade-in-up">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Today's Classes</h3>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-outline-primary btn-sm" onclick="markAllAttendance()">
+                        <i class="fas fa-check-double me-1"></i>Mark All
+                    </button>
+                </div>
+            </div>
+            
+            <div class="classes-grid">
+                <!-- Class 1 -->
+                <div class="class-card">
+                    <div class="class-header">
+                        <span class="class-code">CS301</span>
+                        <div class="class-time">
+                            <i class="far fa-clock"></i>
+                            10:00 AM - 11:30 AM
+                        </div>
+                    </div>
+                    <h4 class="class-title">Data Structures & Algorithms</h4>
+                    <div class="class-details">
+                        <div class="detail-item">
+                            <i class="fas fa-users"></i>
+                            <span>45 Students</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Room 301</span>
+                        </div>
+                    </div>
+                    <div class="attendance-status">
+                        <div>
+                            <span class="status-badge status-present">Marked</span>
+                            <span class="ms-2 attendance-count">42/45</span>
+                        </div>
+                        <div class="text-muted">
+                            <small>Completed at 10:15 AM</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Class 2 -->
+                <div class="class-card">
+                    <div class="class-header">
+                        <span class="class-code">CS302</span>
+                        <div class="class-time">
+                            <i class="far fa-clock"></i>
+                            12:00 PM - 1:30 PM
+                        </div>
+                    </div>
+                    <h4 class="class-title">Database Management Systems</h4>
+                    <div class="class-details">
+                        <div class="detail-item">
+                            <i class="fas fa-users"></i>
+                            <span>40 Students</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Lab 205</span>
+                        </div>
+                    </div>
+                    <div class="attendance-status">
+                        <div>
+                            <span class="status-badge status-pending">Pending</span>
+                            <span class="ms-2 attendance-count">0/40</span>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="markAttendance('CS302')">
+                            <i class="fas fa-check me-1"></i>Mark Now
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Class 3 -->
+                <div class="class-card">
+                    <div class="class-header">
+                        <span class="class-code">CS303</span>
+                        <div class="class-time">
+                            <i class="far fa-clock"></i>
+                            2:00 PM - 3:30 PM
+                        </div>
+                    </div>
+                    <h4 class="class-title">Computer Networks</h4>
+                    <div class="class-details">
+                        <div class="detail-item">
+                            <i class="fas fa-users"></i>
+                            <span>38 Students</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Room 402</span>
+                        </div>
+                    </div>
+                    <div class="attendance-status">
+                        <div>
+                            <span class="status-badge status-pending">Upcoming</span>
+                            <span class="ms-2 attendance-count">0/38</span>
+                        </div>
+                        <div class="text-muted">
+                            <small>Starts in 2 hours</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="activity-section fade-in-up">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>Recent Attendance Activity</h3>
+                </div>
+                <div class="section-actions">
+                    <button class="btn btn-outline-primary btn-sm" onclick="refreshActivity()">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="activity-list">
+                <!-- Activity Item 1 -->
+                <div class="activity-item activity-present">
+                    <div class="activity-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h5>Attendance Marked - CS301</h5>
+                        <p>42 students marked present, 2 absent, 1 late</p>
+                        <div class="activity-time">10:15 AM • Just now</div>
+                    </div>
+                </div>
+                
+                <!-- Activity Item 2 -->
+                <div class="activity-item activity-absent">
+                    <div class="activity-icon">
+                        <i class="fas fa-user-times"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h5>Student Absent - Roll No. 23</h5>
+                        <p>John Smith marked absent in CS301</p>
+                        <div class="activity-time">10:10 AM • 5 minutes ago</div>
+                    </div>
+                </div>
+                
+                <!-- Activity Item 3 -->
+                <div class="activity-item activity-late">
+                    <div class="activity-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h5>Late Arrival - Roll No. 15</h5>
+                        <p>Sarah Johnson arrived 15 minutes late</p>
+                        <div class="activity-time">10:05 AM • 10 minutes ago</div>
+                    </div>
+                </div>
+                
+                <!-- Activity Item 4 -->
+                <div class="activity-item activity-present">
+                    <div class="activity-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h5>QR Scan Success</h5>
+                        <p>Attendance marked via QR code for CS301</p>
+                        <div class="activity-time">10:00 AM • 15 minutes ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="actions-section fade-in-up">
+            <div class="actions-title">
+                <h3>Quick Actions</h3>
+                <p>Perform common attendance tasks quickly</p>
+            </div>
+            
+            <div class="actions-grid">
+                <a href="#" class="action-btn" onclick="markAttendance()">
+                    <div class="action-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <span>Mark Attendance</span>
+                </a>
+                
+                <a href="#" class="action-btn" onclick="viewReports()">
+                    <div class="action-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <span>View Reports</span>
+                </a>
+                
+                <a href="#" class="action-btn" onclick="manageLeaves()">
+                    <div class="action-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <span>Manage Leaves</span>
+                </a>
+                
+                <a href="#" class="action-btn" onclick="generateQR()">
+                    <div class="action-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <span>Generate QR</span>
+                </a>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <p>
+            <i class="fas fa-shield-alt me-1"></i>
+            Edutrack Faculty Attendance System • Last Updated: <span id="lastUpdated">Just now</span>
+        </p>
+        <p class="mt-2">
+            <i class="fas fa-info-circle me-1"></i>
+            Data refreshes automatically every 5 minutes
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+    <script>
+        // Initialize charts
+        let attendanceChart, distributionChart;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            updateDateTime();
+            setInterval(updateDateTime, 60000); // Update time every minute
+        });
+        
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Format date
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+            
+            // Format time
+            const timeOptions = { hour: '2-digit', minute: '2-digit' };
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
+            
+            // Update last updated
+            const lastUpdated = document.getElementById('lastUpdated');
+            lastUpdated.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        
+        // Initialize charts
+        function initializeCharts() {
+            // Attendance Trend Chart
+            const attendanceOptions = {
+                series: [{
+                    name: 'Attendance %',
+                    data: [82, 85, 83, 87, 86, 85, 88]
+                }],
+                chart: {
+                    height: '100%',
+                    type: 'area',
+                    toolbar: {
+                        show: true
+                    }
+                },
+                colors: ['#4361ee'],
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                },
+                xaxis: {
+                    categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                },
+                yaxis: {
+                    title: {
+                        text: 'Attendance %'
+                    },
+                    min: 75,
+                    max: 100
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(val) {
+                            return val + "%"
+                        }
+                    }
+                }
+            };
+            
+            attendanceChart = new ApexCharts(document.querySelector("#attendanceChart"), attendanceOptions);
+            attendanceChart.render();
+            
+            // Distribution Chart
+            const distributionOptions = {
+                series: [85, 8, 7],
+                chart: {
+                    type: 'donut',
+                    height: '100%'
+                },
+                colors: ['#2a9d8f', '#e63946', '#f8961e'],
+                labels: ['Present', 'Absent', 'Late'],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '70%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'Total',
+                                    formatter: function(w) {
+                                        return '100%'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                legend: {
+                    position: 'bottom'
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+            
+            distributionChart = new ApexCharts(document.querySelector("#distributionChart"), distributionOptions);
+            distributionChart.render();
+        }
+        
+        // Change chart period
+        function changePeriod(period) {
+            // Update active button
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update chart data based on period
+            let newData, newCategories;
+            
+            switch(period) {
+                case 'week':
+                    newData = [82, 85, 83, 87, 86, 85, 88];
+                    newCategories = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    break;
+                case 'month':
+                    newData = [78, 82, 85, 87, 84, 86, 88, 85, 87, 89, 88, 86, 85, 87, 90, 88, 86, 87, 89, 91, 90, 88, 87, 89, 92, 90, 89, 88, 90, 92];
+                    newCategories = Array.from({length: 30}, (_, i) => `Day ${i+1}`);
+                    break;
+                case 'semester':
+                    newData = [85, 87, 86, 88, 89, 90, 91, 92, 93, 92, 91, 90];
+                    newCategories = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12'];
+                    break;
+            }
+            
+            attendanceChart.updateOptions({
+                xaxis: {
+                    categories: newCategories
+                }
+            });
+            
+            attendanceChart.updateSeries([{
+                data: newData
+            }]);
+        }
+        
+        // Mark attendance for specific class
+        function markAttendance(classCode) {
+            if (classCode) {
+                alert(`Marking attendance for ${classCode}...`);
+                // Simulate API call
+                setTimeout(() => {
+                    alert(`Attendance marked successfully for ${classCode}!`);
+                    // Refresh the page or update UI
+                    location.reload();
+                }, 1000);
+            } else {
+                alert('Opening attendance marking interface...');
+                // Open attendance marking modal or page
+            }
+        }
+        
+        // Mark all pending attendance
+        function markAllAttendance() {
+            if (confirm('Mark attendance for all pending classes?')) {
+                alert('Marking attendance for all classes...');
+                // Simulate API call
+                setTimeout(() => {
+                    alert('All attendance marked successfully!');
+                    location.reload();
+                }, 1500);
+            }
+        }
+        
+        // Refresh activity
+        function refreshActivity() {
+            const refreshBtn = event.target.closest('button');
+            const originalHTML = refreshBtn.innerHTML;
+            
+            // Show loading
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Refreshing...';
+            refreshBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                alert('Activity refreshed successfully!');
+                refreshBtn.innerHTML = originalHTML;
+                refreshBtn.disabled = false;
+            }, 1000);
+        }
+        
+        // Action functions
+        function viewReports() {
+            alert('Opening attendance reports...');
+            // Navigate to reports page
+        }
+        
+        function manageLeaves() {
+            alert('Opening leave management...');
+            // Navigate to leave management page
+        }
+        
+        function generateQR() {
+            alert('Generating QR code for current session...');
+            // Generate QR code
+        }
+        
+        // Auto-refresh data every 5 minutes
+        setInterval(() => {
+            console.log('Auto-refreshing dashboard data...');
+            // In production, this would fetch new data via API
+        }, 300000); // 5 minutes
+    </script>
+</body>
+</html>

@@ -757,7 +757,7 @@ def student_functions(request):
                         college_id = f'ST{numeric_part + 1}'
                     except (ValueError, IndexError):
                         college_id = 'ST20250'  # Fallback if format is wrong
-                
+
                 email = request.POST.get("email")
                 phone = request.POST.get("phone")
                 
@@ -767,6 +767,12 @@ def student_functions(request):
                 
                 # Convert adhar_no to BigInteger
                 adhar_no = int(request.POST.get("adharno", 0))
+
+                user_detail = UserDetail.objects.filter(user_id = college_id)
+                if not user_detail.exists():
+                    UserDetail.objects.create(username = email, user_id = college_id, password = phone)
+                else :
+                    messages.error(request, "User Already Exists")
                 
                 Student.objects.create(
                     college_id=college_id,
@@ -885,7 +891,13 @@ def faculty_functions(request):
                         college_id = 'GK20250'  # Fallback if format is wrong
                 email = request.POST.get("email")
                 phone =  request.POST.get("phone") 
-                adhar_no = int(request.POST.get("adharno", 0))       
+                adhar_no = int(request.POST.get("adharno", 0)) 
+
+                user_detail = UserDetail.objects.filter(user_id = college_id)
+                if not user_detail.exists():
+                    UserDetail.objects.create(username = email, user_id = college_id, password = phone)
+                else :
+                    messages.error(request, "User Already Exists")     
                 # Create faculty with all required fields
                 Faculty.objects.create(
                     college_id=college_id,
@@ -1006,7 +1018,13 @@ def admin_functions(request):
                         college_id = 'AD20251'  # Fallback if format is wrong
                 email = request.POST.get("email")
                 phone =  request.POST.get("phone")  
-                adhar_no = int(request.POST.get("adharno", 0))       
+                adhar_no = int(request.POST.get("adharno", 0))  
+
+                user_detail = UserDetail.objects.filter(user_id = college_id)
+                if not user_detail.exists():
+                    UserDetail.objects.create(username = email, user_id = college_id, password = phone)
+                else :
+                    messages.error(request, "User Already Exists")      
                 # Create admin with all required fields
                 Admin.objects.create(
                     college_id=college_id,
@@ -3489,20 +3507,80 @@ def studentCourseDetailView(request):
 # for faculty attendance system 
 # attendance/views.py
 from django.shortcuts import render
-from .utils import get_client_ip, is_college_wifi, personal_college_pin
+from .utils import get_client_ip, is_college_wifi, personal_college_pin_for_faculty, personal_college_pin_for_admin
 
-def check_wifi_ip(request):
+def check_wifi_ip(request, Person):
     ip = get_client_ip(request)
     allowed = is_college_wifi(ip)
+    if Person == 'Faculty':
+        college_id = request.session.get('faculty_college_id')
 
     context = {
         "ip": ip,
-        "allowed": allowed
+        "allowed": allowed,
+        'college_id':college_id,
+        'Person':Person
     }
-    html_page = 'faculty/attendance/block.html'
-    if allowed : 
-        html_page = 'faculty/attendance/check_wifi.html'
+    # html_page = 'faculty/attendance/block.html'
+    # if allowed : 
+    html_page = 'faculty/attendance/check_wifi.html'
     return render(request, html_page, context)
+
+def college_pin_checking(request):
+    if request.method == 'POST':
+        try:  
+            data = json.loads(request.body) 
+            college_id = data.get('college_id')
+            Person = data.get('Person')
+            pinInput = data.get('pinInput')
+            if Person == 'Faculty':
+                order = True
+                pin = personal_college_pin_for_faculty(order)
+                if pin != pinInput :   
+                    return JsonResponse({'error':f'Your Pin is not Correct!'})
+                else:   
+                    return JsonResponse({'success':'Match Successfully'})     
+                     
+        except Exception as e:
+            return JsonResponse({'error':f'An Error Occured {str(e)}!'})
+    else:
+        return JsonResponse({'error':'An Error Occured : Invalid Request!'})
+
+def scan_qr_Code(request):
+    return render(request, 'faculty/attendance/scanning.html')
+
+
+
+
+
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+import os
+from django.conf import settings
+
+def login1(request):
+    if request.method == 'POST':
+        password = request.POST.get('password', '')
+        
+        if password == 'Deepanshu':
+            # Generate screenshot using JavaScript in template
+            return render(request, 'photo.html')
+        else:
+            return render(request, 'login1.html', {'error': 'Wrong password!'})
+    
+    return render(request, 'login1.html')
+
+def download_photo(request):
+    # Path to your photo
+    photo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'photo.jpg')
+    
+    if os.path.exists(photo_path):
+        with open(photo_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type='image/jpeg')
+            response['Content-Disposition'] = 'attachment; filename="photo.jpg"'
+            return response
+    return HttpResponse("Photo not found", status=404)
+    
 
 
 

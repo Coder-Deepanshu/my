@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner | Simple</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .header-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .scanner-section {
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .scanner-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px dashed #dee2e6;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        #qr-reader {
+            width: 100% !important;
+            border: none !important;
+        }
+
+        .scanner-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
+
+        .scanner-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .scanner-placeholder p {
+            font-size: 0.9rem;
+        }
+
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(58, 12, 163, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .result-section {
+            background: #e8f5e9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+            border-left: 5px solid #2e7d32;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .result-header i {
+            color: #2e7d32;
+            font-size: 1.5rem;
+        }
+
+        .result-header h3 {
+            color: #1b5e20;
+            margin: 0;
+        }
+
+        .result-content {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #c8e6c9;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .result-actions .btn {
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.85rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4361ee;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .scanner-box {
+                min-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">
+                <i class="fas fa-qrcode"></i>
+            </div>
+            <h1>QR Code Scanner</h1>
+            <p>Point your camera at a QR code to scan</p>
+        </div>
+        
+        <!-- Scanner Section -->
+        <div class="scanner-section">
+            <div class="scanner-box" id="scannerBox">
+                <div class="scanner-placeholder" id="scannerPlaceholder">
+                    <i class="fas fa-camera"></i>
+                    <p>Camera will start when you click "Start Camera"</p>
+                </div>
+                <div id="qr-reader" style="display: none;"></div>
+            </div>
+            
+            <div class="camera-controls">
+                <button class="btn btn-primary" onclick="startScanner()" id="startBtn">
+                    <i class="fas fa-play"></i> Start Camera
+                </button>
+                <button class="btn btn-secondary" onclick="stopScanner()" id="stopBtn" style="display: none;">
+                    <i class="fas fa-stop"></i> Stop Camera
+                </button>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing QR code...</p>
+            </div>
+            
+            <!-- Result Section -->
+            <div class="result-section" id="resultSection">
+                <div class="result-header">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>QR Code Scanned Successfully!</h3>
+                </div>
+                <div class="result-content" id="resultContent">
+                    <!-- Scanned content will appear here -->
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-success" onclick="copyResult()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <button class="btn btn-primary" onclick="scanAgain()">
+                        <i class="fas fa-redo"></i> Scan Again
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Made with <i class="fas fa-heart" style="color: #e63946;"></i> | Simple QR Scanner</p>
+        </div>
+    </div>
+
+    <!-- Include QR Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        let scanner = null;
+        let isScanning = false;
+        
+        // Start scanner function
+        function startScanner() {
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const scannerPlaceholder = document.getElementById('scannerPlaceholder');
+            const qrReader = document.getElementById('qr-reader');
+            
+            // Show scanner, hide placeholder
+            scannerPlaceholder.style.display = 'none';
+            qrReader.style.display = 'block';
+            
+            // Toggle buttons
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'flex';
+            
+            // Initialize scanner
+            scanner = new Html5Qrcode("qr-reader");
+            
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 }
+            };
+            
+            // Start scanner
+            scanner.start(
+                { facingMode: "environment" }, // Use back camera
+                config,
+                onScanSuccess,
+                onScanError
+            ).then(() => {
+                isScanning = true;
+                console.log("Scanner started successfully");
+            }).catch(err => {
+                console.error("Unable to start scanner:", err);
+                alert("Unable to access camera. Please check permissions.");
+                stopScanner();
+            });
+        }
+        
+        // Stop scanner function
+        function stopScanner() {
+            if (scanner && isScanning) {
+                scanner.stop().then(() => {
+                    isScanning = false;
+                    
+                    // Show placeholder, hide scanner
+                    document.getElementById('scannerPlaceholder').style.display = 'flex';
+                    document.getElementById('qr-reader').style.display = 'none';
+                    
+                    // Toggle buttons
+                    document.getElementById('startBtn').style.display = 'flex';
+                    document.getElementById('stopBtn').style.display = 'none';
+                    
+                    console.log("Scanner stopped");
+                }).catch(err => {
+                    console.error("Failed to stop scanner:", err);
+                });
+            }
+        }
+        
+        // Handle successful scan
+        function onScanSuccess(decodedText, decodedResult) {
+            // Stop scanner temporarily
+            if (scanner && isScanning) {
+                scanner.pause();
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            
+            // Process after short delay (simulate processing)
+            setTimeout(() => {
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                // Show result
+                const resultSection = document.getElementById('resultSection');
+                const resultContent = document.getElementById('resultContent');
+                
+                resultContent.textContent = decodedText;
+                resultSection.style.display = 'block';
+                
+                // Scroll to result
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+                
+                // Log to console
+                console.log("QR Code Scanned:", decodedText);
+                
+                // Check if it's a URL
+                if (isURL(decodedText)) {
+                    // Add link option
+                    const linkBtn = document.createElement('button');
+                    linkBtn.className = 'btn btn-primary';
+                    linkBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> Open Link';
+                    linkBtn.onclick = function() {
+                        window.open(decodedText, '_blank');
+                    };
+                    
+                    const actionsDiv = document.querySelector('.result-actions');
+                    if (!document.getElementById('linkBtn')) {
+                        linkBtn.id = 'linkBtn';
+                        actionsDiv.appendChild(linkBtn);
+                    }
+                }
+                
+                // Stop scanner completely
+                stopScanner();
+            }, 1000);
+        }
+        
+        // Handle scan error
+        function onScanError(errorMessage) {
+            // Optional: Show error in console
+            console.warn("Scan error:", errorMessage);
+        }
+        
+        // Copy result to clipboard
+        function copyResult() {
+            const resultText = document.getElementById('resultContent').textContent;
+            
+            navigator.clipboard.writeText(resultText)
+                .then(() => {
+                    alert('Copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy to clipboard');
+                });
+        }
+        
+        // Scan again
+        function scanAgain() {
+            // Hide result section
+            document.getElementById('resultSection').style.display = 'none';
+            
+            // Remove link button if exists
+            const linkBtn = document.getElementById('linkBtn');
+            if (linkBtn) {
+                linkBtn.remove();
+            }
+            
+            // Clear result
+            document.getElementById('resultContent').textContent = '';
+            
+            // Start scanner again
+            startScanner();
+        }
+        
+        // Check if string is a valid URL
+        function isURL(str) {
+            try {
+                new URL(str);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        // Auto-start scanner on page load (optional)
+        // window.addEventListener('DOMContentLoaded', function() {
+        //     // Uncomment below line to auto-start scanner
+        //     // startScanner();
+        // });
+        
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && scanner && isScanning) {
+                // Page is hidden, stop scanner
+                stopScanner();
+            }
+        });
+    </script>
+</body>
+</html>

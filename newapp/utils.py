@@ -15,10 +15,16 @@ def is_college_wifi(ip):
     college_network = ipaddress.ip_network("152.59.90.0/24")
     return ipaddress.ip_address(ip) in college_network
 
-def personal_college_pin(order):
+def personal_college_pin_for_faculty(order):
     if order:
-        pin = '9812860172'
+        pin = '57575'
     else:
         pin = ''
     return pin
 
+def personal_college_pin_for_admin(order):
+    if order:
+        pin = '98128'
+    else:
+        pin = ''
+    return pin

