@@ -3550,6 +3550,7 @@ def scan_qr_Code(request):
     return render(request, 'faculty/attendance/scanning.html')
 
 # for QR Code Creating
+import qrcode
 import time
 import uuid
 import os
@@ -3613,47 +3614,81 @@ def generate_QR_code(request):
         "qr_media_url": f"/media/qr_codes/{qr_filename}"  # Or use file path
     })
 
-import qrcode
-import json
-import time
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
+# QR verification function
 @csrf_exempt
 def verify_qr(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        qr_data = data.get("qr_data")
-
-        # Parse QR data
-        params = dict(item.split("=") for item in qr_data.split("&"))
-        ts = int(params.get("ts", 0))
-
-        # Check 2-minute expiry
-        current_time = int(time.time())
-        if current_time - ts > 120:
+        try:
+            data = json.loads(request.body)
+            qr_data = data.get("qr_data", "")
+            
+            if not qr_data:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "No QR data received"
+                })
+            
+            # Parse QR data safely
+            params = {}
+            try:
+                for item in qr_data.split("&"):
+                    if "=" in item:
+                        key, value = item.split("=", 1)
+                        params[key] = value
+            except:
+                return JsonResponse({
+                    "status": "error", 
+                    "message": "Invalid QR format"
+                })
+            
+            # Get timestamp
+            ts_str = params.get("ts", "0")
+            try:
+                ts = int(ts_str)
+            except ValueError:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "Invalid timestamp in QR"
+                })
+            
+            # Check 2-minute expiry (120 seconds)
+            current_time = int(time.time())
+            time_diff = current_time - ts
+            
+            if time_diff > 120:
+                return JsonResponse({
+                    "status": "error",
+                    "message": f"QR Code expired ({time_diff} seconds ago)"
+                })
+            
+            # Here you can add attendance logic
+            # For example: save to database, check if already scanned, etc.
+            
+            return JsonResponse({
+                "status": "success",
+                "message": "Attendance marked successfully",
+                "time_remaining": 120 - time_diff,
+                "token": params.get("token", "")
+            })
+            
+        except json.JSONDecodeError:
             return JsonResponse({
                 "status": "error",
-                "message": "QR Code expired"
+                "message": "Invalid JSON data"
             })
-
-        return JsonResponse({
-            "status": "success",
-            "message": "Attendance marked successfully"
-        })
-
-    return JsonResponse({"error": "Invalid request"})
+        except Exception as e:
+            return JsonResponse({
+                "status": "error",
+                "message": f"Server error: {str(e)}"
+            })
+    
+    return JsonResponse({
+        "status": "error", 
+        "message": "Invalid request method. Use POST."
+    })
 
 def scanning(request):
     return render(request, 'faculty/attendance/scanning.html')
-
-
-
-
-
-
-
-
 
 
 
