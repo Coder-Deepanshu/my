@@ -3640,6 +3640,9 @@ def verify_qr(request):
 
     return JsonResponse({"error": "Invalid request"})
 
+def scanning(request):
+    return render(request, 'faculty/attendance/scanning.html')
+
 
 
 
