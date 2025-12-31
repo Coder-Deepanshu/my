@@ -3576,10 +3576,19 @@ def generate_QR_code(request):
     # QR data (with expiry logic)
     data = generate_random_token()
     qr_data = str(data) 
-    # generate QR
-    qr = segno.make(qr_data)
     
-    # OPTION 1: Save to media folder (better approach)
+    # generate QR using qrcode library
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(qr_data)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # OPTION 1: Save to media folder
     media_dir = os.path.join(settings.MEDIA_ROOT, 'qr_codes')
     os.makedirs(media_dir, exist_ok=True)
     
@@ -3587,20 +3596,16 @@ def generate_QR_code(request):
     qr_path = os.path.join(media_dir, qr_filename)
     
     # Save QR code
-    qr.save(qr_path, scale=6)
+    img.save(qr_path)
     
-    # OPTION 2: Generate base64 image (no file saving needed)
-    # Create BytesIO buffer
+    # OPTION 2: Generate base64 image
     buffer = BytesIO()
-    qr.save(buffer, kind='png', scale=6)
+    img.save(buffer, format='PNG')
     buffer.seek(0)
     
     # Convert to base64 for embedding in HTML
     qr_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
     qr_data_uri = f"data:image/png;base64,{qr_base64}"
-    
-    # Clean up old QR codes (optional)
-    # You can implement cleanup logic here
     
     return render(request, "faculty/attendance/QR_code.html", {
         "qr_data": qr_data,
@@ -3609,7 +3614,7 @@ def generate_QR_code(request):
         "qr_media_url": f"/media/qr_codes/{qr_filename}"  # Or use file path
     })
 
-
+import qrcode
 import json
 import time
 from django.http import JsonResponse
