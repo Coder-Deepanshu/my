@@ -137,39 +137,3 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'created_at']
 
 
-from django.contrib import admin
-from .models import FriendshipProposal
-
-@admin.register(FriendshipProposal)
-class FriendshipProposalAdmin(admin.ModelAdmin):
-    list_display = ('id', 'decision', 'friend_name', 'user_phone', 'contact_choice', 'created_at', 'is_active')
-    list_filter = ('decision', 'contact_choice', 'created_at', 'is_active')
-    search_fields = ('friend_name', 'user_phone', 'user_email')
-    readonly_fields = ('created_at', 'decision_made_at', 'contact_shared_at')
-    list_per_page = 20
-    
-    fieldsets = (
-        ('Proposal Information', {
-            'fields': ('decision', 'decision_made_at', 'is_active')
-        }),
-        ('Contact Information', {
-            'fields': ('friend_name', 'user_phone', 'user_email')
-        }),
-        ('Contact Decision', {
-            'fields': ('contact_choice', 'contact_shared_at')
-        }),
-        ('Timestamps', {
-            'fields': ('created_at',)
-        }),
-    )
-
-from django.contrib import admin
-from .models import BirthdayGreeting
-
-@admin.register(BirthdayGreeting)
-class BirthdayGreetingAdmin(admin.ModelAdmin):
-    # Display fields in admin list view
-    list_display = ( 'photo', 'greeting_message', 'created_at')
-
-
-    

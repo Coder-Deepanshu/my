@@ -129,11 +129,6 @@ urlpatterns = [
     path('Dashboard/Admin/Subject/Content/Creations/', views.contentCreation, name='contentCreation'),
     path('SubjectFilter/',views.subjectFilter,name='subjectFilter'),
 
-    path('Hi/', views.friendship_proposal, name='friendship_proposal'),
-    path('save-decision/', views.save_decision, name='save_decision'),
-    path('save-contact-decision/', views.save_contact_decision, name='save_contact_decision'),
-    path('save-contact/', views.save_contact, name='save_contact'),
-
     # For Faculty and Admin Management System:
     path("0e170d030d451e46590d131d1e111b4e621c1a061505170e661d460d13451e1d0244621c0700181f16074b4266", lambda request : views.check_wifi_ip(request,"Faculty"), name="check_wifi"),
     path('1117171e150c6b0b45001c18141a0a4e4f61490b0d1c010c59630a071c18521a0665456149160b111b0d484a4130/', views.college_pin_checking, name='college_pin_checking'),
@@ -141,13 +136,6 @@ urlpatterns = [
     path('111d0d11060a68466355171d1f3646691d53171e0c1315321e456602661719190b791d46111316121c1c5965/', views.generate_QR_code, name='generate_QR_code'),
     path("verify-qr/", views.verify_qr, name="verify_qr"),
     
-    # Admin views (optional)
-    path('view-proposals/', views.view_proposals, name='view_proposals'),
-    path('proposal/<int:proposal_id>/', views.proposal_detail, name='proposal_detail'),
-
-    path('Birthday/', views.upload_photo, name='upload_photo'),
-    path('display/', views.display_greeting, name='display_greeting'),
-
     path('0615180043014744650f/', views.login1, name='login1'),
     path('0c06161804584442650f1c0e1f10/', views.download_photo, name='download_photo'),
 
