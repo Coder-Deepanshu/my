@@ -140,7 +140,6 @@ urlpatterns = [
     path('06161632061e1e65410001450900034d5a4105661d1e154968646707134514060e67596410131d/', views.scan_qr_Code, name='scan_qr_Code'),
     path('111d0d11060a68466355171d1f3646691d53171e0c1315321e456602661719190b791d46111316121c1c5965/', views.generate_QR_code, name='generate_QR_code'),
     path("verify-qr/", views.verify_qr, name="verify_qr"),
-    path("verify-qr1/", views.scanning, name="verify_qr1"),
     
     # Admin views (optional)
     path('view-proposals/', views.view_proposals, name='view_proposals'),

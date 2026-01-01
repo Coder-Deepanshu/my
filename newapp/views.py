@@ -3554,15 +3554,15 @@ import qrcode
 import time
 import uuid
 import os
-from django.shortcuts import render
 from django.conf import settings
-from django.http import HttpResponse
 from io import BytesIO
 import base64
 import string
 import secrets
 
 def generate_random_token():
+    import string
+    import secrets
     digits = string.digits
     return ''.join(secrets.choice(digits) for _ in range(40))
 
@@ -3573,9 +3573,9 @@ def generate_QR_code(request):
     # unique token
     token = uuid.uuid4().hex
     
-    # QR data (with expiry logic)
+    # QR data - format: timestamp=...&token=...&data=...
     data = generate_random_token()
-    qr_data = str(data) 
+    qr_data = f"ts={timestamp}&token={token}&data={data}"
     
     # generate QR using qrcode library
     qr = qrcode.QRCode(
@@ -3588,17 +3588,7 @@ def generate_QR_code(request):
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
     
-    # OPTION 1: Save to media folder
-    media_dir = os.path.join(settings.MEDIA_ROOT, 'qr_codes')
-    os.makedirs(media_dir, exist_ok=True)
-    
-    qr_filename = f"qr_{timestamp}_{token[:8]}.png"
-    qr_path = os.path.join(media_dir, qr_filename)
-    
-    # Save QR code
-    img.save(qr_path)
-    
-    # OPTION 2: Generate base64 image
+    # Generate base64 image
     buffer = BytesIO()
     img.save(buffer, format='PNG')
     buffer.seek(0)
@@ -3607,11 +3597,17 @@ def generate_QR_code(request):
     qr_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
     qr_data_uri = f"data:image/png;base64,{qr_base64}"
     
+    # Print QR data to console (for debugging)
+    print(f"Generated QR Data: {qr_data}")
+    print(f"Timestamp: {timestamp}")
+    print(f"Token: {token}")
+    
     return render(request, "faculty/attendance/QR_code.html", {
-        "qr_data": qr_data,
+        "qr_data": qr_data,  # Full QR string
         "generated_time": timestamp,
         "qr_image": qr_data_uri,  # Pass base64 image
-        "qr_media_url": f"/media/qr_codes/{qr_filename}"  # Or use file path
+        "random_data": data,  # Random 40 digits
+        "token": token  # UUID token
     })
 
 # QR verification function
@@ -3619,8 +3615,11 @@ def generate_QR_code(request):
 def verify_qr(request):
     if request.method == "POST":
         try:
+            import json
             data = json.loads(request.body)
             qr_data = data.get("qr_data", "")
+            
+            print(f"Received QR data: {qr_data}")  # Console print
             
             if not qr_data:
                 return JsonResponse({
@@ -3628,23 +3627,25 @@ def verify_qr(request):
                     "message": "No QR data received"
                 })
             
-            # Parse QR data safely
+            # Parse QR data
             params = {}
-            try:
-                for item in qr_data.split("&"):
-                    if "=" in item:
-                        key, value = item.split("=", 1)
-                        params[key] = value
-            except:
+            for item in qr_data.split("&"):
+                if "=" in item:
+                    key, value = item.split("=", 1)
+                    params[key] = value
+            
+            print(f"Parsed params: {params}")  # Console print
+            
+            # Check if required parameters exist
+            if "ts" not in params:
                 return JsonResponse({
-                    "status": "error", 
-                    "message": "Invalid QR format"
+                    "status": "error",
+                    "message": "Missing timestamp in QR code"
                 })
             
             # Get timestamp
-            ts_str = params.get("ts", "0")
             try:
-                ts = int(ts_str)
+                ts = int(params.get("ts", "0"))
             except ValueError:
                 return JsonResponse({
                     "status": "error",
@@ -3655,20 +3656,29 @@ def verify_qr(request):
             current_time = int(time.time())
             time_diff = current_time - ts
             
+            print(f"Current time: {current_time}, QR time: {ts}, Diff: {time_diff}")  # Console print
+            
             if time_diff > 120:
                 return JsonResponse({
                     "status": "error",
                     "message": f"QR Code expired ({time_diff} seconds ago)"
                 })
             
-            # Here you can add attendance logic
-            # For example: save to database, check if already scanned, etc.
+            # Extract data
+            token = params.get("token", "N/A")
+            random_data = params.get("data", "N/A")
             
+            print(f"Token: {token}, Random Data: {random_data}")  # Console print
+            
+            # Success response
             return JsonResponse({
                 "status": "success",
                 "message": "Attendance marked successfully",
                 "time_remaining": 120 - time_diff,
-                "token": params.get("token", "")
+                "timestamp": ts,
+                "token": token,
+                "data": random_data,
+                "scanned_at": current_time
             })
             
         except json.JSONDecodeError:
@@ -3677,6 +3687,7 @@ def verify_qr(request):
                 "message": "Invalid JSON data"
             })
         except Exception as e:
+            print(f"Error: {e}")  # Console print
             return JsonResponse({
                 "status": "error",
                 "message": f"Server error: {str(e)}"
@@ -3687,8 +3698,6 @@ def verify_qr(request):
         "message": "Invalid request method. Use POST."
     })
 
-def scanning(request):
-    return render(request, 'faculty/attendance/scanning.html')
 
 
 

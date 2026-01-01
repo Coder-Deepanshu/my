@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>QR Scanner</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- QR Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
-    
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -23,23 +24,23 @@
             align-items: center;
             padding: 20px;
         }
-        
+
         .container {
             background: white;
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             max-width: 500px;
             width: 100%;
             text-align: center;
         }
-        
+
         h2 {
             color: #333;
             margin-bottom: 20px;
             font-size: 28px;
         }
-        
+
         #reader {
             width: 100%;
             margin: 20px auto;
@@ -47,7 +48,7 @@
             overflow: hidden;
             border: 3px solid #ddd;
         }
-        
+
         #status {
             margin: 20px 0;
             padding: 15px;
@@ -59,32 +60,32 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .status-success {
             background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        
+
         .status-error {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        
+
         .status-info {
             background: #d1ecf1;
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
-        
+
         .controls {
             margin-top: 20px;
             display: flex;
             gap: 10px;
             justify-content: center;
         }
-        
+
         button {
             padding: 12px 25px;
             font-size: 16px;
@@ -94,22 +95,22 @@
             transition: all 0.3s;
             font-weight: 600;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-        
+
         .btn-secondary {
             background: #6c757d;
             color: white;
         }
-        
+
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        
+
         .info-box {
             background: #f8f9fa;
             padding: 15px;
@@ -118,21 +119,21 @@
             text-align: left;
             font-size: 14px;
         }
-        
+
         .info-box h4 {
             color: #333;
             margin-bottom: 10px;
         }
-        
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
             }
-            
+
             #reader {
                 width: 100%;
             }
-            
+
             button {
                 padding: 10px 20px;
                 font-size: 14px;
@@ -140,209 +141,190 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <h2>📱 Scan Attendance QR Code</h2>
-    
-    <div id="reader"></div>
-    
-    <div id="status" class="status-info">
-        Scanning for QR code... Position camera properly.
-    </div>
-    
-    <div class="controls">
-        <button class="btn-primary" onclick="restartScanner()">
-            🔄 Restart Scanner
-        </button>
-        <button class="btn-secondary" onclick="goBack()">
-            ← Go Back
-        </button>
-    </div>
-    
-    <div class="info-box">
-        <h4>📋 Instructions:</h4>
-        <ol>
-            <li>Point camera at the QR code shown on faculty screen</li>
-            <li>Keep the QR code within the scanner frame</li>
-            <li>Scan will happen automatically</li>
-            <li>Wait for confirmation message</li>
-            <li>QR codes expire in 2 minutes</li>
-        </ol>
-    </div>
-</div>
+    <div class="container">
+        <h2>📱 Scan Attendance QR Code</h2>
 
-<script>
-    let scanner = null;
-    let isScanning = false;
-    
-    // CSRF Token function
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
-                    break;
+        <div id="reader"></div>
+
+        <div id="status" class="status-info">
+            Scanning for QR code... Position camera properly.
+        </div>
+
+        <div class="controls">
+            <button class="btn-primary" onclick="restartScanner()">
+                🔄 Restart Scanner
+            </button>
+            <button class="btn-secondary" onclick="goBack()">
+                ← Go Back
+            </button>
+        </div>
+
+        <div class="info-box">
+            <h4>📋 Instructions:</h4>
+            <ol>
+                <li>Point camera at the QR code shown on faculty screen</li>
+                <li>Keep the QR code within the scanner frame</li>
+                <li>Scan will happen automatically</li>
+                <li>Wait for confirmation message</li>
+                <li>QR codes expire in 2 minutes</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let scanner = null;
+        let isScanning = false;
+
+        // CSRF Token function
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
+                        break;
+                    }
                 }
             }
+            return cookieValue;
         }
-        return cookieValue;
-    }
-    
-    // Scanner success callback
-    function onScanSuccess(decodedText) {
-        if (isScanning) return; // Prevent multiple scans
-        isScanning = true;
-        
-        // Update status
-        const statusDiv = document.getElementById("status");
-        statusDiv.className = "status-info";
-        statusDiv.innerHTML = '<div style="display:flex;align-items:center;gap:10px;">' +
-                             '<div class="spinner"></div>' +
-                             'Processing QR code...</div>';
-        
-        // Add spinner CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            .spinner {
-                width: 20px;
-                height: 20px;
-                border: 3px solid #f3f3f3;
-                border-top: 3px solid #3498db;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Send to server
-        fetch("/verify-qr/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken")
-            },
-            body: JSON.stringify({
-                qr_data: decodedText
+
+        // Scanner success callback
+        function onScanSuccess(decodedText) {
+            if (isScanning) return;
+            isScanning = true;
+
+            // Console log QR data
+            console.log("📱 Scanned QR Data:", decodedText);
+
+            // Update status
+            const statusDiv = document.getElementById("status");
+            statusDiv.className = "status-info";
+            statusDiv.innerHTML = 'Processing QR code...';
+
+            // Send to server
+            fetch("/verify-qr/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({
+                    qr_data: decodedText
+                })
             })
-        })
-        .then(res => {
-            if (!res.ok) throw new Error('Network response was not ok');
-            return res.json();
-        })
-        .then(data => {
-            if (data.status === "success") {
-                statusDiv.className = "status-success";
-                statusDiv.innerHTML = `✅ ${data.message}<br>
-                                      <small>Token: ${data.token || 'N/A'}</small><br>
-                                      <small>Time remaining: ${data.time_remaining || 0} seconds</small>`;
-                
-                // Stop scanner after successful scan
-                if (scanner && scanner.isScanning) {
-                    scanner.stop().catch(console.error);
+                .then(res => res.json())
+                .then(data => {
+                    // Console log server response
+                    console.log("✅ Server Response:", data);
+
+                    if (data.status === "success") {
+                        statusDiv.className = "status-success";
+                        statusDiv.innerHTML = `
+                ✅ ${data.message}<br>
+                📅 Timestamp: ${data.timestamp}<br>
+                🔑 Token: ${data.token.substring(0, 20)}...<br>
+                ⏱️ Time remaining: ${data.time_remaining} seconds
+            `;
+
+                        // Stop scanner
+                        if (scanner && scanner.isScanning) {
+                            scanner.stop();
+                        }
+
+                    } else {
+                        statusDiv.className = "status-error";
+                        statusDiv.innerHTML = `❌ ${data.message}`;
+
+                        // Resume scanning
+                        setTimeout(() => {
+                            isScanning = false;
+                            statusDiv.className = "status-info";
+                            statusDiv.innerHTML = "Scanning...";
+                        }, 2000);
+                    }
+                })
+                .catch(err => {
+                    console.error("❌ Error:", err);
+                    statusDiv.className = "status-error";
+                    statusDiv.innerHTML = "❌ Connection error";
+
+                    setTimeout(() => {
+                        isScanning = false;
+                        statusDiv.className = "status-info";
+                        statusDiv.innerHTML = "Scanning...";
+                    }, 2000);
+                });
+        }
+
+        // Initialize scanner
+        function initScanner() {
+            scanner = new Html5Qrcode("reader");
+
+            const config = {
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 250
+                },
+                aspectRatio: 1.0
+            };
+
+            scanner.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess,
+                (errorMessage) => {
+                    // Optional: Handle scan errors
+                    console.log(`Scan error: ${errorMessage}`);
                 }
-                
-                // Auto redirect after 3 seconds
-                setTimeout(() => {
-                    alert("Attendance marked successfully!");
-                    // window.location.href = "/attendance-success/"; // Uncomment for redirect
-                }, 3000);
-                
-            } else {
-                statusDiv.className = "status-error";
-                statusDiv.innerHTML = `❌ ${data.message}`;
-                
-                // Resume scanning after error
-                setTimeout(() => {
+            ).catch(err => {
+                console.error("Failed to start scanner:", err);
+                document.getElementById("status").innerHTML =
+                    "❌ Failed to start camera. Please check permissions.";
+            });
+        }
+
+        // Restart scanner
+        function restartScanner() {
+            if (scanner && scanner.isScanning) {
+                scanner.stop().then(() => {
+                    document.getElementById("status").className = "status-info";
+                    document.getElementById("status").innerHTML = "Scanning for QR code...";
                     isScanning = false;
-                    statusDiv.className = "status-info";
-                    statusDiv.innerHTML = "Scanning for QR code... Position camera properly.";
-                }, 3000);
-            }
-        })
-        .catch(err => {
-            statusDiv.className = "status-error";
-            statusDiv.innerHTML = "❌ Error connecting to server";
-            console.error("Error:", err);
-            
-            // Resume scanning after error
-            setTimeout(() => {
-                isScanning = false;
-                statusDiv.className = "status-info";
-                statusDiv.innerHTML = "Scanning for QR code... Position camera properly.";
-            }, 3000);
-        });
-    }
-    
-    // Initialize scanner
-    function initScanner() {
-        scanner = new Html5Qrcode("reader");
-        
-        const config = {
-            fps: 10,
-            qrbox: { 
-                width: 250, 
-                height: 250 
-            },
-            aspectRatio: 1.0
-        };
-        
-        scanner.start(
-            { facingMode: "environment" },
-            config,
-            onScanSuccess,
-            (errorMessage) => {
-                // Optional: Handle scan errors
-                console.log(`Scan error: ${errorMessage}`);
-            }
-        ).catch(err => {
-            console.error("Failed to start scanner:", err);
-            document.getElementById("status").innerHTML = 
-                "❌ Failed to start camera. Please check permissions.";
-        });
-    }
-    
-    // Restart scanner
-    function restartScanner() {
-        if (scanner && scanner.isScanning) {
-            scanner.stop().then(() => {
-                document.getElementById("status").className = "status-info";
-                document.getElementById("status").innerHTML = "Scanning for QR code...";
-                isScanning = false;
+                    initScanner();
+                }).catch(console.error);
+            } else {
                 initScanner();
-            }).catch(console.error);
-        } else {
-            initScanner();
+            }
         }
-    }
-    
-    // Go back function
-    function goBack() {
-        if (scanner && scanner.isScanning) {
-            scanner.stop().catch(console.error);
-        }
-        window.history.back();
-    }
-    
-    // Start scanner when page loads
-    window.onload = function() {
-        initScanner();
-        
-        // Add stop scanner on page unload
-        window.addEventListener('beforeunload', function() {
+
+        // Go back function
+        function goBack() {
             if (scanner && scanner.isScanning) {
                 scanner.stop().catch(console.error);
             }
-        });
-    };
-</script>
+            window.history.back();
+        }
+
+        // Start scanner when page loads
+        window.onload = function () {
+            initScanner();
+
+            // Add stop scanner on page unload
+            window.addEventListener('beforeunload', function () {
+                if (scanner && scanner.isScanning) {
+                    scanner.stop().catch(console.error);
+                }
+            });
+        };
+    </script>
 
 </body>
+
 </html>
