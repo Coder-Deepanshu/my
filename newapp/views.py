@@ -3644,6 +3644,7 @@ def generate_QR_code(request):
 
 # QR verification function
 @csrf_exempt
+@csrf_exempt
 def verify_qr(request):
     if request.method == "POST":
         try:
@@ -3653,18 +3654,27 @@ def verify_qr(request):
             now = datetime.now()
             current_time = now.time()
             current_date = now.date()
-            qr_code = QR_code.objects.filter(date = current_date)
-            if qr_code.exists():
-                qr_code = qr_code.first()
-                data = qr_code.random_data
-                token = qr_code.token
-                time = qr_code.time
-                
+            
+            # QR code database se fetch karo
+            qr_code = QR_code.objects.filter(date=current_date)
+            
             if not qr_data:
                 return JsonResponse({
                     "status": "error",
                     "message": "No QR data received"
                 })
+            
+            # Agar database me QR code nahi hai
+            if not qr_code.exists():
+                return JsonResponse({
+                    "status": "error",
+                    "message": "No QR code generated for today"
+                })
+            
+            qr_code = qr_code.first()
+            db_data = qr_code.random_data
+            token = qr_code.token
+            qr_time = qr_code.time
             
             # Parse QR data
             params = {}
@@ -3672,7 +3682,6 @@ def verify_qr(request):
                 if "=" in item:
                     key, value = item.split("=", 1)
                     params[key] = value
-            
             
             # Check if required parameters exist
             if "ts" not in params:
@@ -3690,42 +3699,57 @@ def verify_qr(request):
                     "message": "Invalid timestamp in QR"
                 })
             
-            # Check 2-minute expiry (120 seconds)
+            # Time calculation - fixed
+            current_time_obj = datetime.strptime(str(current_time), '%H:%M:%S.%f')
+            set_time_obj = datetime.strptime(str(qr_time), '%H:%M:%S.%f')
             
-            current_time = datetime.strptime(str(current_time), '%H:%M:%S.%f')
-            set_time = datetime.strptime(str(time), '%H:%M:%S.%f')
+            time_diff = int((current_time_obj - set_time_obj).total_seconds())
             
-            time_diff = int((current_time - set_time).total_seconds())
+            # Valid time check
+            valid_time = int(valid_timing_for_qr_code(True)) * 60
             
-            start = True
-            valid_time = int(valid_timing_for_qr_code(start))*60
-            if time_diff > valid_time:
-                hour = time_diff // 3600
-                minutes = (time_diff % 3600)//60
-                seconds = time_diff % 60
-                return JsonResponse({
-                    "status": "error",
-                    "message": f"QR Code expired ({hour:02d}:{minutes:02d}:{seconds:02d} seconds ago)"
-                })
-
+            # Context dictionary initialize karo
             context = {
-                "time_remaining": f'{hour:02d}:{minutes:02d}:{seconds:02d}',
                 "timestamp": ts,
                 "token": token,
-                "data": data,
-                "scanned_at": current_time
-                }
-            # Extract data
+                "data": db_data,
+                "scanned_at": str(current_time)
+            }
+            
+            # Time remaining calculation
+            if time_diff > 0:
+                remaining = valid_time - time_diff
+                if remaining < 0:
+                    remaining = 0
+                hour = remaining // 3600
+                minutes = (remaining % 3600) // 60
+                seconds = remaining % 60
+                context["time_remaining"] = f'{hour:02d}:{minutes:02d}:{seconds:02d}'
+            else:
+                context["time_remaining"] = "00:00:00"
+            
+            # Expiry check
+            if time_diff > valid_time:
+                hour_passed = time_diff // 3600
+                minutes_passed = (time_diff % 3600) // 60
+                seconds_passed = time_diff % 60
+                return JsonResponse({
+                    "status": "error",
+                    "message": f"QR Code expired ({hour_passed:02d}:{minutes_passed:02d}:{seconds_passed:02d} seconds ago)"
+                })
+            
+            # Extract data from QR
             param_token = params.get("token", "N/A")
             param_random_data = params.get("data", "N/A")
-            if (str(token) == param_token) and (int(data) == int(param_random_data)): 
+            
+            # Verify QR data
+            if (str(token) == param_token) and (str(db_data) == param_random_data):
                 context['message'] = 'Attendance Marked Successfully!'
                 context['status'] = 'success'
             else:
                 context['message'] = 'You are Scanning Wrong QR Code!'
                 context['status'] = 'error'
             
-            # Success response
             return JsonResponse(context)
             
         except json.JSONDecodeError:
@@ -3734,7 +3758,7 @@ def verify_qr(request):
                 "message": "Invalid JSON data"
             })
         except Exception as e:
-            print(f"Error: {e}")  # Console print
+            print(f"Error: {e}")
             return JsonResponse({
                 "status": "error",
                 "message": f"Server error: {str(e)}"
@@ -3744,7 +3768,6 @@ def verify_qr(request):
         "status": "error", 
         "message": "Invalid request method. Use POST."
     })
-
 
 
 

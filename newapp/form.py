@@ -36,3 +36,4 @@ class DepartmentForm(forms.ModelForm):
         fields = ["name","code","type","programs_count","faculty_count","student_capacity"]
 
 
+

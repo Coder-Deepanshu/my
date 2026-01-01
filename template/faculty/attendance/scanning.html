@@ -226,17 +226,16 @@
                     if (data.status === "success") {
                         statusDiv.className = "status-success";
                         statusDiv.innerHTML = `
-                ✅ ${data.message}<br>
-                📅 Timestamp: ${data.timestamp}<br>
-                🔑 Token: ${data.token.substring(0, 20)}...<br>
-                ⏱️ Time remaining: ${data.time_remaining} seconds
-            `;
+        ✅ ${data.message}<br>
+        📅 Timestamp: ${data.timestamp}<br>
+        🔑 Token: ${data.token ? data.token.substring(0, 20) + '...' : 'N/A'}<br>
+        ⏱️ Time remaining: ${data.time_remaining || '00:00:00'}
+    `;
 
                         // Stop scanner
                         if (scanner && scanner.isScanning) {
                             scanner.stop();
                         }
-
                     } else {
                         statusDiv.className = "status-error";
                         statusDiv.innerHTML = `❌ ${data.message}`;
