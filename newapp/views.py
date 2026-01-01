@@ -3507,7 +3507,7 @@ def studentCourseDetailView(request):
 # for faculty attendance system 
 # attendance/views.py
 from django.shortcuts import render
-from .utils import get_client_ip, is_college_wifi, personal_college_pin_for_faculty, personal_college_pin_for_admin
+from .utils import get_client_ip, is_college_wifi, personal_college_pin_for_faculty, personal_college_pin_for_admin, valid_timing_for_qr_code
 
 def check_wifi_ip(request, Person):
     ip = get_client_ip(request)
@@ -3519,11 +3519,13 @@ def check_wifi_ip(request, Person):
         "ip": ip,
         "allowed": allowed,
         'college_id':college_id,
-        'Person':Person
+        'Person':Person,
+        'request_name':'Block'
     }
     # html_page = 'faculty/attendance/block.html'
     # if allowed : 
     html_page = 'faculty/attendance/check_wifi.html'
+    context.pop('request_name')
     return render(request, html_page, context)
 
 def college_pin_checking(request):
@@ -3557,8 +3559,8 @@ import os
 from django.conf import settings
 from io import BytesIO
 import base64
-import string
-import secrets
+from .models import QR_code
+from datetime import datetime, timedelta
 
 def generate_random_token():
     import string
@@ -3566,18 +3568,8 @@ def generate_random_token():
     digits = string.digits
     return ''.join(secrets.choice(digits) for _ in range(40))
 
-def generate_QR_code(request):
-    # current timestamp
-    timestamp = int(time.time())
-    
-    # unique token
-    token = uuid.uuid4().hex
-    
-    # QR data - format: timestamp=...&token=...&data=...
-    data = generate_random_token()
+def qr_data_generator(timestamp, token, data):
     qr_data = f"ts={timestamp}&token={token}&data={data}"
-    
-    # generate QR using qrcode library
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -3597,18 +3589,58 @@ def generate_QR_code(request):
     qr_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
     qr_data_uri = f"data:image/png;base64,{qr_base64}"
     
-    # Print QR data to console (for debugging)
-    print(f"Generated QR Data: {qr_data}")
-    print(f"Timestamp: {timestamp}")
-    print(f"Token: {token}")
+    return qr_data, qr_data_uri
     
-    return render(request, "faculty/attendance/QR_code.html", {
+def generate_QR_code(request):
+    # current timestamp
+    timestamp = int(time.time())
+    
+    # unique token
+    token = uuid.uuid4().hex
+
+    # QR data - format: timestamp=...&token=...&data=...
+    data = generate_random_token()
+    
+    now = datetime.now()
+    current_date = now.date()
+    current_time = now.time()
+    
+    qr_code = QR_code.objects.filter(date = current_date)
+
+    if qr_code.exists():
+        qr_code = qr_code.first()
+        current_time = datetime.strptime(str(current_time), '%H:%M:%S.%f')
+        set_time = datetime.strptime(str(qr_code.time), '%H:%M:%S.%f')
+        start = True
+        seconds = int(valid_timing_for_qr_code(start))*60
+        time_seconds = int(seconds) - int((current_time - set_time).total_seconds()) 
+        if time_seconds < 0:
+            time_seconds = 0
+        qr_data, qr_data_uri = qr_data_generator(qr_code.timestamp, qr_code.token, qr_code.random_data)
+        context =  {
+        "qr_data": qr_data,  # Full QR string
+        "generated_time":qr_code.date + ' ' + qr_code.time,
+        "qr_image": qr_data_uri,  # Pass base64 image
+        "random_data": data,  # Random 40 digits
+        "token": token,  # UUID token
+        "time_seconds":time_seconds
+        }
+
+    elif not qr_code.exists():
+        start = True
+        time_seconds = int(valid_timing_for_qr_code(start))*60
+        QR_code.objects.create(date = current_date, time = current_time, timestamp = timestamp, token = token, random_data = data)
+        qr_data, qr_data_uri = qr_data_generator(timestamp, token, data)
+        context =  {
         "qr_data": qr_data,  # Full QR string
         "generated_time": timestamp,
         "qr_image": qr_data_uri,  # Pass base64 image
         "random_data": data,  # Random 40 digits
-        "token": token  # UUID token
-    })
+        "token": token,  # UUID token
+        "time_seconds":time_seconds
+        }
+     
+    return render(request, "faculty/attendance/QR_code.html", context)
 
 # QR verification function
 @csrf_exempt
@@ -3618,9 +3650,16 @@ def verify_qr(request):
             import json
             data = json.loads(request.body)
             qr_data = data.get("qr_data", "")
-            
-            print(f"Received QR data: {qr_data}")  # Console print
-            
+            now = datetime.now()
+            current_time = now.time()
+            current_date = now.date()
+            qr_code = QR_code.objects.filter(date = current_date)
+            if qr_code.exists():
+                qr_code = qr_code.first()
+                data = qr_code.random_data
+                token = qr_code.token
+                time = qr_code.time
+                
             if not qr_data:
                 return JsonResponse({
                     "status": "error",
@@ -3634,7 +3673,6 @@ def verify_qr(request):
                     key, value = item.split("=", 1)
                     params[key] = value
             
-            print(f"Parsed params: {params}")  # Console print
             
             # Check if required parameters exist
             if "ts" not in params:
@@ -3653,33 +3691,42 @@ def verify_qr(request):
                 })
             
             # Check 2-minute expiry (120 seconds)
-            current_time = int(time.time())
-            time_diff = current_time - ts
             
-            print(f"Current time: {current_time}, QR time: {ts}, Diff: {time_diff}")  # Console print
+            current_time = datetime.strptime(str(current_time), '%H:%M:%S.%f')
+            set_time = datetime.strptime(str(time), '%H:%M:%S.%f')
             
-            if time_diff > 120:
+            time_diff = int((current_time - set_time).total_seconds())
+            
+            start = True
+            valid_time = int(valid_timing_for_qr_code(start))*60
+            if time_diff > valid_time:
+                hour = time_diff // 3600
+                minutes = (time_diff % 3600)//60
+                seconds = time_diff % 60
                 return JsonResponse({
                     "status": "error",
-                    "message": f"QR Code expired ({time_diff} seconds ago)"
+                    "message": f"QR Code expired ({hour:02d}:{minutes:02d}:{seconds:02d} seconds ago)"
                 })
-            
-            # Extract data
-            token = params.get("token", "N/A")
-            random_data = params.get("data", "N/A")
-            
-            print(f"Token: {token}, Random Data: {random_data}")  # Console print
-            
-            # Success response
-            return JsonResponse({
-                "status": "success",
-                "message": "Attendance marked successfully",
-                "time_remaining": 120 - time_diff,
+
+            context = {
+                "time_remaining": f'{hour:02d}:{minutes:02d}:{seconds:02d}',
                 "timestamp": ts,
                 "token": token,
-                "data": random_data,
+                "data": data,
                 "scanned_at": current_time
-            })
+                }
+            # Extract data
+            param_token = params.get("token", "N/A")
+            param_random_data = params.get("data", "N/A")
+            if (str(token) == param_token) and (int(data) == int(param_random_data)): 
+                context['message'] = 'Attendance Marked Successfully!'
+                context['status'] = 'success'
+            else:
+                context['message'] = 'You are Scanning Wrong QR Code!'
+                context['status'] = 'error'
+            
+            # Success response
+            return JsonResponse(context)
             
         except json.JSONDecodeError:
             return JsonResponse({
@@ -3697,6 +3744,7 @@ def verify_qr(request):
         "status": "error", 
         "message": "Invalid request method. Use POST."
     })
+
 
 
 

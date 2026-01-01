@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>QR Attendance</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +10,7 @@
             text-align: center;
             padding: 20px;
         }
+
         .qr-container {
             margin: 20px auto;
             padding: 20px;
@@ -17,6 +19,7 @@
             display: inline-block;
             background: white;
         }
+
         #timer {
             font-size: 18px;
             font-weight: bold;
@@ -26,74 +29,54 @@
             border-radius: 5px;
             display: inline-block;
         }
+
         .expired {
             color: red;
             background: #ffe6e6 !important;
         }
     </style>
-    <script>
-        // QR valid for 2 minutes (120 sec)
-        let expiry = 120;
-        let timerInterval;
 
-        function startTimer() {
-            const timer = document.getElementById("timer");
-            
-            timerInterval = setInterval(() => {
-                timer.innerText = `QR valid for: ${expiry} seconds`;
-                
-                if (expiry <= 30 && expiry > 0) {
-                    timer.style.color = "orange";
-                }
-                
-                if (expiry <= 0) {
-                    clearInterval(timerInterval);
-                    timer.innerText = "QR expired! Refresh page.";
-                    timer.className = "expired";
-                    // Optionally disable QR code visually
-                    document.querySelector("img").style.opacity = "0.5";
-                }
-                expiry--;
-            }, 1000);
-        }
-
-        // Auto-refresh QR code when expired
-        function refreshQR() {
-            if (expiry <= 0) {
-                window.location.reload();
-            }
-        }
-
-        // Check every 5 seconds if QR expired
-        setInterval(refreshQR, 5000);
-        
-        // Start timer when page loads
-        window.onload = startTimer;
-    </script>
 </head>
 
 <body>
     <h2>Scan QR Code for Attendance</h2>
-    
+
     <div class="qr-container">
         <!-- Using base64 image (Option 2) -->
         <img src="{{ qr_image }}" alt="QR Code" width="300" height="300">
-        
-        <!-- OR using file path (Option 1) -->
-        <!-- <img src="{{ qr_media_url }}" alt="QR Code" width="300" height="300"> -->
+
     </div>
-    
-    <p id="timer">QR valid for: 120 seconds</p>
-    
+
+    <p>QR valid for:<p id="timer" data-id="{{ time_seconds }}"> 00:00:00</p></p>
+
     <div style="margin-top: 20px; font-size: 14px; color: #666;">
         <p>Token: {{ qr_data|slice:":50" }}...</p>
         <p>Generated: {{ generated_time }}</p>
     </div>
-    
-    <div style="margin-top: 30px;">
-        <button onclick="window.location.reload()" style="padding: 10px 20px; font-size: 16px;">
-            Generate New QR Code
-        </button>
-    </div>
+    <script>
+        let totalSeconds = document.getElementById('timer').getAttribute('data-id');
+
+        function startTimer() {
+            let hours = Math.floor(totalSeconds / 3600);
+            let minutes = Math.floor((totalSeconds % 3600) / 60);
+            let seconds = totalSeconds % 60;
+
+            document.getElementById("timer").innerHTML =
+                String(hours).padStart(2, '0') + ":" +
+                String(minutes).padStart(2, '0') + ":" +
+                String(seconds).padStart(2, '0');
+
+            if (totalSeconds > 0) {
+                totalSeconds--;
+            } else {
+                clearInterval(timerInterval);
+                alert("Time Over ⏰");
+            }
+        }
+
+        startTimer(); // first call
+        let timerInterval = setInterval(startTimer, 1000);
+    </script>
 </body>
+
 </html>

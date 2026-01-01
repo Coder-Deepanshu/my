@@ -477,7 +477,6 @@
 
 <body>
     <!-- Header -->
-     {{ ip }}
     <header class="header">
         <div class="logo-container">
             <i class="fas fa-graduation-cap logo-icon"></i>
@@ -486,6 +485,7 @@
 
     </header>
 
+    {% if request_name == 'Block' %}
     <!-- Main Content -->
     <main class="main-container">
         <div class="error-card">
@@ -523,22 +523,9 @@
                         present on campus and connected to the college network.
                     </p>
                     
-                    <!-- <div class="error-details">
-                        <h3 class="error-details-title">
-                            <i class="fas fa-info-circle"></i>
-                            To mark your attendance:
-                        </h3>
-                        <ul class="error-details-list">
-                            <li>Ensure you are physically present within the college campus</li>
-                            <li>Connect to the official college Wi-Fi network (EduTrack-WiFi)</li>
-                            <li>Navigate back to the attendance portal</li>
-                            <li>Your location and network will be automatically verified</li>
-                        </ul>
-                    </div> -->
-                    
                     <div class="error-actions">
                         <a class="btn btn-primary" href="javascript:history.back()">
-                            <i class="fas fa-redo"></i> Try Again
+                            <i class="fas fa-redo"></i> Back
                         </a>
                         <a class="btn btn-secondary" href="{% url 'dashboard1' %}">
                             <i class="fas fa-home"></i> Return to Dashboard
@@ -551,6 +538,9 @@
             </div>
         </div>
     </main>
+    {% elif request_name == 'QR Code Block' %}
+    <h2>{{ message }}</h2>
+    {% endif %}
 
     <!-- Footer -->
     <footer class="footer">

@@ -549,6 +549,18 @@ class Subject_Details(models.Model):
     def __str__(self):
         return f"{self.serial_no}-{self.course}-{self.level}-Sem:{self.semester}"
 
+# FOR Faculty Attendance
+class QR_code(models.Model):
+    date = models.CharField(max_length=50, unique=True)
+    time = models.CharField(max_length=50, unique=True)
+    timestamp = models.CharField(max_length=50, unique=True)
+    token = models.CharField(max_length=100, unique=True)
+    random_data = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return f"token:{self.token}-data{self.random_data}"
+
+
 
 from django.db import models
 

@@ -28,3 +28,10 @@ def personal_college_pin_for_admin(order):
     else:
         pin = ''
     return pin
+
+def valid_timing_for_qr_code(start):
+    if start:
+        time_in_minutes = 30
+    else:
+        time_in_minutes = 0
+    return time_in_minutes

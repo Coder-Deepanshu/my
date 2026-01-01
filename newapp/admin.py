@@ -121,6 +121,12 @@ class SubjectDetail(admin.ModelAdmin):
     list_display = ('serial_no', 'course','name','code', 'semester', 'level',)
     fields=('serial_no', 'course', 'name','code','semester', 'level','content')
 
+from .models import QR_code
+@admin.register(QR_code)
+class QR_Code(admin.ModelAdmin):
+    list_display = ('date', 'time', 'timestamp', 'token', 'random_data')
+    fields = ('timestamp', 'token', 'random_data')
+
 
 
 from django.contrib import admin
