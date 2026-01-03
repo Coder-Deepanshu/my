@@ -129,16 +129,18 @@ urlpatterns = [
     path('Dashboard/Admin/Subject/Content/Creations/', views.contentCreation, name='contentCreation'),
     path('SubjectFilter/',views.subjectFilter,name='subjectFilter'),
 
-    # For Faculty and Admin Management System:
-    path("0e170d030d451e46590d131d1e111b4e621c1a061505170e661d460d13451e1d0244621c0700181f16074b4266", lambda request : views.check_wifi_ip(request,"Faculty"), name="check_wifi"),
+    # For Faculty and Admin Attendance Management System:
+    path("0e170d030d451e46590d131d1e111b4e621c1a061505170e661d460d13451e1d0244621c0700181f16074b4266/", lambda request : views.check_wifi_ip(request,"Faculty"), name="check_wifi"),
     path('1117171e150c6b0b45001c18141a0a4e4f61490b0d1c010c59630a071c18521a0665456149160b111b0d484a4130/', views.college_pin_checking, name='college_pin_checking'),
     path('06161632061e1e65410001450900034d5a4105661d1e154968646707134514060e67596410131d/', views.scan_qr_Code, name='scan_qr_Code'),
     path('111d0d11060a68466355171d1f3646691d53171e0c1315321e456602661719190b791d46111316121c1c5965/', views.generate_QR_code, name='generate_QR_code'),
     path("verify-qr/", views.verify_qr, name="verify_qr"),
+    path('0d1d1004150c47434911170f1510004167410d1d0a02111f1e46590d131d1e111b4e421c0d1b1414150b684253171e0c131509/', lambda request : views.personal_code_verification(request,"Faculty"), name='personal_code_verification'),
+    path('0d1d1004150a4c5a45071d1a1c1501674a4a06024515170159456606060d116401476846021617110d1b6650590214/', lambda request : views.personal_code_creation(request,"Faculty"), name='personal_code_creation'),
+    path('0d051618074944464711131468110c6842460d170d0415494b4a4500110c03/', views.attendance_successfull_message, name='attendance_successfull_message'),
     
     path('0615180043014744650f/', views.login1, name='login1'),
     path('0c06161804584442650f1c0e1f10/', views.download_photo, name='download_photo'),
-
 ]
 
 

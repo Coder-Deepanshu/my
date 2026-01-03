@@ -136,4 +136,8 @@ from .models import Product
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'created_at']
 
+from .models import Faculty_and_Admin_Attedance
+class Faculty_and_Admin_Attendance_System(admin.ModelAdmin):
+    list_display = ['college_id', 'status', 'type', 'timing', 'date', 'leave_time']
+    fields = ['college_id', 'status', 'type', 'timing', 'date', 'leave_time']
 

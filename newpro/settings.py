@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'newapp',
-    'rest_framework'
+    'rest_framework',
+    'channels',
 
 ]
 
@@ -48,6 +49,19 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',  # Sabhi access kar sakte hain
     ]
+}
+
+# WebSocket Configuration
+ASGI_APPLICATION = 'newpro.asgi.application'
+
+# Channels layer (Redis as backend)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],  # Redis server
+        },
+    },
 }
 
 MIDDLEWARE = [

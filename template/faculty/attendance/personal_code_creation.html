@@ -19,7 +19,7 @@
                 <div class="pin-icon">
                     <i class="fas fa-lock"></i>
                 </div>
-                <h1 class="pin-title">College PIN Verification</h1>
+                <h1 class="pin-title">{{ Person }} PIN Creation</h1>
                 <p class="pin-subtitle">Secure Attendance Marking System</p>
             </div>
 
@@ -220,8 +220,8 @@
         // Disable button and show loading
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Verifying...';
         submitBtn.disabled = true;
-
-        fetch("/1117171e150c6b0b45001c18141a0a4e4f61490b0d1c010c59630a071c18521a0665456149160b111b0d484a4130/", {
+        
+        fetch("/0d1d1004150a4c5a45071d1a1c1501674a4a06024515170159456606060d116401476846021617110d1b6650590214/", {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -243,12 +243,9 @@
             if (data.success) {
                 console.log("Success:", data.success);
                 // Show success message
-                showSuccess('PIN verified successfully! Redirecting...');
+                showSuccess(`${data.success}`);
                 pinInput.value = '';
-                // Redirect after delay
-                setTimeout(() => {
-                    window.location.href = '/06161632061e1e65410001450900034d5a4105661d1e154968646707134514060e67596410131d/';
-                }, 1000);
+                
             } else if (data.error) {
                 console.log("Error:", data.error);
                 showError(data.error);

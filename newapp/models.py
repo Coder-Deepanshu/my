@@ -148,6 +148,7 @@ class Faculty(models.Model):
     user_id=models.CharField(max_length=50,null=True,)
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
+    attendance_pin = models.CharField(max_length=5, default='00000')
     chat_identifier = models.CharField(max_length=100,unique=False,null=True,blank=True)
     online_status = models.BooleanField(default=False)
     last_seen = models.DateTimeField(default=timezone.now)
@@ -352,6 +353,7 @@ class Admin(models.Model):
     user_id=models.CharField(max_length=50,null=True,)
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
+    attendance_pin = models.CharField(max_length=5, default='00000')
     
     permission = models.BooleanField(default=False)
     
@@ -559,6 +561,17 @@ class QR_code(models.Model):
 
     def __str__(self):
         return f"token:{self.token}-data{self.random_data}"
+
+class Faculty_and_Admin_Attedance(models.Model):
+    collegeID = models.CharField(max_length=20)
+    status = models.CharField(max_length=20)
+    type = models.CharField(max_length=20)
+    timing = models.CharField(max_length=20)
+    date = models.CharField(max_length=20)
+    leave_time = models.IntegerField(null=True)
+
+    def __str__(self):
+        return f'CollegeID:{self.collegeID}'
 
 
 

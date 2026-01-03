@@ -226,16 +226,19 @@
                     if (data.status === "success") {
                         statusDiv.className = "status-success";
                         statusDiv.innerHTML = `
-        ✅ ${data.message}<br>
-        📅 Timestamp: ${data.timestamp}<br>
-        🔑 Token: ${data.token ? data.token.substring(0, 20) + '...' : 'N/A'}<br>
-        ⏱️ Time remaining: ${data.time_remaining || '00:00:00'}
-    `;
+                        ✅ ${data.message}<br>
+                        📅 Timestamp: ${data.timestamp}<br>
+                        🔑 Token: ${data.token ? data.token.substring(0, 20) + '...' : 'N/A'}<br>
+                        ⏱️ Time remaining: ${data.time_remaining || '00:00:00'}
+                        `;
 
                         // Stop scanner
                         if (scanner && scanner.isScanning) {
                             scanner.stop();
                         }
+                        setTimeout(() => {
+                            window.location.href = '/0d1d1004150c47434911170f1510004167410d1d0a02111f1e46590d131d1e111b4e421c0d1b1414150b684253171e0c131509/';
+                        }, 2000);
                     } else {
                         statusDiv.className = "status-error";
                         statusDiv.innerHTML = `❌ ${data.message}`;

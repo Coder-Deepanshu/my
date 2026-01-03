@@ -3768,6 +3768,74 @@ def verify_qr(request):
         "status": "error", 
         "message": "Invalid request method. Use POST."
     })
+from .models import Faculty_and_Admin_Attedance
+
+def personal_code_verification(request, Person):
+    if Person == 'Faculty':
+        college_id = request.session.get('faculty_college_id')
+    if request.method == 'POST':
+        try:  
+            data = json.loads(request.body) 
+            college_id = data.get('college_id')
+            Person = data.get('Person')
+            pinInput = data.get('pinInput')
+            now = datetime.now()
+            timing = now.time()
+            date = now.date()
+
+            if Person == 'Faculty':
+                faculty = Faculty.objects.get(college_id = college_id)
+                personal_pin = faculty.attendance_pin
+                if pinInput == personal_pin:
+                    faculty_attendance = Faculty_and_Admin_Attedance.objects.filter(college_id = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
+                    if not faculty_attendance.exists():
+                        Faculty_and_Admin_Attedance.objects.create(college_id = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
+                        return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Attendance Marked Successfully!'})
+                    else:
+                        return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
+                else:
+                    return JsonResponse({'error':'Your Pin is InCorrect!'})
+
+        except Exception as e:
+            return JsonResponse({'error':f'An Error Occured {str(e)}!'})  
+    context = {
+        'college_id':college_id,
+        'Person':Person,
+        }
+    return render(request, 'faculty/attendance/biometric_verificaion.html',context)
+
+def personal_code_creation(request,Person):
+    if Person == 'Faculty':
+        college_id = request.session.get('faculty_college_id')
+    if request.method == 'POST':
+        try:  
+            data = json.loads(request.body) 
+            college_id = data.get('college_id')
+            Person = data.get('Person')
+            pinInput = data.get('pinInput')
+
+            if Person == 'Faculty':
+                faculty = Faculty.objects.get(college_id = college_id)
+                faculty.attendance_pin = str(pinInput)
+                faculty.save()
+                return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Personal Pin Created Successfully!'})
+
+        except Exception as e:
+            return JsonResponse({'error':f'An Error Occured {str(e)}!'})        
+    context = {
+        'college_id':college_id,
+        'Person':Person,
+        }
+    return render(request, 'faculty/attendance/personal_code_creation.html',context)
+
+def attendance_successfull_message(request):
+    return render(request, 'faculty/attendance/success_status_shown.html')
+
+        
+
+
+
+
 
 
 
@@ -3790,9 +3858,9 @@ def login1(request):
             # Generate screenshot using JavaScript in template
             return render(request, 'photo.html')
         else:
-            return render(request, 'login1.html', {'error': 'Wrong password!'})
+            return render(request, 'chat_login.html', {'error': 'Wrong password!'})
     
-    return render(request, 'login1.html')
+    return render(request, 'chat_login.html')
 
 def download_photo(request):
     # Path to your photo
