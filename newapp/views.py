@@ -3802,7 +3802,7 @@ def personal_code_verification(request, Person):
         'college_id':college_id,
         'Person':Person,
         }
-    return render(request, 'faculty/attendance/biometric_verificaion.html',context)
+    return render(request, 'faculty/attendance/biometric_verification.html',context)
 
 def personal_code_creation(request,Person):
     if Person == 'Faculty':
