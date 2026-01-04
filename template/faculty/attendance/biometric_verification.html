@@ -243,12 +243,12 @@
             if (data.success) {
                 console.log("Success:", data.success);
                 // Show success message
-                showSuccess('PIN verified successfully! Redirecting...');
+                showSuccess(data.success);
                 pinInput.value = '';
-                // // Redirect after delay
-                // setTimeout(() => {
-                //     window.location.href = '/06161632061e1e65410001450900034d5a4105661d1e154968646707134514060e67596410131d/';
-                // }, 1000);
+                // Redirect after delay
+                setTimeout(() => {
+                    window.location.href = '/0d051618074944464711131468110c6842460d170d0415494b4a4500110c03/';
+                }, 1000);
             } else if (data.error) {
                 console.log("Error:", data.error);
                 showError(data.error);
