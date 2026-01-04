@@ -3787,7 +3787,7 @@ def personal_code_verification(request, Person):
                 faculty = Faculty.objects.get(college_id = college_id)
                 personal_pin = faculty.attendance_pin
                 if pinInput == personal_pin:
-                    faculty_attendance = Faculty_and_Admin_Attedance.objects.filter(college_id = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
+                    faculty_attendance = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
                     if not faculty_attendance.exists():
                         Faculty_and_Admin_Attedance.objects.create(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
                         return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Attendance Marked Successfully!'})
