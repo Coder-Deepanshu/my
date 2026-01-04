@@ -3789,7 +3789,7 @@ def personal_code_verification(request, Person):
                 if pinInput == personal_pin:
                     faculty_attendance = Faculty_and_Admin_Attedance.objects.filter(college_id = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
                     if not faculty_attendance.exists():
-                        Faculty_and_Admin_Attedance.objects.create(college_id = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
+                        Faculty_and_Admin_Attedance.objects.create(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
                         return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Attendance Marked Successfully!'})
                     else:
                         return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
