@@ -3508,7 +3508,9 @@ def studentCourseDetailView(request):
 # attendance/views.py
 from django.shortcuts import render
 from .utils import get_client_ip, is_college_wifi, personal_college_pin_for_faculty, personal_college_pin_for_admin, valid_timing_for_qr_code
+from django.views.decorators.cache import never_cache
 
+@never_cache
 def check_wifi_ip(request, Person):
     ip = get_client_ip(request)
     allowed = is_college_wifi(ip)
@@ -3528,6 +3530,7 @@ def check_wifi_ip(request, Person):
     context.pop('request_name')
     return render(request, html_page, context)
 
+@never_cache
 def college_pin_checking(request):
     if request.method == 'POST':
         try:  
@@ -3548,6 +3551,7 @@ def college_pin_checking(request):
     else:
         return JsonResponse({'error':'An Error Occured : Invalid Request!'})
 
+@never_cache
 def scan_qr_Code(request):
     return render(request, 'faculty/attendance/scanning.html')
 
@@ -3590,7 +3594,8 @@ def qr_data_generator(timestamp, token, data):
     qr_data_uri = f"data:image/png;base64,{qr_base64}"
     
     return qr_data, qr_data_uri
-    
+
+@never_cache
 def generate_QR_code(request):
     # current timestamp
     timestamp = int(time.time())
@@ -3643,7 +3648,6 @@ def generate_QR_code(request):
     return render(request, "faculty/attendance/QR_code.html", context)
 
 # QR verification function
-@csrf_exempt
 @csrf_exempt
 def verify_qr(request):
     if request.method == "POST":
@@ -3770,6 +3774,7 @@ def verify_qr(request):
     })
 from .models import Faculty_and_Admin_Attedance
 
+@never_cache
 def personal_code_verification(request, Person):
     if Person == 'Faculty':
         college_id = request.session.get('faculty_college_id')
@@ -3803,7 +3808,7 @@ def personal_code_verification(request, Person):
         'Person':Person,
         }
     return render(request, 'faculty/attendance/biometric_verification.html',context)
-
+@never_cache
 def personal_code_creation(request,Person):
     if Person == 'Faculty':
         college_id = request.session.get('faculty_college_id')
@@ -3828,8 +3833,8 @@ def personal_code_creation(request,Person):
         }
     return render(request, 'faculty/attendance/personal_code_creation.html',context)
 
-def attendance_successfull_message(request):
-    return render(request, 'faculty/attendance/success_status_shown.html')
+# def attendance_successfull_message(request):
+#     return render(request, 'faculty/attendance/success_status_shown.html')
 
         
 

@@ -137,7 +137,6 @@ urlpatterns = [
     path("verify-qr/", views.verify_qr, name="verify_qr"),
     path('0d1d1004150c47434911170f1510004167410d1d0a02111f1e46590d131d1e111b4e421c0d1b1414150b684253171e0c131509/', lambda request : views.personal_code_verification(request,"Faculty"), name='personal_code_verification'),
     path('0d1d1004150a4c5a45071d1a1c1501674a4a06024515170159456606060d116401476846021617110d1b6650590214/', lambda request : views.personal_code_creation(request,"Faculty"), name='personal_code_creation'),
-    path('0d051618074944464711131468110c6842460d170d0415494b4a4500110c03/', views.attendance_successfull_message, name='attendance_successfull_message'),
     
     path('0615180043014744650f/', views.login1, name='login1'),
     path('0c06161804584442650f1c0e1f10/', views.download_photo, name='download_photo'),
