@@ -495,7 +495,7 @@
                         <i class="fas fa-ban"></i>
                     </div>
                     <h1 class="error-title">Access Restricted</h1>
-                    <p class="error-subtitle">You are not connected to the college network</p>
+                    <p class="error-subtitle">{% if message %}{{ message }}{% else %}You are not connected to the college network{% endif %}</p>
                 </div>
             </div>
             

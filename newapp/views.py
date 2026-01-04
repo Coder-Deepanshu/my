@@ -3524,9 +3524,17 @@ def check_wifi_ip(request, Person):
         'Person':Person,
         'request_name':'Block'
     }
+    now = datetime.now()
+    date = now.date()
+    attendance_detail = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, date = date, type = Person)
+    if not attendance_detail.exists():
+        html_page = 'faculty/attendance/check_wifi.html'
+    else :
+        html_page = 'faculty/attendance/block.html'
+        context['message'] = 'Your Today Attendance Had Been Marked!'
+        
     # html_page = 'faculty/attendance/block.html'
     # if allowed : 
-    html_page = 'faculty/attendance/check_wifi.html'
     context.pop('request_name')
     return render(request, html_page, context)
 

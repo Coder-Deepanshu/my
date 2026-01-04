@@ -258,6 +258,9 @@
                 setTimeout(() => {
                     pinInput.classList.remove('shake');
                 }, 500);
+                setTimeout(() => {
+                    window.location.replace('/Faculty/Dashboard/')
+                }, 1000);
             }
         })
         .catch(error => {
