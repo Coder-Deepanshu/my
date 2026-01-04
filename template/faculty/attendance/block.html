@@ -485,7 +485,6 @@
 
     </header>
 
-    {% if request_name == 'Block' %}
     <!-- Main Content -->
     <main class="main-container">
         <div class="error-card">
@@ -538,9 +537,6 @@
             </div>
         </div>
     </main>
-    {% elif request_name == 'QR Code Block' %}
-    <h2>{{ message }}</h2>
-    {% endif %}
 
     <!-- Footer -->
     <footer class="footer">
