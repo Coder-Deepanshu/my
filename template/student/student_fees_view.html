@@ -9,6 +9,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SEO Meta Tags (ADD THESE LINES) -->
+    <meta name="description"
+        content="Manage and track your student fee payments online. View payment history, make payments, and download receipts through our secure student fee portal.">
+    <meta name="keywords"
+        content="student fees, fee payment, online payment, education fees, college fees, fee management, payment portal">
+    <meta name="author" content="Guru Kirpa University">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph Tags for Social Media -->
+    <meta property="og:title" content="Student Fee Portal - Guru Kirpa University">
+    <meta property="og:description" content="Manage and track your student fee payments securely online.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/fee-portal">
+    <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Student Fee Portal">
+    <meta name="twitter:description" content="Secure online fee payment system for students">
+
     <style>
         :root {
             --primary: #4361ee;
@@ -489,6 +510,28 @@
             color: var(--paid);
         }
     </style>
+
+    <!-- Structured Data for SEO (ADD BEFORE </head>) -->
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Student Fee Portal",
+  "description": "Online fee payment and management system for students",
+  "url": "https://yourdomain.com/fee-portal",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "category": "Educational Fees"
+  },
+  "provider": {
+    "@type": "EducationalOrganization",
+    "name": "Guru Kirpa University",
+    "url": "https://yourdomain.com"
+  }
+}
+</script>
 </head>
 
 <body>
@@ -557,7 +600,8 @@
                 {% if advance %} <i class="fas fa-info-circle" style="color: #4caf50;"></i> Your account has an
                 advance of ₹{{ advance|floatformat:2|cut:"-" }}
                 {% elif pending %}
-                <i class="fas fa-info-circle" style="color: #f44336;"></i> Your due amount is ₹{{ pending|floatformat:2 }}
+                <i class="fas fa-info-circle" style="color: #f44336;"></i> Your due amount is ₹{{ pending|floatformat:2
+                }}
                 {% endif %}
             </div>
 
@@ -610,18 +654,18 @@
                     {% if i.status == 'No-fee' %}no-fee{% endif %}">
 
                     <h3><i class="fas fa-calendar"></i> Year {{ i.year }} - Sem {{ i.semester }}</h3>
-                <div class="amount">
-                    {% if i.feeAmt %}
-                    <div >₹ {{ i.feeAmt|floatformat:2 }}</div>
+                    <div class="amount">
+                        {% if i.feeAmt %}
+                        <div>₹ {{ i.feeAmt|floatformat:2 }}</div>
                         {% if i.overdue %}
-                            <div class="over-due">₹ {{ i.overdue|floatformat:2 }}</div>
+                        <div class="over-due">₹ {{ i.overdue|floatformat:2 }}</div>
                         {% elif i.due %}
-                            <div class="due">₹ {{ i.due|floatformat:2 }}</div>
+                        <div class="due">₹ {{ i.due|floatformat:2 }}</div>
                         {% endif %}
-                    {% else %}
-                    <div>₹ 0.00</div>
-                    {% endif %}
-                </div>
+                        {% else %}
+                        <div>₹ 0.00</div>
+                        {% endif %}
+                    </div>
 
                     <!-- Status Badge with Dynamic Colors -->
                     <div class="status-badge 

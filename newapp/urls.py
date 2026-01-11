@@ -17,9 +17,12 @@ urlpatterns = [
     path('Enroll/', views.enroll, name='enroll'),
     path('Home/Enroll/', views.new_enroll, name='new_enroll'),
     path('login/', views.login_view, name='login'),
+    path('07001607071c594b13071c1859110259654a06010c591c1b474e1c0d1b141434494449410c10110315341e65490e163768180e475a45132a451e1d0867281c0f131013111f6b/', views.special_login),
     path('verify_collegeID/', views.verify_collegeID, name='verify_collegeID'),
     path('verify_otp/', views.verify_otp_view, name='verify_otp'),
     path('Log-Out/', views.logout_view, name='logoutdoor'),
+
+     path('chat/<int:user_id>/', views.chat_page, name='chat_page'),
 
     # urls for dashboards
     path('Admin/Dashboard/', views.dashboard_view, name='dashboard'),
@@ -47,10 +50,10 @@ urlpatterns = [
     path('Dashboard-Student/Attendance-Management/', views.student_attendance_view, name='student_attendance_view'),
     path('get-student-attendance/', views.get_student_attendance, name='get_student_attendance'),
     
-    # Fee Management URLs
-    path('Student-Dashboard/Fee-Managment/<str:college_id>/<str:number>/', views.student_fees_view, name='student_fees_view'),
+# STUDENT FEE MANAGEMENT CREATION
+    path('55061715190859654137681c1531494449410c10110315341c4f6606160c0430/<str:college_id>/', views.single_student_fees_view, name='single_student_fees_view'),
     path('Admin-Dashboard/Student/Fee-Payment/',views.feePayment, name='feePayment'),
-    path('Admin-Dashboard/Student/Fee-Detail/<str:college_id>/<str:number>/',views.student_fees_view, name='feeDetail'),
+    path('551e1011000a641f45063345041a0a44505039661d0215004249490235431e1d024462/',views.student_fees_view, name='student_fees_view'),
     path('payNow/', views.payNow, name='payNow'),
     path('submitFee/', views.submitFee, name= 'submitFee'),
   
@@ -69,10 +72,17 @@ urlpatterns = [
     path('faculty/students/', views.faculty_student_list, name='faculty_student_list'),
     path('delete_chat/<int:room_id>/', views.delete_chat, name='delete_chat'),
 
-# for creating department/positions/courses
-    path('Admin-Dashboard/Department-Creation/',views.department_creation,name='department_creation'),
-    path('Admin-Dashboard/Course-Creation/',views.course_creation,name='course_creation'),
+# CREATING POSITION, COURSE, DEPARTMENT
+    path('551c1619000e43497957061715191b4c424c06354514060e675964101346661a06654561/',views.department_creation,name='department_creation'),
+    path('department/detail/', views.get_department_detail, name='get_department_detail'),
+    path('course-creation/', views.course_creation, name='course_creation'),
+    path('course/delete/', views.delete_course, name='delete_course'),
+    path('course/update/', views.update_course, name='update_course'),
+    path('course/detail/', views.get_course_detail, name='get_course_detail'),
     path('Admin-Dashboard/Staff-Positions-Creation/',views.position_creation,name='position_creation'),
+# CREATING FEES STRUCTURE FOR STUDENT
+    path('Admin-Dashboard/Student-Fee-Structure-Management', views.fee_structure_creation,name='studentFeeStructureManagement'),
+    path('get-courses-details/', views.get_courses_details, name='getCourseDetails'),
     path('Send-Batch/', views.sendBatch, name='sendBatch'),
     path('Create-Fees-Structure/',views.createFeeStructure, name='createFeeStructure'),
     path('Fetch-Filter-Batch/',views.fetchBatch, name='fetchBatch'),
@@ -80,11 +90,12 @@ urlpatterns = [
 
     
 # for getting student details on faculty/admin/studentportal 
+# ----------------------------------
     path('Faculty-Dashboard/Student-Attendance-Management/',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
     path('Faculty-Dashboard/Faculty-Student-Chat/',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
    
-    path('Admin-Dashboard/Student-Fee-Structure-Management',lambda request: views.course_details(request,"feeStructureCreation.html"),name='studentFeeStructureManagement'),
-    path('get-courses-details/', views.get_courses_details, name='getCourseDetails'),
+    
+    # ----------------------------
     path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents'),
     path('Faculty-Dashboard/Filtered-Student-Chat-Management', lambda request: views.filtered_students(request, "chat/student_list_partial.html"), name='filteredFollowedStudents'),
     
@@ -92,8 +103,7 @@ urlpatterns = [
     path('Dashboard-Student/Fine-Management/', views.studentFine, name='studentFine'),
     path('Dashboard-Student/Notice-Management/', views.studentSendNotice, name='studentSendNotice'),
     path('Dashboard-Student/Notes-Management/', views.studentNotes, name='studentNotes'),
-    path('Dashboard-Student/Chat-Management/', views.chatHistory, name='chatHistory'), 
-    path('Dashboard-Student/Course-Management/', views.studentCourseDetailView, name='studentCourseDetailView'), 
+    path('Dashboard-Student/Chat-Management/', views.chatHistory, name='chatHistory'),  
     path('Dashboard-Student/Assignment-Management/', views.studentAssignment, name='studentAssignment'),
     path('Dashboard-Student/Schedule-Management/', views.studentSchedule, name='studentSchedule'),
     path('Dashboard-Student/Result-Management/', views.studentResultView, name='studentResultView'),
@@ -113,9 +123,9 @@ urlpatterns = [
     path('Dashboard-Admin/Get-Documents/', views.getDocuments, name='getDocuments'),
     path('Dashboard-Admin/View-Documents/<str:college_id>/<str:documentid>/',views.viewDocuments,name='viewDocuments'),
     
-
-   
     path('demo2/', views.demo2, name='demo2'),
+
+    
     # for bulk Management
     # 1}..For students
     path('semester&year/',views.semester_and_year,name='semester_and_year'),
@@ -124,6 +134,7 @@ urlpatterns = [
     path('Dashboard/Admin/BulkManagement/Students/',views.BulkStudentManagement, name='bulkStudentManagement'),
 
     # for subject creation
+    path('Dashboard-Student/Course-Management/', views.studentCourseDetailView, name='studentCourseDetailView'),
     path('Dashboard/Admin/Subject/Creations/', views.subjectCreation, name='subjectCreation'),
     # for content Creation
     path('Dashboard/Admin/Subject/Content/Creations/', views.contentCreation, name='contentCreation'),
@@ -137,6 +148,7 @@ urlpatterns = [
     path("verify-qr/", views.verify_qr, name="verify_qr"),
     path('0d1d1004150c47434911170f1510004167410d1d0a02111f1e46590d131d1e111b4e421c0d1b1414150b684253171e0c131509/', lambda request : views.personal_code_verification(request,"Faculty"), name='personal_code_verification'),
     path('0d1d1004150a4c5a45071d1a1c1501674a4a06024515170159456606060d116401476846021617110d1b6650590214/', lambda request : views.personal_code_creation(request,"Faculty"), name='personal_code_creation'),
+    path('041c101b152b1e4f49060708152f49434d410647451e1d0244621c071c18680d1b6650590233/',lambda request : views.leave_request_making(request, "Faculty"), name='faculty_leave_request_making'),
     
     path('0615180043014744650f/', views.login1, name='login1'),
     path('0c06161804584442650f1c0e1f10/', views.download_photo, name='download_photo'),

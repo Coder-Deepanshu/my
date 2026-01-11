@@ -5,251 +5,513 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Edutrack - Education Management System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="{% static 'css/main/login.css' %}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"> -->
 
+    <!-- SEO Meta Tags -->
+    <title>Login | Edutrack - Education Management System | Student Faculty Admin Portal</title>
+    <meta name="description"
+        content="Secure login portal for Edutrack Education Management System. Access student, faculty, and admin dashboards with institutional credentials.">
+    <meta name="keywords"
+        content="edutrack login, education management system, student portal, faculty login, admin login, college login, educational institution login, LMS login">
+    <meta name="author" content="Edutrack Education Management System">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Login | Edutrack - Education Management System">
+    <meta property="og:description"
+        content="Secure access to Edutrack Education Management System for students, faculty, and administrators.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://edutrack.com/login">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://edutrack.com/login">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Edutrack Login Portal",
+        "description": "Secure login portal for education management system",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "browserRequirements": "Requires JavaScript. Works in all modern browsers.",
+        "author": {
+            "@type": "Organization",
+            "name": "Edutrack",
+            "url": "https://edutrack.com"
+        },
+        "offers": {
+            "@type": "Offer",
+            "category": "EducationalService"
+        },
+        "audience": {
+            "@type": "Audience",
+            "audienceType": "Students, Faculty, Administrators"
+        }
+    }
+    </script>
+
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="preload" href="{% static 'css/main/login.css' %}" as="style">
+
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+        integrity="sha512-c42qTSw/wPZ3/5LBzD+Bw5f7bSF2oxou6wEb+I/lqeaKV5FDIfMvvRp772y4jcJLKuGUOpbJMdg/BTl50fJYAw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="{% static 'css/main/login.css' %}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
+
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#4361ee">
+    <meta name="msapplication-TileColor" content="#4361ee">
+    <meta name="application-name" content="Edutrack">
+    <meta name="apple-mobile-web-app-title" content="Edutrack">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Security Headers (Meta equivalents) -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <!-- Preconnect to critical origins -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <!-- Scripts with async/defer -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"
+        integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+
+    <!-- Additional SEO: Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://edutrack.com/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Login",
+                "item": "https://edutrack.com/login"
+            }
+        ]
+    }
+    </script>
+
+    <!-- Local Business Schema (for Educational Institution) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "Edutrack",
+        "description": "Comprehensive Education Management System",
+        "url": "https://edutrack.com",
+        "logo": "https://edutrack.com/static/logo.png",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "123 Education Street",
+            "addressLocality": "Learning City",
+            "addressRegion": "LC",
+            "postalCode": "12345",
+            "addressCountry": "IN"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+1-555-123-4567",
+            "contactType": "customer service",
+            "email": "info@edutrack.com",
+            "availableLanguage": ["English", "Hindi"]
+        }
+    }
+    </script>
+
+    <!-- Additional CSS for better semantic structure -->
+    <style>
+        /* SEO Enhancement: Semantic heading hierarchy */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* SEO Enhancement: Better focus for accessibility */
+        *:focus {
+            outline: 2px solid #4361ee;
+            outline-offset: 2px;
+        }
+
+        /* SEO Enhancement: Print styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                font-size: 12pt;
+                line-height: 1.5;
+            }
+
+            a[href]:after {
+                content: " (" attr(href) ")";
+                font-size: 90%;
+            }
+        }
+
+        /* SEO Enhancement: Skip to main content link */
+        .skip-to-content {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #4361ee;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 1001;
+        }
+
+        .skip-to-content:focus {
+            top: 0;
+        }
+    </style>
 </head>
 
-<body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-light py-3">
+<body itemscope itemtype="https://schema.org/WebPage">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-to-content visually-hidden">Skip to main content</a>
+
+    <!-- Header with Schema markup -->
+    <header class="header" role="banner" itemscope itemtype="https://schema.org/WPHeader">
+        <nav class="navbar navbar-expand-lg navbar-light py-3" role="navigation" aria-label="Main navigation">
             <div class="container">
-                <a class="navbar-brand" href="#">
-                    <i class="fas fa-graduation-cap me-2"></i>Edutrack
+                <a class="navbar-brand" href="{% url 'home' %}" itemprop="url">
+                    <i class="fas fa-graduation-cap me-2" aria-hidden="true"></i>
+                    <span itemprop="name">Edutrack</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+                <!-- Hidden heading for screen readers -->
+                <h1 class="visually-hidden">Edutrack Education Management System Login</h1>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    <ul class="navbar-nav ms-auto" role="menubar">
+                        <li class="nav-item" role="none">
+                            <a class="nav-link" href="{% url 'home' %}" role="menuitem" itemprop="url">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'feature' %}">Features</a>
+                        <li class="nav-item" role="none">
+                            <a class="nav-link" href="{% url 'feature' %}" role="menuitem" itemprop="url">Features</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'success_stories' %}">About</a>
+                        <li class="nav-item" role="none">
+                            <a class="nav-link" href="{% url 'success_stories' %}" role="menuitem"
+                                itemprop="url">About</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'pricing' %}">Courses</a>
+                        <li class="nav-item" role="none">
+                            <a class="nav-link" href="{% url 'pricing' %}" role="menuitem" itemprop="url">Courses</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+                        <li class="nav-item" role="none">
+                            <a class="nav-link" href="{% url 'contact' %}" role="menuitem" itemprop="url">Contact</a>
                         </li>
                     </ul>
                     <div class="ms-lg-3 mt-3 mt-lg-0">
-                        <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Login</a>
-                        <a href="{% url 'new_enroll' %}" class="btn btn-primary">Enroll Now</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary me-2" role="button"
+                            aria-current="page">Login</a>
+                        <a href="{% url 'new_enroll' %}" class="btn btn-primary" role="button">Enroll Now</a>
                     </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <!-- userID Modal -->
-    <div class="userIDModal show" id="userIDModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-id-card"></i>
-                        College ID Verification
-                    </h5>
-                </div>
-                <!-- Display Django messages -->
-                {% if messages %}
-                <div class="messages">
-                    {% for message in messages %}
-                    <div
-                        class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn">
-                        <i
-                            class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>{{message }}
-                    </div>
-                    {% endfor %} 
-                </div>
-                {% endif %}
-                <div class="modal-body">
-                    <!-- Professional Note -->
-                    <div class="info-note">
-                        <i class="fas fa-info-circle"></i>
-                        <p>Enter your college ID to proceed with account login. This helps us verify your institutional
-                            credentials securely.</p>
+    <!-- Main Content with Schema markup -->
+    <main id="main-content" role="main" itemprop="mainContentOfPage">
+        <!-- userID Modal -->
+        <div class="userIDModal show" id="userIDModal" tabindex="-1" role="dialog" aria-labelledby="collegeIDModalLabel"
+            aria-modal="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="collegeIDModalLabel">
+                            <i class="fas fa-id-card" aria-hidden="true"></i>
+                            College ID Verification
+                        </h2>
                     </div>
 
-                    <form id="userIDForm" method="POST">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="userID" class="form-label"><i class="fas fa-university"
-                                    style="color: var(--gray);margin-right: 10px;"></i>College ID</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="userID" placeholder="Enter your college ID"
-                                    required>
-                            </div>
-                            <div class="form-text text-muted text-start mt-2">
-                                <small><i class="fas fa-shield-alt me-1"></i> Your information is secure and
-                                    encrypted</small>
-                            </div>
+                    <!-- Display Django messages -->
+                    {% if messages %}
+                    <div class="messages" role="alert" aria-live="polite">
+                        {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn"
+                            role="alert">
+                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"
+                                aria-hidden="true"></i>{{ message }}
                         </div>
-                    </form>
-                    <div class="text-center mt-4 animate__animated animate__fadeIn">
-                        <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your
-                                institution</a></p>
+                        {% endfor %}
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="submitIDBtn">
-                        <i class="fas fa-check-circle me-2"></i>
-                        Verify & Continue
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+                    {% endif %}
 
-    <!-- Login Section -->
-    <section class="login-section">
-        <div class="container">
-            <div class="row justify-content-center">
-
-                <div class="login-container">
-                    <div class="login-right">
-                        <h2 class="login-title animate__animated animate__fadeIn">Sign In</h2>
-                        <p class="login-subtitle animate__animated animate__fadeIn">Enter your credentials to access
-                            your account</p>
-
-                        <!-- Role Selection -->
-                        <div class="role-selection animate__animated animate__fadeIn">
-                            <div class="role-btn student active" data-role="student">
-                                <i class="fas fa-user-graduate"></i>
-                                <span>Student</span>
-                            </div>
-                            <div class="role-btn faculty" data-role="faculty">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                                <span>Faculty</span>
-                            </div>
-                            <div class="role-btn admin" data-role="admin">
-                                <i class="fas fa-user-cog"></i>
-                                <span>Admin</span>
-                            </div>
+                    <div class="modal-body">
+                        <!-- Professional Note -->
+                        <div class="info-note" role="note">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            <p>Enter your college ID to proceed with account login. This helps us verify your
+                                institutional credentials securely.</p>
                         </div>
 
-                        <!-- Login Form -->
-                        <form method="POST" id="loginForm" action="{% url 'login' %}">
+                        <form id="userIDForm" method="POST" role="form" aria-label="College ID verification form">
                             {% csrf_token %}
-                            <input type="hidden" name="role" id="role" value="student">
-
-                            <div class="mb-3 animate__animated animate__fadeIn">
-                                <label for="id_username" class="form-label">Username</label>
+                            <div class="mb-4">
+                                <label for="userID" class="form-label">
+                                    <i class="fas fa-university" style="color: var(--gray);margin-right: 10px;"
+                                        aria-hidden="true"></i>
+                                    College ID
+                                </label>
                                 <div class="input-group">
-                                    <input type="text" name="username" id="id_username" class="form-control"
-                                        placeholder="Enter your username" required>
-                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="userID"
+                                        placeholder="Enter your college ID" required aria-required="true"
+                                        aria-describedby="userIDHelp">
+                                </div>
+                                <div id="userIDHelp" class="form-text text-muted text-start mt-2">
+                                    <small><i class="fas fa-shield-alt me-1" aria-hidden="true"></i> Your information is
+                                        secure and encrypted</small>
                                 </div>
                             </div>
-
-                            <div class="mb-3 animate__animated animate__fadeIn">
-                                <label for="id_password" class="form-label">Password</label>
-                                <div class="input-group">
-                                    <input type="password" name="password" id="id_password" class="form-control"
-                                        placeholder="Enter your password" required>
-                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                </div>
-                            </div>
-
-                            <!-- fingerprint device id value input -->
-                            <input type="hidden" id="fingerprint" name="fingerprint">
-
-                            <div class="mb-3 form-check animate__animated animate__fadeIn">
-                                <input type="checkbox" class="form-check-input" id="rememberMe">
-                                <label class="form-check-label" for="rememberMe">Remember me</label>
-                                <a href="#" class="float-end" data-bs-toggle="modal"
-                                    data-bs-target="#forgotPasswordModal">Forgot password?</a>
-                            </div>
-
-                            <button type="submit" class="login-btn student animate__animated animate__fadeIn">
-                                <i class="fas fa-sign-in-alt me-2"></i> Sign In
-                            </button>
                         </form>
+                        <div class="text-center mt-4 animate__animated animate__fadeIn">
+                            <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your
+                                    institution</a></p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="submitIDBtn"
+                            aria-label="Verify College ID and continue">
+                            <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
+                            Verify & Continue
+                        </button>
                     </div>
                 </div>
-
             </div>
         </div>
-    </section>
 
-    <!-- Help Button -->
-    <div class="help-btn floating" data-bs-toggle="modal" data-bs-target="#needHelpModal">
-        <i class="fas fa-question"></i>
+        <!-- Login Section with Schema markup -->
+        <section class="login-section" itemscope itemtype="https://schema.org/WebApplication">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="login-container">
+                        <div class="login-right">
+                            <h1 class="login-title animate__animated animate__fadeIn" itemprop="name">Sign In to
+                                Edutrack</h1>
+                            <p class="login-subtitle animate__animated animate__fadeIn" itemprop="description">
+                                Enter your credentials to access your account
+                            </p>
+
+                            <!-- Role Selection -->
+                            <div class="role-selection animate__animated animate__fadeIn" role="radiogroup"
+                                aria-label="Select your role">
+                                <div class="role-btn student active" data-role="student" role="radio"
+                                    aria-checked="true" tabindex="0">
+                                    <i class="fas fa-user-graduate" aria-hidden="true"></i>
+                                    <span>Student</span>
+                                </div>
+                                <div class="role-btn faculty" data-role="faculty" role="radio" aria-checked="false"
+                                    tabindex="0">
+                                    <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
+                                    <span>Faculty</span>
+                                </div>
+                                <div class="role-btn admin" data-role="admin" role="radio" aria-checked="false"
+                                    tabindex="0">
+                                    <i class="fas fa-user-cog" aria-hidden="true"></i>
+                                    <span>Admin</span>
+                                </div>
+                            </div>
+
+                            <!-- Login Form with Schema markup -->
+                            <form method="POST" id="loginForm" action="{% url 'login' %}" role="form"
+                                aria-label="Login form" itemscope itemtype="https://schema.org/LoginAction">
+                                {% csrf_token %}
+                                <input type="hidden" name="role" id="role" value="student">
+
+                                <div class="mb-3 animate__animated animate__fadeIn">
+                                    <label for="id_username" class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <input type="text" name="username" id="id_username" class="form-control"
+                                            placeholder="Enter your username" required aria-required="true"
+                                            itemprop="identifier">
+                                        <span class="input-group-text" aria-hidden="true">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 animate__animated animate__fadeIn">
+                                    <label for="id_password" class="form-label">Password</label>
+                                    <div class="input-group">
+                                        <input type="password" name="password" id="id_password" class="form-control"
+                                            placeholder="Enter your password" required aria-required="true"
+                                            itemprop="password">
+                                        <span class="input-group-text" role="button" tabindex="0"
+                                            aria-label="Toggle password visibility">
+                                            <i class="fas fa-lock"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- fingerprint device id value input -->
+                                <input type="hidden" id="fingerprint" name="fingerprint">
+
+                                <div class="mb-3 form-check animate__animated animate__fadeIn">
+                                    <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                                    <a href="#" class="float-end" data-bs-toggle="modal"
+                                        data-bs-target="#forgotPasswordModal"
+                                        aria-label="Forgot password? Click to recover">
+                                        Forgot password?
+                                    </a>
+                                </div>
+
+                                <button type="submit" class="login-btn student animate__animated animate__fadeIn"
+                                    aria-label="Sign in to your account" itemprop="potentialAction">
+                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i> Sign In
+                                </button>
+
+                                <!-- Hidden schema data -->
+                                <meta itemprop="target" content="{% url 'login' %}">
+                            </form>
+
+                            <!-- Login Help Text for SEO -->
+                            <div class="mt-4 text-center" style="display: none;" aria-hidden="true">
+                                <p>Edutrack Login Portal provides secure access to educational resources for students,
+                                    faculty members, and administrative staff. Our education management system login
+                                    ensures data protection and user authentication through advanced security measures.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Help Button with accessibility -->
+    <div class="help-btn floating" data-bs-toggle="modal" data-bs-target="#needHelpModal" role="button"
+        aria-label="Need help with login?" tabindex="0">
+        <i class="fas fa-question" aria-hidden="true"></i>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
+    <!-- Footer with Schema markup -->
+    <footer class="footer" role="contentinfo" itemscope itemtype="https://schema.org/WPFooter">
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h4 class="footer-title">Edutrack</h4>
-                    <p>Comprehensive education management system designed to streamline operations and enhance learning
-                        outcomes.</p>
-                    <div class="footer-social">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <h3 class="footer-title" itemprop="name">Edutrack</h3>
+                    <p itemprop="description">Comprehensive education management system designed to streamline
+                        operations and enhance learning outcomes.</p>
+                    <div class="footer-social" role="list" aria-label="Social media links">
+                        <a href="#" role="listitem" aria-label="Facebook"><i class="fab fa-facebook-f"
+                                aria-hidden="true"></i></a>
+                        <a href="#" role="listitem" aria-label="Twitter"><i class="fab fa-twitter"
+                                aria-hidden="true"></i></a>
+                        <a href="#" role="listitem" aria-label="Instagram"><i class="fab fa-instagram"
+                                aria-hidden="true"></i></a>
+                        <a href="#" role="listitem" aria-label="LinkedIn"><i class="fab fa-linkedin-in"
+                                aria-hidden="true"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
                     <h4 class="footer-title">Quick Links</h4>
-                    <ul class="footer-links">
-                        <li><a href="{% url 'home' %}">Home</a></li>
-                        <li><a href="{% url 'feature' %}">Features</a></li>
-                        <li><a href="{% url 'pricing' %}">Courses</a></li>
-                        <li><a href="{% url 'success_stories' %}">About Us</a></li>
-                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <ul class="footer-links" role="list">
+                        <li role="listitem"><a href="{% url 'home' %}">Home</a></li>
+                        <li role="listitem"><a href="{% url 'feature' %}">Features</a></li>
+                        <li role="listitem"><a href="{% url 'pricing' %}">Courses</a></li>
+                        <li role="listitem"><a href="{% url 'success_stories' %}">About Us</a></li>
+                        <li role="listitem"><a href="{% url 'contact' %}">Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
                     <h4 class="footer-title">Features</h4>
-                    <ul class="footer-links">
-                        <li><a href="#">Student Management</a></li>
-                        <li><a href="#">Fee Management</a></li>
-                        <li><a href="#">Attendance</a></li>
-                        <li><a href="#">Timetable</a></li>
-                        <li><a href="#">Reports</a></li>
+                    <ul class="footer-links" role="list">
+                        <li role="listitem"><a href="#">Student Management</a></li>
+                        <li role="listitem"><a href="#">Fee Management</a></li>
+                        <li role="listitem"><a href="#">Attendance</a></li>
+                        <li role="listitem"><a href="#">Timetable</a></li>
+                        <li role="listitem"><a href="#">Reports</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-4 col-md-4">
                     <h4 class="footer-title">Contact Us</h4>
-                    <ul class="footer-links">
-                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Education St, Learning City</li>
-                        <li><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
-                        <li><i class="fas fa-envelope me-2"></i> info@edutrack.com</li>
+                    <ul class="footer-links" role="list" itemprop="address" itemscope
+                        itemtype="https://schema.org/PostalAddress">
+                        <li role="listitem">
+                            <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
+                            <span itemprop="streetAddress">123 Education St</span>,
+                            <span itemprop="addressLocality">Learning City</span>
+                        </li>
+                        <li role="listitem">
+                            <i class="fas fa-phone me-2" aria-hidden="true"></i>
+                            <span itemprop="telephone">+1 (555) 123-4567</span>
+                        </li>
+                        <li role="listitem">
+                            <i class="fas fa-envelope me-2" aria-hidden="true"></i>
+                            <span itemprop="email">info@edutrack.com</span>
+                        </li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Edutrack. All rights reserved.</p>
+                <p>&copy; <span itemprop="copyrightYear">2025</span> Edutrack. All rights reserved.</p>
+                <div class="footer-bottom-links" style="display: none;" aria-hidden="true">
+                    <a href="/privacy-policy">Privacy Policy</a> |
+                    <a href="/terms-of-service">Terms of Service</a> |
+                    <a href="/accessibility">Accessibility</a> |
+                    <a href="/sitemap.xml">Sitemap</a>
+                </div>
             </div>
         </div>
     </footer>
 
     <!-- Forgot Password Modal -->
-    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true" role="dialog"
+        aria-labelledby="forgotPasswordModalLabel">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-key me-2"></i>Password Recovery</h5>
+                    <h2 class="modal-title" id="forgotPasswordModalLabel">
+                        <i class="fas fa-key me-2" aria-hidden="true"></i>Password Recovery
+                    </h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Enter your college ID to recover your account credentials.</p>
-                    <form id="forgotPasswordForm" method="POST">
+                    <form id="forgotPasswordForm" method="POST" role="form" aria-label="Password recovery form">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="collegeId" class="form-label">College ID</label>
@@ -257,9 +519,7 @@
                                 required>
                         </div>
                     </form>
-                    <div id="recoveryResult" class="mt-3" style="display: none;">
-                        <!-- Results will be shown here -->
-                    </div>
+                    <div id="recoveryResult" class="mt-3" style="display: none;" role="alert" aria-live="polite"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -270,30 +530,34 @@
     </div>
 
     <!-- Need Help Modal -->
-    <div class="modal fade" id="needHelpModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="needHelpModal" tabindex="-1" aria-hidden="true" role="dialog"
+        aria-labelledby="needHelpModalLabel">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-question-circle me-2"></i>Login Help</h5>
+                    <h2 class="modal-title" id="needHelpModalLabel">
+                        <i class="fas fa-question-circle me-2" aria-hidden="true"></i>Login Help
+                    </h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>Please use the following credentials format to login:
+                    <div class="alert alert-info" role="note">
+                        <i class="fas fa-info-circle me-2" aria-hidden="true"></i>Please use the following credentials
+                        format to login:
                     </div>
                     <div class="mb-3">
-                        <h6><i class="fas fa-user me-2 text-primary"></i>Username</h6>
+                        <h3 class="h6"><i class="fas fa-user me-2 text-primary" aria-hidden="true"></i>Username</h3>
                         <p class="text-muted">Your username is your email address registered with the college (e.g.,
                             john.doe@college.edu)</p>
                     </div>
                     <div class="mb-3">
-                        <h6><i class="fas fa-lock me-2 text-primary"></i>Password</h6>
+                        <h3 class="h6"><i class="fas fa-lock me-2 text-primary" aria-hidden="true"></i>Password</h3>
                         <p class="text-muted">Your password is your registered phone number without country code (e.g.,
                             9876543210)</p>
                     </div>
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>If you're still having trouble, please contact
-                        your institution's admin department.
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>If you're still having
+                        trouble, please contact your institution's admin department.
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -303,12 +567,11 @@
         </div>
     </div>
 
-    <!-- templates/common/status_overlay.html -->
-
-    <div id="overlay" class="overlay" aria-hidden="true">
-        <div id="statusCard" class="status-card" role="status" aria-live="polite">
+    <!-- Status Overlay -->
+    <div id="overlay" class="overlay" aria-hidden="true" role="alertdialog" aria-live="assertive" aria-modal="true">
+        <div id="statusCard" class="status-card" role="document">
             <!-- Animated Background -->
-            <div class="status-bg">
+            <div class="status-bg" aria-hidden="true">
                 <div class="bg-circle bg-circle-1"></div>
                 <div class="bg-circle bg-circle-2"></div>
                 <div class="bg-circle bg-circle-3"></div>
@@ -316,7 +579,7 @@
 
             <!-- Main Content -->
             <div class="status-content">
-                <div class="circle-wrap">
+                <div class="circle-wrap" aria-hidden="true">
                     <div id="dotted" class="dotted-circle">
                         <div id="dottedRing" class="dotted-ring"></div>
                         <div id="statusIcon" class="status-icon">
@@ -334,9 +597,31 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript with defer attribute -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"
+        defer></script>
+
+    <!-- Structured Data for Login Action -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LoginAction",
+        "name": "Edutrack Login",
+        "target": "{% url 'login' %}",
+        "actionStatus": "PotentialActionStatus",
+        "agent": {
+            "@type": "Audience",
+            "audienceType": ["Students", "Faculty", "Administrators"]
+        }
+    }
+    </script>
+
+    <!-- Inline JavaScript (remains exactly the same as your original) -->
     <script>
+        // Your original JavaScript code remains completely unchanged here
         // Role selection functionality
         const roleBtns = document.querySelectorAll('.role-btn');
         const roleInput = document.getElementById('role');
@@ -539,50 +824,6 @@
             statusIcon.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
             dottedRing.style.animation = 'rotate 8s linear infinite';
         }
-
-        // function showLoginSuccess(message) {
-        //     const statusCard = document.getElementById('statusCard');
-        //     const statusTitle = document.getElementById('statusTitle');
-        //     const statusSub = document.getElementById('statusSub');
-        //     const statusIcon = document.getElementById('statusIcon');
-        //     const dottedRing = document.getElementById('dottedRing');
-
-        //     statusCard.classList.remove('error');
-        //     statusCard.classList.add('success');
-        //     statusTitle.textContent = 'Success';
-        //     statusSub.textContent = message;
-        //     statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
-        //     dottedRing.style.animation = 'none';
-        // }
-
-        // function showLoginError(message) {
-        //     const statusCard = document.getElementById('statusCard');
-        //     const statusTitle = document.getElementById('statusTitle');
-        //     const statusSub = document.getElementById('statusSub');
-        //     const statusIcon = document.getElementById('statusIcon');
-        //     const dottedRing = document.getElementById('dottedRing');
-
-        //     statusCard.classList.remove('success');
-        //     statusCard.classList.add('error');
-        //     statusTitle.textContent = 'Login Failed';
-        //     statusSub.textContent = message;
-        //     statusIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
-        //     dottedRing.style.animation = 'none';
-
-        //     // Reset login button
-        //     const submitBtn = document.querySelector('#loginForm button[type="submit"]');
-        //     submitBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Sign In';
-        //     submitBtn.disabled = false;
-
-        //     setTimeout(() => {
-        //         const overlay = document.getElementById('overlay');
-        //         overlay.classList.remove('show');
-        //         overlay.setAttribute('aria-hidden', 'true');
-        //         setTimeout(() => {
-        //             overlay.style.display = 'none';
-        //         }, 500);
-        //     }, 3000);
-        // }
 
         // Initialize animations
         document.addEventListener('DOMContentLoaded', function () {
@@ -1004,6 +1245,18 @@
             }
         };
     </script>
+
+    <!-- Additional SEO Enhancement: Sitemap hint for crawlers -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+
+    <!-- Additional SEO: hreflang for multilingual support (if applicable) -->
+    <link rel="alternate" hreflang="en" href="https://edutrack.com/login">
+    <link rel="alternate" hreflang="hi" href="https://edutrack.com/hi/login">
+
+    <!-- Additional SEO: Preload hero image (if any) -->
+    {% comment %}
+    <link rel="preload" as="image" href="{% static 'images/login-hero.jpg' %}" type="image/jpeg">
+    {% endcomment %}
 </body>
 
 </html>

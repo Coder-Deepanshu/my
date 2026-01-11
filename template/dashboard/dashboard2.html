@@ -14,6 +14,27 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/dashboard/studentDashboard.css' %}">
+    <!-- SEO Meta Tags (ADD THESE LINES) -->
+    <meta name="description"
+        content="Manage and track your student fee payments online. View payment history, make payments, and download receipts through our secure student fee portal.">
+    <meta name="keywords"
+        content="student fees, fee payment, online payment, education fees, college fees, fee management, payment portal">
+    <meta name="author" content="Guru Kirpa University">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph Tags for Social Media -->
+    <meta property="og:title" content="Student Fee Portal - Guru Kirpa University">
+    <meta property="og:description" content="Manage and track your student fee payments securely online.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/fee-portal">
+    <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Student Fee Portal">
+    <meta name="twitter:description" content="Secure online fee payment system for students">
+
 </head>
 
 <body>
@@ -132,10 +153,10 @@
                 </li>
 
                 <li class="menu-item">
-                    <button type="button" class="menu-link" data-id="{{ college_id }}" id="feeBtn">
+                    <a href="{% url 'student_fees_view' %}" class="menu-link" id="feeBtn">
                         <i class="fas fa-file-invoice-dollar menu-icon"></i>
                         <span class="menu-text">Fees</span>
-                    </button>
+                    </a>
                 </li>
 
                 <li class="menu-item">
@@ -715,12 +736,7 @@
                 }
             }
         }
-        let feeBtn = document.querySelector("#feeBtn");
-        feeBtn.addEventListener('click',()=>{
-            const value = feeBtn.getAttribute('data-id');
-            window.location.href = `/Student-Dashboard/Fee-Managment/${value}/P2/`
-            
-        });
+    
     </script>
 </body>
 

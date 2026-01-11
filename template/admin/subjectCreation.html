@@ -64,7 +64,7 @@
                             <select class="form-select" id="course" required>
                                 <option value="all" selected disabled>Select Course</option>
                                 {% for course in courses %}
-                                <option value="{{ course.course_id }}">{{ course.name }} {{ course.level.name }}
+                                <option value="{{ course.id }}">{{ course.name }} {{ course.level.name }}
                                 </option>
                                 {% endfor %}
 

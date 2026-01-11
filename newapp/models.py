@@ -4,19 +4,18 @@ from django.utils import timezone # Import timezone for default date
 
 # for department
 class Department(models.Model):
-    department_id = models.CharField(max_length=200,unique=True)
-    name = models.CharField(max_length=200)
-    code = models.CharField(max_length=20)
-    type = models.CharField(max_length=10) # faculty ha ya admin
+    TYPE_CHOICES = [('Admin', 'Admin'), ('Faculty', 'Faculty')]
+    name = models.CharField(max_length=200, unique=True)
+    code = models.CharField(max_length=20, unique=True)
+    type = models.CharField(TYPE_CHOICES ,max_length=10) # faculty ha ya admin
     description = models.TextField()
     programs_count = models.PositiveIntegerField(default=1)
     faculty_count = models.PositiveIntegerField(default=1)
-    student_capacity = models.PositiveIntegerField(default=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return self.name
+        return f"{self.name}-{self.code} of {self.type}"
     
     class Meta:
         ordering = ['name']
@@ -28,21 +27,19 @@ class Level(models.Model):
         return self.name
     
 class Course(models.Model):
-    course_id = models.CharField(max_length=50, unique=True)
     image = models.ImageField(upload_to='pictures')
     name = models.CharField(max_length=100)
-    department=models.ForeignKey(Department,on_delete=models.CASCADE)
-    no_of_years = models.IntegerField()
-    no_of_semesters = models.IntegerField()
     code = models.CharField(max_length=50)
+    department=models.ForeignKey(Department,on_delete=models.CASCADE)
+    years = models.IntegerField()
+    semesters = models.IntegerField()
     description = models.TextField()
     student_capacity = models.PositiveIntegerField(default=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     level = models.ForeignKey(Level,on_delete=models.CASCADE)
     fees_per_year = models.IntegerField()
-    no_of_lecture = models.IntegerField()
-
+    
     def __str__(self):
         return self.name
     
@@ -190,7 +187,6 @@ class Student(models.Model):
     income=models.CharField(max_length=20,null=True)
     gender = models.CharField(max_length=10)
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
-    level = models.ForeignKey(Level,on_delete=models.CASCADE)  # Changed to ForeignKey
     birthday = models.DateField()
     address = models.TextField()
     semester = models.IntegerField(default=1)
@@ -408,7 +404,7 @@ class FeePayment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     fee_structure = models.ForeignKey(FeeStructure, on_delete=models.SET_NULL, null=True, blank=True)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_date = models.DateField(auto_now_add=True)
+    payment_date = models.DateField(auto_now=True)
     payment_method = models.CharField(max_length=50, choices=[
         ('Cash', 'Cash'),
         ('Cheque', 'Cheque'),
@@ -419,10 +415,6 @@ class FeePayment(models.Model):
     receipt_number = models.CharField(max_length=50, unique=True)
     remarks = models.TextField(blank=True, null=True)
     verified_by = models.CharField(max_length=100, blank=True, null=True)
-    adjusted_in_year = models.CharField(max_length=5,default='0')
-    adjusted_in_semester = models.CharField(max_length=5,default='0')
-    extra = models.DecimalField(max_digits=10, decimal_places=2,default=0)
-    due_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
 
     def __str__(self):
         return f"{self.student.name} - {self.amount_paid}"
@@ -491,9 +483,9 @@ class Students(models.Model):
 
 # User 
 class UserDetail(models.Model):
-    username = models.CharField(max_length=50, unique=True)
-    user_id = models.CharField(max_length=50, unique=True)
-    password = models.CharField(max_length=50, unique = True)
+    username = models.CharField(max_length=50, )
+    user_id = models.CharField(max_length=50, )
+    password = models.CharField(max_length=50, )
 
     def _str_(self):
         return f"{self.username} - {self.user_id}"
@@ -525,8 +517,6 @@ class OTPVerification(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.otp_code}"
-
-
 
 from django.db import models
 
@@ -572,6 +562,64 @@ class Faculty_and_Admin_Attedance(models.Model):
 
     def __str__(self):
         return f'CollegeID:{self.collegeID}'
+
+class Leave(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'), 
+        ('Approved', 'Approved'), 
+        ('Rejected', 'Rejected')
+    ]
+    
+    # Change 1: Consistent naming
+    LEAVE_TYPE_CHOICES = [
+        ('Casual Leave', 'Casual Leave'),
+        ('Sick Leave', 'Sick Leave'), 
+        ('Earned Leave', 'Earned Leave'),
+        ('Medical Leave', 'Medical Leave'),
+        ('On Duty Leave', 'On Duty Leave'),
+        ('Other', 'Other')
+    ]
+
+    college_id = models.CharField(max_length=20)
+    subject = models.CharField(max_length=200)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    total_days = models.PositiveIntegerField()
+    leave_type = models.CharField(max_length=50, choices=LEAVE_TYPE_CHOICES)  # Change 2: Updated variable name
+    time = models.TimeField(auto_now_add=True)
+    contact_during_leave = models.CharField(max_length=15)
+    reason = models.TextField()
+    status = models.CharField(choices=STATUS_CHOICES, max_length=10, default='Pending')
+    
+    applied_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.college_id}-{self.start_date}-{self.end_date}-{self.status}"
+    
+from django.db import models
+from django.contrib.auth.models import User
+
+class StudentProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    student_id = models.CharField(max_length=20, unique=True)
+    department = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.user.username
+
+class ChatMessage(models.Model):
+    # Kisne bheja aur kise bheja
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")
+    message = models.TextField()
+    thread_name = models.CharField(max_length=200, null=True, blank=True) # Unique room ID
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.username} to {self.receiver.username}"
+
+
 
 
 

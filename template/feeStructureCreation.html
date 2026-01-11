@@ -11,6 +11,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/creation/feeStructure.css' %}">
+    <!-- SEO Meta Tags (ADD THESE LINES) -->
+    <meta name="description"
+        content="Manage and track your student fee payments online. View payment history, make payments, and download receipts through our secure student fee portal.">
+    <meta name="keywords"
+        content="student fees, fee payment, online payment, education fees, college fees, fee management, payment portal">
+    <meta name="author" content="Guru Kirpa University">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph Tags for Social Media -->
+    <meta property="og:title" content="Student Fee Portal - Guru Kirpa University">
+    <meta property="og:description" content="Manage and track your student fee payments securely online.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/fee-portal">
+    <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Student Fee Portal">
+    <meta name="twitter:description" content="Secure online fee payment system for students">
+
 </head>
 
 <body>
@@ -71,7 +92,7 @@
                                 <select class="form-select select" id="course" name="course" required>
                                     <option value="">Select Course</option>
                                     {% for course in courses %}
-                                    <option value="{{ course }}">{{ course }}</option>
+                                    <option value="{{ course.id }}">{{ course.name }} {{ course.level.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -142,7 +163,7 @@
                             <select class="form-select" id="courseFilter">
                                 <option value=""> Select Course</option>
                                 {% for course in courses %}
-                                <option value="{{ course }}">{{ course }}</option>
+                                <option value="{{ course.id }}">{{ course.name }} {{ course.level.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -693,7 +714,7 @@
                         document.querySelector("#pagination span").innerText =
                             `Page ${data.page_number} of ${data.total_pages}`;
 
-                      
+
                     });
             }
 

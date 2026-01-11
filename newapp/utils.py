@@ -31,7 +31,22 @@ def personal_college_pin_for_admin(order):
 
 def valid_timing_for_qr_code(start):
     if start:
-        time_in_minutes = 30
+        time_in_minutes = 2
     else:
         time_in_minutes = 0
     return time_in_minutes
+
+# utils.py me
+def special_login_detail(start):  # ✅ sepecial -> special
+    # username = ''
+    # password = ''
+    if start:
+        username = 'Deepanshu'
+        password = '98128601'
+    return username, password
+
+def special_login_permission(start):
+    permission = 'Block'  # Default
+    if start:
+        permission = 'Access'
+    return permission

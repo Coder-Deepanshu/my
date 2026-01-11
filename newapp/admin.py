@@ -51,7 +51,7 @@ class AttendenceAddAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class coursesAdmin(admin.ModelAdmin):
-    list_display=('name','no_of_years','no_of_semesters')
+    list_display=('name','years','semesters')
     search_fields=('name',)
 
 @admin.register(FeeStructure)
@@ -93,10 +93,6 @@ class Department(admin.ModelAdmin):
     list_display=('name','code')
     search_fields=('name',)
 
-@admin.register(Level)
-class Level(admin.ModelAdmin):
-    list_display=('name',)
-    search_fields=('name',)
 
 @admin.register(Position)
 class Position(admin.ModelAdmin):
@@ -127,8 +123,6 @@ class QR_Code(admin.ModelAdmin):
     list_display = ('date', 'time', 'timestamp', 'token', 'random_data')
     fields = ('timestamp', 'token', 'random_data')
 
-
-
 from django.contrib import admin
 from .models import Product
 
@@ -142,3 +136,8 @@ class Faculty_and_Admin_Attendance_System(admin.ModelAdmin):
     list_display = ['collegeID', 'status', 'type', 'timing', 'date', 'leave_time']
     fields = ['collegeID', 'status', 'type', 'timing', 'date', 'leave_time']
 
+from .models import Leave
+@admin.register(Leave)
+class Leave(admin.ModelAdmin):
+    list_display = ['id', 'college_id', 'leave_type', 'subject', 'start_date', 'end_date', 'total_days', 'contact_during_leave', 'reason', 'status', 'applied_on', 'updated_on']
+    fields = ['college_id', 'leave_type', 'subject', 'start_date', 'end_date', 'total_days', 'contact_during_leave', 'reason', 'status', 'applied_on', 'updated_on']

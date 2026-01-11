@@ -17,6 +17,7 @@ import socket
 import uuid
 import json
 
+
 # function of front page 
 def home(request):
     return render(request,'Home/home.html')
@@ -45,6 +46,39 @@ def new_enroll(request):
 import random
 from .models import *
 from .models import  OTPVerification
+from newapp.utils import special_login_permission, special_login_detail
+from django.views.decorators.cache import never_cache
+
+
+# views.py me
+def special_login(request):
+    start = True
+    permission = special_login_permission(start)
+    
+    if permission == 'Access':
+        html_page = 'Home/special_login.html'
+    elif permission == 'Block':
+        html_page = 'faculty/attendance/Block.html'
+    
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            username = data.get('username')
+            password = data.get('password')
+            detect_username, detect_password = special_login_detail(start)  # ✅ Yeh line change karo
+            
+            if str(username) == detect_username and str(password) == detect_password:  
+                request.session['username1'] = username
+                request.session['admin_college_id'] = 'AD2025**'  
+                request.session['role'] = 'SpecialLogin'
+                return JsonResponse({'success': 'Login Successfully!'})
+            else:
+                return JsonResponse({'error': 'Invalid credentials!'})
+        except Exception as e:
+            return JsonResponse({'error': f'An error occurred: {str(e)}'})
+    
+    return render(request, html_page)
+
 
 def verify_collegeID(request):
     if request.method == 'POST':
@@ -736,8 +770,7 @@ def student_functions(request):
     context = {}
     role = request.session.get('role')
     context['role'] = role
-    context['course'] = Course.objects.all()
-    context['level'] = Level.objects.all()
+    context['course'] = Course.objects.all().order_by('id')
 
     if request.method == "POST":
         action = request.POST.get("action")
@@ -787,7 +820,6 @@ def student_functions(request):
                     other_phone_no=request.POST.get("otherphone"),
                     gender=request.POST.get("gender"),
                     course_id=request.POST.get("course"),
-                    level_id=request.POST.get("education"),
                     birthday=request.POST.get("birthday"),
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
@@ -1122,92 +1154,7 @@ def admin_functions(request):
 #  for multiple student filtering
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
-def course_details(request, template):
-    role = request.session.get('role')
 
-    try:
-        # Get all courses from Course model (not from Student records)
-        if template != 'chat/page2.html':
-            courses = Course.objects.all().values_list('name', flat=True)
-            students = Student.objects.all()
-            page_obj = None
-            
-                
-            if template == 'feeStructureCreation.html':
-                values = FeeStructure.objects.all().order_by("structure_id")
-                paginator = Paginator(values, 1)  # Changed from 1 to reasonable number
-                page_number = request.GET.get("page")
-                page_obj = paginator.get_page(page_number)
-                
-                # for ajax working
-                if request.headers.get("x-requested-with") == "XMLHttpRequest":
-                    data = []
-                    for i in page_obj:
-                        data.append({
-                            'structure_id': i.structure_id, 
-                            'course': i.course, 
-                            'year': i.year, 
-                            'semester': i.semester, 
-                            'due_date': i.due_date.strftime("%Y-%m-%d"), 
-                            'batch': i.batch, 
-                            'amount': i.amount
-                        })
-                    return JsonResponse({
-                        "data1": data, 
-                        "has_next": page_obj.has_next(), 
-                        "has_prev": page_obj.has_previous(),
-                        "page_number": page_obj.number, 
-                        "total_pages": paginator.num_pages  # Fixed variable name
-                    })
-                    
-            return render(request, template, {
-                'courses':courses, 
-                'students': students, 
-                'role': role, 
-                'page_obj': page_obj
-            })
-        else:
-            courses = Course.objects.all().values_list('name', flat=True)
-            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-            students = Student.objects.filter(followed_faculty=faculty)
-            return render(request, 'chat/page2.html', {
-                'faculty': faculty,
-                'courses': courses, 
-                'students': students, 
-                'role': role  # Removed duplicate 'role' parameter
-            })
-
-    except Exception as e:
-        messages.error(request, f"Error loading courses: {str(e)}")
-        return render(request, template, {
-            'courses': [],
-            'students': [], 
-            'faculty': [], 
-            'role': role,
-            'page_obj': []  # Added missing page_obj for error case
-        })
-        
-def get_courses_details(request):
-   
-    try:
-      if request.method == 'POST':
-        data = json.loads(request.body)
-        course_name = data.get('course_name')
-        if not course_name or course_name == 'all':
-            return JsonResponse({'error': 'Please select a valid course'}, status=400)
-            
-        # Get the course - make sure name matching is case-insensitive
-        course = Course.objects.filter(name__iexact=course_name).first()
-        if not course:
-            return JsonResponse({'error': f'Course "{course_name}" not found'}, status=404)
-            
-        return JsonResponse({
-            'years': list(range(1, course.no_of_years + 1)),
-            'semesters': list(range(1, course.no_of_semesters + 1)),
-        })
-    except Exception as e:
-        return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
-    
 def filtered_students(request, template):
     try:
         filters = {
@@ -1425,21 +1372,13 @@ def get_student_attendance(request):
 # FOR FEES MANAGEMENT OF STUDENT
 
 # for student, for viewing fees
-def student_fees_view(request, college_id, number):
+def student_fees_view(request):
     role = request.session.get('role')
-    if number == 'P1':
-        college_id = college_id
-        template = 'student/student_fee_detail.html'
-        value = 'tem1'
-    else:
-        college_id = college_id
-        template = 'student/student_fees_view.html'
-        value = 'tem2'
-    
+    college_id = request.session.get('student_college_id')
     try:
         student = Student.objects.get(college_id=college_id)
-        course = student.course # student course name
-        year = student.course.no_of_years # student course time period
+        course = student.course# student course name
+        year = student.course.years # student course time period
         batch = student.date_of_joining.year # fetch the student starting year only 
         totalFee = float(int(course.fees_per_year)*year)
         fee = 0 # total fee in starting is zero
@@ -1456,38 +1395,28 @@ def student_fees_view(request, college_id, number):
         e = 2 # ending point
         for i in range(1, year+1):   
             for j in range(s+i, e+i):
-                feeStructure = FeeStructure.objects.filter(course = course, batch = str(batch), year = str(i), semester = str(j))
+                feeStructure = FeeStructure.objects.filter(course = course.id, batch = str(batch), year = str(i), semester = str(j))
                 dic1 = {'year':i, 'semester':j, }
                 
                 if feeStructure.exists():
                     payment = FeePayment.objects.filter(student = student, fee_structure = feeStructure.first())
                     dueDate = feeStructure.first().due_date # due date for fee payment
+                    amount1 = float(feeStructure.first().amount) # structure amount access
+                    fee += amount1
                     if payment.exists():
                         # render payment history
                         paymentDetails = FeePayment.objects.filter(student = student).order_by('payment_date')
-                        adj_val_year = int(payment.first().adjusted_in_year)
-                        adj_val_sem = int(payment.first().adjusted_in_semester)
-                        
-                        if value == 'tem1':
-                            dic1['singlePayment'] = payment
                             
                         # calculate amount1 and amount2
-                        amount1 = float(feeStructure.first().amount) # structure amount access
-                        amount2 = float(payment.first().amount_paid) # payment amount access
-                        extra = float(payment.first().extra)
+                        amount2 = float(payment.aggregate(total=Sum('amount_paid'))['total']) # payment amount access
                         
                         # calculate the total paid amount
-                        fee += amount1
                         paid += amount2
                         percent = (amount2/amount1)*100
-                        amount2 = amount2 + extra
                        
                         if amount1 == amount2 :
                             dic1['status'] = 'Paid'
                             dic1['feeAmt'] = amount1
-                            if value == 'tem1':
-                                dic1['paid'] = amount2
-                                dic1['showBtn'] = 'No'
                                 
                         elif amount1 != amount2:
                             if amount1 > amount2 :
@@ -1497,21 +1426,6 @@ def student_fees_view(request, college_id, number):
                                 dic1['due'] = due
                                 dic1['dueDate'] = dueDate
                                 dic1['feeAmt'] = amount1
-                                if value == 'tem1':
-                                    dic1['paid'] = amount2
-                                    
-                                    if adj_val_year == i and adj_val_sem == j:
-                                        dic1['showBtn'] = 'Yes'
-                                        
-                                    else:
-                                        if adj_year[0] == i and adj_sem[0] == j :
-                                            dic1['showBtn'] = 'Yes'
-                                            adj_year[0] = adj_val_year
-                                            adj_sem[0] = adj_val_sem
-                                        else:
-                                            dic1['showBtn'] = 'No'
-                                            adj_year[0] = adj_val_year
-                                            adj_sem[0] = adj_val_sem
                                                   
                             elif amount2 > amount1 :
                                 overdue = amount2 - amount1
@@ -1520,9 +1434,6 @@ def student_fees_view(request, college_id, number):
                                 dic1['overdue'] = overdue
                                 dic1['dueDate'] = dueDate
                                 dic1['feeAmt'] = amount1
-                                if value == 'tem1':
-                                    dic1['paid'] = amount2
-                                    dic1['showBtn'] = 'No'
                     else:
                         dic1['status'] = 'Pending'           
                         dic1['dueDate'] = dueDate
@@ -1539,7 +1450,7 @@ def student_fees_view(request, college_id, number):
             s+=1
             e+=1 
             
-        return render(request, template, {'student':student, 'totalFee':totalFee, 'data':data, 'role':role, 'fee':fee, 'paid':paid, 'pending':pending, 'advance':advance, 'percent':percent, 'paymentDetails':paymentDetails})
+        return render(request, 'student/student_fees_view.html', {'student':student, 'totalFee':totalFee, 'data':data, 'role':role, 'fee':fee, 'paid':paid, 'pending':pending, 'advance':advance, 'percent':percent, 'paymentDetails':paymentDetails})
                  
     except Student.DoesNotExist:
         messages.error(request, "Student not found")
@@ -1554,33 +1465,32 @@ def student_fees_view(request, college_id, number):
     })
 # for admin - for payment of fees
 def feePayment(request):
-       
             students = Student.objects.all()
             data = []
             
             for student in students:
                 batch = student.date_of_joining.year
-                course = Course.objects.get(course_id=student.course.course_id)
-                s = 0
-                e = 2
-                Amt1 = 0
-                Amt2 = 0
+                course = Course.objects.get(id=student.course.id)
+                s = 0 # starting point
+                e = 2 # ending point 
+                Amt1 = 0 # actual amount
+                Amt2 = 0 # paid amount
                 due = 0
                 overdue = 0
-                totalFee = int(course.fees_per_year * course.no_of_years)
-                year = course.no_of_years
+                totalFee = int(course.fees_per_year * course.years)
+                year = course.years
                 for i in range(1, year+1):   
                     for j in range(s + i, e + i):
                         feeStructure = FeeStructure.objects.filter(
                             year=str(i), 
                             semester=str(j), 
                             batch=batch, 
-                            course=course
+                            course=course.id
                         )
                         
                         if feeStructure.exists():
                             fee_structure = feeStructure.first()
-                            Amt1 += fee_structure.amount
+                            Amt1 += float(fee_structure.amount)
                             
                             feePayment = FeePayment.objects.filter(
                                 student=student, 
@@ -1588,7 +1498,7 @@ def feePayment(request):
                             )
                             
                             if feePayment.exists():
-                                Amt2 += feePayment.first().amount_paid                                  
+                                Amt2 += float(feePayment.aggregate(total=Sum('amount_paid'))['total'])                                  
                     s += 1
                     e += 1
                
@@ -1608,12 +1518,108 @@ def feePayment(request):
 
             return render(request, 'admin/admin_fee_management.html',{'data':data})
 
-from datetime import datetime
-import json
-from django.http import JsonResponse
+def single_student_fees_view(request, college_id):
+    role = request.session.get('role')
+    try:
+        # filtering varible
+        student = Student.objects.get(college_id=college_id)
+        course = student.course# student course name
+        year = student.course.years # student course time period
+        batch = student.date_of_joining.year # fetch the student starting year only
+
+        # top html container variables 
+        totalFee = float(int(course.fees_per_year)*year)
+        fee = 0 # total fee in starting is zero
+        paid = 0 # total fee payment in starting is zero
+        pending = 0 # (if any pending payment), in starting pending payment is zero
+        advance = 0 #(if student paid extra payment)
+        percent = 0 # payment percentage
+
+        # last variable which show all transaction history
+        paymentDetails = None
+        adj_year = [0]
+        adj_sem = [0]
+        
+        data = [] # for showing year seperately
+        s = 0 # starting point
+        e = 2 # ending point
+        for i in range(1, year+1):   
+            for j in range(s+i, e+i):
+                feeStructure = FeeStructure.objects.filter(course = course.id, batch = str(batch), year = str(i), semester = str(j))
+                dic1 = {'year':i, 'semester':j, }
+                
+                if feeStructure.exists():
+                    payment = FeePayment.objects.filter(student = student, fee_structure = feeStructure.first())
+                    dueDate = feeStructure.first().due_date # due date for fee payment
+                    if payment.exists():
+                        dic1['singlePayment'] = payment
+                        # render payment history
+                        paymentDetails = FeePayment.objects.filter(student = student).order_by('payment_date') 
+                        # calculate amount1 and amount2
+                        amount1 = float(feeStructure.first().amount) # structure amount access
+                        amount2 = float(payment.aggregate(total=Sum('amount_paid'))['total']) # payment amount access
+                        
+                        # calculate the total paid amount
+                        fee += amount1
+                        paid += amount2
+                        percent = (amount2/amount1)*100
+                       
+                        if amount1 == amount2 :
+                            dic1['status'] = 'Paid'
+                            dic1['feeAmt'] = amount1
+                                
+                        elif amount1 != amount2:
+                            if amount1 > amount2 :
+                                due = amount1 - amount2
+                                pending += due
+                                dic1['status'] = 'Due'
+                                dic1['due'] = due
+                                dic1['dueDate'] = dueDate
+                                dic1['feeAmt'] = amount1
+                                dic1['showBtn'] = 'Yes'
+                                              
+                            elif amount2 > amount1 :
+                                overdue = amount2 - amount1
+                                advance += overdue
+                                dic1['status'] = 'Overdue'
+                                dic1['overdue'] = overdue
+                                dic1['dueDate'] = dueDate
+                                dic1['feeAmt'] = amount1
+                                dic1['showBtn'] = 'No'
+
+                    else:
+                        dic1['status'] = 'Pending'           
+                        dic1['dueDate'] = dueDate
+                        dic1['feeAmt'] = float(feeStructure.first().amount)
+                        dic1['showBtn'] = 'Yes'
+                        adj_year[0] = 0
+                        adj_sem[0] = 0
+                        
+                else:
+                    dic1['status'] = "No-fee"
+                    dic1['showBtn'] = 'No'
+                    
+                data.append(dic1)
+            s+=1
+            e+=1 
+            
+        return render(request, 'student/student_fee_detail.html', {'student':student, 'totalFee':totalFee, 'data':data, 'role':role, 'fee':fee, 'paid':paid, 'pending':pending, 'advance':advance, 'percent':percent, 'paymentDetails':paymentDetails})
+                 
+    except Student.DoesNotExist:
+        messages.error(request, "Student not found")
+        return render(request, 'main/error.html', {
+        'message': 'Student not found with the provided ID.'
+    })
+
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        return render(request, 'main/error.html', {
+        'message': f'An unexpected error occurred while processing your request: {str(e)}'
+    })
+
+# PAYNOW FUNCTION FOR SHOWING THE PAYMENT DETAIL TO ADMIN ON CLICK PAY NOW BUTTON
 from django.db.models import Max
 from .models import Student, FeeStructure, FeePayment  # Replace your_app with your actual app name
-
 def payNow(request):
     if request.method == 'POST':
         try:
@@ -1623,19 +1629,21 @@ def payNow(request):
             S_sem = str(info.get('semester'))
             
             student = Student.objects.get(college_id=college_id)
-            course = Course.objects.get(course_id = student.course.course_id)
-            year = student.course.no_of_years
+            course = Course.objects.get(id = student.course.id)
+            year = student.course.years
             batch = student.date_of_joining.year
             s = 0
             e = 2 
+            feeShow = 0 # showing actual fees
+            payment = 0 # your actual payment
             due = 0
             extra = 0
             data = []
-            
             for i in range(1, year + 1):   
                 for j in range(s + i, e + i):   
-                    feeStructure = FeeStructure.objects.filter(year=str(i), semester=str(j), course = course, batch = str(batch)) 
-                    # Generate receipt no
+                    feeStructure = FeeStructure.objects.filter(year=str(i), semester=str(j), course = course.id, batch = str(batch)) 
+                    
+                    # GENERATE RECEIPT NUMBER
                     current_year = str(datetime.now().year)
                     max_receipt_result = FeePayment.objects.aggregate(max_receipt_no=Max('receipt_number'))
                     max_receipt_no = max_receipt_result['max_receipt_no']
@@ -1649,7 +1657,7 @@ def payNow(request):
                         except (ValueError, IndexError):
                             receipt_no = 'GK' + current_year + 'RC1'
 
-                            # Generate transaction id
+                    # GENERATE TRANSACTION ID
                     max_tr_result = FeePayment.objects.aggregate(max_tr_id=Max('transaction_id'))
                     max_tr_id = max_tr_result['max_tr_id']
                             
@@ -1661,41 +1669,42 @@ def payNow(request):
                             TR_id = f'GK{current_year}TR{numeric_part + 1}'
                         except (ValueError, IndexError):
                             TR_id = 'GK' + current_year + 'TR1'
-                    
+
+                    # REAL WORK START NOW
                     if feeStructure.exists(): 
                         feeShow = float(feeStructure.first().amount) 
                         feePayment = FeePayment.objects.filter(fee_structure=feeStructure.first(), student=student)
-                        
+                        amount1 = float(feeStructure.first().amount)
                         if feePayment.exists():
-                            amount1 = feeStructure.first().amount
-                            amount2 = feePayment.first().amount_paid
-                            ex = feePayment.first().extra
-                            amount2 = amount2 + ex
+                            amount2 = float(feePayment.aggregate(total=Sum('amount_paid'))['total'])
                             if amount1 == amount2 :
-                                if S_year == str(i) and S_sem == str(j):
-                                    data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Paid'})
+                                if int(S_year) == i and int(S_sem) == j:
+                                    data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Paid', 'payment': amount1})
                                     break        
                             else:
                                 if amount1 > amount2:
                                     pending = amount1 - amount2
                                     due += pending
                                     if S_year == str(i) and S_sem == str(j):
-                                        data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Due', 'due':due, 'extra':extra})
+                                        data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Due', 'due':due, 'extra':extra, 'payment':due})
                                         break
                                 
                                 elif amount2 > amount1:
+                                    ex = amount2 - amount1
                                     extra += ex
-                                    if S_year == str(i) and S_sem == str(j):
-                                        data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Overdue', 'extra':extra, 'due':due})
-                                        break
-                                
-                        elif not feePayment.exists() and str(i) == S_year and str(j) == S_sem:
-                            data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Pending','due':due, 'extra':extra})
-                            break
+                        else:
+                            payment = amount1
+                            if (j and int(S_sem)) != 1:  
+                                if due != 0:
+                                    payment += float(due)
+                                elif extra !=0:
+                                    payment -= float(extra)
+                                data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Pending','due':due, 'extra':extra, 'payment':payment})
+                                break
                         
-                        elif not feePayment.exists() and ((str(i) and S_year) == str(1)) and ((str(j) and S_sem) == str(1)):
-                            data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'New', 'due':due, 'extra':extra})
-                            break
+                            elif (j and int(S_sem)) == 1:
+                                data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'New', 'due':due, 'extra':extra, 'payment': payment})
+                                break
                 s += 1
                 e += 1        
             return JsonResponse({'data': data})
@@ -1731,7 +1740,6 @@ def submitFee(request):
                     'extra_amount': request.POST.get('extra_amount'),
                     'due_amount': request.POST.get('due_amount'),
                     'remark': request.POST.get('remark'),
-                    'checkbox': request.POST.get('checkbox')
                     }
             
             # Validate required fields
@@ -1745,71 +1753,83 @@ def submitFee(request):
             college_id = data.get('college_id')
             student = Student.objects.get(college_id = college_id)
 
-            year = student.course.no_of_years
-            sem = student.course.no_of_semesters
+            year = student.course.years
+            sem = student.course.semesters
             course = student.course
             batch = student.date_of_joining.year
+            # fetch from Ajax Function
             actualFee = float(data.get('totalFee'))
             amount_paid = float(data.get('paidFee'))
             clickedYear = data.get('clickedYear')
             clickedSem = data.get('clickedSem')
-            checkbox = data.get('checkbox')
             payment_method = data.get('method')
             transaction_id = data.get('transaction_id')
             receipt_number = data.get('receipt_no')
             remark = data.get('remark')
-            adj_year = 0
-            adj_sem = 0
-            due = 0
-            extra = 0
+            # variables
+            due_list = []
             for i in range(1, year+1):
                 for j in range(s+i, e+i):
-                    feeStructure = FeeStructure.objects.filter(year=str(i), semester=str(j), course = course, batch = str(batch)) 
+                    feeStructure = FeeStructure.objects.filter(year=str(i), semester=str(j), course = course.id, batch = str(batch)) 
                     if feeStructure.exists():
+                        amount1 = float(feeStructure.first().amount)
                         feePayment = FeePayment.objects.filter(fee_structure=feeStructure.first(), student=student)
-                        if feePayment.exists() and checkbox==True:
-                            amount1 = feeStructure.first().amount
-                            amount2 = feePayment.first().amount_paid
+                        if feePayment.exists():
+                            due = {}
+                            amount2 = float(feePayment.aggregate(total=Sum('amount_paid'))['total']) 
                             if amount1 == amount2:
-                                amount_paid +=0
+                                due['year'] = i
+                                due['semester'] = j
+                                due['amount'] = 0 
+                                due['extra'] = 0
                             else:
                                 if amount1 > amount2:
-                                    due += (amount1 - amount2)
-                                    if amount_paid > due:
-                                        amount_paid -= due
-                                        FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = due,
-                                                    payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
-                                                    remarks = 'Due Amount is Paid', verified_by = admin_college_id, due_amount = float(0), extra = float(0))
-                                        due = 0
-                                    else:
-                                        due -= amount_paid
-                                        if (j%2)==0:
-                                            adj_year = i+1
-                                        else:
-                                            adj_year = i
+                                    due['year'] = i
+                                    due['semester'] = j
+                                    due['amount'] = amount1-amount2 
+                                    due['extra'] = 0
+                                    if i == int(clickedYear) and j == int(clickedSem):
                                         FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = amount_paid,
-                                                    payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
-                                                    remarks = 'Due Amount is Pending', verified_by = admin_college_id, due_amount = float(due), extra = float(0),
-                                                    adjusted_in_year = str(adj_year), adjusted_in_semester = str(j))
-                                elif amount2 > amount1:
-                                    extra += (amount2 - amount1)
-                                    
-                        elif i == int(clickedYear) and j == int(clickedSem):
-                            if amount_paid > actualFee:
-                                extra += (amount_paid - actualFee)
-                                amount_paid -= extra
-                            else:
-                                due += (actualFee - amount_paid)
-                                if (j%2)==0:
-                                    adj_year = i+1
-                                    adj_sem = j
-                                else:
-                                    adj_year = i
-                                    adj_sem = j
-                            FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = amount_paid,
                                             payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
-                                            remarks = remark, verified_by = admin_college_id, due_amount = float(due), extra = float(extra),
-                                            adjusted_in_year = str(adj_year), adjusted_in_semester = str(adj_sem))
+                                            remarks = remark, verified_by = admin_college_id)
+                                        return JsonResponse({'success': 'Fee Submitted Successfully!'})
+                                elif amount1 < amount2:
+                                    due['year'] = i
+                                    due['semester'] = j
+                                    due['amount'] = 0
+                                    due['extra'] = amount2-amount1
+                            due_list.append(due)
+
+                            #  if payment not exist 
+                        elif i == int(clickedYear) and j == int(clickedSem):
+                            due_amount = 0
+                            n = 1
+                            
+                            for k in due_list:
+                                TR = f'{transaction_id[0:8]}{int(transaction_id[8:])+n}'
+                                RC = f'{receipt_number[0:8]}{int(receipt_number[8:])+n}'
+                                if len(k) != 0:
+                                    if k['amount'] != 0:
+                                        due_amount += k['amount']
+                                        due_fee_structure = FeeStructure.objects.filter(batch = str(batch), year = str(k['year']), semester = str(k['semester']), course = course.id)
+                                        FeePayment.objects.create(student = student, fee_structure = due_fee_structure.first(), amount_paid = float(k['amount']),
+                                            payment_method = payment_method, transaction_id = TR, receipt_number = RC,
+                                            remarks = 'Pay Due Amount First', verified_by = admin_college_id)
+                                    elif k['extra'] != 0:
+                                        extra_fee_structure = FeeStructure.objects.filter(batch = str(batch), year = str(k['year']), semester = str(k['semester']), course = course.id)
+                                        payment = FeePayment.objects.get(student = student, fee_structure = extra_fee_structure.first())
+                                        payment_date = payment.payment_date
+                                        actual_pay = payment.amount_paid
+                                        payment.amount_paid = float(actual_pay) - float(k['extra'])
+                                        FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = float(k['extra']),
+                                            payment_method = payment_method, transaction_id = TR, receipt_number = RC,
+                                            remarks = 'Adjust Extra Payment', verified_by = admin_college_id, payment_date = payment_date)
+                                        payment.save()
+                                        
+                                n+=1             
+                            FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = amount_paid-float(due_amount),
+                                            payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
+                                            remarks = remark, verified_by = admin_college_id)
                             return JsonResponse({'success': 'Fee Submitted Successfully!'})
                 s += 1
                 e += 1
@@ -1822,14 +1842,103 @@ def submitFee(request):
         return JsonResponse({'error':'Invalid Method!'}, status = 400)
 
 # for fee structure creation
-# [[[[[[[[[[[[[Send Batch Details]]]]]]]]]]]]]
+def course_details(request, template):
+    role = request.session.get('role')
+
+    try:
+        # Get all courses from Course model (not from Student records)
+        if template != 'chat/page2.html':
+            courses = Course.objects.all().values_list('name', flat=True)
+            students = Student.objects.all()
+            page_obj = None
+               
+        else:
+            courses = Course.objects.all().values_list('name', flat=True)
+            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
+            students = Student.objects.filter(followed_faculty=faculty)
+            return render(request, 'chat/page2.html', {
+                'faculty': faculty,
+                'courses': courses, 
+                'students': students, 
+                'role': role  # Removed duplicate 'role' parameter
+            })
+
+    except Exception as e:
+        messages.error(request, f"Error loading courses: {str(e)}")
+        return render(request, template, {
+            'courses': [],
+            'students': [], 
+            'faculty': [], 
+            'role': role,
+            'page_obj': []  # Added missing page_obj for error case
+        })
+
+def fee_structure_creation(request):
+    role = request.session.get('role')
+    courses = Course.objects.all()
+    students = Student.objects.all()
+    values = FeeStructure.objects.all().order_by("structure_id")
+    paginator = Paginator(values, 1)  # Changed from 1 to reasonable number
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+                
+                # for ajax working
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        data = []
+        for i in page_obj:
+            data.append({
+                'structure_id': i.structure_id, 
+                'course': i.course, 
+                'year': i.year, 
+                'semester': i.semester, 
+                'due_date': i.due_date.strftime("%Y-%m-%d"), 
+                'batch': i.batch, 
+                'amount': i.amount
+                 })
+        return JsonResponse({
+                        "data1": data, 
+                        "has_next": page_obj.has_next(), 
+                        "has_prev": page_obj.has_previous(),
+                        "page_number": page_obj.number, 
+                        "total_pages": paginator.num_pages  # Fixed variable name
+                    })
+                    
+    context = {
+            'courses':courses, 
+            'students': students, 
+            'role': role, 
+            'page_obj': page_obj
+            }
+    return render(request, 'feeStructureCreation.html', context)
+        
+def get_courses_details(request):
+   
+    try:
+      if request.method == 'POST':
+        data = json.loads(request.body)
+        course_name = data.get('course_name')
+        if not course_name or course_name == 'all':
+            return JsonResponse({'error': 'Please select a valid course'}, status=400)
+            
+        # Get the course - make sure name matching is case-insensitive
+        course = Course.objects.filter(id__iexact=course_name).first()
+        if not course:
+            return JsonResponse({'error': f'Course "{id}" not found'}, status=404)
+            
+        return JsonResponse({
+            'years': list(range(1, course.years + 1)),
+            'semesters': list(range(1, course.semesters + 1)),
+        })
+    except Exception as e:
+        return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
+    
 from django.db.models import Max, IntegerField
 from django.db.models.functions import Cast, Substr
 def sendBatch(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         course = data.get('course')
-        course_detail = Course.objects.get(name = course)
+        course_detail = Course.objects.get(id = course)
         year = data.get('year')
         semester = data.get('semester')
         try:
@@ -1840,7 +1949,7 @@ def sendBatch(request):
                max_id = 'ST' + str(max_id)
                student = Student.objects.get(college_id = str(max_id))
                 # get course fees:
-               fees = float((Course.objects.get(name = course).fees_per_year)/2)
+               fees = float((Course.objects.get(id = course).fees_per_year)/2)
                return JsonResponse({'batch':student.date_of_joining.year,'fees':fees})
             else:
                 return JsonResponse({'error':'Student Does not exist with this Infomation!'},status=400)        
@@ -2469,217 +2578,412 @@ def delete_chat(request, room_id):
         'message': 'Invalid request method'
     }, status=405)
 
-
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, redirect
 from django.core.paginator import Paginator
 from .models import Department, Faculty, Student, Course
-from .form import DepartmentForm
+from .serializers import DepartmentSerializers
+
+from django.core.paginator import Paginator
+
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+import json
 
 def department_creation(request):
-    # Always get departments list for the template
     role = request.session.get('role')
-    details = Department.objects.all().order_by("department_id")
-    paginator = Paginator(details, 5) 
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    total_department = Department.objects.count()
-    total_faculty = Faculty.objects.count()
-    enrolled_students = Student.objects.count()
-    total_course = Course.objects.count()
-    programs = Course.objects.all().order_by('code')
-    # Handle AJAX requests first
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        data = []
-        for department in page_obj:
-            data.append({
-                "department_id": department.department_id,
-                "name": department.name,
-                "code": department.code,
-                "type": department.type,
-                "faculty_count": department.faculty_count,
-                "programs_count": department.programs_count,
-                "student_capacity": department.student_capacity
-                
+    
+    # Count stats
+    students = Student.objects.count()
+    faculty = Faculty.objects.count()
+    courses = Course.objects.count()
+    departments = Department.objects.count()
+
+    # programs
+    programs = Course.objects.all().order_by('id')
+    
+    # AJAX request for pagination/search
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            # Get search query
+            search_query = request.GET.get('search', '')
+            page = request.GET.get('page', 1)
+            
+            # Get departments with search filter
+            departments_list = Department.objects.all().order_by('id')
+            
+            if search_query:
+                departments_list = departments_list.filter(
+                    name__icontains=search_query
+                ) | departments_list.filter(
+                    code__icontains=search_query
+                ) | departments_list.filter(
+                    type__icontains=search_query
+                )
+            
+            # Pagination
+            paginator = Paginator(departments_list, 10)
+            page_obj = paginator.page(page)
+            
+            # Prepare response data
+            departments_data = []
+            for dept in page_obj:
+                departments_data.append({
+                    'department_id': dept.id,
+                    'name': dept.name,
+                    'type': dept.type,
+                    'code': dept.code,
+                    'faculty_count': dept.faculty_count,
+                    'programs_count': dept.programs_count,
+                })
+            
+            return JsonResponse({
+                'departments': departments_data,
+                'has_previous': page_obj.has_previous(),
+                'has_next': page_obj.has_next(),
+                'current_page': page_obj.number,
+                'total_pages': paginator.num_pages,
+                'total_departments': paginator.count
             })
-        return JsonResponse({
-            "details": data,
-            "has_next": page_obj.has_next(),
-            "has_prev": page_obj.has_previous(),
-            "page_number": page_obj.number,
-            "total_pages": paginator.num_pages
-        })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
     
+    # POST request for creating department
     if request.method == 'POST':
-        action = request.POST.get('form_name')
-        
-        if action == 'departmentCreation':
+        try:
+            data = json.loads(request.body)
+            department_data = {
+                'name': data.get('deptName', '').strip(),
+                'code': data.get('deptCode', ''),
+                'type': data.get('deptType', ''),
+                'description': data.get('deptDescription', ''),
+                'programs_count': data.get('deptProgram', ''),
+                'faculty_count': data.get('deptFaculty', '')
+            }
+
+            serializer = DepartmentSerializers(data=department_data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse({'success': 'Department Created Successfully!'})
+            else:
+                return JsonResponse({'error': f'An Error Occurred: {serializer.errors}'}, status=400)
+        except json.JSONDecodeError as e:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400) 
+        except Exception as e:
+            return JsonResponse({'error': f'An Error Occurred: {str(e)}'}, status=500)
+
+    if request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            department_id = data.get('Id')
+            
             try:
-                max_id = Department.objects.aggregate(max_id=models.Max('department_id'))['max_id']
+                department = Department.objects.get(id=department_id)
+                department.delete()
+                return JsonResponse({'success': 'Department deleted successfully!'})
+            except Department.DoesNotExist:
+                return JsonResponse({'error': 'Department not found!'}, status=404)
                 
-                if max_id is None:
-                    department_id = 'DEP-0'  # Initial ID
-                else:
-                    try:
-                        # Extract numeric part and increment
-                        numeric_part = int(max_id[4:])  # Remove 'ST' prefix
-                        department_id = f'DEP-{numeric_part + 1}'
-                    except (ValueError, IndexError):
-                        department_id = 'DEP-0'  # Fallback if format is wrong
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
-                code = request.POST.get('code')
-                if Department.objects.filter(code=code).exists():
-                    messages.error(request, f"Department with code '{code}' already exists!")
-                else:
-                    Department.objects.create(
-                        department_id = department_id,
-                        name=request.POST.get('name'),
-                        code=code,
-                        type=request.POST.get('type'),
-                        description=request.POST.get('description'),
-                        programs_count=request.POST.get('programe'),
-                        faculty_count=request.POST.get('facultyCount'),
-                        student_capacity=request.POST.get('studentCapacity'),
-                    )
-                    messages.success(request, "Department Created Successfully!")
-                    # Redirect to prevent form resubmission on refresh
-                    return redirect('department_creation')
-            except Exception as e:
-                messages.error(request, f"Error adding department: {str(e)}")
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body)
+            department_id = data.get('Id')
+            name = data.get('name', '').strip()
+            
+            if not name:
+                return JsonResponse({'error': 'Department name is required!'}, status=400)
+            
+            try:
+                department = Department.objects.get(id=department_id)
+                department.name = name
+                department.save()
+                return JsonResponse({'success': 'Department updated successfully!'})
+            except Department.DoesNotExist:
+                return JsonResponse({'error': 'Department not found!'}, status=404)
+                
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    # Initial page load
+    context = {
+        'departments': departments,
+        'faculty': faculty,
+        'students': students,
+        'courses': courses,
+        'role': role,
+        'programs':programs
+    }
     
-    # Always return the render with details
-    return render(request, 'department.html', {
-        "page_obj": page_obj,
-        'total_department': total_department,
-        'total_faculty': total_faculty,
-        'enrolled_students': enrolled_students,
-        'total_course': total_course,
-        'programs': programs,
-        'role':role
-    })
+    return render(request, 'Creation/department.html', context)
 
-from django.shortcuts import get_object_or_404
-class DepartmentUpdateView(UpdateView):
-    model = Department
-    form_class = DepartmentForm
-    template_name = "department.html"
-    success_url = reverse_lazy("department_creation")
+from .serializers import DepartmentSerializers
+
+def get_department_detail(request):
+    if request.method == 'GET':
+        department_id = request.GET.get('id')
+        
+        if not department_id:
+            return JsonResponse({'error': 'Department ID is required!'}, status=400)
+        
+        try:
+            department = Department.objects.get(id=department_id)
+            
+            # Use serializer
+            serializer = DepartmentSerializers(department)
+            
+            # Add extra fields if needed
+            data = serializer.data
+            data['created_at'] = department.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            data['updated_at'] = department.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+            
+            return JsonResponse({'department': data})
+            
+        except Department.DoesNotExist:
+            return JsonResponse({'error': 'Department not found!'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
     
-    # Override get_object to use department_id instead of pk
-    def get_object(self, queryset=None):
-        department_id = self.kwargs.get('pk')
-        return get_object_or_404(Department, department_id=department_id)
-
-class DepartmentDeleteView(DeleteView):
-    model = Department
-    template_name = "department.html"
-    success_url = reverse_lazy("department_creation")
-    
-    # Override get_object to use department_id instead of pk
-    def get_object(self, queryset=None):
-        department_id = self.kwargs.get('pk')
-        return get_object_or_404(Department, department_id=department_id)
-
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 # course craetion
-from .models import Department, Course,Level
-from django.db.models import Q
+from .models import Department, Course, Level
+from .serializers import CourseSerializers
+
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+import json
+from .models import Course, Department, Level
+from .serializers import CourseSerializers
 
 def course_creation(request):
-    role = request.session.get('role')
-    action = request.POST.get('form_name')
-    query = request.POST.get('q')
-    details = Course.objects.all().order_by('created_at')
-    if query : 
-        details = details.filter(
-        Q(name__icontains=query)|
-        Q(code__icontains=query)|
-        Q(department__name=query)|
-        Q(level__name=query)
-        )    
-    paginator = Paginator(details,5)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        data = []
-        for course in page_obj:
-            data.append({
-                "name": course.name,
-                "department": course.department.name,
-                "code": course.code,
-                "no_of_years": course.no_of_years,
-                "no_of_semesters": course.no_of_semesters,
-                "student_capacity": course.student_capacity,
-                "level":course.level.name, 
-                
-            })
-        return JsonResponse({
-            "details": data,
-            "has_next": page_obj.has_next(),
-            "has_prev": page_obj.has_previous(),
-            "page_number": page_obj.number,
-            "total_pages": paginator.num_pages
-        })        
-    try:
-        # Get lists for both GET and POST requests
-        department_list = Department.objects.filter(type='Faculty')
-        level_list = Level.objects.all()
-        
-        if request.method == 'POST':
-            action = request.POST.get('form_name')
-            if action == 'courseCreation':
-                try:
-                    # Get and convert form data
-                    duration = int(request.POST.get('courseDuration'))
-                    capacity = int(request.POST.get('studentCapacity'))
-                    fees = float(request.POST.get('courseFees'))
-                    # Auto-generate employee ID
-                    max_id = Course.objects.aggregate(max_id=models.Max('course_id'))['max_id']
-                
-                    if max_id is None:
-                        course_id = 'GK-C-01'  # Initial ID
-                    else:
-                        try:
-                            # Extract numeric part and increment
-                            numeric_part = int(max_id[5:])  # Remove 'GK' prefix
-                            course_id = f'GK-C-{numeric_part + 1}'
-                        except (ValueError, IndexError):
-                            course_id = 'GK-C-01'  
-                    
-                    # Create course with foreign key IDs
-                    Course.objects.create(
-                        course_id = course_id,
-                        image = request.POST.get('cousreImage'),
-                        name=request.POST.get('courseName'),
-                        department_id=request.POST.get('courseDepartment'),  # Use _id field
-                        no_of_years=duration,
-                        no_of_semesters=duration * 2,
-                        code=request.POST.get('courseCode'),
-                        description=request.POST.get('courseDescription'),
-                        student_capacity=capacity,
-                        level_id=request.POST.get('courseLevel'),  # Use _id field
-                        fees_per_year=fees,
-                        no_of_lecture = request.POST.get('courseLecture')
-                    )
-                    messages.success(request, f"Course Created Successfully with {course_id}!")
-                    return redirect("course_creation")
-                except ValueError:
-                    messages.error(request, "Invalid number format in form data")
-                except Exception as e:
-                    messages.error(request, f"Error adding course: {str(e)}")
+    # Get all departments and levels for dropdown
+    department_list = Department.objects.all()
+    level_list = Level.objects.all()
+    
+    # AJAX request for pagination/search
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        try:
+            # Get search query
+            search_query = request.GET.get('search', '')
+            page = request.GET.get('page', 1)
             
-    except Exception as e:
-        messages.error(request, f"Error loading page: {str(e)}")
-    return render(request, 'course_creation.html', {
-            'department_list': department_list,
-            'level_list': level_list,
-            'details':details,
-            'role':role,
-            "page_obj": page_obj, 
-            "course":details,
-            "query":query
-        })
+            # Get courses with search filter
+            courses_list = Course.objects.all().select_related('department', 'level').order_by('name')
+            
+            if search_query:
+                courses_list = courses_list.filter(
+                    name__icontains=search_query
+                ) | courses_list.filter(
+                    code__icontains=search_query
+                ) | courses_list.filter(
+                    department__name__icontains=search_query
+                )
+            
+            # Pagination - 10 items per page
+            paginator = Paginator(courses_list, 10)
+            page_obj = paginator.page(page)
+            
+            # Prepare response data
+            courses_data = []
+            for course in page_obj:
+                courses_data.append({
+                    'id': course.id,
+                    'name': course.name,
+                    'code': course.code,
+                    'department': course.department.name,
+                    'department_id': course.department.id,
+                    'level': course.level.name,
+                    'level_id': course.level.id,
+                    'years': course.years,
+                    'semesters': course.semesters,
+                    'student_capacity': course.student_capacity,
+                    'fees_per_year': course.fees_per_year,
+                    'description': course.description,
+                    'created_at': course.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                    'updated_at': course.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+                })
+            
+            return JsonResponse({
+                'courses': courses_data,
+                'has_previous': page_obj.has_previous(),
+                'has_next': page_obj.has_next(),
+                'current_page': page_obj.number,
+                'total_pages': paginator.num_pages,
+                'total_courses': paginator.count
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    # POST request for creating course
+    if request.method == 'POST':
+        try:
+            # Check if it's form data (with image) or JSON data
+            if 'application/json' in request.content_type:
+                data = json.loads(request.body)
+                
+                # Handle JSON data (for AJAX without image)
+                course_data = {
+                    'name': data.get('courseName', '').strip(),
+                    'code': data.get('courseCode', '').strip(),
+                    'department': data.get('courseDepartment'),
+                    'level': data.get('courseLevel'),
+                    'years': data.get('courseDuration'),
+                    'semesters': data.get('courseSemesters', 2),  # Default 2 semesters per year
+                    'description': data.get('courseDescription', ''),
+                    'student_capacity': data.get('studentCapacity'),
+                    'fees_per_year': data.get('courseFees'),
+                    'image': None  # Image not supported via JSON
+                }
+                
+                serializer = CourseSerializers(data=course_data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse({'success': 'Course Created Successfully!'})
+                else:
+                    return JsonResponse({'error': f'Validation Error: {serializer.errors}'}, status=400)
+                    
+            else:
+                # Handle form data with image
+                name = request.POST.get('courseName', '').strip()
+                code = request.POST.get('courseCode', '').strip()
+                department_id = request.POST.get('courseDepartment')
+                level_id = request.POST.get('courseLevel')
+                years = request.POST.get('courseDuration')
+                description = request.POST.get('courseDescription', '')
+                student_capacity = request.POST.get('studentCapacity')
+                fees_per_year = request.POST.get('courseFees')
+                image = request.FILES.get('courseImage')
+                
+                # Get department and level instances
+                try:
+                    department = Department.objects.get(id=department_id)
+                    level = Level.objects.get(name=level_id)
+                except (Department.DoesNotExist, Level.DoesNotExist) as e:
+                    return JsonResponse({'error': f'Invalid department or level: {str(e)}'}, status=400)
+                
+                # Calculate semesters (2 per year)
+                semesters = int(years) * 2 if years else 2
+                
+                # Create course
+                course = Course(
+                    name=name,
+                    code=code,
+                    department=department,
+                    level=level,
+                    years=years,
+                    semesters=semesters,
+                    description=description,
+                    student_capacity=student_capacity,
+                    fees_per_year=fees_per_year,
+                    image=image
+                )
+                course.save()
+                
+                return JsonResponse({'success': 'Course Created Successfully!'})
+                
+        except json.JSONDecodeError as e:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400) 
+        except Exception as e:
+            return JsonResponse({'error': f'An Error Occurred: {str(e)}'}, status=500)
+    
+    # Initial page load
+    context = {
+        'department_list': department_list,
+        'level_list': level_list,
+    }
+    
+    return render(request, 'Creation/course_creation.html', context)
+
+# Add these functions for delete, update, view
+def delete_course(request):
+    if request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            course_id = data.get('Id')
+            
+            try:
+                course = Course.objects.get(id=course_id)
+                course.delete()
+                return JsonResponse({'success': 'Course deleted successfully!'})
+            except Course.DoesNotExist:
+                return JsonResponse({'error': 'Course not found!'}, status=404)
+                
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def update_course(request):
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body)
+            course_id = data.get('Id')
+            name = data.get('name', '').strip()
+            
+            if not name:
+                return JsonResponse({'error': 'Course name is required!'}, status=400)
+            
+            try:
+                course = Course.objects.get(id=course_id)
+                course.name = name
+                course.save()
+                return JsonResponse({'success': 'Course updated successfully!'})
+            except Course.DoesNotExist:
+                return JsonResponse({'error': 'Course not found!'}, status=404)
+                
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def get_course_detail(request):
+    if request.method == 'GET':
+        course_id = request.GET.get('id')
+        
+        if not course_id:
+            return JsonResponse({'error': 'Course ID is required!'}, status=400)
+        
+        try:
+            course = Course.objects.get(id=course_id)
+            
+            # Prepare course data
+            course_data = {
+                'id': course.id,
+                'name': course.name,
+                'code': course.code,
+                'department': course.department.name,
+                'level': course.level.name,
+                'years': course.years,
+                'semesters': course.semesters,
+                'description': course.description,
+                'student_capacity': course.student_capacity,
+                'fees_per_year': course.fees_per_year,
+                'created_at': course.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'updated_at': course.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'image_url': course.image.url if course.image else None
+            }
+            
+            return JsonResponse({'course': course_data})
+            
+        except Course.DoesNotExist:
+            return JsonResponse({'error': 'Course not found!'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+   
     
 # Created Positions
 from .models import Position, Department
@@ -3288,9 +3592,9 @@ def semester_and_year(request):
         try:  
             data = json.loads(request.body) 
             course_id = data.get('course_id')
-            course = Course.objects.get(course_id = course_id)
-            year = list(range(1,course.no_of_years + 1))
-            semester = list(range(1,course.no_of_semesters + 1))
+            course = Course.objects.get(id = course_id)
+            year = list(range(1,course.years + 1))
+            semester = list(range(1,course.semesters + 1))
             level = course.level.name
             return JsonResponse({'year':year, 'semester':semester ,'success':'work successfully!', 'level':level})
         except Exception as e:
@@ -3339,6 +3643,7 @@ def EditSelectedSubmit(request):
     else:
         return JsonResponse({'error':'An Error Occured : Invalid Request!'})
 
+
 # FOR creating subjects 
 def subjectCreation(request):
     role = request.session.get('role')
@@ -3381,7 +3686,7 @@ def subjectCreation(request):
             return JsonResponse({'error':f"Subjects Already Exists!"})
         # return JsonResponse({'success':f"Subject Submmited Successfully! {subject}"})
             
-    courses = Course.objects.all().order_by('course_id')
+    courses = Course.objects.all().order_by('id')
 
     return render(request, 'admin/subjectCreation.html', {
         'courses': courses,
@@ -3409,16 +3714,19 @@ def contentCreation(request):
         level = contentData.get('level')
         semester = contentData.get('semester')
         subject = contentData.get('subject')
-        contents = contentData.get('contents', [])
+        contents = contentData.get('contents', [])        
         content_filter = Subject_Details.objects.get(course = course, level = level, semester = semester, name = subject)
         all_content = []
+        content_dict = {}
         for i in contents:
-            all_content.append(i['name'])
+            # all_content.append(i['name'])
+            content_dict[str(i['name'])] = 'Pending'
+        all_content.append(content_dict)
         content_filter.content = all_content
         content_filter.save()
-        return JsonResponse({'success':f"Subject Submmited Successfully!"})
+        return JsonResponse({'success':f"Content Submmited Successfully!"})
             
-    courses = Course.objects.all().order_by('course_id')
+    courses = Course.objects.all().order_by('id')
 
     return render(request, 'admin/contentCreation.html', {
         'courses': courses,
@@ -3456,10 +3764,10 @@ def studentCourseDetailView(request):
     
     name = f'{student.name} {student.last_name}'
     course = f'{student.course.code}-{student.course.level.name}'
-    no_semester = student.course.no_of_semesters
+    no_semester = student.course.semesters
 
     subject = Subject_Details.objects.filter(
-        course = student.course.course_id,
+        course = student.course.id,
         level = student.course.level.name
     )
 
@@ -3509,7 +3817,9 @@ def studentCourseDetailView(request):
 from django.shortcuts import render
 from .utils import get_client_ip, is_college_wifi, personal_college_pin_for_faculty, personal_college_pin_for_admin, valid_timing_for_qr_code
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 @never_cache
 def check_wifi_ip(request, Person):
     ip = get_client_ip(request)
@@ -3538,6 +3848,7 @@ def check_wifi_ip(request, Person):
     context.pop('request_name')
     return render(request, html_page, context)
 
+@csrf_exempt
 @never_cache
 def college_pin_checking(request):
     if request.method == 'POST':
@@ -3559,6 +3870,7 @@ def college_pin_checking(request):
     else:
         return JsonResponse({'error':'An Error Occured : Invalid Request!'})
 
+@csrf_exempt
 @never_cache
 def scan_qr_Code(request):
     return render(request, 'faculty/attendance/scanning.html')
@@ -3603,6 +3915,7 @@ def qr_data_generator(timestamp, token, data):
     
     return qr_data, qr_data_uri
 
+@csrf_exempt
 @never_cache
 def generate_QR_code(request):
     # current timestamp
@@ -3626,10 +3939,11 @@ def generate_QR_code(request):
         set_time = datetime.strptime(str(qr_code.time), '%H:%M:%S.%f')
         start = True
         seconds = int(valid_timing_for_qr_code(start))*60
-        time_seconds = int(seconds) - int((current_time - set_time).total_seconds()) 
+        time_seconds = int(seconds) - int((current_time - set_time).total_seconds())     
+        qr_data, qr_data_uri = qr_data_generator(qr_code.timestamp, qr_code.token, qr_code.random_data)
         if time_seconds < 0:
             time_seconds = 0
-        qr_data, qr_data_uri = qr_data_generator(qr_code.timestamp, qr_code.token, qr_code.random_data)
+            qr_data = '.........................'
         context =  {
         "qr_data": qr_data,  # Full QR string
         "generated_time":qr_code.date + ' ' + qr_code.time,
@@ -3652,10 +3966,46 @@ def generate_QR_code(request):
         "token": token,  # UUID token
         "time_seconds":time_seconds
         }
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            completed = data.get('completed')
+            if completed:
+                admin = []
+                faculty = []
+                message = ''
+                if Admin.objects.exists(): 
+                    admin = Admin.objects.values_list('college_id', flat=True)
+                    for i in admin:
+                        single_admin = Faculty_and_Admin_Attedance.objects.filter(collegeID = i, date = current_date)
+                        if not single_admin.exists():     
+                            Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Absent', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
+                            if len(message) == 0:
+                                message += 'Admin'
+
+                if Faculty.objects.exists():
+                    faculty = Faculty.objects.values_list('college_id', flat=True)
+                    for j in faculty:
+                        single_faculty = Faculty_and_Admin_Attedance.objects.filter(collegeID = j, date = current_date)
+                        if not single_faculty.exists():     
+                            Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Absent', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
+                            if len(message) != 0:
+                                message += ' and Faculty'
+                            else:
+                                message +='Faculty'
+
+                if len(message)!= 0 :
+                    message += ' Attendance Marked!'
+                return JsonResponse({'success':f'{message}'}) 
+                        
+        except Exception as e:
+            return JsonResponse({'error': f'An Error Occured: {str(e)}!'})
      
     return render(request, "faculty/attendance/QR_code.html", context)
 
 # QR verification function
+@csrf_exempt
 @csrf_exempt
 def verify_qr(request):
     if request.method == "POST":
@@ -3782,6 +4132,7 @@ def verify_qr(request):
     })
 from .models import Faculty_and_Admin_Attedance
 
+@csrf_exempt
 @never_cache
 def personal_code_verification(request, Person):
     if Person == 'Faculty':
@@ -3816,6 +4167,8 @@ def personal_code_verification(request, Person):
         'Person':Person,
         }
     return render(request, 'faculty/attendance/biometric_verification.html',context)
+
+@csrf_exempt
 @never_cache
 def personal_code_creation(request,Person):
     if Person == 'Faculty':
@@ -3841,12 +4194,80 @@ def personal_code_creation(request,Person):
         }
     return render(request, 'faculty/attendance/personal_code_creation.html',context)
 
-# def attendance_successfull_message(request):
-#     return render(request, 'faculty/attendance/success_status_shown.html')
+from .serializers import LeaveSerializer
+import json
+from datetime import datetime
+from django.utils import timezone
+from .pagination import LeavePagination
+from rest_framework.views import APIView
 
+def leave_request_making(request, Person):
+    role = request.session.get('role')
+    
+    if Person == 'Faculty':
+        college_id = request.session.get('faculty_college_id')
+        detail = Faculty.objects.get(college_id=college_id)
+        name = f'{detail.name} {detail.last_name}'
+        position = f'{detail.position.name} Level-{detail.position.level}'
+        department = f'{detail.department.name}'
+        leaves = Leave.objects.filter(college_id=college_id)
+
+    if request.method == 'POST':
+        try:
+            form_data = json.loads(request.body)
+            
+            # Map form fields to model fields
+            leave_data = {
+                'college_id': form_data.get('college_id', '').strip(),
+                'subject': form_data.get('leaveSubject', '').strip(),
+                'start_date': form_data.get('startDate'),
+                'end_date': form_data.get('endDate'),
+                'total_days': form_data.get('totalDays'),
+                'leave_type': form_data.get('leaveType', '').strip(),
+                'contact_during_leave': form_data.get('contactNumber', '').strip(),
+                'reason': form_data.get('leaveReason', '').strip(),
+                'status': 'Pending',
+            }
+            
+            serializer = LeaveSerializer(data=leave_data)
+            
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse({'success': 'Leave application submitted successfully!'}, status=201)
+            else:
+                return JsonResponse({'error': serializer.errors}, status=400)
+                
+        except json.JSONDecodeError as e:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    # if request.method == 'GET':
+    #     try:
+    #         leaves = Leave.objects.filter(college_id = college_id).order_by('id')
+    #         search = request.GET.get('search')
+    #         if search:
+    #             leaves = leaves.filter(id__icontains=search)
+    #         paginator = LeavePagination()
+    #         paginator.page_size = 5
+    #         paginated_data = paginator.paginate_queryset(leaves, request)
+    #         serializer = LeaveSerializer(paginated_data, many=True)
+    #         return paginator.get_paginated_response(serializer.data)
         
+    #     except json.JSONDecodeError as e:
+    #         return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+    #     except Exception as e:
+    #         return JsonResponse({'error': str(e)}, status=500)
 
-
+    context = {
+        'role': role,
+        'college_id': college_id,
+        'name': name,
+        'position': position,
+        'department': department,
+        'leaves': leaves
+    }
+    return render(request, 'faculty/attendance/leave.html', context)
 
 
 
@@ -3885,27 +4306,22 @@ def download_photo(request):
             response['Content-Disposition'] = 'attachment; filename="photo.jpg"'
             return response
     return HttpResponse("Photo not found", status=404)
+
+
     
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import User
+from .models import ChatMessage
 
+def chat_page(request, user_id):
+    # Jis student se baat karni hai uska data
+    other_user = get_object_or_404(User, id=user_id)
+    
+    # Purani chat history load karne ke liye (Optional)
+    room_name = f'{min(request.user.id, other_user.id)}_{max(request.user.id, other_user.id)}'
+    messages = ChatMessage.objects.filter(thread_name=room_name).order_create('timestamp')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return render(request, 'chat_room.html', {
+        'other_user': other_user,
+        'messages': messages
+    })

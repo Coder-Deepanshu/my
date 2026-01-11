@@ -277,25 +277,8 @@
                             <h4 class="mb-4">Academic Information</h4>
 
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="education" class="form-label"><i class="fas fa-graduation-cap"></i>
-                                            Education Level</label>
-                                        <select class="form-select" id="education" name="education" required>
-                                            <option value="" selected disabled>Select education level</option>
-                                            {% if level %}
-                                               {% for i in level %}
-                                                   <option value="{{ i.id }}">{{ i.name }}</option>
-                                               {% endfor %}
-                                            {% else %}
-                                               <option value="" selected disabled>No Level Found</option>
-                                            {% endif %}
 
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="course" class="form-label"><i class="fas fa-book"></i> Select
                                             Course</label>
@@ -303,7 +286,7 @@
                                             <option value="" selected disabled>Choose a course</option>
                                             {% if course %}
                                                {% for i in course %}
-                                                   <option value="{{ i.id }}">{{ i.name }}</option>
+                                                   <option value="{{ i.id }}">{{ i.name }} {{ i.level.name }}</option>
                                                {% endfor %}
                                             {% else %}
                                                <option value="" selected disabled>No Courses Found</option>
@@ -496,7 +479,6 @@
                                     <h5 class="mb-0">Academic Information</h5>
                                 </div>
                                 <div class="card-body">
-                                    <p><strong>Education Level:</strong> <span id="reviewEducation"></span></p>
                                     <p><strong>Course:</strong> <span id="reviewCourse"></span></p>
                                     <p><strong>Tenth GPA:</strong> <span id="reviewtenthGpa"></span></p>
                                     <p><strong>Twelth GPA:</strong> <span id="reviewtwelthGpa"></span></p>
@@ -777,8 +759,7 @@
                         <i class="fas fa-check-circle text-success fa-3x"></i>
                     </div>
                     <h4 class="text-center mb-3">Congratulations!</h4>
-                    <p class="text-center">The student has been successfully added to the system with ID: <strong>{{
-                            college_id }}</strong></p>
+                    <p class="text-center">The student has been successfully added to the system </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue</button>
@@ -883,7 +864,6 @@
                 $('#reviewPhone').text($('#phone').val());
                 $('#reviewfatherPhone').text($('#otherphone').val());
                 $('#reviewAddress').text($('#address').val() + ', ' + $('#city').val() + ', ' + $('#state').val() + ' ' + $('#zipcode').val());
-                $('#reviewEducation').text($('#education').find('option:selected').text());
                 $('#reviewtenthGpa').text($('#tenthgpa').val());
                 $('#reviewtwelthGpa').text($('#twelthgpa').val());
                 $('#reviewCourse').text($('#course').find('option:selected').text());

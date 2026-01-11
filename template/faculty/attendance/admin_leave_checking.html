@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Leave Management | EduTrack</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Admin dashboard for managing faculty leave applications - approve, reject, and track all leave requests">
+    <meta name="keywords" content="admin leave management, faculty leave approval, education administration, leave tracking">
+    <meta name="author" content="EduTrack University">
+    
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Admin Header */
+        .admin-header {
+            padding: 20px 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.pending {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+
+        .stat-icon.approved {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success);
+        }
+
+        .stat-icon.rejected {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger);
+        }
+
+        .stat-icon.total {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .stat-content p {
+            color: var(--gray);
+            margin: 5px 0 0;
+            font-weight: 500;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        /* Leave Table */
+        .leave-table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            padding: 25px 25px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        .table thead th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--light-gray);
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-pending {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #856404;
+        }
+
+        .badge-approved {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #155724;
+        }
+
+        .badge-rejected {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #721c24;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-sm:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-approve {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-reject {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-view {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-download {
+            background-color: var(--info);
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--light-gray);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        /* Leave Details */
+        .leave-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .detail-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .detail-card h4 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-card p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        /* Approval Form */
+        .approval-form {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            outline: none;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 25px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .page-item {
+            list-style: none;
+        }
+
+        .page-link {
+            padding: 8px 16px;
+            border: 1px solid var(--light-gray);
+            background: white;
+            color: var(--dark);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .page-link:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-link.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .admin-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .action-buttons {
+                justify-content: center;
+            }
+
+            .modal-content {
+                margin: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-container {
+                padding: 15px;
+            }
+
+            .modal-body {
+                padding: 15px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Message Alerts */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .quick-stat {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .quick-stat h5 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .quick-stat p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="admin-logo">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Leave Management</span>
+                </div>
+                <div class="admin-actions">
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-user"></i> Admin User
+                    </span>
+                    <button class="btn btn-light btn-sm">
+                        <i class="fas fa-download"></i> Export Report
+                    </button>
+                    <button class="btn btn-light btn-sm" id="refreshData">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="quick-stat">
+                <h5>Today's Leaves</h5>
+                <p>8</p>
+            </div>
+            <div class="quick-stat">
+                <h5>Pending Action</h5>
+                <p>12</p>
+            </div>
+            <div class="quick-stat">
+                <h5>This Month</h5>
+                <p>45</p>
+            </div>
+            <div class="quick-stat">
+                <h5>Approval Rate</h5>
+                <p>78%</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>127</h3>
+                    <p>Total Leaves</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>24</h3>
+                    <p>Pending Review</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon approved">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>89</h3>
+                    <p>Approved</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon rejected">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>14</h3>
+                    <p>Rejected</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div>
+                    <label class="form-label">Status Filter</label>
+                    <select class="form-control" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Department</label>
+                    <select class="form-control" id="departmentFilter">
+                        <option value="">All Departments</option>
+                        <option value="cs">Computer Science</option>
+                        <option value="math">Mathematics</option>
+                        <option value="phy">Physics</option>
+                        <option value="chem">Chemistry</option>
+                        <option value="bio">Biology</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Date Range</label>
+                    <div class="input-group">
+                        <input type="date" class="form-control" id="startDate">
+                        <span class="input-group-text">to</span>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-primary w-100" id="applyFilter">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Table -->
+        <div class="leave-table-container">
+            <div class="table-header">
+                <h3 class="table-title">
+                    <i class="fas fa-list"></i> Faculty Leave Applications
+                </h3>
+                <div class="table-actions">
+                    <div class="input-group" style="max-width: 300px;">
+                        <input type="text" class="form-control" placeholder="Search faculty or leave type...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Application ID</th>
+                            <th>Faculty Name</th>
+                            <th>Department</th>
+                            <th>Leave Type</th>
+                            <th>From - To</th>
+                            <th>Days</th>
+                            <th>Applied On</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Pending Leave -->
+                        <tr data-id="1">
+                            <td><strong>#L-2023-1128</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #4361ee; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RS</div>
+                                    <div>
+                                        <div>Prof. Rohan Sharma</div>
+                                        <small class="text-muted">ID: FAC-101</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Computer Science</td>
+                            <td>Medical Leave</td>
+                            <td>
+                                <div>28 Nov 2023</div>
+                                <small class="text-muted">to 30 Nov 2023</small>
+                            </td>
+                            <td><strong>3 days</strong></td>
+                            <td>25 Nov 2023</td>
+                            <td>
+                                <span class="badge badge-pending">
+                                    <i class="fas fa-clock"></i> Pending
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-sm btn-approve approve-leave" data-id="1">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn-sm btn-reject reject-leave" data-id="1">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                    <button class="btn-sm btn-view view-leave" data-id="1">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Approved Leave -->
+                        <tr data-id="2">
+                            <td><strong>#L-2023-1125</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">PM</div>
+                                    <div>
+                                        <div>Prof. Priya Mehta</div>
+                                        <small class="text-muted">ID: FAC-205</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Mathematics</td>
+                            <td>Conference</td>
+                            <td>
+                                <div>5 Dec 2023</div>
+                                <small class="text-muted">to 8 Dec 2023</small>
+                            </td>
+                            <td><strong>4 days</strong></td>
+                            <td>20 Nov 2023</td>
+                            <td>
+                                <span class="badge badge-approved">
+                                    <i class="fas fa-check"></i> Approved
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-sm btn-view view-leave" data-id="2">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn-sm btn-download">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Rejected Leave -->
+                        <tr data-id="3">
+                            <td><strong>#L-2023-1120</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #dc3545; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">AS</div>
+                                    <div>
+                                        <div>Prof. Amit Singh</div>
+                                        <small class="text-muted">ID: FAC-312</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Physics</td>
+                            <td>Casual Leave</td>
+                            <td>
+                                <div>15 Dec 2023</div>
+                                <small class="text-muted">to 16 Dec 2023</small>
+                            </td>
+                            <td><strong>2 days</strong></td>
+                            <td>18 Nov 2023</td>
+                            <td>
+                                <span class="badge badge-rejected">
+                                    <i class="fas fa-times"></i> Rejected
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-sm btn-view view-leave" data-id="3">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn-sm btn-download">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Pending Leave -->
+                        <tr data-id="4">
+                            <td><strong>#L-2023-1118</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #4361ee; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">NM</div>
+                                    <div>
+                                        <div>Prof. Neha Mathur</div>
+                                        <small class="text-muted">ID: FAC-408</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Chemistry</td>
+                            <td>Maternity Leave</td>
+                            <td>
+                                <div>1 Jan 2024</div>
+                                <small class="text-muted">to 1 Apr 2024</small>
+                            </td>
+                            <td><strong>90 days</strong></td>
+                            <td>15 Nov 2023</td>
+                            <td>
+                                <span class="badge badge-pending">
+                                    <i class="fas fa-clock"></i> Pending
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-sm btn-approve approve-leave" data-id="4">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn-sm btn-reject reject-leave" data-id="4">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                    <button class="btn-sm btn-view view-leave" data-id="4">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Approved Leave -->
+                        <tr data-id="5">
+                            <td><strong>#L-2023-1115</strong></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #28a745; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">RK</div>
+                                    <div>
+                                        <div>Prof. Rajesh Kumar</div>
+                                        <small class="text-muted">ID: FAC-519</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Biology</td>
+                            <td>Earned Leave</td>
+                            <td>
+                                <div>10 Nov 2023</div>
+                                <small class="text-muted">to 14 Nov 2023</small>
+                            </td>
+                            <td><strong>5 days</strong></td>
+                            <td>5 Nov 2023</td>
+                            <td>
+                                <span class="badge badge-approved">
+                                    <i class="fas fa-check"></i> Approved
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-sm btn-view view-leave" data-id="5">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn-sm btn-download">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <ul class="d-flex gap-2 list-unstyled">
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+                    <li class="page-item"><a class="page-link active" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Detail Modal -->
+    <div class="modal-overlay" id="leaveDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-file-alt"></i> Leave Application Details
+                </h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Leave Details will be populated here by JavaScript -->
+                <div id="leaveDetailsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rejection Reason Modal -->
+    <div class="modal-overlay" id="rejectionModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-times-circle"></i> Reject Leave Application
+                </h3>
+                <button class="modal-close" id="closeRejectionModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Please provide a reason for rejecting this leave application:</p>
+                <form id="rejectionForm">
+                    <div class="form-group">
+                        <label class="form-label">Rejection Reason</label>
+                        <textarea class="form-control" id="rejectionReason" rows="4" placeholder="Enter reason for rejection..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notify Faculty</label>
+                        <select class="form-control" id="notificationType">
+                            <option value="email">Send Email Notification</option>
+                            <option value="both">Email & SMS</option>
+                            <option value="none">No Notification</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="rejectionLeaveId">
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelRejection">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Main JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Modal Elements
+            const leaveModal = document.getElementById('leaveDetailModal');
+            const rejectionModal = document.getElementById('rejectionModal');
+            const closeModal = document.getElementById('closeModal');
+            const closeRejectionModal = document.getElementById('closeRejectionModal');
+            const cancelRejection = document.getElementById('cancelRejection');
+            
+            // Current leave ID for actions
+            let currentLeaveId = null;
+
+            // Sample leave data
+            const leaveData = {
+                1: {
+                    id: "L-2023-1128",
+                    faculty: "Prof. Rohan Sharma",
+                    facultyId: "FAC-101",
+                    department: "Computer Science",
+                    leaveType: "Medical Leave",
+                    fromDate: "28 Nov 2023",
+                    toDate: "30 Nov 2023",
+                    totalDays: "3",
+                    appliedOn: "25 Nov 2023",
+                    status: "pending",
+                    reason: "Suffering from severe viral fever with high temperature. Doctor has advised complete bed rest for 3 days. Medical certificate attached.",
+                    contact: "+91 9876543210",
+                    email: "rohan.sharma@university.edu",
+                    attachment: "medical_certificate.pdf",
+                    approvalChain: [
+                        { name: "HOD (Computer Science)", status: "pending" },
+                        { name: "Dean (Faculty of Science)", status: "pending" },
+                        { name: "Principal", status: "pending" }
+                    ],
+                    remarks: ""
+                },
+                2: {
+                    id: "L-2023-1125",
+                    faculty: "Prof. Priya Mehta",
+                    facultyId: "FAC-205",
+                    department: "Mathematics",
+                    leaveType: "Conference Attendance",
+                    fromDate: "5 Dec 2023",
+                    toDate: "8 Dec 2023",
+                    totalDays: "4",
+                    appliedOn: "20 Nov 2023",
+                    status: "approved",
+                    reason: "Attending International Conference on Advanced Mathematics at IIT Delhi. Paper presentation scheduled on 6th December.",
+                    contact: "+91 9876543211",
+                    email: "priya.mehta@university.edu",
+                    attachment: "conference_invitation.pdf",
+                    approvalChain: [
+                        { name: "HOD (Mathematics)", status: "approved", date: "22 Nov 2023" },
+                        { name: "Dean (Faculty of Science)", status: "approved", date: "23 Nov 2023" },
+                        { name: "Principal", status: "approved", date: "24 Nov 2023" }
+                    ],
+                    remarks: "Leave approved. Please submit conference report upon return."
+                }
+            };
+
+            // View Leave Details
+            document.querySelectorAll('.view-leave').forEach(button => {
+                button.addEventListener('click', function() {
+                    const leaveId = this.getAttribute('data-id');
+                    currentLeaveId = leaveId;
+                    showLeaveDetails(leaveId);
+                });
+            });
+
+            // Show leave details in modal
+            function showLeaveDetails(leaveId) {
+                const leave = leaveData[leaveId] || leaveData[1]; // Fallback to first leave
+                
+                const detailsHTML = `
+                    <div class="leave-details-grid">
+                        <div class="detail-card">
+                            <h4>Application ID</h4>
+                            <p>#${leave.id}</p>
+                        </div>
+                        <div class="detail-card">
+                            <h4>Faculty</h4>
+                            <p>${leave.faculty} (${leave.facultyId})</p>
+                        </div>
+                        <div class="detail-card">
+                            <h4>Department</h4>
+                            <p>${leave.department}</p>
+                        </div>
+                        <div class="detail-card">
+                            <h4>Leave Type</h4>
+                            <p>${leave.leaveType}</p>
+                        </div>
+                        <div class="detail-card">
+                            <h4>Leave Period</h4>
+                            <p>${leave.fromDate} to ${leave.toDate}</p>
+                        </div>
+                        <div class="detail-card">
+                            <h4>Total Days</h4>
+                            <p>${leave.totalDays} days</p>
+                        </div>
+                        <div class="detail-card">
+                            <h4>Contact During Leave</h4>
+                            <p>${leave.contact}</p>
+                        </div>
+                        <div class="detail-card">
+                            <h4>Email</h4>
+                            <p>${leave.email}</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Reason for Leave</h4>
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                            <p>${leave.reason}</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Supporting Document</h4>
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <i class="fas fa-file-pdf text-danger"></i>
+                                    <strong> ${leave.attachment}</strong>
+                                </div>
+                                <button class="btn-sm btn-primary">
+                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Approval Chain</h4>
+                        <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 10px;">
+                            ${leave.approvalChain.map((step, index) => `
+                                <div class="d-flex justify-content-between align-items-center mb-2 ${index < leave.approvalChain.length - 1 ? 'pb-2 border-bottom' : ''}">
+                                    <div>
+                                        <i class="fas fa-user-tie text-primary"></i>
+                                        <span class="ms-2">${step.name}</span>
+                                    </div>
+                                    <div>
+                                        ${step.status === 'approved' ? 
+                                            `<span class="badge badge-approved">
+                                                <i class="fas fa-check"></i> Approved ${step.date ? `on ${step.date}` : ''}
+                                            </span>` : 
+                                            step.status === 'rejected' ? 
+                                            `<span class="badge badge-rejected">
+                                                <i class="fas fa-times"></i> Rejected
+                                            </span>` :
+                                            `<span class="badge badge-pending">
+                                                <i class="fas fa-clock"></i> Pending
+                                            </span>`
+                                        }
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    ${leave.remarks ? `
+                    <div class="detail-card">
+                        <h4>Remarks</h4>
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                            <p>${leave.remarks}</p>
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+
+                document.getElementById('leaveDetailsContent').innerHTML = detailsHTML;
+                leaveModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Approve Leave
+            document.querySelectorAll('.approve-leave').forEach(button => {
+                button.addEventListener('click', function() {
+                    const leaveId = this.getAttribute('data-id');
+                    if (confirm(`Approve leave application #L-2023-11${leaveId}?`)) {
+                        approveLeave(leaveId);
+                    }
+                });
+            });
+
+            // Reject Leave
+            document.querySelectorAll('.reject-leave').forEach(button => {
+                button.addEventListener('click', function() {
+                    const leaveId = this.getAttribute('data-id');
+                    currentLeaveId = leaveId;
+                    document.getElementById('rejectionLeaveId').value = leaveId;
+                    rejectionModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // Approve leave function
+            function approveLeave(leaveId) {
+                // In real application, send AJAX request to server
+                showMessage('success', `Leave application #L-2023-11${leaveId} has been approved successfully.`);
+                
+                // Update UI
+                const row = document.querySelector(`tr[data-id="${leaveId}"]`);
+                if (row) {
+                    const statusCell = row.querySelector('td:nth-child(8)');
+                    const actionCell = row.querySelector('td:nth-child(9)');
+                    
+                    statusCell.innerHTML = `
+                        <span class="badge badge-approved">
+                            <i class="fas fa-check"></i> Approved
+                        </span>
+                    `;
+                    
+                    actionCell.innerHTML = `
+                        <div class="action-buttons">
+                            <button class="btn-sm btn-view view-leave" data-id="${leaveId}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn-sm btn-download">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Re-attach event listeners
+                    actionCell.querySelector('.view-leave').addEventListener('click', function() {
+                        showLeaveDetails(leaveId);
+                    });
+                }
+                
+                updateStats();
+            }
+
+            // Reject leave form submission
+            document.getElementById('rejectionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const leaveId = document.getElementById('rejectionLeaveId').value;
+                const reason = document.getElementById('rejectionReason').value;
+                const notificationType = document.getElementById('notificationType').value;
+                
+                if (!reason.trim()) {
+                    alert('Please enter rejection reason');
+                    return;
+                }
+                
+                // In real application, send AJAX request to server
+                showMessage('error', `Leave application #L-2023-11${leaveId} has been rejected. Reason: ${reason}`);
+                
+                // Update UI
+                const row = document.querySelector(`tr[data-id="${leaveId}"]`);
+                if (row) {
+                    const statusCell = row.querySelector('td:nth-child(8)');
+                    const actionCell = row.querySelector('td:nth-child(9)');
+                    
+                    statusCell.innerHTML = `
+                        <span class="badge badge-rejected">
+                            <i class="fas fa-times"></i> Rejected
+                        </span>
+                    `;
+                    
+                    actionCell.innerHTML = `
+                        <div class="action-buttons">
+                            <button class="btn-sm btn-view view-leave" data-id="${leaveId}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="btn-sm btn-download">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Re-attach event listeners
+                    actionCell.querySelector('.view-leave').addEventListener('click', function() {
+                        showLeaveDetails(leaveId);
+                    });
+                }
+                
+                // Close modal
+                rejectionModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                document.getElementById('rejectionForm').reset();
+                
+                updateStats();
+            });
+
+            // Update statistics
+            function updateStats() {
+                const pendingCount = document.querySelectorAll('.badge-pending').length;
+                const approvedCount = document.querySelectorAll('.badge-approved').length;
+                const rejectedCount = document.querySelectorAll('.badge-rejected').length;
+                const totalCount = pendingCount + approvedCount + rejectedCount;
+                
+                // Update quick stats
+                document.querySelectorAll('.quick-stat p')[0].textContent = pendingCount;
+                document.querySelectorAll('.quick-stat p')[1].textContent = pendingCount;
+                document.querySelectorAll('.quick-stat p')[2].textContent = totalCount;
+                
+                // Update main stats
+                document.querySelectorAll('.stat-content h3')[1].textContent = pendingCount;
+                document.querySelectorAll('.stat-content h3')[2].textContent = approvedCount;
+                document.querySelectorAll('.stat-content h3')[3].textContent = rejectedCount;
+            }
+
+            // Show message function
+            function showMessage(type, text) {
+                // Remove existing messages
+                const existingMsg = document.querySelector('.alert-message');
+                if (existingMsg) existingMsg.remove();
+                
+                // Create new message
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `alert alert-${type === 'success' ? 'success' : 'error'} alert-message`;
+                messageDiv.style.cssText = 'position: fixed; top: 100px; right: 20px; z-index: 3000; max-width: 400px;';
+                messageDiv.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    ${text}
+                `;
+                
+                document.body.appendChild(messageDiv);
+                
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    messageDiv.remove();
+                }, 5000);
+            }
+
+            // Close modals
+            closeModal.addEventListener('click', () => {
+                leaveModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+
+            closeRejectionModal.addEventListener('click', () => {
+                rejectionModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                document.getElementById('rejectionForm').reset();
+            });
+
+            cancelRejection.addEventListener('click', () => {
+                rejectionModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                document.getElementById('rejectionForm').reset();
+            });
+
+            // Close modals when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === leaveModal) {
+                    leaveModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+                if (event.target === rejectionModal) {
+                    rejectionModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    document.getElementById('rejectionForm').reset();
+                }
+            });
+
+            // Apply filters
+            document.getElementById('applyFilter').addEventListener('click', function() {
+                const status = document.getElementById('statusFilter').value;
+                const department = document.getElementById('departmentFilter').value;
+                
+                // In real application, this would filter server-side
+                showMessage('info', `Filters applied: Status: ${status || 'All'}, Department: ${department || 'All'}`);
+            });
+
+            // Refresh data
+            document.getElementById('refreshData').addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+                    this.disabled = false;
+                    showMessage('success', 'Data refreshed successfully');
+                }, 1000);
+            });
+
+            // Initialize
+            updateStats();
+        });
+    </script>
+</body>
+
+</html>
