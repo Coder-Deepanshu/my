@@ -193,21 +193,42 @@ EMAIL_HOST_USER = 'edutrack496@gmail.com'
 EMAIL_HOST_PASSWORD = 'xqvw xgmf xfix lyks'
 DEFAULT_FROM_EMAIL = 'edutrack496@gmail.com'
 
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+# CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# TIME_ZONE = 'Asia/Kolkata'
+
+# ==============================
+# CELERY CONFIGURATION
+# ==============================
+CELERY_BROKER_URL = 'redis://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379'
+CELERY_RESULT_BACKEND = 'redis://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-TIME_ZONE = 'Asia/Kolkata'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True  # Important for Celery 5+
 
+# ==============================
+# TIMEZONE
+# ==============================
+TIME_ZONE = 'Asia/Kolkata'
+USE_TZ = True
+
+# ==============================
+# REDIS CONFIGURATION
+# ==============================
 import os
+from urllib.parse import urlparse
 
 REDIS_URL = "redis://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"
 
 # Parse the URL
-from urllib.parse import urlparse
-# URL को parse करें
 url = urlparse(REDIS_URL)
 
-# Django Channels Configuration
+# ==============================
+# DJANGO CHANNELS CONFIGURATION
+# ==============================
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -215,11 +236,14 @@ CHANNEL_LAYERS = {
             "hosts": [(url.hostname, url.port)],  # hostname और port
             "password": url.password,  # password automatically
             "ssl": True,  # Upstash के लिए जरूरी है
+            "ssl_cert_reqs": None,  # SSL certificate verify नहीं करेगा
         },
     },
 }
 
-# Optional: Cache के लिए भी Redis use करें
+# ==============================
+# CACHE CONFIGURATION
+# ==============================
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -227,6 +251,26 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             "SSL": True,  # SSL enable करें
+            "SSL_CERT_REQS": None,  # SSL certificate verify नहीं करेगा
+            "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None},  # Connection pool के लिए
         }
     }
+}
+
+# ==============================
+# OPTIONAL: FOR CELERY WITH SSL
+# ==============================
+# Celery के लिए Redis connection options
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 3600,
+    'socket_timeout': 10,
+    'socket_connect_timeout': 10,
+    'retry_on_timeout': True,
+    'ssl_cert_reqs': None,  # SSL certificate verify नहीं करेगा
+}
+
+# या alternative
+import ssl
+CELERY_REDIS_BACKEND_USE_SSL = {
+    'ssl_cert_reqs': ssl.CERT_NONE
 }
