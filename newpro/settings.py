@@ -198,48 +198,56 @@ DEFAULT_FROM_EMAIL = 'edutrack496@gmail.com'
 # CELERY_TASK_SERIALIZER = 'json'
 # TIME_ZONE = 'Asia/Kolkata'
 
-# settings.py में ये पूरा code replace कर दो:
+# settings.py में ये exact code replace करें:
 
-# ==================== UPSTASH REDIS CONFIGURATION ====================
 import os
 import ssl
 
-# Your Upstash Redis URL
+# ==================== UPSTASH REDIS URL ====================
 UPSTASH_REDIS_URL = "rediss://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"
 
 # ==================== CELERY CONFIGURATION ====================
-CELERY_BROKER_URL = UPSTASH_REDIS_URL + "/0"
-CELERY_RESULT_BACKEND = UPSTASH_REDIS_URL + "/1"
+# URL में SSL parameter explicitly add करें
+CELERY_BROKER_URL = UPSTASH_REDIS_URL + "/0?ssl_cert_reqs=none"
+CELERY_RESULT_BACKEND = UPSTASH_REDIS_URL + "/1?ssl_cert_reqs=none"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Kolkata'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_BROKER_USE_SSL = {'ssl_cert_reqs': ssl.CERT_NONE}
 
-# ==================== DJANGO CHANNELS CONFIGURATION ====================
+# Explicit SSL settings
+CELERY_REDIS_BACKEND_USE_SSL = {
+    'ssl_cert_reqs': ssl.CERT_NONE
+}
+CELERY_BROKER_USE_SSL = {
+    'ssl_cert_reqs': ssl.CERT_NONE
+}
+
+# ==================== DJANGO CHANNELS ====================
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [UPSTASH_REDIS_URL + "/2"],
-            "connection_kwargs": {"ssl_cert_reqs": None},
+            "hosts": [UPSTASH_REDIS_URL + "/2?ssl_cert_reqs=none"],
         },
     },
 }
 
-# ==================== CACHE CONFIGURATION ====================
+# ==================== CACHE ====================
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": UPSTASH_REDIS_URL + "/3",
+        "LOCATION": UPSTASH_REDIS_URL + "/3?ssl_cert_reqs=none",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None},
+            "CONNECTION_POOL_KWARGS": {
+                "ssl_cert_reqs": None,
+                "ssl": True
+            },
         }
     }
 }
 
-# ==================== TIMEZONE ====================
 TIME_ZONE = 'Asia/Kolkata'
 USE_TZ = True
