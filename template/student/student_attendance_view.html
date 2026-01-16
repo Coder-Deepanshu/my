@@ -86,7 +86,7 @@
             {% endif %}
 
             <div class="filter-section">
-                <form id="filterForm" method="GET" action="{% url 'get_student_attendance' %}">
+                <form id="filterForm" method="GET" action="#">
                     <input type="hidden" name="student_id" value="{{ student.id }}">
                     <div class="filter-group">
                         <label for="course"><i class="fas fa-book"></i> Course:</label>

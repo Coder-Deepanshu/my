@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q, Sum
-from .models import Student, Faculty, Course, Attendance,Admin, FeeStructure, FeePayment,StudentBalance # Import the new Attendance model
+from .models import Student, Faculty, Course, Attendance,Admin, FeeStructure, FeePayment # Import the new Attendance model
 from django.http import JsonResponse
 import json # For handling JSON data from AJAX requests
 from django.db.models.functions import Coalesce
@@ -820,6 +820,7 @@ def student_functions(request):
                     other_phone_no=request.POST.get("otherphone"),
                     gender=request.POST.get("gender"),
                     course_id=request.POST.get("course"),
+                    department = request.POST.get("course").department.id,
                     birthday=request.POST.get("birthday"),
                     address=request.POST.get("address"),
                     city=request.POST.get("city"),
@@ -1155,6 +1156,37 @@ def admin_functions(request):
 from django.template.loader import render_to_string
 from django.core.paginator import Paginator
 
+def course_details(request, template):
+    role = request.session.get('role')
+
+    try:
+        # Get all courses from Course model (not from Student records)
+        if template != 'chat/page2.html':
+            courses = Course.objects.all().values_list('name', flat=True)
+            students = Student.objects.all()
+            page_obj = None
+               
+        else:
+            courses = Course.objects.all().values_list('name', flat=True)
+            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
+            students = Student.objects.filter(followed_faculty=faculty)
+            return render(request, 'chat/page2.html', {
+                'faculty': faculty,
+                'courses': courses, 
+                'students': students, 
+                'role': role  # Removed duplicate 'role' parameter
+            })
+
+    except Exception as e:
+        messages.error(request, f"Error loading courses: {str(e)}")
+        return render(request, template, {
+            'courses': [],
+            'students': [], 
+            'faculty': [], 
+            'role': role,
+            'page_obj': []  # Added missing page_obj for error case
+        })
+
 def filtered_students(request, template):
     try:
         filters = {
@@ -1188,189 +1220,7 @@ def filtered_students(request, template):
     html = render_to_string(template, {'students': students})
     return JsonResponse({'html': html})
 
-# for attendance management student-faculty
-from django.utils import timezone
-@csrf_exempt
-def save_attendance(request):
-    if not request.session.get('faculty_college_id'):
-        return JsonResponse({'error': 'Please login as faculty first'}, status=403)
-        
-    if request.method == 'POST':
-        try:
-            lecture = request.POST.get('lecture')
-            date = request.POST.get('date')
-            attendance_data = json.loads(request.POST.get('attendance'))
-            course_name = request.POST.get('course')
-            
-            if not lecture or not date or not attendance_data or not course_name:
-                return JsonResponse({'error': 'Missing required data'}, status=400)
-                
-            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-            course = Course.objects.get(code=course_name)
-            
-            saved_count = 0
-            duplicate_entries = []
-            new_entries = []
-            
-            for record in attendance_data:
-                student = Student.objects.get(id=record['student_id'])
-                
-                # Check if attendance already exists
-                existing_attendance = Attendance.objects.filter(
-                    student=student,
-                    course=course,
-                    lecture_number=lecture,
-                    date=date
-                ).first()
-                
-                if existing_attendance:
-                    # Record duplicate entry
-                    duplicate_entries.append({
-                        'student_id': student.id,
-                        'student_name': student.name,
-                        'existing_status': existing_attendance.status,
-                        'new_status': record['status'].capitalize()
-                    })
-                    continue
-                
-                # Create new attendance record
-                Attendance.objects.create(
-                    student=student,
-                    course=course,
-                    lecture_number=lecture,
-                    date=date,
-                    faculty=faculty,
-                    department=student.course.department if hasattr(student.course, 'department') else '',
-                    status=record['status'].capitalize(),
-                    timing=timezone.now()
-                )
-                
-                new_entries.append({
-                    'student_id': student.id,
-                    'student_name': student.name,
-                    'status': record['status'].capitalize()
-                })
-                saved_count += 1
-                
-            response_data = {
-                'success': True,
-                'message': f'Attendance saved successfully for {saved_count} students',
-                'saved_count': saved_count,
-                'new_entries': new_entries,
-                'duplicate_entries': duplicate_entries
-            }
-            
-            if duplicate_entries:
-                response_data['warning'] = f'Found {len(duplicate_entries)} duplicate attendance records that were not saved'
-                
-            return JsonResponse(response_data)
-            
-        except Student.DoesNotExist:
-            return JsonResponse({'error': 'One or more students not found'}, status=404)
-        except Course.DoesNotExist:
-            return JsonResponse({'error': 'Course not found'}, status=404)
-        except Faculty.DoesNotExist:
-            return JsonResponse({'error': 'Faculty not found'}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-            
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-
-from datetime import datetime
-from django.core.paginator import Paginator
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from newapp.models import Student, Attendance  # Yahan 'newapp' use karo (apne app ka naam)
-
-def student_attendance_view(request):
-    role = request.session.get('role')
-    if not request.session.get('student_college_id'):
-        messages.error(request, "Please login as student first")
-        return redirect('login')
-        
-    try:
-        student = Student.objects.get(college_id=request.session['student_college_id'])
-        # Get distinct years from attendance records
-        years = Attendance.objects.filter(student=student).dates('date', 'year').distinct()
-        years = [year.year for year in years]
-        
-        current_year = datetime.now().year
-        
-        return render(request, 'student/student_attendance_view.html', {
-            'student': student,
-            'years': years,
-            'current_year': current_year,
-            'role': role
-        })
-        
-    except Student.DoesNotExist:
-        messages.error(request, "Student not found")
-        return redirect('dashboard2')
-    except Exception as e:
-        messages.error(request, f"An error occurred: {str(e)}")
-        return redirect('dashboard2')
-
-def get_student_attendance(request):
-    try:
-        student_id = request.GET.get('student_id')
-        month = request.GET.get('month', 'all')
-        year = request.GET.get('year', 'all')
-        status = request.GET.get('status', 'all')
-        course = request.GET.get('course', 'all')
-        
-        student = Student.objects.get(id=student_id)
-        attendance = Attendance.objects.filter(student=student)
-        
-        if course != 'all':
-            attendance = attendance.filter(course__name=course)
-        if month != 'all':
-            attendance = attendance.filter(date__month=month)
-        if year != 'all':
-            attendance = attendance.filter(date__year=year)
-        if status != 'all':
-            attendance = attendance.filter(status=status)
-            
-        attendance = attendance.order_by('-date', 'lecture_number')
-
-        # pagination
-        paginator = Paginator(attendance, 10)
-        page_number = request.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-        
-        # Calculate summary
-        total_lectures = attendance.count()
-        present = attendance.filter(status='Present').count()
-        absent = attendance.filter(status='Absent').count()
-        
-        attendance_percentage = 0
-        if total_lectures > 0:
-            attendance_percentage = round((present / total_lectures) * 100, 2)
-            
-        # Get distinct years again for the template
-        years = Attendance.objects.filter(student=student).dates('date', 'year').distinct()
-        years = [year.year for year in years]
-        
-        return render(request, 'student/student_attendance_view.html', {
-            'page_obj': page_obj,
-            'summary': {
-                'total_lectures': total_lectures,
-                'present': present,
-                'absent': absent,
-                'attendance_percentage': attendance_percentage
-            },
-            'student': student,
-            'years': years,
-            'current_year': datetime.now().year,
-            'role': request.session.get('role')
-        })
-        
-    except Exception as e:
-        messages.error(request, f"An error occurred: {str(e)}")
-        return redirect('student_attendance_view')
-
 # FOR FEES MANAGEMENT OF STUDENT
-
 # for student, for viewing fees
 def student_fees_view(request):
     role = request.session.get('role')
@@ -1567,6 +1417,7 @@ def single_student_fees_view(request, college_id):
                         if amount1 == amount2 :
                             dic1['status'] = 'Paid'
                             dic1['feeAmt'] = amount1
+                            dic1['paid'] = amount2
                                 
                         elif amount1 != amount2:
                             if amount1 > amount2 :
@@ -1577,6 +1428,7 @@ def single_student_fees_view(request, college_id):
                                 dic1['dueDate'] = dueDate
                                 dic1['feeAmt'] = amount1
                                 dic1['showBtn'] = 'Yes'
+                                dic1['paid'] = amount2
                                               
                             elif amount2 > amount1 :
                                 overdue = amount2 - amount1
@@ -1586,6 +1438,7 @@ def single_student_fees_view(request, college_id):
                                 dic1['dueDate'] = dueDate
                                 dic1['feeAmt'] = amount1
                                 dic1['showBtn'] = 'No'
+                                dic1['paid'] = amount2
 
                     else:
                         dic1['status'] = 'Pending'           
@@ -1842,37 +1695,6 @@ def submitFee(request):
         return JsonResponse({'error':'Invalid Method!'}, status = 400)
 
 # for fee structure creation
-def course_details(request, template):
-    role = request.session.get('role')
-
-    try:
-        # Get all courses from Course model (not from Student records)
-        if template != 'chat/page2.html':
-            courses = Course.objects.all().values_list('name', flat=True)
-            students = Student.objects.all()
-            page_obj = None
-               
-        else:
-            courses = Course.objects.all().values_list('name', flat=True)
-            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-            students = Student.objects.filter(followed_faculty=faculty)
-            return render(request, 'chat/page2.html', {
-                'faculty': faculty,
-                'courses': courses, 
-                'students': students, 
-                'role': role  # Removed duplicate 'role' parameter
-            })
-
-    except Exception as e:
-        messages.error(request, f"Error loading courses: {str(e)}")
-        return render(request, template, {
-            'courses': [],
-            'students': [], 
-            'faculty': [], 
-            'role': role,
-            'page_obj': []  # Added missing page_obj for error case
-        })
-
 def fee_structure_creation(request):
     role = request.session.get('role')
     courses = Course.objects.all()
@@ -1909,7 +1731,7 @@ def fee_structure_creation(request):
             'role': role, 
             'page_obj': page_obj
             }
-    return render(request, 'feeStructureCreation.html', context)
+    return render(request, 'Creation/feeStructureCreation.html', context)
         
 def get_courses_details(request):
    
@@ -3514,6 +3336,27 @@ def viewDocuments(request, college_id, documentid):
 def demo2(request):
     return render(request, 'demo2.html')
 
+# FOR STUDENT ASSIGNMENT
+def faculty_student_assignment(request):
+    role = request.session.get('role')
+    faculty_college_id = request.session.get('faculty_college_id')
+    faculty = Faculty.objects.get(college_id = faculty_college_id)
+    name = f'{faculty.name} {faculty.last_name}'
+    department = f'{faculty.department.name} - {faculty.department.code}'
+    position = f'{faculty.position.name} - {faculty.position.level}'
+    now = datetime.now()
+    date = now.date()
+
+    context = {
+        'role':role,
+        'college_id':faculty_college_id,
+        'name':name,
+        'department':department,
+        'position':position,
+        'date':date
+        }
+    return render(request, 'faculty/studentAssignment.html', context)
+
 def studentAssignment(request):
     return render(request,'student/studentAssignment.html')
 
@@ -3538,7 +3381,7 @@ def BulkStudentManagement(request):
     # 🔥 Filter only when values are valid
     if course != 'all':
         try:
-            course_obj = Course.objects.get(course_id=course)
+            course_obj = Course.objects.get(id=course)
             students = students.filter(course=course_obj)
         except Course.DoesNotExist:
             pass  # Avoid crashing
@@ -3579,7 +3422,7 @@ def BulkStudentManagement(request):
             "has_prev": page_obj.has_previous(),
         })
 
-    courses = Course.objects.all().order_by('course_id')
+    courses = Course.objects.all().order_by('id')
 
     return render(request, 'bulkActions/student/studentActions.html', {
         'courses': courses,
@@ -3717,14 +3560,21 @@ def contentCreation(request):
         contents = contentData.get('contents', [])        
         content_filter = Subject_Details.objects.get(course = course, level = level, semester = semester, name = subject)
         all_content = []
-        content_dict = {}
-        for i in contents:
+        if len(contents) !=0:
+            for i in contents:
+                content_dict = {}
             # all_content.append(i['name'])
-            content_dict[str(i['name'])] = 'Pending'
-        all_content.append(content_dict)
-        content_filter.content = all_content
-        content_filter.save()
-        return JsonResponse({'success':f"Content Submmited Successfully!"})
+                # content_dict[str(i['name'])] = 'Pending'
+                content_dict['name'] = str(i['name'])
+                content_dict['status'] = 'Pending'
+                all_content.append(content_dict)
+            content_filter.content = all_content
+            content_filter.save()
+            return JsonResponse({'success':f"Content Submmited Successfully!"})
+        else:
+            content_filter.content = []
+            return JsonResponse({'success':f"Content Submmited Successfully with null!"})
+        
             
     courses = Course.objects.all().order_by('id')
 
@@ -3745,7 +3595,7 @@ def subjectFilter(request):
             subjects = Subject_Details.objects.filter(course = course, semester = semester)
             if subjects.exists():
                 data = []
-                for name in  subjects.values_list('name', flat=True):
+                for name in subjects.values_list('name', flat=True):
                     data.append({'name':name})
                     
                 return JsonResponse({'data':data})
@@ -3780,21 +3630,24 @@ def studentCourseDetailView(request):
 
         for sub in semester_subjects:
             contents = []
+            # status = []
 
             # Handle Dict type JSON
             if isinstance(sub.content, dict):
                 for key, value in sub.content.items():
-                    contents.append({'content': value})
+                    contents.append({'content': value['name']})
 
             # Handle List type JSON
             elif isinstance(sub.content, list):
                 for value in sub.content:
-                    contents.append({'content': value})
+                    contents.append({'content': value['name']})
+                    # status.append({'state': value.status})
 
             data.append({
             'name': sub.name,
             'code':sub.code,
-            'contents': contents
+            'contents': contents,
+            # 'status': status
              })
 
         return JsonResponse({'subject': data})
@@ -3915,6 +3768,10 @@ def qr_data_generator(timestamp, token, data):
     
     return qr_data, qr_data_uri
 
+from .utils import background_leave_time
+from django.utils.timezone import now
+from datetime import timedelta
+from .tasks import finalize_attendance
 @csrf_exempt
 @never_cache
 def generate_QR_code(request):
@@ -3927,9 +3784,9 @@ def generate_QR_code(request):
     # QR data - format: timestamp=...&token=...&data=...
     data = generate_random_token()
     
-    now = datetime.now()
-    current_date = now.date()
-    current_time = now.time()
+    now_time = datetime.now()
+    current_date = now_time.date()
+    current_time = now_time.time()
     
     qr_code = QR_code.objects.filter(date = current_date)
 
@@ -3968,6 +3825,7 @@ def generate_QR_code(request):
         }
 
     if request.method == 'POST':
+        leave_time = background_leave_time(True)
         try:
             data = json.loads(request.body)
             completed = data.get('completed')
@@ -3980,7 +3838,20 @@ def generate_QR_code(request):
                     for i in admin:
                         single_admin = Faculty_and_Admin_Attedance.objects.filter(collegeID = i, date = current_date)
                         if not single_admin.exists():     
-                            Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Absent', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
+                            leave =  Leave.objects.filter(college_id = i, start_date__lte = current_date, end_date__gte = current_date)  
+                            if leave.exists():
+                                status = leave.first().status
+                                if status == 'Pending':
+                                    Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Pending', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
+                                    finalize_time = now() + timedelta(minutes=leave_time)
+                                    finalize_attendance.apply_async(args=[current_date, i], eta=finalize_time)
+                                elif status == 'Approved':
+                                    Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Leave', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
+                                elif status == 'Rejected':
+                                    Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Absent', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
+                            elif not leave.exists():
+                                Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Absent', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
+                                
                             if len(message) == 0:
                                 message += 'Admin'
 
@@ -3988,8 +3859,21 @@ def generate_QR_code(request):
                     faculty = Faculty.objects.values_list('college_id', flat=True)
                     for j in faculty:
                         single_faculty = Faculty_and_Admin_Attedance.objects.filter(collegeID = j, date = current_date)
-                        if not single_faculty.exists():     
-                            Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Absent', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
+                        if not single_faculty.exists(): 
+                            leave =  Leave.objects.filter(college_id = j, start_date__lte = current_date, end_date__gte = current_date)  
+                            if leave.exists():
+                                status = leave.first().status
+                                if status == 'Pending':
+                                    Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Pending', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
+                                    finalize_time = now() + timedelta(minutes=leave_time)
+                                    finalize_attendance.apply_async(args=[current_date, j], eta=finalize_time)
+                                elif status == 'Approved':
+                                    Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Leave', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
+                                elif status == 'Rejected':
+                                    Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Absent', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
+                            elif not leave.exists():
+                                Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Absent', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
+                                
                             if len(message) != 0:
                                 message += ' and Faculty'
                             else:
@@ -4004,8 +3888,8 @@ def generate_QR_code(request):
      
     return render(request, "faculty/attendance/QR_code.html", context)
 
+
 # QR verification function
-@csrf_exempt
 @csrf_exempt
 def verify_qr(request):
     if request.method == "POST":
@@ -4200,6 +4084,8 @@ from datetime import datetime
 from django.utils import timezone
 from .pagination import LeavePagination
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+from .utils import leaves_limit
 
 def leave_request_making(request, Person):
     role = request.session.get('role')
@@ -4210,66 +4096,279 @@ def leave_request_making(request, Person):
         name = f'{detail.name} {detail.last_name}'
         position = f'{detail.position.name} Level-{detail.position.level}'
         department = f'{detail.department.name}'
-        leaves = Leave.objects.filter(college_id=college_id)
+
+    if Person == 'Admin':
+        college_id = request.session.get('admin_college_id')
+        detail = Admin.objects.get(college_id=college_id)
+        name = f'{detail.name} {detail.last_name}'
+        position = f'{detail.position.name} Level-{detail.position.level}'
+        department = f'{detail.department.name}'
+        
+    leaves = Leave.objects.filter(college_id=college_id)
+    total_applied = leaves.count()
+    pending = leaves.filter(status = 'Pending').count()
+    approved = leaves.filter(status = 'Approved').count()
+    rejected = leaves.filter(status = 'Rejected').count()
+    leave_days = leaves_limit(True)
+    used_days = approved
+    percentage = (used_days/leave_days)*100
+    leaves = leaves.order_by("applied_on")[:5]
 
     if request.method == 'POST':
-        try:
-            form_data = json.loads(request.body)
-            
-            # Map form fields to model fields
-            leave_data = {
-                'college_id': form_data.get('college_id', '').strip(),
-                'subject': form_data.get('leaveSubject', '').strip(),
-                'start_date': form_data.get('startDate'),
-                'end_date': form_data.get('endDate'),
-                'total_days': form_data.get('totalDays'),
-                'leave_type': form_data.get('leaveType', '').strip(),
-                'contact_during_leave': form_data.get('contactNumber', '').strip(),
-                'reason': form_data.get('leaveReason', '').strip(),
-                'status': 'Pending',
-            }
-            
-            serializer = LeaveSerializer(data=leave_data)
-            
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse({'success': 'Leave application submitted successfully!'}, status=201)
-            else:
-                return JsonResponse({'error': serializer.errors}, status=400)
-                
-        except json.JSONDecodeError as e:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    # if request.method == 'GET':
-    #     try:
-    #         leaves = Leave.objects.filter(college_id = college_id).order_by('id')
-    #         search = request.GET.get('search')
-    #         if search:
-    #             leaves = leaves.filter(id__icontains=search)
-    #         paginator = LeavePagination()
-    #         paginator.page_size = 5
-    #         paginated_data = paginator.paginate_queryset(leaves, request)
-    #         serializer = LeaveSerializer(paginated_data, many=True)
-    #         return paginator.get_paginated_response(serializer.data)
+      try:
+        form_data = json.loads(request.body)
+        college_id = form_data.get('college_id')
         
-    #     except json.JSONDecodeError as e:
-    #         return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-    #     except Exception as e:
-    #         return JsonResponse({'error': str(e)}, status=500)
-
+        
+        if college_id and college_id[0:2] == 'GK':
+            try:
+                user = Faculty.objects.get(college_id=college_id)
+                # Get ContentType object
+                content_type_obj = ContentType.objects.get_for_model(user)
+                # Use the ID (pk) instead of object
+                content_type_id = content_type_obj.id
+            except Faculty.DoesNotExist:
+                return JsonResponse({'error': 'Faculty not found'}, status=404)
+        else:
+            return JsonResponse({'error': 'Invalid college ID format'}, status=400)
+        
+        # Convert string dates to Date objects
+        try:
+            start_date = datetime.strptime(form_data.get('startDate'), '%Y-%m-%d').date() if form_data.get('startDate') else None
+            end_date = datetime.strptime(form_data.get('endDate'), '%Y-%m-%d').date() if form_data.get('endDate') else None
+        except ValueError as e:
+            return JsonResponse({'error': 'Invalid date format. Use YYYY-MM-DD'}, status=400)
+        
+        # Map form fields to model fields - use content_type_id instead of content_type_obj
+        leave_data = {
+            'content_type': content_type_id,  # CHANGED: Use ID instead of object
+            'college_id': form_data.get('college_id', '').strip(),
+            'subject': form_data.get('leaveSubject', '').strip(),
+            'start_date': start_date,
+            'end_date': end_date,
+            'department': user.department.id,
+            'total_days': int(form_data.get('totalDays', 0)),
+            'leave_type': form_data.get('leaveType', '').strip(),
+            'contact_during_leave': form_data.get('contactNumber', '').strip(),
+            'reason': form_data.get('leaveReason', '').strip(),
+            'status': 'Pending',
+        }
+        
+        serializer = LeaveSerializer(data=leave_data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'success': 'Leave application submitted successfully!'}, status=201)
+        else:
+            print(serializer.errors)
+            return JsonResponse({'error': serializer.errors}, status=400)
+            
+      except json.JSONDecodeError as e:
+        return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+      except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({'error': str(e)}, status=500)
+    
     context = {
         'role': role,
         'college_id': college_id,
         'name': name,
         'position': position,
         'department': department,
-        'leaves': leaves
+        'leaves': leaves, 
+        'total_applied': total_applied,
+        'pending': pending,
+        'approved': approved,
+        'rejected': rejected,
+        'leave_days': leave_days,
+        'used_days': used_days,
+        'percentage': percentage
     }
     return render(request, 'faculty/attendance/leave.html', context)
 
+@api_view(['GET'])
+def leave_details(request):
+    if request.method == 'GET':
+        try:
+            college_id = request.GET.get('college_id')
+            queryset = Leave.objects.filter(college_id = college_id).order_by("-applied_on")
+            search = request.GET.get("search")
+            if search:
+                queryset = queryset.filter(
+                    Q(leave_type__icontains = search) |
+                    Q(subject__icontains = search) |
+                    Q(start_date__icontains = search)|
+                    Q(end_date__icontains = search) |
+                    Q(status__icontains = search)
+                    )
+            status = request.GET.get("status")
+            if status:
+                queryset = queryset.filter(status = status)
+            paginator = LeavePagination()
+            paginated_queryset = paginator.paginate_queryset(queryset, request)
+            serializer = LeaveSerializer(paginated_queryset, many=True)
+            return paginator.get_paginated_response(serializer.data)     
+            
+        except json.JSONDecodeError as e:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)         
+            
+def admin_leave_page(request):
+    role = request.session.get('role')
+    admin_college_id = request.session.get('admin_college_id')
+    now = datetime.now()
+    admin_ct = ContentType.objects.get_for_model(Admin)
+    faculty_ct = ContentType.objects.get_for_model(Faculty)
+    today_leaves = Leave.objects.filter(applied_on=now.date())
+    today_leaves = today_leaves.filter(content_type__in=[admin_ct, faculty_ct])
+    pending_leaves = today_leaves.filter(status='Pending').count()
+    this_month_leaves = Leave.objects.filter(applied_on__month=now.month, applied_on__year=now.year)
+    this_month_leaves = this_month_leaves.filter(content_type__in=[admin_ct, faculty_ct])
+    this_month_approved_leaves = this_month_leaves.filter(status='Approved')
+    approval_rate = (this_month_approved_leaves.count()/this_month_leaves.count())*100
 
+    total_leaves = Leave.objects.all()
+    total_leaves = total_leaves.filter(content_type__in=[admin_ct, faculty_ct])
+    total_pending = total_leaves.filter(status = 'Pending').count()
+    total_approved = total_leaves.filter(status = 'Approved').count()
+    total_rejected = total_leaves.filter(status = 'Rejected').count()
+
+    departments = Department.objects.all().order_by('id')
+
+    context = {
+        'role':role,
+        'college_id':admin_college_id,
+        'today_leaves':today_leaves.count(),
+        'pending_leaves':pending_leaves,
+        'this_month_leaves':this_month_leaves.count(),
+        'approval_rate':approval_rate,
+        'total_leaves':total_leaves.count(),
+        'total_pending':total_pending,
+        'total_approved':total_approved,
+        'total_rejected':total_rejected,
+        'departments':departments
+        }
+
+    return render(request, 'admin/admin_leave_checking.html', context)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.utils.dateparse import parse_date
+@api_view(['GET'])
+def admin_leave_api(request):
+    if request.method == 'GET':
+        try:
+            # Yeh line change karo - pehle hi order_by add karo
+            queryset = Leave.objects.all().order_by('applied_on')  # <-- IMPORTANT
+
+            search = request.GET.get('search')
+            if search:
+               queryset = queryset.filter(
+                   Q(college_id__icontains = search)|
+                   Q(leave_type__icontains = search)|
+                   Q(status__icontains = search)
+                   )
+
+            # filteration
+            status = request.GET.get('status')
+            department = request.GET.get('department')
+            from_date = request.GET.get('from_date')
+            to_date = request.GET.get('to_date')
+            
+            if status:
+                queryset = queryset.filter(status__iexact = status)
+
+            if department:
+                admin_college_ids = Admin.objects.filter(department_id=department).values_list('college_id', flat=True)
+                faculty_college_ids = Faculty.objects.filter(department_id=department).values_list('college_id', flat=True)
+                queryset = queryset.filter(college_id__in=list(admin_college_ids) + list(faculty_college_ids))
+
+            if from_date and to_date:
+                      # Django ka built-in parse_date use karo
+                    from_date_obj = parse_date(from_date)
+                    to_date_obj = parse_date(to_date)
+    
+                    if from_date_obj and to_date_obj:
+                     # Simple date range filter
+                        queryset = queryset.filter(applied_on__date__range=[from_date_obj, to_date_obj])
+            # pagination
+            paginator = LeavePagination()
+            paginated_queryset = paginator.paginate_queryset(queryset, request)
+            serializer = LeaveSerializer(paginated_queryset, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+@api_view(['GET', 'PATCH', 'DELETE', 'PUT'])   
+def admin_leave_api_view(request, id):
+    if request.method == 'GET':
+        try:       
+            leave = Leave.objects.get(id=id)
+            serializer = LeaveSerializer(leave)
+            return JsonResponse(serializer.data)
+        except Leave.DoesNotExist:
+            return JsonResponse({'error': "No Leave Found !"})
+        except Exception as e:
+            return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
+
+    if request.method in ['PATCH', 'PUT']:
+        try:
+            leave = Leave.objects.get(id=id)
+            data = request.data.copy()
+            
+            # If updating status, use admin_response field
+            if 'status' in data:
+                data['admin_response'] = data['status']
+                
+            serializer = LeaveSerializer(leave, data=data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse({'success': "Leave response Updated Successfully!"})
+            return JsonResponse({'error': serializer.errors}, status=400)
+            
+        except Leave.DoesNotExist:
+            return JsonResponse({'error': "No Leave Found !"})
+        except Exception as e:
+            return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
+
+    if request.method == 'DELETE':
+        try:
+            leave = Leave.objects.get(id=id)
+            
+            # Check if leave can be deleted (only pending leaves can be deleted)
+            if leave.status != 'Pending':
+                return JsonResponse({'error': "Only pending leaves can be cancelled!"}, status=400)
+                
+            cancellation_reason = request.data.get('cancellation_reason', '')
+            leave.delete()
+            return JsonResponse({'success': "Leave Cancelled Successfully!"})
+        except Leave.DoesNotExist:
+            return JsonResponse({'error': "No Leave Found !"})
+        except Exception as e:
+            return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
+
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.permissions import IsAuthenticated
+from .models import Lab
+from .serializers import LabSerializers
+from .pagination import LabPagination
+
+class LabViewsSet(ModelViewSet):
+    queryset = Lab.objects.all().order_by("-id")
+    serializer_class = LabSerializers
+    pagination_class = LabPagination
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(name__icontains = search)
+            qs = qs.filter(number__icontains = search)
+        return qs
+    
 
 
 
@@ -4325,3 +4424,6 @@ def chat_page(request, user_id):
         'other_user': other_user,
         'messages': messages
     })
+
+
+

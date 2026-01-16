@@ -3,7 +3,11 @@ from django.urls import path
 from newapp import views
 from django.conf import settings
 from django.conf.urls.static import static
-# from .views import ProductListView, ProductDetailView
+from rest_framework.routers import DefaultRouter
+from .views import LabViewsSet
+router = DefaultRouter()
+router.register('labs', LabViewsSet, basename='lab')
+urlpatterns = router.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -44,16 +48,10 @@ urlpatterns = [
     path('admin-adding-page/', views.admin_adding_page, name='admin_adding_page'),
     path('admin-card/', views.admin_card, name='admin_card'),
     
-    # for attendance management 
-    # # # for student attendance management
-    path('save_attendance/', views.save_attendance, name='save_attendance'),
-    path('Dashboard-Student/Attendance-Management/', views.student_attendance_view, name='student_attendance_view'),
-    path('get-student-attendance/', views.get_student_attendance, name='get_student_attendance'),
-    
 # STUDENT FEE MANAGEMENT CREATION
     path('55061715190859654137681c1531494449410c10110315341c4f6606160c0430/<str:college_id>/', views.single_student_fees_view, name='single_student_fees_view'),
-    path('Admin-Dashboard/Student/Fee-Payment/',views.feePayment, name='feePayment'),
     path('551e1011000a641f45063345041a0a44505039661d0215004249490235431e1d024462/',views.student_fees_view, name='student_fees_view'),
+    path('550617151916596b1e06174868000143454f172a4514060e675964101346661a06654561/',views.feePayment, name='feePayment'),
     path('payNow/', views.payNow, name='payNow'),
     path('submitFee/', views.submitFee, name= 'submitFee'),
   
@@ -91,24 +89,22 @@ urlpatterns = [
     
 # for getting student details on faculty/admin/studentportal 
 # ----------------------------------
-    path('Faculty-Dashboard/Student-Attendance-Management/',lambda request: views.course_details(request,"faculty_filtering.html"),name='studentAttendance_management'),
     path('Faculty-Dashboard/Faculty-Student-Chat/',lambda request: views.course_details(request,"chat/page2.html"),name='facultyStudent_chat'),
-   
-    
-    # ----------------------------
-    path('Faculty-Dashboard/Filtered-Student-Attendance-Management', lambda request: views.filtered_students(request, "student/student_table.html"), name='filteredStudents'),
     path('Faculty-Dashboard/Filtered-Student-Chat-Management', lambda request: views.filtered_students(request, "chat/student_list_partial.html"), name='filteredFollowedStudents'),
     
     # for other features
     path('Dashboard-Student/Fine-Management/', views.studentFine, name='studentFine'),
     path('Dashboard-Student/Notice-Management/', views.studentSendNotice, name='studentSendNotice'),
     path('Dashboard-Student/Notes-Management/', views.studentNotes, name='studentNotes'),
-    path('Dashboard-Student/Chat-Management/', views.chatHistory, name='chatHistory'),  
-    path('Dashboard-Student/Assignment-Management/', views.studentAssignment, name='studentAssignment'),
+    path('Dashboard-Student/Chat-Management/', views.chatHistory, name='chatHistory'), 
+    
+# FOR STUDENT ASSIGNMENT 
+    path('55061715190a454266024843041a0a6565430a010a30641b68464616063366101d59665a0b011833/', views.studentAssignment, name='studentAssignment'),
+    path('Faculty/Dashboard/Student/Assignment/', views.faculty_student_assignment, name="faculty_student_assignment"),
     path('Dashboard-Student/Schedule-Management/', views.studentSchedule, name='studentSchedule'),
     path('Dashboard-Student/Result-Management/', views.studentResultView, name='studentResultView'),
     
-    # for history feature
+# FOR HISTORY
     path('Dashboard-Admin/Student-History-Management', lambda request : views.historySender(request,"Student"), name='studentHistoryManagement'),
     path('Dashboard-Admin/Faculty-History-Management', lambda request : views.historySender(request,"Faculty"), name='facultyHistoryManagement'),
     path('Dashboard-Admin/Admin-History-Management', lambda request : views.historySender(request,"Admin"), name='adminHistoryManagement'),
@@ -149,6 +145,12 @@ urlpatterns = [
     path('0d1d1004150c47434911170f1510004167410d1d0a02111f1e46590d131d1e111b4e421c0d1b1414150b684253171e0c131509/', lambda request : views.personal_code_verification(request,"Faculty"), name='personal_code_verification'),
     path('0d1d1004150a4c5a45071d1a1c1501674a4a06024515170159456606060d116401476846021617110d1b6650590214/', lambda request : views.personal_code_creation(request,"Faculty"), name='personal_code_creation'),
     path('041c101b152b1e4f49060708152f49434d410647451e1d0244621c071c18680d1b6650590233/',lambda request : views.leave_request_making(request, "Faculty"), name='faculty_leave_request_making'),
+    path('2d453930302f701d693844372d30341e666e2b363468394679277a342a373364356e286f29324868432f2665f2/', views.leave_details, name='leave_details'),
+    path('041c101b170a487a1c06041815374968646707321d1e15164e674f00134868101d59665a0b01183364014768462b/', views.admin_leave_page, name="admin_leave_page"),
+    path('332b3768001c43504b06294515020e43281c1a061505170e4612460d13481e1d0244621c0700181f16074b4266551c101d1037/', views.admin_leave_api, name="admin_leave_api"),
+    path('552e45382b49636d612f47453437317f2569553436452a3579631c30453768432f266561553534304436686a6130663638383479/<int:id>/', views.admin_leave_api_view, name="admin_leave_api_view"),
+    # for student: 
+    
     
     path('0615180043014744650f/', views.login1, name='login1'),
     path('0c06161804584442650f1c0e1f10/', views.download_photo, name='download_photo'),

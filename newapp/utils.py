@@ -31,7 +31,7 @@ def personal_college_pin_for_admin(order):
 
 def valid_timing_for_qr_code(start):
     if start:
-        time_in_minutes = 2
+        time_in_minutes = 1
     else:
         time_in_minutes = 0
     return time_in_minutes
@@ -50,3 +50,16 @@ def special_login_permission(start):
     if start:
         permission = 'Access'
     return permission
+
+def leaves_limit(start):
+    total = 0
+    if start:
+        total = 15
+
+    return total
+
+def background_leave_time(start):
+    time = 0
+    if start:
+        time = 1
+    return time

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'newapp',
-    'channels'
+    'rest_framework',
 ]
 
 # REST Framework settings add kare
@@ -192,3 +192,8 @@ EMAIL_USE_SSL = False  # ✅ Important
 EMAIL_HOST_USER = 'edutrack496@gmail.com'
 EMAIL_HOST_PASSWORD = 'xqvw xgmf xfix lyks'
 DEFAULT_FROM_EMAIL = 'edutrack496@gmail.com'
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+TIME_ZONE = 'Asia/Kolkata'

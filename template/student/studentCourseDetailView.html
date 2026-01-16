@@ -623,11 +623,13 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.subject && data.subject.length > 0) {
+                        console.log(data.subject);
                         semesterDiv.innerHTML = ''
                         let subjects = '';
                         data.subject.forEach((value, index) => {
                             // Create a unique ID without spaces/special chars
                             const subjectId = `subject-${semester}-${index}`;
+                            console.log(subjectId)
 
                             subjects += `
                     <div class="course-card">
@@ -673,12 +675,12 @@
                                     <div class="topic-status completed">
                                         <i class="fas fa-check"></i>
                                     </div>
-                                    <h4 class="topic-name">${one.content}</h4>
+                                    <h4 class="topic-name" id="${one.content}"></h4>
                                     <p class="topic-duration">8 Lectures • 12 Hours</p>
                                     <p class="topic-date">Completed: 15 Aug 2023</p>
                                 </div>`;
                                     });
-                                    topicGrid.innerHTML = contentAll;
+
                                 } else {
                                     topicGrid.innerHTML = `
                             <div class="no-data-container">
@@ -715,5 +717,4 @@
         };
     </script>
 </body>
-<!--
 </html>

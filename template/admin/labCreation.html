@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab & Room Management | Edutrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #f0f2f5;
+            --border-gray: #dee2e6;
+            --success: #2ecc71;
+            --warning: #f8961e;
+            --danger: #e63946;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            color: var(--accent);
+        }
+
+        /* Main Container */
+        .main-container {
+            padding: 40px 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--primary);
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        /* Card Styling */
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+
+        .form-card:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            transition: var(--transition);
+            border-top: 4px solid var(--accent);
+        }
+
+        .table-card:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Form Section Title */
+        .form-section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section-title i {
+            color: var(--primary);
+        }
+
+        /* Form Styling */
+        .form-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-gray);
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        }
+
+        .input-group-text {
+            background-color: var(--light-gray);
+            border: 2px solid var(--border-gray);
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--gray), #5a6268);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268, var(--gray));
+            transform: translateY(-2px);
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            border-radius: 50px;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid var(--border-gray);
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            z-index: 5;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Table Styling */
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, var(--light-gray), #e9ecef);
+            color: var(--dark);
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-gray);
+            padding: 16px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody td {
+            padding: 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .table tbody tr {
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-available {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: var(--success);
+        }
+
+        .status-occupied {
+            background-color: rgba(230, 57, 70, 0.15);
+            color: var(--danger);
+        }
+
+        .status-maintenance {
+            background-color: rgba(248, 150, 30, 0.15);
+            color: var(--warning);
+        }
+
+        /* Type Badges */
+        .type-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-lab {
+            background-color: rgba(67, 97, 238, 0.15);
+            color: var(--primary);
+        }
+
+        .type-classroom {
+            background-color: rgba(114, 9, 183, 0.15);
+            color: var(--accent);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .btn-edit {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(67, 97, 238, 0.2);
+        }
+
+        .btn-edit:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: rgba(230, 57, 70, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(230, 57, 70, 0.2);
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--border-gray);
+        }
+
+        .empty-state h4 {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        /* Statistics Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .stat-icon.labs {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .stat-icon.rooms {
+            background: linear-gradient(135deg, var(--accent), #9d4edd);
+        }
+
+        .stat-icon.available {
+            background: linear-gradient(135deg, var(--success), #27ae60);
+        }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .stat-info p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .main-container {
+                padding: 20px 0;
+            }
+            
+            .form-card, .table-card {
+                padding: 20px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 1.6rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-action {
+                width: 100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-flask"></i>
+                    Edutrack
+                </a>
+                <div class="ms-auto">
+                    <span class="navbar-text">
+                        <i class="fas fa-user-circle me-2"></i>Admin
+                    </span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header fade-in">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="page-title">Laboratory & Room Management</h1>
+                        <p class="page-subtitle">Create and manage labs, classrooms, and other facilities</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <button class="btn btn-primary" id="refreshData">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-container fade-in">
+                <div class="stat-card">
+                    <div class="stat-icon labs">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalLabs">8</h3>
+                        <p>Total Labs</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon rooms">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalRooms">12</h3>
+                        <p>Total Classrooms</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon available">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="availableRooms">15</h3>
+                        <p>Available Rooms</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row fade-in">
+                <!-- Left Side: Form -->
+                <div class="col-lg-5 mb-4">
+                    <div class="form-card">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-plus-circle"></i>
+                            Create New Lab/Room
+                        </h3>
+                        
+                        <form id="roomForm">
+                            <div class="mb-3">
+                                <label for="roomName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="roomName" placeholder="Enter room/lab name" required>
+                                <div class="form-text">E.g., Computer Lab 1, Chemistry Lab, Classroom A-101</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="roomNumber" class="form-label">Room Number</label>
+                                <input type="text" class="form-control" id="roomNumber" placeholder="Enter room number" required>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="roomType" class="form-label">Type</label>
+                                    <select class="form-select" id="roomType" required>
+                                        <option value="" selected disabled>Select type</option>
+                                        <option value="lab">Laboratory</option>
+                                        <option value="classroom">Classroom</option>
+                                        <option value="lecture_hall">Lecture Hall</option>
+                                        <option value="seminar_room">Seminar Room</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="capacity" class="form-label">Capacity</label>
+                                    <input type="number" class="form-control" id="capacity" placeholder="No. of seats" min="1" max="500" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="facilities" class="form-label">Facilities</label>
+                                <textarea class="form-control" id="facilities" rows="3" placeholder="Describe available facilities (projector, computers, etc.)"></textarea>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="floor" class="form-label">Floor</label>
+                                    <select class="form-select" id="floor">
+                                        <option value="ground">Ground Floor</option>
+                                        <option value="1">1st Floor</option>
+                                        <option value="2">2nd Floor</option>
+                                        <option value="3">3rd Floor</option>
+                                        <option value="4">4th Floor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" required>
+                                        <option value="available" selected>Available</option>
+                                        <option value="occupied">Occupied</option>
+                                        <option value="maintenance">Under Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button type="submit" class="btn btn-primary flex-grow-1">
+                                    <i class="fas fa-save me-2"></i>Create Room/Lab
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="resetForm">
+                                    <i class="fas fa-redo me-2"></i>Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Right Side: Table -->
+                <div class="col-lg-7">
+                    <div class="table-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="form-section-title mb-0">
+                                <i class="fas fa-list"></i>
+                                All Rooms & Labs
+                            </h3>
+                            
+                            <!-- Search Bar -->
+                            <div class="search-container" style="width: 300px;">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="form-control search-input" id="searchInput" placeholder="Search by name, number, or type...">
+                                <button class="search-btn" id="searchBtn">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Rooms Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="roomsTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Number</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Capacity</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="roomsTableBody">
+                                    <!-- Data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Empty State (Initially hidden) -->
+                        <div class="empty-state" id="emptyState" style="display: none;">
+                            <i class="fas fa-door-open"></i>
+                            <h4>No Rooms or Labs Found</h4>
+                            <p>Start by adding a new room or lab using the form on the left.</p>
+                        </div>
+                        
+                        <!-- Table Info -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div class="text-muted" id="tableInfo">
+                                Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> entries
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-sm mb-0" id="pagination">
+                                    <!-- Pagination will be generated by JavaScript -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Room/Lab</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Edit form will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // // Sample data for rooms and labs
+        // const roomsData = [
+        //     { id: 1, name: "Computer Lab 1", number: "LAB-101", type: "lab", capacity: 30, floor: "1", status: "available", facilities: "30 PCs, Projector, Whiteboard" },
+        //     { id: 2, name: "Physics Lab", number: "LAB-102", type: "lab", capacity: 25, floor: "1", status: "available", facilities: "Experimental equipment, Projector" },
+        //     { id: 3, name: "Chemistry Lab", number: "LAB-103", type: "lab", capacity: 20, floor: "1", status: "maintenance", facilities: "Chemical equipment, Fume hood" },
+        //     { id: 4, name: "Classroom A-101", number: "CR-101", type: "classroom", capacity: 50, floor: "1", status: "occupied", facilities: "Projector, Whiteboard, AC" },
+        //     { id: 5, name: "Lecture Hall", number: "LH-201", type: "lecture_hall", capacity: 120, floor: "2", status: "available", facilities: "Projector, Sound system, AC" },
+        //     { id: 6, name: "Biology Lab", number: "LAB-104", type: "lab", capacity: 25, floor: "1", status: "available", facilities: "Microscopes, Specimens, Projector" },
+        //     { id: 7, name: "Seminar Room 1", number: "SR-301", type: "seminar_room", capacity: 40, floor: "3", status: "available", facilities: "Projector, Conference table, AC" },
+        //     { id: 8, name: "Computer Lab 2", number: "LAB-201", type: "lab", capacity: 35, floor: "2", status: "occupied", facilities: "35 PCs, Projector, Whiteboard" },
+        //     { id: 9, name: "Classroom B-102", number: "CR-102", type: "classroom", capacity: 45, floor: "1", status: "available", facilities: "Whiteboard, AC" },
+        //     { id: 10, name: "Language Lab", number: "LAB-202", type: "lab", capacity: 25, floor: "2", status: "available", facilities: "Audio systems, Computers" },
+        //     { id: 11, name: "Classroom C-103", number: "CR-103", type: "classroom", capacity: 60, floor: "1", status: "occupied", facilities: "Projector, Whiteboard" },
+        //     { id: 12, name: "Research Lab", number: "LAB-301", type: "lab", capacity: 15, floor: "3", status: "available", facilities: "Specialized equipment" },
+        //     { id: 13, name: "Classroom D-201", number: "CR-201", type: "classroom", capacity: 55, floor: "2", status: "available", facilities: "Projector, Whiteboard, AC" },
+        //     { id: 14, name: "Seminar Room 2", number: "SR-302", type: "seminar_room", capacity: 30, floor: "3", status: "maintenance", facilities: "Projector, Whiteboard" },
+        //     { id: 15, name: "Math Lab", number: "LAB-203", type: "lab", capacity: 30, floor: "2", status: "available", facilities: "Computers, Math software" },
+        //     { id: 16, name: "Classroom E-202", number: "CR-202", type: "classroom", capacity: 40, floor: "2", status: "occupied", facilities: "Whiteboard" },
+        //     { id: 17, name: "Electronics Lab", number: "LAB-302", type: "lab", capacity: 20, floor: "3", status: "available", facilities: "Electronic components, Oscilloscopes" },
+        //     { id: 18, name: "Conference Room", number: "CF-401", type: "other", capacity: 25, floor: "4", status: "available", facilities: "Projector, Conference table, AC" },
+        //     { id: 19, name: "Classroom F-301", number: "CR-301", type: "classroom", capacity: 50, floor: "3", status: "available", facilities: "Projector, Whiteboard" },
+        //     { id: 20, name: "Robotics Lab", number: "LAB-303", type: "lab", capacity: 25, floor: "3", status: "occupied", facilities: "Robotics kits, Computers" }
+        // ];
+
+        // // Variables for pagination and filtering
+        // let currentPage = 1;
+        // const itemsPerPage = 8;
+        // let filteredData = [...roomsData];
+        // let sortDirection = {};
+
+        // // Initialize the page
+        // $(document).ready(function() {
+        //     updateStatistics();
+        //     renderTable();
+        //     setupEventListeners();
+        // });
+
+        // // Update statistics
+        // function updateStatistics() {
+        //     const totalLabs = roomsData.filter(room => room.type === 'lab').length;
+        //     const totalRooms = roomsData.filter(room => room.type !== 'lab').length;
+        //     const availableRooms = roomsData.filter(room => room.status === 'available').length;
+            
+        //     $('#totalLabs').text(totalLabs);
+        //     $('#totalRooms').text(totalRooms);
+        //     $('#availableRooms').text(availableRooms);
+        // }
+
+        // // Render table with pagination
+        // function renderTable() {
+        //     const tableBody = $('#roomsTableBody');
+        //     tableBody.empty();
+            
+        //     // Calculate pagination
+        //     const startIndex = (currentPage - 1) * itemsPerPage;
+        //     const endIndex = startIndex + itemsPerPage;
+        //     const pageData = filteredData.slice(startIndex, endIndex);
+            
+        //     if (pageData.length === 0) {
+        //         $('#emptyState').show();
+        //         $('#roomsTable').hide();
+        //     } else {
+        //         $('#emptyState').hide();
+        //         $('#roomsTable').show();
+                
+        //         pageData.forEach(room => {
+        //             const row = createTableRow(room);
+        //             tableBody.append(row);
+        //         });
+        //     }
+            
+        //     updateTableInfo();
+        //     renderPagination();
+        // }
+
+        // // Create a table row for a room
+        // function createTableRow(room) {
+        //     // Get type display text
+        //     let typeText = '';
+        //     let typeClass = '';
+        //     switch(room.type) {
+        //         case 'lab': typeText = 'Lab'; typeClass = 'type-lab'; break;
+        //         case 'classroom': typeText = 'Classroom'; typeClass = 'type-classroom'; break;
+        //         case 'lecture_hall': typeText = 'Lecture Hall'; typeClass = 'type-lab'; break;
+        //         case 'seminar_room': typeText = 'Seminar Room'; typeClass = 'type-classroom'; break;
+        //         default: typeText = 'Other'; typeClass = 'type-classroom';
+        //     }
+            
+        //     // Get status display
+        //     let statusText = '';
+        //     let statusClass = '';
+        //     switch(room.status) {
+        //         case 'available': statusText = 'Available'; statusClass = 'status-available'; break;
+        //         case 'occupied': statusText = 'Occupied'; statusClass = 'status-occupied'; break;
+        //         case 'maintenance': statusText = 'Maintenance'; statusClass = 'status-maintenance'; break;
+        //     }
+            
+        //     return `
+        //         <tr data-id="${room.id}">
+        //             <td>${room.id}</td>
+        //             <td>
+        //                 <strong>${room.name}</strong>
+        //                 <div class="text-muted small">Floor: ${room.floor}</div>
+        //             </td>
+        //             <td>${room.number}</td>
+        //             <td><span class="type-badge ${typeClass}">${typeText}</span></td>
+        //             <td>${room.capacity} seats</td>
+        //             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+        //             <td>
+        //                 <div class="action-buttons">
+        //                     <button class="btn-action btn-edit" onclick="editRoom(${room.id})">
+        //                         <i class="fas fa-edit"></i>
+        //                     </button>
+        //                     <button class="btn-action btn-delete" onclick="deleteRoom(${room.id})">
+        //                         <i class="fas fa-trash"></i>
+        //                     </button>
+        //                 </div>
+        //             </td>
+        //         </tr>
+        //     `;
+        // }
+
+        // // Update table info text
+        // function updateTableInfo() {
+        //     const total = filteredData.length;
+        //     const start = total === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+        //     const end = Math.min(currentPage * itemsPerPage, total);
+            
+        //     $('#showingCount').text(`${start}-${end}`);
+        //     $('#totalCount').text(total);
+        // }
+
+        // // Render pagination controls
+        // function renderPagination() {
+        //     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        //     const pagination = $('#pagination');
+        //     pagination.empty();
+            
+        //     if (totalPages <= 1) return;
+            
+        //     // Previous button
+        //     const prevDisabled = currentPage === 1 ? 'disabled' : '';
+        //     pagination.append(`
+        //         <li class="page-item ${prevDisabled}">
+        //             <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+        //         </li>
+        //     `);
+            
+        //     // Page numbers
+        //     for (let i = 1; i <= totalPages; i++) {
+        //         const active = i === currentPage ? 'active' : '';
+        //         pagination.append(`
+        //             <li class="page-item ${active}">
+        //                 <a class="page-link" href="#" data-page="${i}">${i}</a>
+        //             </li>
+        //         `);
+        //     }
+            
+        //     // Next button
+        //     const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+        //     pagination.append(`
+        //         <li class="page-item ${nextDisabled}">
+        //             <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+        //         </li>
+        //     `);
+        // }
+
+        // // Setup event listeners
+        // function setupEventListeners() {
+        //     // Form submission
+        //     $('#roomForm').on('submit', function(e) {
+        //         e.preventDefault();
+        //         createRoom();
+        //     });
+            
+        //     // Reset form
+        //     $('#resetForm').on('click', function() {
+        //         $('#roomForm')[0].reset();
+        //     });
+            
+        //     // Search functionality
+        //     $('#searchBtn').on('click', performSearch);
+        //     $('#searchInput').on('keyup', function(e) {
+        //         if (e.key === 'Enter') performSearch();
+        //     });
+            
+        //     // Pagination
+        //     $(document).on('click', '.page-link', function(e) {
+        //         e.preventDefault();
+        //         const page = parseInt($(this).data('page'));
+        //         if (!isNaN(page)) {
+        //             currentPage = page;
+        //             renderTable();
+        //         }
+        //     });
+            
+        //     // Refresh data
+        //     $('#refreshData').on('click', function() {
+        //         filteredData = [...roomsData];
+        //         currentPage = 1;
+        //         $('#searchInput').val('');
+        //         renderTable();
+        //         updateStatistics();
+        //         showMessage('Data refreshed successfully!', 'success');
+        //     });
+        // }
+
+        // // Create a new room
+        // function createRoom() {
+        //     const name = $('#roomName').val();
+        //     const number = $('#roomNumber').val();
+        //     const type = $('#roomType').val();
+        //     const capacity = $('#capacity').val();
+        //     const floor = $('#floor').val();
+        //     const status = $('#status').val();
+        //     const facilities = $('#facilities').val();
+            
+        //     // Generate new ID
+        //     const newId = roomsData.length > 0 ? Math.max(...roomsData.map(r => r.id)) + 1 : 1;
+            
+        //     // Create new room object
+        //     const newRoom = {
+        //         id: newId,
+        //         name,
+        //         number,
+        //         type,
+        //         capacity: parseInt(capacity),
+        //         floor,
+        //         status,
+        //         facilities
+        //     };
+            
+        //     // Add to data
+        //     roomsData.push(newRoom);
+        //     filteredData.push(newRoom);
+            
+        //     // Reset form
+        //     $('#roomForm')[0].reset();
+            
+        //     // Update table and statistics
+        //     currentPage = Math.ceil(filteredData.length / itemsPerPage);
+        //     renderTable();
+        //     updateStatistics();
+            
+        //     // Show success message
+        //     showMessage(`${name} has been created successfully!`, 'success');
+        // }
+
+        // // Edit a room
+        // function editRoom(id) {
+        //     const room = roomsData.find(r => r.id === id);
+        //     if (!room) return;
+            
+        //     // In a real app, you would show a modal with a form to edit the room
+        //     // For this demo, we'll just toggle the status
+        //     const newStatus = room.status === 'available' ? 'occupied' : 
+        //                      room.status === 'occupied' ? 'maintenance' : 'available';
+            
+        //     room.status = newStatus;
+            
+        //     // Update the filtered data as well
+        //     const filteredRoom = filteredData.find(r => r.id === id);
+        //     if (filteredRoom) filteredRoom.status = newStatus;
+            
+        //     renderTable();
+        //     updateStatistics();
+            
+        //     showMessage(`${room.name} status updated to ${newStatus}!`, 'success');
+        // }
+
+        // // Delete a room
+        // function deleteRoom(id) {
+        //     if (!confirm('Are you sure you want to delete this room/lab?')) return;
+            
+        //     // Find room name for message
+        //     const room = roomsData.find(r => r.id === id);
+        //     const roomName = room ? room.name : 'Room';
+            
+        //     // Remove from data
+        //     const roomIndex = roomsData.findIndex(r => r.id === id);
+        //     if (roomIndex > -1) roomsData.splice(roomIndex, 1);
+            
+        //     // Remove from filtered data
+        //     const filteredIndex = filteredData.findIndex(r => r.id === id);
+        //     if (filteredIndex > -1) filteredData.splice(filteredIndex, 1);
+            
+        //     // Adjust current page if needed
+        //     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        //     if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+            
+        //     renderTable();
+        //     updateStatistics();
+            
+        //     showMessage(`${roomName} has been deleted successfully!`, 'success');
+        // }
+
+        // // Perform search
+        // function performSearch() {
+        //     const searchTerm = $('#searchInput').val().toLowerCase().trim();
+            
+        //     if (!searchTerm) {
+        //         filteredData = [...roomsData];
+        //     } else {
+        //         filteredData = roomsData.filter(room => 
+        //             room.name.toLowerCase().includes(searchTerm) ||
+        //             room.number.toLowerCase().includes(searchTerm) ||
+        //             room.type.toLowerCase().includes(searchTerm) ||
+        //             room.status.toLowerCase().includes(searchTerm) ||
+        //             room.floor.toLowerCase().includes(searchTerm)
+        //         );
+        //     }
+            
+        //     currentPage = 1;
+        //     renderTable();
+            
+        //     if (filteredData.length === 0 && searchTerm) {
+        //         showMessage('No rooms or labs found matching your search.', 'warning');
+        //     }
+        // }
+
+        // // Show message
+        // function showMessage(text, type) {
+        //     // Create alert element
+        //     const alertClass = type === 'success' ? 'alert-success' : 
+        //                       type === 'warning' ? 'alert-warning' : 'alert-info';
+            
+        //     const alert = $(`
+        //         <div class="alert ${alertClass} alert-dismissible fade show position-fixed top-0 end-0 m-3" 
+        //              style="z-index: 1100; min-width: 300px;" role="alert">
+        //             <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
+        //             ${text}
+        //             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        //         </div>
+        //     `);
+            
+        //     // Add to body and auto remove after 3 seconds
+        //     $('body').append(alert);
+        //     setTimeout(() => {
+        //         alert.alert('close');
+        //     }, 3000);
+        // }
+    </script>
+</body>
+</html>

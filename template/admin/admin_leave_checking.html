@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Leave Management | EduTrack</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Admin dashboard for managing faculty leave applications - approve, reject, and track all leave requests">
+    <meta name="keywords"
+        content="admin leave management, faculty leave approval, education administration, leave tracking">
+    <meta name="author" content="EduTrack University">
+
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+    <!-- Custom Styles -->
+    <!-- CSS Dependencies section me ye changes karo -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        /* Fallback font stack */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/leave/admin_leave.css' %}">
+</head>
+
+<body>
+    {% include 'header.html' %}
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="quick-stat">
+                <h5>Today's Leaves</h5>
+                <p>{{ today_leaves }}</p>
+            </div>
+            <div class="quick-stat">
+                <h5>Pending Action</h5>
+                <p>{{ pending_leaves }}</p>
+            </div>
+            <div class="quick-stat">
+                <h5>This Month</h5>
+                <p>{{ this_month_leaves }}</p>
+            </div>
+            <div class="quick-stat">
+                <h5>Approval Rate</h5>
+                <p>{{ approval_rate }}%</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ total_leaves }}</h3>
+                    <p>Total Leaves</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ total_pending }}</h3>
+                    <p>Pending Review</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon approved">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ total_approved }}</h3>
+                    <p>Approved</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon rejected">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ total_rejected }}</h3>
+                    <p>Rejected</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading leave applications...</div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div>
+                    <label class="form-label">Status Filter</label>
+                    <select class="form-control" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Department</label>
+                    <select class="form-control" id="departmentFilter">
+                        <option value="">All Departments</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}">{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Date Range</label>
+                    <div class="input-group">
+                        <input type="date" class="form-control" id="startDate">
+                        <span class="input-group-text">to</span>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-primary w-100" id="applyFilter">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Table -->
+        <div class="leave-table-container">
+            <div class="table-header">
+                <h3 class="table-title">
+                    <i class="fas fa-list"></i> Faculty Leave Applications
+                </h3>
+                <div class="table-actions">
+                    <div class="input-group" style="max-width: 300px;">
+                        <input type="text" class="form-control" id="searchBar"
+                            placeholder="Search faculty or leave type...">
+                        <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Application ID</th>
+                            <th>Faculty Name</th>
+                            <th>Department</th>
+                            <th>Leave Type</th>
+                            <th>From - To</th>
+                            <th>Days</th>
+                            <th>Applied On</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaveDetail">
+                        <!-- result will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <button id="prev-btn" class="btn btn-outline-primary">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <span id="pageInfo" class="mx-3">Loading...</span>
+                <button id="next-btn" class="btn btn-outline-primary">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Detail Modal -->
+    <!-- View Leave Details Modal -->
+    <div class="modal-overlay" id="viewLeaveModal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-file-medical"></i> Leave Application Details
+                </h3>
+                <button class="modal-close close-view-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="leave-details-grid" id="leaveDetailsContent">
+                    <!-- Details will be filled by JavaScript -->
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions"
+                    style="margin-top: 30px; border-top: 1px solid var(--light-gray); padding-top: 25px;">
+                    <button type="button" class="btn btn-success btn-lg approve-from-view" style="padding: 12px 30px;">
+                        <i class="fas fa-check-circle"></i> Approve Leave
+                    </button>
+                    <button type="button" class="btn btn-danger btn-lg reject-from-view" style="padding: 12px 30px;">
+                        <i class="fas fa-times-circle"></i> Reject Leave
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-lg close-view-modal" style="padding: 12px 30px;">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Reason Modal -->
+    <div class="modal-overlay" id="rejectReasonModal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i> Confirm Rejection
+                </h3>
+                <button class="modal-close close-reject-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning" style="margin-bottom: 25px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Warning:</strong> This action cannot be undone. The faculty will be notified.
+                </div>
+
+                <form id="rejectForm">
+                    <div class="form-group">
+                        <label class="form-label">Rejection Reason *</label>
+                        <textarea class="form-control" id="rejectReasonText" rows="4"
+                            placeholder="Please provide a clear reason for rejecting this leave application..." required
+                            style="resize: vertical;"></textarea>
+                        <small class="text-muted">This reason will be shared with the faculty member.</small>
+                    </div>
+
+                    <input type="hidden" id="rejectLeaveId">
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline-secondary close-reject-modal"
+                            style="padding: 10px 25px;">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-danger" style="padding: 10px 25px;">
+                            <i class="fas fa-ban"></i> Confirm Rejection
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal-overlay" id="messageModal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <div class="modal-body" style="padding: 40px;">
+                <div id="messageIcon" style="font-size: 60px; margin-bottom: 20px; color: var(--success);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 id="messageTitle" style="color: var(--primary); margin-bottom: 15px;">Success!</h3>
+                <p id="messageText" style="color: var(--dark); font-size: 16px; line-height: 1.6;">
+                    Operation completed successfully.
+                </p>
+                <button type="button" class="btn btn-primary" id="closeMessageModal"
+                    style="margin-top: 25px; padding: 10px 30px;">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal-overlay" id="loadingModal" style="display: none; z-index: 9999;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 40px;">
+            <div class="spinner" style="width: 60px; height: 60px; margin: 0 auto 20px;"></div>
+            <h3 style="color: var(--primary); margin-bottom: 10px;">Loading Data</h3>
+            <p style="color: var(--gray);">Please wait while we fetch the latest leave applications...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Main JavaScript -->
+    <script>
+        let apiURL = '/332b3768001c43504b06294515020e43281c1a061505170e4612460d13481e1d0244621c0700181f16074b4266551c101d1037/'
+        let currentPage = 1;
+        let totalPages = 1;
+
+        // ================== MODAL FUNCTIONS ==================
+
+        // 1. Show Loading Modal
+        function showLoading() {
+            document.getElementById('loadingModal').style.display = 'flex';
+        }
+
+        // 2. Hide Loading Modal
+        function hideLoading() {
+            document.getElementById('loadingModal').style.display = 'none';
+        }
+
+        // 3. Show Message Modal
+        function showMessage(title, message, type = 'success') {
+            const modal = document.getElementById('messageModal');
+            const icon = document.getElementById('messageIcon');
+            const msgTitle = document.getElementById('messageTitle');
+            const msgText = document.getElementById('messageText');
+
+            // Set colors based on type
+            if (type === 'success') {
+                icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                icon.style.color = 'var(--success)';
+                msgTitle.style.color = 'var(--success)';
+            } else if (type === 'error') {
+                icon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                icon.style.color = 'var(--danger)';
+                msgTitle.style.color = 'var(--danger)';
+            } else if (type === 'info') {
+                icon.innerHTML = '<i class="fas fa-info-circle"></i>';
+                icon.style.color = 'var(--info)';
+                msgTitle.style.color = 'var(--info)';
+            }
+
+            msgTitle.textContent = title;
+            msgText.textContent = message;
+            modal.style.display = 'flex';
+        }
+
+        // 4. Show View Leave Modal
+        let ID_API = `/552e45382b49636d612f47453437317f2569553436452a3579631c30453768432f266561553534304436686a6130663638383479/`
+        function showViewModal(leaveId) {
+            console.log(leaveId)
+            // Fetch leave details from your API
+            showLoading();
+
+            fetch(`${ID_API}${leaveId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    hideLoading();
+                    // Populate the modal with data
+                    const content = document.getElementById('leaveDetailsContent');
+                    content.innerHTML = `
+                <div class="detail-card">
+                    <h4>Faculty Information</h4>
+                    <p><strong>Name:</strong> ${data.name}</p>
+                    <p><strong>ID:</strong> ${data.college_id}</p>
+                    <p><strong>Department:</strong> ${data.department}</p>
+                    <p><strong>Contact:</strong> ${data.contact_during_leave}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>Leave Details</h4>
+                    <p><strong>Type:</strong> ${data.leave_type}</p>
+                    <p><strong>From:</strong> ${data.start_date}</p>
+                    <p><strong>To:</strong> ${data.end_date}</p>
+                    <p><strong>Total Days:</strong> ${data.total_days}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>Application Info</h4>
+                    <p><strong>Applied On:</strong> ${data.applied_on}</p>
+                    <p><strong>Status:</strong> ${data.status}</p>
+                    <p><strong>Contact During Leave:</strong> ${data.contact_during_leave}</p>
+                </div>
+                
+                <div class="detail-card" style="grid-column: span 2;">
+                    <h4>Reason for Leave</h4>
+                    <p style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+                        ${data.reason}
+                    </p>
+                </div>
+            `;
+
+                    // Set leave ID for action buttons
+                    document.querySelector('.approve-from-view').dataset.id = leaveId;
+                    document.querySelector('.reject-from-view').dataset.id = leaveId;
+                    if(data.status == 'Approved' || data.status == 'Rejected'){
+                        document.querySelector('.approve-from-view').disabled = true;
+                        document.querySelector('.reject-from-view').disabled = true;
+                    }else{
+                        document.querySelector('.approve-from-view').disabled = false;
+                        document.querySelector('.reject-from-view').disabled = false;
+                    }
+
+                    // Show the modal
+                    document.getElementById('viewLeaveModal').style.display = 'flex';
+                })
+                .catch(err => {
+                    hideLoading();
+                    showMessage('Error', 'Failed to load leave details', 'error');
+                });
+        }
+
+        // 5. Show Reject Modal
+        function showRejectModal(leaveId) {
+            document.getElementById('rejectLeaveId').value = leaveId;
+            document.getElementById('rejectReasonModal').style.display = 'flex';
+        }
+
+        // ================== EVENT LISTENERS ==================
+
+        // Close buttons
+        document.querySelectorAll('.modal-close, .close-view-modal, .close-reject-modal, #closeMessageModal').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            });
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+
+        // View button click handler (add this to your existing table row creation)
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('view-leave') ||
+                e.target.closest('.view-leave')) {
+                const leaveId = e.target.dataset.id || e.target.closest('.view-leave').dataset.id;
+                showViewModal(leaveId);
+            }
+
+            if (e.target.classList.contains('reject-leave') ||
+                e.target.closest('.reject-leave')) {
+                const leaveId = e.target.dataset.id || e.target.closest('.reject-leave').dataset.id;
+                showRejectModal(leaveId);
+            }
+            if (e.target.classList.contains('approve-leave') ||
+                e.target.closest('.approve-leave')) {
+                const leaveId = e.target.dataset.id || e.target.closest('.approve-leave').dataset.id;
+                showApproveModal(leaveId);
+            }
+        });
+
+        // Reject form submission
+        document.getElementById('rejectForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const leaveId = document.getElementById('rejectLeaveId').value;
+            const reason = document.getElementById('rejectReasonText').value;
+
+            // Call your reject API here
+            showLoading();
+            fetch(`${ID_API}${leaveId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    rejection_reason: reason,
+                    status : 'Rejected'
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    hideLoading();
+                    document.getElementById('rejectReasonModal').style.display = 'none';
+                    showMessage('Leave Rejected', 'The leave application has been rejected successfully.', 'success');
+                    loadLeaves(); // Refresh the table
+                })
+                .catch(err => {
+                    hideLoading();
+                    showMessage('Error', 'Failed to reject leave application', 'error');
+                });
+        });
+
+        document.querySelector('.approve-from-view').addEventListener('click', ()=>{
+            const leaveId = this.dataset.id;
+            showApproveModal(leaveId)
+        })
+
+        // Approve from view modal
+       function showApproveModal(leaveId) {
+            
+            showLoading();
+            fetch(`${ID_API}${leaveId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body : JSON.stringify({
+                    status : "Approved"
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    hideLoading();
+                    document.getElementById('viewLeaveModal').style.display = 'none';
+                    if(data.success){
+                        showMessage('Leave Approved',data.success, 'success');
+                    }else{
+                        showMessage('Error' ,data.error, 'error');
+                    }
+                    loadLeaves(); // Refresh the table
+                })
+                .catch(err => {
+                    hideLoading();
+                    showMessage('Error', 'Failed to approve leave', 'error');
+                });
+        };
+
+        // Reject from view modal
+        document.querySelector('.reject-from-view').addEventListener('click', function () {
+            const leaveId = this.dataset.id;
+            document.getElementById('viewLeaveModal').style.display = 'none';
+            showRejectModal(leaveId);
+        });
+
+        // CSRF Token function (Django ke liye)
+        function getCSRFToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue;
+        }
+
+        // ================== UPDATE YOUR EXISTING loadLeaves FUNCTION ==================
+        function loadLeaves() {
+            showLoading(); // Add this line at start
+
+            let params = {
+                search: document.getElementById('searchBar').value,
+                status: document.getElementById('statusFilter').value,
+                from_date: document.getElementById('startDate').value,
+                to_date: document.getElementById('endDate').value,
+                department: document.getElementById('departmentFilter').value,
+                page: currentPage
+            };
+
+            Object.keys(params).forEach(key => {
+                if (!params[key]) delete params[key];
+            });
+
+            const queryString = new URLSearchParams(params).toString();
+
+            fetch(`${apiURL}?${queryString}`)
+                .then(res => res.json())
+                .then(data => {
+                    hideLoading(); // Add this line
+
+                    const body = document.getElementById("leaveDetail");
+                    body.innerHTML = "";
+
+                    data.results.forEach(obj => {
+                        // Status badge color
+                        let badgeClass = 'badge-pending';
+                        if (obj.status === 'Approved') badgeClass = 'badge-approved';
+                        if (obj.status === 'Rejected') badgeClass = 'badge-rejected';
+
+                        // Short name for avatar
+                        const shortName = obj.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+
+                        body.innerHTML += `
+                <tr>
+                    <td><strong>${obj.id}</strong></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #4361ee; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                ${shortName}
+                            </div>
+                            <div>
+                                <div>${obj.name}</div>
+                                <small class="text-muted">ID: ${obj.college_id}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${obj.department_name}</td>
+                    <td>${obj.leave_type}</td>
+                    <td>
+                        <div>${obj.start_date}</div>
+                        <small class="text-muted">to</small>
+                        <div>${obj.end_date}</div>
+                    </td>
+                    <td><strong>${obj.total_days} days</strong></td>
+                    <td>${obj.applied_on}</td>
+                    <td>
+                        <span class="badge ${badgeClass}">
+                            <i class="fas fa-${obj.status === 'Pending' ? 'clock' : obj.status === 'Approved' ? 'check' : 'times'}"></i> 
+                            ${obj.status}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-sm btn-approve approve-leave" data-id="${obj.id}" ${obj.status !== 'Pending' ? 'disabled style="opacity:0.5"' : ''}>
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn-sm btn-reject reject-leave" data-id="${obj.id}" ${obj.status !== 'Pending' ? 'disabled style="opacity:0.5"' : ''}>
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                            <button class="btn-sm btn-view view-leave" id="view-btn" data-id="${obj.id}">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+                    });
+
+                    currentPage = data.current_page;
+                    totalPages = data.total_pages;
+                    updatePaginationButtons(); // <-- IMPORTANT
+                    document.getElementById("pageInfo").innerHTML = `Page ${currentPage} of ${totalPages}`;
+                })
+                .catch(err => {
+                    hideLoading(); // Add this line in error too
+                    showMessage('Error', 'Failed to load leave applications', 'error');
+                    console.error(err);
+                });
+        }
+
+        document.getElementById("next-btn").addEventListener("click", function (e) {
+            e.preventDefault();
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadLeaves();
+                updatePaginationButtons();
+            }
+        });
+
+        document.getElementById("prev-btn").addEventListener("click", function (e) {
+            e.preventDefault();
+            if (currentPage > 1) {
+                currentPage--;
+                loadLeaves();
+                updatePaginationButtons();
+            }
+        });
+
+        // Pagination buttons update function
+        function updatePaginationButtons() {
+            const prevBtn = document.getElementById("prev-btn");
+            const nextBtn = document.getElementById("next-btn");
+
+            // Previous button
+            if (currentPage === 1) {
+                prevBtn.disabled = true;
+                prevBtn.style.opacity = "0.5";
+                prevBtn.style.cursor = "not-allowed";
+            } else {
+                prevBtn.disabled = false;
+                prevBtn.style.opacity = "1";
+                prevBtn.style.cursor = "pointer";
+            }
+
+            // Next button
+            if (currentPage === totalPages) {
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = "0.5";
+                nextBtn.style.cursor = "not-allowed";
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = "1";
+                nextBtn.style.cursor = "pointer";
+            }
+        }
+        document.getElementById("applyFilter").addEventListener("click", function (e) {
+            e.preventDefault();
+            currentPage = 1;
+            loadLeaves();
+        })
+
+        document.getElementById("searchBtn").addEventListener("click", function (e) {
+            e.preventDefault();
+            loadLeaves();
+        })
+
+        window.onload = loadLeaves;
+    </script>
+</body>
+
+</html>

@@ -25,15 +25,27 @@
 
 # print(f"{id[0:8]}{int(id[8:])+1}")
 
-list1 = []
+# list1 = []
 
-for i in range(1,6):
-    due = {}
-    list1.append(due)
+# for i in range(1,6):
+#     due = {}
+#     list1.append(due)
 
-print(list1)
+# print(list1)
 
-for i in list1:
-    if len(i)!=0:
-       print(i['amount'])
-       print(i['amt'])
+# for i in list1:
+#     if len(i)!=0:
+#        print(i['amount'])
+#        print(i['amt'])
+
+# from datetime import datetime
+
+# now = datetime.now()
+
+# start_date = '2026-01-12'
+# end_date = '20226-01-17'
+
+dict1 = {'name': 'Math', 'status': 'Pending'}
+
+print(dict1['name'
+            ])

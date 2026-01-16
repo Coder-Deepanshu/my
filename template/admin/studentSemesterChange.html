@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Student Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 80px 0 40px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* Admin Container */
+        .admin-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .admin-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .admin-content {
+            padding: 30px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .filter-section h3 {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+        }
+
+        .filter-section h3 i {
+            color: var(--primary);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        /* Form Elements */
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            color: var(--primary);
+        }
+
+        .form-control,
+        .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Students Table */
+        .students-table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .students-table th {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .students-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: middle;
+        }
+
+        .students-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .students-table tr.selected {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-active {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        .status-inactive {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--danger);
+        }
+
+        .status-pending {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: var(--warning);
+        }
+
+        /* Action Buttons in Table */
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .table-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .table-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--light-gray);
+            padding: 20px 25px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 20px;
+            border-radius: 10px;
+            background: var(--light-gray);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--light-gray);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .students-table {
+                font-size: 0.9em;
+            }
+
+            .table-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .admin-content {
+                padding: 20px;
+            }
+
+            .students-table td,
+            .students-table th {
+                padding: 10px;
+            }
+        }
+
+        /* Checkbox styling */
+        .select-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Bulk action bar */
+        .bulk-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .bulk-action-bar.show {
+            transform: translateY(0);
+        }
+
+        .selected-count {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown">Admin - Student Management System</h1>
+            <p class="animate__animated animate__fadeInUp">Manage student records, update academic details, and export data</p>
+        </div>
+    </section>
+
+    <!-- Main Admin Container -->
+    <div class="admin-container">
+        <div class="admin-header">
+            <h3>Student Management Dashboard</h3>
+            <p class="mb-0">Manage all student records and academic details</p>
+        </div>
+
+        <div class="admin-content">
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary action-btn" id="updateSemesterBtn">
+                    <i class="fas fa-calendar-alt"></i> Update Semester/Year
+                </button>
+                <button class="btn btn-success action-btn" id="exportPdfBtn">
+                    <i class="fas fa-file-pdf"></i> Export to PDF
+                </button>
+                <button class="btn btn-warning action-btn" id="exportSelectedBtn">
+                    <i class="fas fa-download"></i> Export Selected
+                </button>
+                <button class="btn btn-info action-btn" id="refreshDataBtn">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <h3><i class="fas fa-filter"></i> Filter Students</h3>
+                <div class="filter-grid">
+                    <div>
+                        <label class="form-label"><i class="fas fa-graduation-cap"></i> Course</label>
+                        <select class="form-select" id="courseFilter">
+                            <option value="">All Courses</option>
+                            <option value="B.Tech">B.Tech</option>
+                            <option value="MBA">MBA</option>
+                            <option value="MCA">MCA</option>
+                            <option value="BBA">BBA</option>
+                            <option value="BCA">BCA</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label"><i class="fas fa-calendar"></i> Year</label>
+                        <select class="form-select" id="yearFilter">
+                            <option value="">All Years</option>
+                            <option value="1">First Year</option>
+                            <option value="2">Second Year</option>
+                            <option value="3">Third Year</option>
+                            <option value="4">Fourth Year</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label"><i class="fas fa-book"></i> Semester</label>
+                        <select class="form-select" id="semesterFilter">
+                            <option value="">All Semesters</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label"><i class="fas fa-user-check"></i> Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-outline-primary" id="applyFilterBtn">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                    <button class="btn btn-outline-secondary" id="clearFilterBtn">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Bar for Bulk Operations -->
+            <div class="progress-container" id="progressContainer">
+                <div class="d-flex justify-content-between mb-2">
+                    <span id="progressText">Processing...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Students Table -->
+            <div class="students-table-container">
+                <table class="students-table" id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">
+                                <input type="checkbox" id="selectAll" class="select-checkbox">
+                            </th>
+                            <th>Student ID</th>
+                            <th>Name</th>
+                            <th>Course</th>
+                            <th>Current Year</th>
+                            <th>Current Semester</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- Students will be loaded here -->
+                    </tbody>
+                </table>
+                
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <i class="fas fa-user-graduate"></i>
+                    <h4>No students found</h4>
+                    <p>Try adjusting your filters or add new students</p>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <!-- Pagination will be generated here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Bulk Action Bar -->
+    <div class="bulk-action-bar" id="bulkActionBar">
+        <div class="selected-count">
+            <span id="selectedCount">0</span> students selected
+        </div>
+        <div class="bulk-actions">
+            <button class="btn btn-light btn-sm me-2" id="bulkUpdateBtn">
+                <i class="fas fa-calendar-alt"></i> Update Academic Year
+            </button>
+            <button class="btn btn-light btn-sm me-2" id="bulkExportBtn">
+                <i class="fas fa-file-pdf"></i> Export Selected
+            </button>
+            <button class="btn btn-light btn-sm" id="clearSelectionBtn">
+                <i class="fas fa-times"></i> Clear Selection
+            </button>
+        </div>
+    </div>
+
+    <!-- Update Semester/Year Modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Academic Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateForm">
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-calendar"></i> Academic Year</label>
+                            <select class="form-select" id="updateYear" required>
+                                <option value="">Select Year</option>
+                                <option value="1">First Year</option>
+                                <option value="2">Second Year</option>
+                                <option value="3">Third Year</option>
+                                <option value="4">Fourth Year</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-book"></i> Semester</label>
+                            <select class="form-select" id="updateSemester" required>
+                                <option value="">Select Semester</option>
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                                <option value="5">Semester 5</option>
+                                <option value="6">Semester 6</option>
+                                <option value="7">Semester 7</option>
+                                <option value="8">Semester 8</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-comment"></i> Update Reason</label>
+                            <textarea class="form-control" id="updateReason" rows="3" placeholder="Enter reason for update..."></textarea>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> This will update academic details for selected students.
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save"></i> Update Records
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Mock student data
+            const mockStudents = [
+                { id: 1, studentId: "STU2023001", name: "Rahul Sharma", course: "B.Tech", year: "3", semester: "5", email: "rahul@example.com", phone: "9876543210", status: "active" },
+                { id: 2, studentId: "STU2023002", name: "Priya Patel", course: "MBA", year: "2", semester: "3", email: "priya@example.com", phone: "9876543211", status: "active" },
+                { id: 3, studentId: "STU2023003", name: "Amit Kumar", course: "B.Tech", year: "4", semester: "7", email: "amit@example.com", phone: "9876543212", status: "inactive" },
+                { id: 4, studentId: "STU2023004", name: "Sneha Gupta", course: "MCA", year: "1", semester: "1", email: "sneha@example.com", phone: "9876543213", status: "pending" },
+                { id: 5, studentId: "STU2023005", name: "Vikram Singh", course: "BBA", year: "3", semester: "5", email: "vikram@example.com", phone: "9876543214", status: "active" },
+                { id: 6, studentId: "STU2023006", name: "Neha Reddy", course: "B.Tech", year: "2", semester: "3", email: "neha@example.com", phone: "9876543215", status: "active" },
+                { id: 7, studentId: "STU2023007", name: "Rajesh Verma", course: "BCA", year: "3", semester: "5", email: "rajesh@example.com", phone: "9876543216", status: "inactive" },
+                { id: 8, studentId: "STU2023008", name: "Pooja Mehta", course: "MBA", year: "1", semester: "1", email: "pooja@example.com", phone: "9876543217", status: "active" },
+                { id: 9, studentId: "STU2023009", name: "Arun Joshi", course: "B.Tech", year: "4", semester: "7", email: "arun@example.com", phone: "9876543218", status: "pending" },
+                { id: 10, studentId: "STU2023010", name: "Kavita Nair", course: "MCA", year: "2", semester: "3", email: "kavita@example.com", phone: "9876543219", status: "active" }
+            ];
+
+            let students = [...mockStudents];
+            let selectedStudents = new Set();
+            const itemsPerPage = 5;
+            let currentPage = 1;
+
+            // Initialize table
+            function renderTable() {
+                const tableBody = $('#studentsTableBody');
+                tableBody.empty();
+                
+                const filteredStudents = filterStudents();
+                const paginatedStudents = paginateStudents(filteredStudents);
+                
+                if (paginatedStudents.length === 0) {
+                    $('#emptyState').show();
+                    $('#studentsTable').hide();
+                } else {
+                    $('#emptyState').hide();
+                    $('#studentsTable').show();
+                    
+                    paginatedStudents.forEach(student => {
+                        const isSelected = selectedStudents.has(student.id);
+                        const row = `
+                            <tr class="${isSelected ? 'selected' : ''}">
+                                <td>
+                                    <input type="checkbox" class="select-checkbox student-checkbox" 
+                                           data-id="${student.id}" ${isSelected ? 'checked' : ''}>
+                                </td>
+                                <td>${student.studentId}</td>
+                                <td>${student.name}</td>
+                                <td>${student.course}</td>
+                                <td>Year ${student.year}</td>
+                                <td>Semester ${student.semester}</td>
+                                <td>${student.email}</td>
+                                <td>${student.phone}</td>
+                                <td>
+                                    <span class="status-badge status-${student.status}">
+                                        ${student.status.charAt(0).toUpperCase() + student.status.slice(1)}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn btn-sm btn-outline-primary table-btn edit-student" 
+                                                data-id="${student.id}">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info table-btn view-student" 
+                                                data-id="${student.id}">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.append(row);
+                    });
+                }
+                
+                renderPagination(filteredStudents.length);
+                updateBulkActionBar();
+            }
+
+            // Filter students
+            function filterStudents() {
+                const courseFilter = $('#courseFilter').val();
+                const yearFilter = $('#yearFilter').val();
+                const semesterFilter = $('#semesterFilter').val();
+                const statusFilter = $('#statusFilter').val();
+                
+                return students.filter(student => {
+                    if (courseFilter && student.course !== courseFilter) return false;
+                    if (yearFilter && student.year !== yearFilter) return false;
+                    if (semesterFilter && student.semester !== semesterFilter) return false;
+                    if (statusFilter && student.status !== statusFilter) return false;
+                    return true;
+                });
+            }
+
+            // Paginate students
+            function paginateStudents(studentsList) {
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                return studentsList.slice(startIndex, startIndex + itemsPerPage);
+            }
+
+            // Render pagination
+            function renderPagination(totalItems) {
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                const pagination = $('#pagination');
+                pagination.empty();
+                
+                if (totalPages <= 1) return;
+                
+                // Previous button
+                const prevDisabled = currentPage === 1 ? 'disabled' : '';
+                pagination.append(`
+                    <li class="page-item ${prevDisabled}">
+                        <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+                    </li>
+                `);
+                
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const active = i === currentPage ? 'active' : '';
+                    pagination.append(`
+                        <li class="page-item ${active}">
+                            <a class="page-link" href="#" data-page="${i}">${i}</a>
+                        </li>
+                    `);
+                }
+                
+                // Next button
+                const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+                pagination.append(`
+                    <li class="page-item ${nextDisabled}">
+                        <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+                    </li>
+                `);
+            }
+
+            // Update bulk action bar
+            function updateBulkActionBar() {
+                const count = selectedStudents.size;
+                $('#selectedCount').text(count);
+                
+                if (count > 0) {
+                    $('#bulkActionBar').addClass('show');
+                } else {
+                    $('#bulkActionBar').removeClass('show');
+                }
+            }
+
+            // Export to PDF function
+            function exportToPDF(studentsToExport, fileName = 'students_data.pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add header
+                doc.setFontSize(20);
+                doc.text('Student Management Report', 105, 15, null, null, 'center');
+                doc.setFontSize(11);
+                doc.text('Guru Kirpa University - Admin Report', 105, 25, null, null, 'center');
+                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 32, null, null, 'center');
+                
+                // Add table
+                const headers = [['ID', 'Name', 'Course', 'Year', 'Semester', 'Email', 'Phone', 'Status']];
+                const data = studentsToExport.map(student => [
+                    student.studentId,
+                    student.name,
+                    student.course,
+                    `Year ${student.year}`,
+                    `Sem ${student.semester}`,
+                    student.email,
+                    student.phone,
+                    student.status.toUpperCase()
+                ]);
+                
+                doc.autoTable({
+                    head: headers,
+                    body: data,
+                    startY: 40,
+                    theme: 'striped',
+                    headStyles: { fillColor: [67, 97, 238] },
+                    styles: { fontSize: 9 },
+                    columnStyles: {
+                        0: { cellWidth: 25 },
+                        1: { cellWidth: 30 },
+                        2: { cellWidth: 25 },
+                        3: { cellWidth: 20 },
+                        4: { cellWidth: 20 },
+                        5: { cellWidth: 40 },
+                        6: { cellWidth: 30 },
+                        7: { cellWidth: 20 }
+                    }
+                });
+                
+                // Add footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(10);
+                    doc.text(`Page ${i} of ${pageCount}`, 200, 285, null, null, 'right');
+                    doc.text('Confidential', 10, 285);
+                }
+                
+                // Save PDF
+                doc.save(fileName);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'PDF Exported',
+                    text: `${studentsToExport.length} student records exported successfully!`,
+                    timer: 2000
+                });
+            }
+
+            // Simulate bulk update with progress
+            function simulateBulkUpdate(selectedIds) {
+                $('#progressContainer').show();
+                $('#progressText').text('Updating academic details...');
+                $('#progressFill').css('width', '0%');
+                $('#progressPercent').text('0%');
+                
+                let progress = 0;
+                const total = selectedIds.length;
+                const progressStep = 100 / total;
+                
+                const interval = setInterval(() => {
+                    progress += progressStep;
+                    const roundedProgress = Math.min(Math.round(progress), 100);
+                    $('#progressFill').css('width', `${roundedProgress}%`);
+                    $('#progressPercent').text(`${roundedProgress}%`);
+                    
+                    if (roundedProgress >= 100) {
+                        clearInterval(interval);
+                        
+                        // Update students data
+                        const newYear = $('#updateYear').val();
+                        const newSemester = $('#updateSemester').val();
+                        
+                        students = students.map(student => {
+                            if (selectedIds.includes(student.id)) {
+                                return {
+                                    ...student,
+                                    year: newYear,
+                                    semester: newSemester
+                                };
+                            }
+                            return student;
+                        });
+                        
+                        $('#progressContainer').hide();
+                        $('#updateModal').modal('hide');
+                        renderTable();
+                        selectedStudents.clear();
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Update Complete!',
+                            text: `Updated ${total} student records successfully`,
+                            timer: 3000
+                        });
+                    }
+                }, 100);
+            }
+
+            // Event Listeners
+            // Apply filters
+            $('#applyFilterBtn').click(function () {
+                currentPage = 1;
+                renderTable();
+            });
+
+            // Clear filters
+            $('#clearFilterBtn').click(function () {
+                $('#courseFilter, #yearFilter, #semesterFilter, #statusFilter').val('');
+                currentPage = 1;
+                renderTable();
+            });
+
+            // Select all checkbox
+            $('#selectAll').change(function () {
+                const isChecked = $(this).prop('checked');
+                $('.student-checkbox').prop('checked', isChecked);
+                
+                if (isChecked) {
+                    const filteredStudents = filterStudents();
+                    const paginatedStudents = paginateStudents(filteredStudents);
+                    paginatedStudents.forEach(student => selectedStudents.add(student.id));
+                } else {
+                    selectedStudents.clear();
+                }
+                
+                renderTable();
+            });
+
+            // Individual student checkbox
+            $(document).on('change', '.student-checkbox', function () {
+                const studentId = parseInt($(this).data('id'));
+                if ($(this).prop('checked')) {
+                    selectedStudents.add(studentId);
+                } else {
+                    selectedStudents.delete(studentId);
+                    $('#selectAll').prop('checked', false);
+                }
+                renderTable();
+            });
+
+            // Update semester/year button
+            $('#updateSemesterBtn').click(function () {
+                if (selectedStudents.size === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Students Selected',
+                        text: 'Please select at least one student to update'
+                    });
+                    return;
+                }
+                $('#updateModal').modal('show');
+            });
+
+            // Export to PDF button
+            $('#exportPdfBtn').click(function () {
+                exportToPDF(students, 'all_students_report.pdf');
+            });
+
+            // Export selected button
+            $('#exportSelectedBtn').click(function () {
+                if (selectedStudents.size === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No Students Selected',
+                        text: 'Please select at least one student to export'
+                    });
+                    return;
+                }
+                
+                const selectedStudentsData = students.filter(student => 
+                    selectedStudents.has(student.id)
+                );
+                
+                exportToPDF(selectedStudentsData, `selected_students_${new Date().getTime()}.pdf`);
+            });
+
+            // Refresh data button
+            $('#refreshDataBtn').click(function () {
+                Swal.fire({
+                    title: 'Refreshing Data...',
+                    timer: 1000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                }).then(() => {
+                    selectedStudents.clear();
+                    renderTable();
+                    Swal.fire('Refreshed!', 'Student data has been refreshed', 'success');
+                });
+            });
+
+            // Bulk update button
+            $('#bulkUpdateBtn').click(function () {
+                $('#updateModal').modal('show');
+            });
+
+            // Bulk export button
+            $('#bulkExportBtn').click(function () {
+                const selectedStudentsData = students.filter(student => 
+                    selectedStudents.has(student.id)
+                );
+                exportToPDF(selectedStudentsData, `bulk_export_${new Date().getTime()}.pdf`);
+            });
+
+            // Clear selection button
+            $('#clearSelectionBtn').click(function () {
+                selectedStudents.clear();
+                $('#selectAll').prop('checked', false);
+                renderTable();
+            });
+
+            // Update form submission
+            $('#updateForm').submit(function (e) {
+                e.preventDefault();
+                
+                const selectedIds = Array.from(selectedStudents);
+                simulateBulkUpdate(selectedIds);
+            });
+
+            // Pagination click
+            $(document).on('click', '.page-link', function (e) {
+                e.preventDefault();
+                const page = parseInt($(this).data('page'));
+                if (page && page !== currentPage) {
+                    currentPage = page;
+                    renderTable();
+                }
+            });
+
+            // Edit student
+            $(document).on('click', '.edit-student', function () {
+                const studentId = $(this).data('id');
+                const student = students.find(s => s.id === studentId);
+                
+                Swal.fire({
+                    title: 'Edit Student',
+                    html: `
+                        <div class="text-start">
+                            <div class="mb-3">
+                                <label class="form-label">Student ID</label>
+                                <input type="text" class="form-control" id="editStudentId" value="${student.studentId}" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" id="editName" value="${student.name}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Academic Year</label>
+                                <select class="form-select" id="editYear">
+                                    ${[1,2,3,4].map(y => 
+                                        `<option value="${y}" ${student.year == y ? 'selected' : ''}>Year ${y}</option>`
+                                    ).join('')}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Semester</label>
+                                <select class="form-select" id="editSemester">
+                                    ${[1,2,3,4,5,6,7,8].map(s => 
+                                        `<option value="${s}" ${student.semester == s ? 'selected' : ''}>Semester ${s}</option>`
+                                    ).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Save Changes',
+                    preConfirm: () => {
+                        const name = $('#editName').val();
+                        const year = $('#editYear').val();
+                        const semester = $('#editSemester').val();
+                        
+                        if (!name.trim()) {
+                            Swal.showValidationMessage('Please enter student name');
+                            return false;
+                        }
+                        
+                        return { name, year, semester };
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const index = students.findIndex(s => s.id === studentId);
+                        students[index] = {
+                            ...students[index],
+                            name: result.value.name,
+                            year: result.value.year,
+                            semester: result.value.semester
+                        };
+                        
+                        renderTable();
+                        Swal.fire('Updated!', 'Student record has been updated', 'success');
+                    }
+                });
+            });
+
+            // View student
+            $(document).on('click', '.view-student', function () {
+                const studentId = $(this).data('id');
+                const student = students.find(s => s.id === studentId);
+                
+                const statusColors = {
+                    active: 'success',
+                    inactive: 'danger',
+                    pending: 'warning'
+                };
+                
+                Swal.fire({
+                    title: 'Student Details',
+                    html: `
+                        <div class="text-start">
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <strong>Student ID:</strong><br>
+                                    ${student.studentId}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Status:</strong><br>
+                                    <span class="badge bg-${statusColors[student.status]}">
+                                        ${student.status.toUpperCase()}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <strong>Name:</strong><br>
+                                    ${student.name}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <strong>Course:</strong><br>
+                                    ${student.course}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Academic Year:</strong><br>
+                                    Year ${student.year} - Semester ${student.semester}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <strong>Email:</strong><br>
+                                    ${student.email}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Phone:</strong><br>
+                                    ${student.phone}
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    width: '600px'
+                });
+            });
+
+            // Initialize table
+            renderTable();
+        });
+    </script>
+</body>
+
+</html>

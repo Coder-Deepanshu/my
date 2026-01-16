@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner | Edutrack Faculty</title>
+    <title>Faculty - Assignment Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Include QR Scanner Library -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -17,850 +16,1294 @@
             --accent: #7209b7;
             --light: #f8f9fa;
             --dark: #212529;
-            --success: #2a9d8f;
-            --warning: #f8961e;
-            --danger: #e63946;
             --gray: #6c757d;
-            --light-gray: #e9ecef;
-            --transition: all 0.3s ease;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --info: #2196f3;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f5f7fb 0%, #e9edf7 100%);
-            min-height: 100vh;
+            background-color: #f5f7fb;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
-        .scanner-container {
-            max-width: 900px;
-            margin: 60px auto;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-            transition: var(--transition);
+
+        .navbar {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
         }
-        
-        .scanner-container:hover {
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-        }
-        
-        .scanner-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+
+        .page-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             color: white;
-            padding: 2.5rem;
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-top: 4px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-submitted {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-late {
+            background: #e2d5f0;
+            color: #4a148c;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            margin: 2px;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --info: #2196f3;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 80px 0 40px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-        
-        .scanner-header::before {
-            content: "";
+
+        .page-header::before {
+            content: '';
             position: absolute;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            top: -150px;
-            right: -100px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+            opacity: 0.1;
         }
-        
-        .scanner-header::after {
-            content: "";
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            bottom: -100px;
-            left: -50px;
-        }
-        
-        .header-content {
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
             position: relative;
-            z-index: 2;
         }
-        
-        .scanner-icon {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            width: 90px;
-            height: 90px;
-            line-height: 90px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .scanner-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
-        }
-        
-        .scanner-subtitle {
-            opacity: 0.9;
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .scanner-body {
-            padding: 2.5rem;
-        }
-        
-        .scanner-status-card {
-            background: linear-gradient(135deg, #f8f9ff 0%, #edf0ff 100%);
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            background: white;
             border-radius: 15px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border-left: 5px solid var(--primary);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .dashboard-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        /* Faculty Info */
+        .faculty-info {
+            padding: 20px;
+            background: var(--light);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .info-card {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
         }
-        
-        .status-icon {
-            width: 60px;
-            height: 60px;
+
+        .info-card h3 i {
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .info-card p {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* Quick Stats */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .stat-card {
             background: white;
-            border-radius: 50%;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+        }
+
+        .stat-card h3 i {
+            margin-right: 8px;
             color: var(--primary);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.15);
         }
-        
-        .status-content h5 {
-            margin: 0 0 0.5rem 0;
-            font-weight: 700;
-            color: var(--dark);
-        }
-        
-        .status-content p {
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
             margin: 0;
-            color: var(--gray);
         }
-        
-        .scanner-main {
+
+        /* Action Buttons */
+        .action-buttons {
+            padding: 20px;
             display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-        
-        @media (min-width: 992px) {
-            .scanner-main {
-                flex-direction: row;
-            }
-        }
-        
-        .scanner-section {
-            flex: 1;
-        }
-        
-        .scanner-box {
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
             background: var(--light);
-            border-radius: 15px;
-            padding: 1.5rem;
-            height: 100%;
-            border: 2px dashed var(--light-gray);
-            transition: var(--transition);
+            border-top: 1px solid var(--light-gray);
         }
-        
-        .scanner-box:hover {
-            border-color: var(--primary);
-        }
-        
-        .scanner-box-title {
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 1rem;
+
+        .action-btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.2rem;
+            transition: var(--transition);
         }
-        
-        /* QR Scanner Styling */
-        #qr-reader {
-            width: 100% !important;
-            border: none !important;
-            padding: 0 !important;
+
+        .action-btn i {
+            font-size: 1.1rem;
         }
-        
-        #qr-reader__dashboard_section {
-            padding: 1rem 0 !important;
-        }
-        
-        #qr-reader__dashboard_section_csr button {
-            background: var(--primary) !important;
-            color: white !important;
-            border: none !important;
-            padding: 10px 20px !important;
-            border-radius: 8px !important;
-            font-weight: 600 !important;
-            transition: var(--transition) !important;
-        }
-        
-        #qr-reader__dashboard_section_csr button:hover {
-            background: var(--primary-dark) !important;
-            transform: translateY(-2px) !important;
-        }
-        
-        #qr-reader__scan_region {
-            background: #000 !important;
-            border-radius: 10px !important;
-            overflow: hidden !important;
-        }
-        
-        #html5-qrcode-anchor-scan-type-change {
-            display: none !important;
-        }
-        
-        .scanner-view {
-            min-height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 1rem;
-            position: relative;
-        }
-        
-        .scanner-placeholder {
-            text-align: center;
-            color: var(--gray);
-        }
-        
-        .scanner-placeholder-icon {
-            font-size: 4rem;
-            color: var(--light-gray);
-            margin-bottom: 1rem;
-        }
-        
-        /* Manual Entry Section */
-        .manual-entry {
+
+        /* Tabs Navigation */
+        .tabs-container {
+            padding: 20px 20px 0;
             background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
-        
-        .form-label {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
+
+        .nav-tabs {
+            border-bottom: 2px solid var(--light-gray);
         }
-        
-        .form-control {
-            border: 2px solid var(--light-gray);
-            border-radius: 10px;
-            padding: 12px 15px;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-        
-        .btn-primary {
-            background: var(--primary);
+
+        .nav-tabs .nav-link {
             border: none;
-            padding: 12px 24px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: var(--transition);
-            border-radius: 10px;
-            width: 100%;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--light-gray);
             color: var(--gray);
-            padding: 10px 20px;
             font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
             transition: var(--transition);
-            border-radius: 10px;
-            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .btn-outline:hover {
-            border-color: var(--primary);
+
+        .nav-tabs .nav-link:hover {
             color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.1);
         }
-        
-        /* Result Display */
-        .result-container {
-            margin-top: 2rem;
-            display: none;
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border-bottom: 3px solid var(--primary);
         }
-        
-        .result-card {
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            border-radius: 15px;
-            padding: 1.5rem;
-            border-left: 5px solid var(--success);
-            animation: slideIn 0.5s ease;
+
+        /* Tab Content */
+        .tab-content {
+            padding: 30px;
+            background: white;
         }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        /* Assignment Table */
+        .assignments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        
-        .result-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 1rem;
+
+        .assignments-table th,
+        .assignments-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+            vertical-align: middle;
         }
-        
-        .result-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--success);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-        }
-        
-        .result-title {
-            font-weight: 700;
-            color: var(--dark);
-            margin: 0;
-        }
-        
-        .result-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .result-item {
-            background: rgba(255, 255, 255, 0.7);
-            padding: 1rem;
-            border-radius: 10px;
-        }
-        
-        .result-label {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-bottom: 0.3rem;
-        }
-        
-        .result-value {
+
+        .assignments-table th {
+            background: var(--light);
             font-weight: 600;
             color: var(--dark);
-            font-size: 1.1rem;
+            position: sticky;
+            top: 0;
         }
-        
-        .scanner-footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--light-gray);
+
+        .assignments-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
         }
-        
-        .footer-links {
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .status-submitted {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: var(--info);
+        }
+
+        .status-approved {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        .status-rejected {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--danger);
+        }
+
+        .status-late {
+            background-color: rgba(156, 39, 176, 0.2);
+            color: #9c27b0;
+        }
+
+        /* Action Buttons in Table */
+        .action-group {
             display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 1rem;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        
-        .footer-link {
-            color: var(--gray);
-            text-decoration: none;
-            transition: var(--transition);
+
+        .table-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 5px;
+            transition: var(--transition);
         }
-        
-        .footer-link:hover {
+
+        .table-btn-sm {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+        }
+
+        /* Form Styles */
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .form-label i {
+            margin-right: 10px;
             color: var(--primary);
         }
-        
-        .copyright {
+
+        .form-control,
+        .form-select {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Assignment Preview */
+        .assignment-preview {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .preview-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .preview-meta {
+            display: flex;
+            gap: 15px;
             color: var(--gray);
             font-size: 0.9rem;
         }
-        
-        /* Responsive */
+
+        .preview-content {
+            color: var(--dark);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .file-attachments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .file-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--light-gray);
+            padding: 20px 25px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--light-gray);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .faculty-info {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
         @media (max-width: 768px) {
-            .scanner-container {
-                margin: 30px 20px;
+            .page-header h1 {
+                font-size: 2rem;
             }
-            
-            .scanner-header {
-                padding: 2rem 1.5rem;
+
+            .stats-cards {
+                grid-template-columns: 1fr;
             }
-            
-            .scanner-body {
-                padding: 1.5rem;
+
+            .assignments-table {
+                display: block;
+                overflow-x: auto;
             }
-            
-            .scanner-title {
+
+            .nav-tabs .nav-link {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-header h1 {
                 font-size: 1.8rem;
             }
-            
-            .scanner-status-card {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
+
+            .tab-content {
+                padding: 15px;
             }
-            
-            .footer-links {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-        
-        /* Loading Animation */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--light-gray);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
+
 <body>
+    {% include 'haeder.html' %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-chalkboard-teacher me-2"></i> Assignment Management</h1>
+            <p class="lead">Manage student assignments and submissions</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
     <div class="container">
-        <div class="scanner-container">
-            <!-- Header -->
-            <div class="scanner-header">
-                <div class="header-content">
-                    <div class="scanner-icon">
-                        <i class="fas fa-qrcode"></i>
-                    </div>
-                    <h1 class="scanner-title">QR Code Scanner</h1>
-                    <p class="scanner-subtitle">
-                        Scan your class QR code to mark attendance quickly and securely
-                    </p>
+        <!-- Faculty Info -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="info-card">
+                    <h6><i class="fas fa-user-tie text-primary"></i> Faculty Name</h6>
+                    <p class="mb-0 fw-bold">{{ name }}</p>
                 </div>
             </div>
-            
-            <!-- Body -->
-            <div class="scanner-body">
-                <!-- Status Card -->
-                <div class="scanner-status-card">
-                    <div class="status-icon">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                    <div class="status-content">
-                        <h5>Welcome, {{ faculty_name|default:"Professor" }}</h5>
-                        <p>
-                            <i class="fas fa-clock me-1"></i>
-                            {% now "F j, Y, g:i a" %}
-                            • 
-                            <i class="fas fa-map-marker-alt me-1"></i>
-                            Campus: {{ campus_name|default:"Main Campus" }}
-                        </p>
-                    </div>
+            <div class="col-md-3">
+                <div class="info-card">
+                    <h6><i class="fas fa-id-card text-primary"></i> College ID</h6>
+                    <p class="mb-0 fw-bold">{{ college_id }}</p>
                 </div>
-                
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} alert-dismissible fade show">
-                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"></i>
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                
-                <!-- Main Scanner Area -->
-                <div class="scanner-main">
-                    <!-- QR Scanner Section -->
-                    <div class="scanner-section">
-                        <div class="scanner-box">
-                            <h3 class="scanner-box-title">
-                                <i class="fas fa-camera"></i>
-                                Scan QR Code
-                            </h3>
-                            
-                            <div id="scanner-view" class="scanner-view">
-                                <div id="qr-reader" style="width: 100%"></div>
-                            </div>
-                            
-                            <div class="scanner-instructions mt-3">
-                                <h6><i class="fas fa-lightbulb me-2"></i>How to Scan:</h6>
-                                <ol class="text-muted small">
-                                    <li>Allow camera access when prompted</li>
-                                    <li>Position QR code within the scanner frame</li>
-                                    <li>Hold steady until scan is complete</li>
-                                    <li>Attendance will be marked automatically</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Manual Entry Section -->
-                    <div class="scanner-section">
-                        <div class="manual-entry">
-                            <h3 class="scanner-box-title mb-3">
-                                <i class="fas fa-keyboard"></i>
-                                Manual Entry
-                            </h3>
-                            <p class="text-muted mb-4">
-                                Can't scan? Enter the QR code details manually
-                            </p>
-                            
-                            <form method="POST" id="manualForm">
-                                {% csrf_token %}
-                                <input type="hidden" name="entry_type" value="manual">
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">Class Code</label>
-                                    <input type="text" 
-                                           name="class_code" 
-                                           class="form-control" 
-                                           placeholder="e.g., CS301-2023" 
-                                           required>
-                                    <div class="form-text">Enter the 8-10 digit class code</div>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">Session ID</label>
-                                    <input type="text" 
-                                           name="session_id" 
-                                           class="form-control" 
-                                           placeholder="e.g., SESS-001" 
-                                           required>
-                                    <div class="form-text">Unique session identifier</div>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">Verification PIN</label>
-                                    <div class="input-group">
-                                        <input type="password" 
-                                               name="verification_pin" 
-                                               class="form-control" 
-                                               placeholder="Enter 6-digit PIN" 
-                                               maxlength="6"
-                                               required>
-                                        <button class="btn btn-outline-secondary" type="button" id="togglePin">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-primary mt-2">
-                                    <i class="fas fa-check-circle me-2"></i>
-                                    Submit Manual Entry
-                                </button>
-                            </form>
-                            
-                            <div class="text-center mt-4">
-                                <button class="btn btn-outline" id="toggleCameraBtn">
-                                    <i class="fas fa-video me-2"></i>
-                                    Toggle Camera
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+            <div class="col-md-3">
+                <div class="info-card">
+                    <h6><i class="fas fa-building text-primary"></i> Department</h6>
+                    <p class="mb-0 fw-bold">{{ department }}</p>
                 </div>
-                
-                <!-- Loading Indicator -->
-                <div class="loading" id="loadingIndicator">
-                    <div class="spinner"></div>
-                    <p class="text-muted">Processing attendance...</p>
+            </div>
+            <div class="col-md-3">
+                <div class="info-card">
+                    <h6><i class="fas fa-calendar-day text-primary"></i> Date</h6>
+                    <p class="mb-0 fw-bold">{{ date }}</p>
                 </div>
-                
-                <!-- Result Display -->
-                <div class="result-container" id="resultContainer">
-                    <div class="result-card">
-                        <div class="result-header">
-                            <div class="result-icon">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div>
-                                <h4 class="result-title">Attendance Marked Successfully!</h4>
-                                <p class="text-muted mb-0" id="resultTimestamp"></p>
-                            </div>
-                        </div>
-                        
-                        <div class="result-details" id="resultDetails">
-                            <!-- Filled by JavaScript -->
-                        </div>
-                        
-                        <div class="text-center mt-3">
-                            <button class="btn btn-outline me-2" onclick="resetScanner()">
-                                <i class="fas fa-redo me-1"></i>
-                                Scan Another
-                            </button>
-                            <a href="#" class="btn btn-primary">
-                                <i class="fas fa-tachometer-alt me-1"></i>
-                                Go to Dashboard
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-md-2 col-6">
+                <div class="stat-card">
+                    <h6><i class="fas fa-tasks text-primary"></i> Total</h6>
+                    <h3>{{ status_counts.total }}</h3>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card">
+                    <h6><i class="fas fa-clock text-warning"></i> Pending</h6>
+                    <h3>{{ status_counts.pending }}</h3>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card">
+                    <h6><i class="fas fa-paper-plane text-info"></i> Submitted</h6>
+                    <h3>{{ status_counts.submitted }}</h3>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card">
+                    <h6><i class="fas fa-check-circle text-success"></i> Approved</h6>
+                    <h3>{{ status_counts.approved }}</h3>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card">
+                    <h6><i class="fas fa-times-circle text-danger"></i> Rejected</h6>
+                    <h3>{{ status_counts.rejected }}</h3>
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <div class="stat-card">
+                    <h6><i class="fas fa-exclamation-triangle text-purple"></i> Late</h6>
+                    <h3>{{ status_counts.late }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
+                        <i class="fas fa-plus-circle"></i> Add Assignment
+                    </button>
+                    <button class="btn btn-success" id="bulkApproveBtn">
+                        <i class="fas fa-check-double"></i> Bulk Approve
+                    </button>
+                    <button class="btn btn-warning" id="bulkRejectBtn">
+                        <i class="fas fa-times"></i> Bulk Reject
+                    </button>
+                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+                        <i class="fas fa-calendar-plus"></i> Add Schedule
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <form method="GET" class="d-flex gap-2">
+                    <select name="status" class="form-select" style="width: auto;">
+                        <option value="all" {% if status_filter=='all' %}selected{% endif %}>All Status</option>
+                        <option value="pending" {% if status_filter=='pending' %}selected{% endif %}>Pending</option>
+                        <option value="submitted" {% if status_filter=='submitted' %}selected{% endif %}>Submitted
+                        </option>
+                        <option value="approved" {% if status_filter=='approved' %}selected{% endif %}>Approved</option>
+                        <option value="rejected" {% if status_filter=='rejected' %}selected{% endif %}>Rejected</option>
+                        <option value="late" {% if status_filter=='late' %}selected{% endif %}>Late</option>
+                    </select>
+                    <input type="text" name="search" class="form-control" placeholder="Search assignments..."
+                        value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Filter
+                    </button>
+                    <a href="{% url 'faculty_student_assignment' %}" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Reset
+                    </a>
+                </form>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
+                    <label class="form-check-label" for="selectAllCheckbox">
+                        Select All
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignments Table -->
+        <div class="main-container">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th width="50">
+                                <input type="checkbox" id="selectAll">
+                            </th>
+                            <th>Assignment Title</th>
+                            <th>Course</th>
+                            <th>Student</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="assignment-checkbox"
+                                    value="{{ assignment.assignment_id }}">
+                            </td>
+                            <td>{{ assignment.assignment_title|truncatechars:30 }}</td>
+                            <td>{{ assignment.course_code }}</td>
+                            <td>{{ assignment.student_name }}</td>
+                            <td>{{ assignment.due_date|date:"d/m/Y" }}</td>
+                            <td>
+                                <span class="status-badge badge-{{ assignment.status }}">
+                                    {{ assignment.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap">
+                                    <button class="btn btn-sm btn-primary action-btn view-assignment"
+                                        data-id="{{ assignment.assignment_id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+
+                                    {% if assignment.status == 'submitted' or assignment.status == 'pending' %}
+                                    <button class="btn btn-sm btn-success action-btn approve-assignment"
+                                        data-id="{{ assignment.assignment_id }}">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning action-btn reject-assignment"
+                                        data-id="{{ assignment.assignment_id }}">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    {% endif %}
+
+                                    <button class="btn btn-sm btn-danger action-btn delete-assignment"
+                                        data-id="{{ assignment.assignment_id }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+                                <p class="text-muted">No assignments found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item">
+                        <a class="page-link"
+                            href="?page={{ num }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            {{ num }}
+                        </a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_obj.next_page_number }}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                Next
                             </a>
+                        </li>
+                        {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <!-- Schedule Table (Simple) -->
+        <div class="main-container mt-4">
+            <h5><i class="fas fa-calendar-alt me-2"></i> Faculty Schedule</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Course</th>
+                            <th>Day</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in schedule %}
+                        <tr>
+                            <td>{{ item.subject }}</td>
+                            <td>{{ item.course }}</td>
+                            <td>{{ item.day }}</td>
+                            <td>{{ item.time }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">
+                                No schedule found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Assignment Modal -->
+    <div class="modal fade" id="addAssignmentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i> Add New Assignment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{% url 'add_assignment' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Assignment Title *</label>
+                                <input type="text" name="assignment_title" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Course Code *</label>
+                                <select name="course_code" class="form-select" required>
+                                    <option value="">Select Course</option>
+                                    {% for subject in subjects %}
+                                    <option value="{{ subject.code }}">{{ subject.code }} - {{ subject.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Subject *</label>
+                                <input type="text" name="subject" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Due Date *</label>
+                                <input type="date" name="due_date" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Student ID</label>
+                                <input type="text" name="student_id" class="form-control" placeholder="Optional">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Student Name</label>
+                                <input type="text" name="student_name" class="form-control" placeholder="Optional">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description *</label>
+                            <textarea name="description" class="form-control" rows="3" required></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Maximum Marks</label>
+                                <input type="number" name="max_marks" class="form-control" value="100" min="0"
+                                    max="100">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Attachment (Optional)</label>
+                                <input type="file" name="attachment" class="form-control" accept=".pdf,.doc,.docx,.zip">
+                            </div>
                         </div>
                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Assignment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Schedule Modal -->
+    <div class="modal fade" id="addScheduleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="fas fa-calendar-plus me-2"></i> Add Schedule</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                
-                <!-- Footer -->
-                <div class="scanner-footer">
-                    <div class="footer-links">
-                        <a href="#" class="footer-link">
-                            <i class="fas fa-home"></i>
-                            Dashboard
-                        </a>
-                        <a href="#" class="footer-link">
-                            <i class="fas fa-history"></i>
-                            History
-                        </a>
-                        <a href="#" class="footer-link">
-                            <i class="fas fa-question-circle"></i>
-                            Help
-                        </a>
-                        <a href="#" class="footer-link text-danger">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Logout
-                        </a>
+                <form method="POST" action="{% url 'add_schedule' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Subject *</label>
+                            <input type="text" name="subject" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Course *</label>
+                            <select name="course" class="form-select" required>
+                                <option value="">Select Course</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.code }}">{{ subject.code }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Day</label>
+                                <select name="day" class="form-select">
+                                    <option value="Monday">Monday</option>
+                                    <option value="Tuesday">Tuesday</option>
+                                    <option value="Wednesday">Wednesday</option>
+                                    <option value="Thursday">Thursday</option>
+                                    <option value="Friday">Friday</option>
+                                    <option value="Saturday">Saturday</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Time</label>
+                                <input type="time" name="time" class="form-control" value="09:00">
+                            </div>
+                        </div>
                     </div>
-                    <div class="copyright">
-                        <i class="fas fa-shield-alt me-1"></i>
-                        Edutrack Faculty Attendance System • Secure QR Scanning
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-info">Add Schedule</button>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Assignment Modal -->
+    <div class="modal fade" id="viewAssignmentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-eye me-2"></i> Assignment Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="assignmentDetailsContent">
+                    <!-- Content loaded dynamically -->
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Approve Modal -->
+    <div class="modal fade" id="approveModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-check me-2"></i> Approve Assignment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="approveForm">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <input type="hidden" name="assignment_id" id="approveAssignmentId">
+                        <input type="hidden" name="action" value="approve">
+
+                        <div class="mb-3">
+                            <label class="form-label">Marks (out of 100)</label>
+                            <input type="number" name="marks" class="form-control" min="0" max="100" value="0" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Feedback (Optional)</label>
+                            <textarea name="feedback" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-success">Approve</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div class="modal fade" id="rejectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title"><i class="fas fa-times me-2"></i> Reject Assignment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="rejectForm">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <input type="hidden" name="assignment_id" id="rejectAssignmentId">
+                        <input type="hidden" name="action" value="reject">
+
+                        <div class="mb-3">
+                            <label class="form-label">Remarks (Optional)</label>
+                            <textarea name="remarks" class="form-control" rows="3"
+                                placeholder="Reason for rejection..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Reject</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let scanner = null;
-            let currentCameraId = null;
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            const resultContainer = document.getElementById('resultContainer');
-            const resultDetails = document.getElementById('resultDetails');
-            const resultTimestamp = document.getElementById('resultTimestamp');
-            
-            // Initialize QR Scanner
-            function initScanner() {
-                if (scanner) {
-                    scanner.clear();
-                }
-                
-                const config = {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 },
-                    rememberLastUsedCamera: true,
-                    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-                };
-                
-                scanner = new Html5Qrcode("qr-reader");
-                
-                // Get camera list and start with back camera if available
-                Html5Qrcode.getCameras().then(cameras => {
-                    if (cameras && cameras.length > 0) {
-                        // Prefer back camera
-                        const backCamera = cameras.find(cam => cam.label.toLowerCase().includes('back'));
-                        currentCameraId = backCamera ? backCamera.id : cameras[0].id;
-                        
-                        scanner.start(
-                            currentCameraId,
-                            config,
-                            onScanSuccess,
-                            onScanError
-                        ).catch(err => {
-                            console.error("Unable to start scanner:", err);
-                            showCameraError();
-                        });
-                    } else {
-                        showCameraError();
-                    }
-                }).catch(err => {
-                    console.error("Unable to get cameras:", err);
-                    showCameraError();
+        document.addEventListener('DOMContentLoaded', function () {
+            // Select All Checkbox
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) {
+                selectAll.addEventListener('change', function () {
+                    const checkboxes = document.querySelectorAll('.assignment-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
                 });
             }
-            
-            // Handle successful scan
-            function onScanSuccess(decodedText, decodedResult) {
-                // Stop scanner
-                scanner.pause();
-                
-                // Show loading
-                loadingIndicator.style.display = 'block';
-                
-                // Process the QR code data
-                console.log("QR Code scanned:", decodedText);
-                
-                // Simulate API call (replace with actual AJAX call)
-                setTimeout(() => {
-                    processAttendance(decodedText);
-                }, 1500);
-            }
-            
-            // Handle scan error
-            function onScanError(errorMessage) {
-                // Optional: Show error to user
-                console.warn("Scan error:", errorMessage);
-            }
-            
-            // Process attendance from QR data
-            function processAttendance(qrData) {
-                // Hide loading
-                loadingIndicator.style.display = 'none';
-                
-                // Parse QR data (assuming format: class_code|session_id|timestamp)
-                const parts = qrData.split('|');
-                
-                // Show result
-                const now = new Date();
-                resultTimestamp.textContent = `Marked at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                
-                // Populate result details
-                resultDetails.innerHTML = `
-                    <div class="result-item">
-                        <div class="result-label">Class Code</div>
-                        <div class="result-value">${parts[0] || 'CS301-2023'}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Session</div>
-                        <div class="result-value">${parts[1] || 'Lecture 01'}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Faculty</div>
-                        <div class="result-value">{{ faculty_name|default:"Professor" }}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Status</div>
-                        <div class="result-value"><span class="text-success">Present ✓</span></div>
-                    </div>
-                `;
-                
-                // Show result container
-                resultContainer.style.display = 'block';
-                
-                // Scroll to result
-                resultContainer.scrollIntoView({ behavior: 'smooth' });
-                
-                // In real implementation, submit via AJAX
-                // submitAttendance(qrData);
-            }
-            
-            // Show camera error
-            function showCameraError() {
-                const scannerView = document.getElementById('scanner-view');
-                scannerView.innerHTML = `
-                    <div class="scanner-placeholder">
-                        <div class="scanner-placeholder-icon">
-                            <i class="fas fa-video-slash"></i>
-                        </div>
-                        <h5>Camera Access Required</h5>
-                        <p class="text-muted">Please allow camera access to scan QR codes</p>
-                        <button class="btn btn-primary mt-2" onclick="initScanner()">
-                            <i class="fas fa-camera me-1"></i>
-                            Enable Camera
-                        </button>
-                    </div>
-                `;
-            }
-            
-            // Toggle PIN visibility
-            document.getElementById('togglePin').addEventListener('click', function() {
-                const pinInput = document.querySelector('input[name="verification_pin"]');
-                const icon = this.querySelector('i');
-                
-                if (pinInput.type === 'password') {
-                    pinInput.type = 'text';
-                    icon.className = 'fas fa-eye-slash';
-                } else {
-                    pinInput.type = 'password';
-                    icon.className = 'fas fa-eye';
-                }
+
+            // View Assignment
+            document.querySelectorAll('.view-assignment').forEach(button => {
+                button.addEventListener('click', function () {
+                    const assignmentId = this.dataset.id;
+
+                    fetch(`/faculty/view-assignment/${assignmentId}/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const assignment = data.assignment;
+                                const content = `
+                                    <div class="assignment-details">
+                                        <h5>${assignment.title}</h5>
+                                        <hr>
+                                        <p><strong>Course:</strong> ${assignment.course}</p>
+                                        <p><strong>Subject:</strong> ${assignment.subject}</p>
+                                        <p><strong>Student:</strong> ${assignment.student_name} (${assignment.student_id})</p>
+                                        <p><strong>Due Date:</strong> ${assignment.due_date}</p>
+                                        <p><strong>Submitted Date:</strong> ${assignment.submitted_date}</p>
+                                        <p><strong>Status:</strong> 
+                                            <span class="badge badge-${assignment.status}">
+                                                ${assignment.status.charAt(0).toUpperCase() + assignment.status.slice(1)}
+                                            </span>
+                                        </p>
+                                        <p><strong>Marks:</strong> ${assignment.marks}/${assignment.max_marks}</p>
+                                        <p><strong>Description:</strong></p>
+                                        <p>${assignment.description}</p>
+                                        ${assignment.feedback ? `<p><strong>Feedback:</strong> ${assignment.feedback}</p>` : ''}
+                                        ${assignment.remarks ? `<p><strong>Remarks:</strong> ${assignment.remarks}</p>` : ''}
+                                        ${assignment.attachment ? `<p><strong>Attachment:</strong> <a href="${assignment.attachment}" target="_blank">Download</a></p>` : ''}
+                                        <p><small class="text-muted">Created: ${assignment.created_at}</small></p>
+                                    </div>
+                                `;
+
+                                document.getElementById('assignmentDetailsContent').innerHTML = content;
+                                new bootstrap.Modal(document.getElementById('viewAssignmentModal')).show();
+                            } else {
+                                Swal.fire('Error', data.error, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error', 'Failed to load assignment details', 'error');
+                        });
+                });
             });
-            
-            // Toggle camera
-            document.getElementById('toggleCameraBtn').addEventListener('click', function() {
-                if (scanner && scanner.isScanning) {
-                    scanner.stop().then(() => {
-                        initScanner();
+
+            // Approve Assignment
+            document.querySelectorAll('.approve-assignment').forEach(button => {
+                button.addEventListener('click', function () {
+                    const assignmentId = this.dataset.id;
+                    document.getElementById('approveAssignmentId').value = assignmentId;
+                    new bootstrap.Modal(document.getElementById('approveModal')).show();
+                });
+            });
+
+            // Reject Assignment
+            document.querySelectorAll('.reject-assignment').forEach(button => {
+                button.addEventListener('click', function () {
+                    const assignmentId = this.dataset.id;
+                    document.getElementById('rejectAssignmentId').value = assignmentId;
+                    new bootstrap.Modal(document.getElementById('rejectModal')).show();
+                });
+            });
+
+            // Delete Assignment
+            document.querySelectorAll('.delete-assignment').forEach(button => {
+                button.addEventListener('click', function () {
+                    const assignmentId = this.dataset.id;
+
+                    Swal.fire({
+                        title: 'Delete Assignment?',
+                        text: 'This action cannot be undone!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const formData = new FormData();
+                            formData.append('assignment_id', assignmentId);
+                            formData.append('action', 'delete');
+
+                            fetch(`/faculty/update-assignment/${assignmentId}/`, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token }}'
+                                }
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire('Deleted!', 'Assignment has been deleted.', 'success');
+                                        setTimeout(() => location.reload(), 1000);
+                                    } else {
+                                        Swal.fire('Error', data.error, 'error');
+                                    }
+                                });
+                        }
                     });
-                }
+                });
             });
-            
-            // Manual form submission
-            document.getElementById('manualForm').addEventListener('submit', function(e) {
+
+            // Approve Form Submit
+            document.getElementById('approveForm')?.addEventListener('submit', function (e) {
                 e.preventDefault();
-                
-                // Show loading
-                loadingIndicator.style.display = 'block';
-                
-                // Simulate processing
-                setTimeout(() => {
-                    loadingIndicator.style.display = 'none';
-                    
-                    // For demo, create a fake QR data
-                    const classCode = this.querySelector('input[name="class_code"]').value;
-                    const sessionId = this.querySelector('input[name="session_id"]').value;
-                    const qrData = `${classCode}|${sessionId}|manual`;
-                    
-                    processAttendance(qrData);
-                }, 1500);
+
+                const formData = new FormData(this);
+                const assignmentId = formData.get('assignment_id');
+
+                fetch(`/faculty/update-assignment/${assignmentId}/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Approved!', 'Assignment has been approved.', 'success');
+                            document.getElementById('approveModal').querySelector('.btn-close').click();
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            Swal.fire('Error', data.error, 'error');
+                        }
+                    });
             });
-            
-            // Initialize scanner on page load
-            initScanner();
+
+            // Reject Form Submit
+            document.getElementById('rejectForm')?.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                const assignmentId = formData.get('assignment_id');
+
+                fetch(`/faculty/update-assignment/${assignmentId}/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Rejected!', 'Assignment has been rejected.', 'success');
+                            document.getElementById('rejectModal').querySelector('.btn-close').click();
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            Swal.fire('Error', data.error, 'error');
+                        }
+                    });
+            });
+
+            // Bulk Actions
+            document.getElementById('bulkApproveBtn')?.addEventListener('click', function () {
+                const selected = Array.from(document.querySelectorAll('.assignment-checkbox:checked'))
+                    .map(checkbox => checkbox.value);
+
+                if (selected.length === 0) {
+                    Swal.fire('No Selection', 'Please select assignments to approve', 'info');
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Approve Selected Assignments?',
+                    text: `You are about to approve ${selected.length} assignment(s)`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Approve All'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        selected.forEach(id => formData.append('assignment_ids[]', id));
+                        formData.append('action', 'approve');
+
+                        fetch('/faculty/bulk-action/', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire('Approved!', `${selected.length} assignment(s) approved.`, 'success');
+                                    setTimeout(() => location.reload(), 1000);
+                                } else {
+                                    Swal.fire('Error', data.error, 'error');
+                                }
+                            });
+                    }
+                });
+            });
+
+            document.getElementById('bulkRejectBtn')?.addEventListener('click', function () {
+                const selected = Array.from(document.querySelectorAll('.assignment-checkbox:checked'))
+                    .map(checkbox => checkbox.value);
+
+                if (selected.length === 0) {
+                    Swal.fire('No Selection', 'Please select assignments to reject', 'info');
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Reject Selected Assignments?',
+                    text: `You are about to reject ${selected.length} assignment(s)`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Reject All'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        selected.forEach(id => formData.append('assignment_ids[]', id));
+                        formData.append('action', 'reject');
+
+                        fetch('/faculty/bulk-action/', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire('Rejected!', `${selected.length} assignment(s) rejected.`, 'success');
+                                    setTimeout(() => location.reload(), 1000);
+                                } else {
+                                    Swal.fire('Error', data.error, 'error');
+                                }
+                            });
+                    }
+                });
+            });
+
+            // Set minimum date for due date
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('input[name="due_date"]')?.setAttribute('min', today);
         });
-        
-        // Reset scanner function
-        function resetScanner() {
-            const resultContainer = document.getElementById('resultContainer');
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            
-            resultContainer.style.display = 'none';
-            loadingIndicator.style.display = 'none';
-            
-            // Re-initialize scanner
-            if (window.scanner && window.scanner.isScanning) {
-                window.scanner.resume();
-            }
-        }
-        
-        // Make scanner available globally
-        window.scanner = null;
-        window.resetScanner = resetScanner;
     </script>
 </body>
+
 </html>

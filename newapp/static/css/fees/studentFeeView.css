@@ -1,0 +1,605 @@
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --secondary: #3f37c9;
+    --accent: #7209b7;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --gray: #6c757d;
+    --light-gray: #e9ecef;
+    --paid: #4caf50;
+    --pending: #ff9800;
+    --overdue: #f44336;
+    --transition: all 0.3s ease;
+}
+
+body {
+    background-color: #f5f7fb;
+    color: var(--dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Page Header */
+.page-header {
+    padding: 80px 0 40px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+    opacity: 0.1;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* Main Content */
+.f-container {
+    max-width: 1400px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.enroll-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 40px;
+}
+
+.enroll-header {
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    padding: 25px 30px;
+    text-align: center;
+}
+
+.enroll-content {
+    padding: 30px;
+}
+
+.alert {
+    margin: 0;
+    border-radius: 0;
+    text-align: center;
+}
+
+/* Student Info Section */
+.student-info {
+    padding: 20px;
+    background: var(--light);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.info-card {
+    flex: 1;
+    min-width: 200px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.info-card h3 {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.info-card h3 i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.info-card p {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* Fee Summary Cards */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: var(--transition);
+
+    border-top: 4px solid var(--primary);
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card h3 {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.summary-card h3 i {
+    margin-right: 8px;
+    color: var(--primary);
+}
+
+.summary-card p {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0;
+}
+
+/* Fee Note Section */
+.fee-note {
+    padding: 15px 20px;
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+    margin: 10px 20px 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.fee-note i {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+/* Year-wise Fee Cards Section */
+.section-title {
+    padding: 0 20px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.fee-years {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 0 20px 20px;
+}
+
+.year-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.year-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.year-card.paid {
+    border-top: 4px solid var(--paid);
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
+.year-card.pending {
+    border-top: 4px solid var(--pending);
+    background-color: rgba(255, 152, 0, 0.05);
+}
+
+.year-card.overdue {
+    border-top: 4px solid var(--overdue);
+    background-color: rgba(244, 67, 54, 0.05);
+}
+
+.year-card.no-fee {
+    border-top: 4px solid #9e9e9e;
+    background-color: rgba(158, 158, 158, 0.05);
+}
+
+.year-card h3 {
+    margin-top: 0;
+    color: var(--dark);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.year-card h3 i {
+    margin-right: 8px;
+}
+
+.year-card .amount {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* Status Badge Colors */
+.status-badge {
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.status-badge.paid {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: var(--paid);
+}
+
+.status-badge.pending {
+    background-color: rgba(255, 152, 0, 0.2);
+    color: var(--pending);
+}
+
+.status-badge.overdue {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: var(--overdue);
+}
+
+.status-badge.no-fee {
+    background-color: rgba(158, 158, 158, 0.2);
+    color: #9e9e9e;
+}
+
+.year-card .due-date {
+    font-size: 0.9em;
+    color: var(--gray);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.year-card .due-date i {
+    margin-right: 8px;
+}
+
+.year-card .btn {
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.year-card .btn i {
+    margin-right: 8px;
+}
+
+/* Payment History Section */
+.payment-history {
+    padding: 20px;
+}
+
+.payment-history h2 {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.payment-history h2 i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.payment-table th,
+.payment-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.payment-table th {
+    background: var(--light);
+    font-weight: 600;
+    color: var(--dark);
+    position: sticky;
+    top: 0;
+}
+
+.payment-table tr:hover {
+    background-color: rgba(67, 97, 238, 0.05);
+}
+
+.no-records {
+    text-align: center;
+    padding: 30px;
+    color: var(--gray);
+}
+
+/* Status Colors in Table */
+.status.paid {
+    color: var(--paid);
+    font-weight: 600;
+}
+
+.status.pending {
+    color: var(--pending);
+    font-weight: 600;
+}
+
+.status.overdue {
+    color: var(--overdue);
+    font-weight: 600;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--light-gray);
+    padding: 20px 25px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+/* Form Elements */
+.form-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+}
+
+.form-label i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.form-control {
+    padding: 12px 15px;
+    border: 2px solid var(--light-gray);
+    border-radius: 8px;
+    transition: var(--transition);
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+}
+
+.form-select {
+    padding: 12px 15px;
+    border: 2px solid var(--light-gray);
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .student-info {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .fee-years {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+
+    .enroll-content {
+        padding: 20px;
+    }
+}
+
+.due {
+    color: var(--overdue);
+}
+
+.over-due {
+    color: var(--paid);
+}
+
+/* Additional styles for receipt modal */
+.receipt-header {
+    text-align: center;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.receipt-header h2 {
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.receipt-header p {
+    color: var(--gray);
+    margin-bottom: 5px;
+}
+
+.receipt-details {
+    margin-bottom: 30px;
+}
+
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #dee2e6;
+}
+
+.receipt-label {
+    font-weight: 600;
+    color: var(--dark);
+    min-width: 200px;
+}
+
+.receipt-value {
+    color: var(--gray);
+    text-align: right;
+}
+
+.receipt-amount {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.receipt-amount h3 {
+    color: var(--primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.receipt-amount p {
+    color: var(--gray);
+    margin: 0;
+}
+
+.receipt-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid var(--primary);
+    text-align: center;
+}
+
+.signature-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+}
+
+.signature-box {
+    text-align: center;
+    width: 45%;
+}
+
+.signature-line {
+    border-top: 1px solid #000;
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 10px;
+}
+
+.receipt-status {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-paid {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: var(--paid);
+}
+
+.status-pending {
+    background-color: rgba(255, 152, 0, 0.2);
+    color: var(--pending);
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #feeReceiptModal,
+    #feeReceiptModal * {
+        visibility: visible;
+    }
+
+    #feeReceiptModal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .modal-footer {
+        display: none !important;
+    }
+}

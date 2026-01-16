@@ -187,6 +187,7 @@ class Student(models.Model):
     income=models.CharField(max_length=20,null=True)
     gender = models.CharField(max_length=10)
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
     birthday = models.DateField()
     address = models.TextField()
     semester = models.IntegerField(default=1)
@@ -372,10 +373,10 @@ class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    department = models.CharField(max_length=50,null=True)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
     lecture_number = models.IntegerField()  # e.g., 1, 2, 3 for the day
     date = models.DateField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=[('Present', 'Present'), ('Absent', 'Absent')])
+    status = models.CharField(max_length=10, choices=[('Present', 'Present'), ('Absent', 'Absent'), ('Leave', 'Leave')])
     timing = models.TimeField(auto_now_add=True,null=True)
 
     class Meta:
@@ -418,15 +419,6 @@ class FeePayment(models.Model):
 
     def __str__(self):
         return f"{self.student.name} - {self.amount_paid}"
-
-class StudentBalance(models.Model):
-    student = models.OneToOneField(Student, on_delete=models.CASCADE)
-    extra_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
-    advance_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
-    last_updated = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.student.name} - Extra: {self.extra_amount}, Advance: {self.advance_amount}"
     
 class ChatRoom(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -563,6 +555,8 @@ class Faculty_and_Admin_Attedance(models.Model):
     def __str__(self):
         return f'CollegeID:{self.collegeID}'
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 class Leave(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'Pending'), 
@@ -579,8 +573,10 @@ class Leave(models.Model):
         ('On Duty Leave', 'On Duty Leave'),
         ('Other', 'Other')
     ]
-
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     college_id = models.CharField(max_length=20)
+    applied_by = GenericForeignKey('content_type', 'college_id')
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
     subject = models.CharField(max_length=200)
     start_date = models.DateField()
     end_date = models.DateField()
@@ -589,6 +585,7 @@ class Leave(models.Model):
     time = models.TimeField(auto_now_add=True)
     contact_during_leave = models.CharField(max_length=15)
     reason = models.TextField()
+    rejection_reason = models.TextField(default='')
     status = models.CharField(choices=STATUS_CHOICES, max_length=10, default='Pending')
     
     applied_on = models.DateTimeField(auto_now_add=True)
@@ -596,6 +593,62 @@ class Leave(models.Model):
     
     def __str__(self):
         return f"{self.college_id}-{self.start_date}-{self.end_date}-{self.status}"
+
+# FOR SCHEDULE
+class Lab(models.Model):
+    NAME_CHOICES = [('Room', 'Room'), ('Lab', 'Lab')]
+    name = models.CharField(choices=NAME_CHOICES, max_length=10)
+    number = models.PositiveBigIntegerField()
+
+    def __str__(self):
+        return f"{self.id} {self.name} {self.number}"
+    
+
+# Student Assignment Model
+class StudentAssignment(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('submitted', 'Submitted'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('late', 'Late Submission'),
+    ]
+    
+    assignment_id = models.AutoField(primary_key=True)
+    faculty_id = models.CharField(max_length=50)
+    student_id = models.CharField(max_length=50)
+    student_name = models.CharField(max_length=100)
+    course_code = models.CharField(max_length=50)
+    subject = models.CharField(max_length=100)
+    assignment_title = models.CharField(max_length=200)
+    description = models.TextField()
+    marks = models.IntegerField(default=0)
+    max_marks = models.IntegerField(default=100)
+    due_date = models.DateField()
+    submitted_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    attachment = models.FileField(upload_to='assignments/', null=True, blank=True)
+    feedback = models.TextField(blank=True)
+    remarks = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.assignment_title} - {self.student_name}"
+    
+    def is_overdue(self):
+        if self.due_date and self.submitted_date:
+            return self.submitted_date > self.due_date
+        return False
+    
+    def save(self, *args, **kwargs):
+        if self.submitted_date and self.due_date and self.submitted_date > self.due_date:
+            self.status = 'late'
+        super().save(*args, **kwargs)
+
+
+
+
     
 from django.db import models
 from django.contrib.auth.models import User

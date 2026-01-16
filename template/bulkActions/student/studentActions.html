@@ -51,7 +51,7 @@
                     <select id="course" class="form-select">
                         <option value="all" selected>All Courses</option>
                         {% for course in courses %}
-                        <option value="{{ course.course_id }}">{{ course.name }} with {{ course.level.name }}</option>
+                        <option value="{{ course.id }}">{{ course.name }} with {{ course.level.name }}</option>
                         {% endfor %}
                     </select>
                 </div>

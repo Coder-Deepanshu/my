@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin,StudentBalance, Subject_Details
+from .models import Student,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin, Subject_Details
 from .models import Department,Level,Position, StudentDocuments,AdminDocuments, FacultyDocuments
 
 from .models import DeviceFingerprint, UserDetail, OTPVerification
@@ -18,11 +18,6 @@ class UserDetail(admin.ModelAdmin):
 class DeviceFingerprint(admin.ModelAdmin):
     list_display = ('user', 'fingerprint')
     search_fields = ('user',)
-
-@admin.register(StudentBalance)
-class StudentAddAdmin(admin.ModelAdmin):
-    list_display = ('student', 'extra_amount')
-    search_fields = ('student',)
 
 @admin.register(StudentDocuments)
 class StudentDocuments(admin.ModelAdmin):
@@ -139,5 +134,11 @@ class Faculty_and_Admin_Attendance_System(admin.ModelAdmin):
 from .models import Leave
 @admin.register(Leave)
 class Leave(admin.ModelAdmin):
-    list_display = ['id', 'college_id', 'leave_type', 'subject', 'start_date', 'end_date', 'total_days', 'contact_during_leave', 'reason', 'status', 'applied_on', 'updated_on']
-    fields = ['college_id', 'leave_type', 'subject', 'start_date', 'end_date', 'total_days', 'contact_during_leave', 'reason', 'status', 'applied_on', 'updated_on']
+    list_display = ['id', 'college_id', 'leave_type', 'subject', 'start_date', 'end_date', 'total_days', 'contact_during_leave', 'reason', 'status', 'rejection_reason']
+    fields = ['college_id', 'leave_type', 'subject', 'start_date', 'end_date', 'total_days', 'contact_during_leave', 'reason', 'status', 'rejection_reason']
+
+from .models import Lab
+@admin.register(Lab)
+class Lab(admin.ModelAdmin):
+    list_display = ['id', 'name', 'number']
+    fields = ['name', 'number']
