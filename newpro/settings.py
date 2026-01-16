@@ -198,79 +198,48 @@ DEFAULT_FROM_EMAIL = 'edutrack496@gmail.com'
 # CELERY_TASK_SERIALIZER = 'json'
 # TIME_ZONE = 'Asia/Kolkata'
 
-# ==============================
-# CELERY CONFIGURATION
-# ==============================
-CELERY_BROKER_URL = 'redis://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379'
-CELERY_RESULT_BACKEND = 'redis://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379'
+# settings.py में ये पूरा code replace कर दो:
+
+# ==================== UPSTASH REDIS CONFIGURATION ====================
+import os
+import ssl
+
+# Your Upstash Redis URL
+UPSTASH_REDIS_URL = "rediss://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"
+
+# ==================== CELERY CONFIGURATION ====================
+CELERY_BROKER_URL = UPSTASH_REDIS_URL + "/0"
+CELERY_RESULT_BACKEND = UPSTASH_REDIS_URL + "/1"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Kolkata'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True  # Important for Celery 5+
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BROKER_USE_SSL = {'ssl_cert_reqs': ssl.CERT_NONE}
 
-# ==============================
-# TIMEZONE
-# ==============================
-TIME_ZONE = 'Asia/Kolkata'
-USE_TZ = True
-
-# ==============================
-# REDIS CONFIGURATION
-# ==============================
-import os
-from urllib.parse import urlparse
-
-REDIS_URL = "redis://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"
-
-# Parse the URL
-url = urlparse(REDIS_URL)
-
-# ==============================
-# DJANGO CHANNELS CONFIGURATION
-# ==============================
+# ==================== DJANGO CHANNELS CONFIGURATION ====================
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [(url.hostname, url.port)],  # hostname और port
-            "password": url.password,  # password automatically
-            "ssl": True,  # Upstash के लिए जरूरी है
-            "ssl_cert_reqs": None,  # SSL certificate verify नहीं करेगा
+            "hosts": [UPSTASH_REDIS_URL + "/2"],
+            "connection_kwargs": {"ssl_cert_reqs": None},
         },
     },
 }
 
-# ==============================
-# CACHE CONFIGURATION
-# ==============================
+# ==================== CACHE CONFIGURATION ====================
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL,  # यही same URL
+        "LOCATION": UPSTASH_REDIS_URL + "/3",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "SSL": True,  # SSL enable करें
-            "SSL_CERT_REQS": None,  # SSL certificate verify नहीं करेगा
-            "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None},  # Connection pool के लिए
+            "CONNECTION_POOL_KWARGS": {"ssl_cert_reqs": None},
         }
     }
 }
 
-# ==============================
-# OPTIONAL: FOR CELERY WITH SSL
-# ==============================
-# Celery के लिए Redis connection options
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    'visibility_timeout': 3600,
-    'socket_timeout': 10,
-    'socket_connect_timeout': 10,
-    'retry_on_timeout': True,
-    'ssl_cert_reqs': None,  # SSL certificate verify नहीं करेगा
-}
-
-# या alternative
-import ssl
-CELERY_REDIS_BACKEND_USE_SSL = {
-    'ssl_cert_reqs': ssl.CERT_NONE
-}
+# ==================== TIMEZONE ====================
+TIME_ZONE = 'Asia/Kolkata'
+USE_TZ = True
