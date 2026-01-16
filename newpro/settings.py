@@ -193,61 +193,9 @@ EMAIL_HOST_USER = 'edutrack496@gmail.com'
 EMAIL_HOST_PASSWORD = 'xqvw xgmf xfix lyks'
 DEFAULT_FROM_EMAIL = 'edutrack496@gmail.com'
 
-# CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# TIME_ZONE = 'Asia/Kolkata'
-
-# settings.py में ये exact code replace करें:
-
-import os
-import ssl
-
-# ==================== UPSTASH REDIS URL ====================
-UPSTASH_REDIS_URL = "rediss://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"
-
-# ==================== CELERY CONFIGURATION ====================
-# URL में SSL parameter explicitly add करें
-CELERY_BROKER_URL = UPSTASH_REDIS_URL + "/0?ssl_cert_reqs=none"
-CELERY_RESULT_BACKEND = UPSTASH_REDIS_URL + "/1?ssl_cert_reqs=none"
+CELERY_BROKER_URL = 'rediss://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Kolkata'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-
-# Explicit SSL settings
-CELERY_REDIS_BACKEND_USE_SSL = {
-    'ssl_cert_reqs': ssl.CERT_NONE
-}
-CELERY_BROKER_USE_SSL = {
-    'ssl_cert_reqs': ssl.CERT_NONE
-}
-
-# ==================== DJANGO CHANNELS ====================
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [UPSTASH_REDIS_URL + "/2?ssl_cert_reqs=none"],
-        },
-    },
-}
-
-# ==================== CACHE ====================
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": UPSTASH_REDIS_URL + "/3?ssl_cert_reqs=none",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "CONNECTION_POOL_KWARGS": {
-                "ssl_cert_reqs": None,
-                "ssl": True
-            },
-        }
-    }
-}
-
 TIME_ZONE = 'Asia/Kolkata'
-USE_TZ = True
+
+# settings.py में ये exact code replace करें:
