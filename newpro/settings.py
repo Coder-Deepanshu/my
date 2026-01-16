@@ -197,3 +197,36 @@ CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 TIME_ZONE = 'Asia/Kolkata'
+
+import os
+
+REDIS_URL = "redis://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"
+
+# Parse the URL
+from urllib.parse import urlparse
+# URL को parse करें
+url = urlparse(REDIS_URL)
+
+# Django Channels Configuration
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(url.hostname, url.port)],  # hostname और port
+            "password": url.password,  # password automatically
+            "ssl": True,  # Upstash के लिए जरूरी है
+        },
+    },
+}
+
+# Optional: Cache के लिए भी Redis use करें
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,  # यही same URL
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SSL": True,  # SSL enable करें
+        }
+    }
+}
