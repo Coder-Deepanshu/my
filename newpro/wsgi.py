@@ -1,11 +1,15 @@
-"""
-WSGI config for newpro project.
+import os
+import sys
 
-It exposes the WSGI callable as a module-level variable named ``application``.
+# GitHub repo ka name 'my' hai
+path = '/home/Edutrack/my'
 
-For more information on this file, see
-https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
-"""
+if path not in sys.path:
+    sys.path.insert(0, path)
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'newpro.settings')
+
+# Rest of the file...
 
 import os
 

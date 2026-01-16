@@ -191,4 +191,35 @@ DATABASES = {
     }
 }
 
-UPSTASH_REDIS_URL = "rediss://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"
+# Yeh
+UPSTASH_REDIS_URL = "redis://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"
+# PORT 6379 use karo (non-SSL)
+
+# ==================== CELERY CONFIGURATION ====================
+
+# Redis URL
+CELERY_BROKER_URL = UPSTASH_REDIS_URL
+CELERY_RESULT_BACKEND = 'django-db'  # Django database as result backend
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_RESULT_EXPIRES = 3600
+
+# Important for PythonAnywhere
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BROKER_POOL_LIMIT = 1
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'process-qr-expiry-every-minute': {
+        'task': 'process_qr_expiry_task',
+        'schedule': crontab(minute='*/5'),  # Every 5 minutes
+        'options': {
+            'expires': 300,  # 5 minutes
+        },
+    },
+}

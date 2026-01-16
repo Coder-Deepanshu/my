@@ -1,20 +1,18 @@
-# newpro/celery.py (create if not exists):
 import os
 from celery import Celery
 
-# Django settings module set करो
+# Set the default Django settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'newpro.settings')
 
-# Celery app create करो
 app = Celery('newpro')
 
-# Settings से configuration load करो
+# Using a string here means the worker doesn't have to serialize
+# the configuration object to child processes.
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# All Django apps में tasks auto-discover करो
+# Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
-# Optional: Task को test के लिए
-@app.task(bind=True)
+@app.task(bind=True, ignore_result=True)
 def debug_task(self):
     print(f'Request: {self.request!r}')
