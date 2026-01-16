@@ -1,24 +1,20 @@
-# celery.py me
+# newpro/celery.py (create if not exists):
 import os
 from celery import Celery
 
+# Django settings module set करो
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'newpro.settings')
 
+# Celery app create करो
 app = Celery('newpro')
 
-# Windows ke liye important settings
-app.conf.update(
-    worker_pool_restarts=True,
-    worker_max_tasks_per_child=1,  # Windows ke liye important
-    broker_connection_retry_on_startup=True,
-)
-
+# Settings से configuration load करो
 app.config_from_object('django.conf:settings', namespace='CELERY')
+
+# All Django apps में tasks auto-discover करो
 app.autodiscover_tasks()
 
-# Windows compatibility ke liye
-if os.name == 'nt':
-    app.conf.update(
-        worker_pool='solo',  # Windows pe 'solo' pool use karein
-        worker_concurrency=1,
-    )
+# Optional: Task को test के लिए
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')

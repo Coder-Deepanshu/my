@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'newapp',
     'rest_framework',
+    'django_celery_results',
 ]
 
 # REST Framework settings add kare
@@ -51,16 +52,6 @@ REST_FRAMEWORK = {
 
 # WebSocket Configuration
 ASGI_APPLICATION = 'newpro.asgi.application'
-
-# Channels layer (Redis as backend)
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],  # Redis server
-        },
-    },
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -127,13 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -160,8 +144,6 @@ STATICFILES_DIRS = [
 
 # Production के लिए collectstatic का location
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-
 
 # Media files (Uploaded files)
 MEDIA_URL = '/media/'
@@ -193,9 +175,28 @@ EMAIL_HOST_USER = 'edutrack496@gmail.com'
 EMAIL_HOST_PASSWORD = 'xqvw xgmf xfix lyks'
 DEFAULT_FROM_EMAIL = 'edutrack496@gmail.com'
 
-CELERY_BROKER_URL = 'rediss://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379'
+# ==================== CELERY CONFIGURATION ====================
+# Django Database को Celery broker बनाओ
+CELERY_BROKER_URL = 'django://'
+CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-TIME_ZONE = 'Asia/Kolkata'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_TASK_TRACK_STARTED = True
 
-# settings.py में ये exact code replace करें:
+# ==================== CACHE ====================
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# ==================== DATABASE ====================
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
