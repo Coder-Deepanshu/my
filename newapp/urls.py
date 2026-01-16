@@ -137,14 +137,29 @@ urlpatterns = [
     path('SubjectFilter/',views.subjectFilter,name='subjectFilter'),
 
     # For Faculty and Admin Attendance Management System:
-    path("0e170d030d451e46590d131d1e111b4e621c1a061505170e661d460d13451e1d0244621c0700181f16074b4266/", lambda request : views.check_wifi_ip(request,"Faculty"), name="check_wifi"),
+    # For Student, Admin, Faculty First Page
+    path("0e170d030d451e46590d131d1e111b4e621c1a061505170e661d460d13451e1d0244621c0700181f16074b4266/", lambda request : views.check_wifi_ip(request,"Faculty"), name="faculty_check_wifi"),
+    path("0d1b14143449474349336812131107611d6706060a093049435a6602161715001b791d46111316121c1c59651c0d1b141434/", lambda request : views.check_wifi_ip(request,"Admin"), name="admin_check_wifi"),
+    path("171c1c14011b6b1d49051b37661f0c434979551f1c0407166b46590d131d1e111b4e621c0700181f16074b426655061715101a4e6a/", lambda request : views.check_wifi_ip(request,"Student"), name="student_check_wifi"),
+    # for checking the personal code pin
     path('1117171e150c6b0b45001c18141a0a4e4f61490b0d1c010c59630a071c18521a0665456149160b111b0d484a4130/', views.college_pin_checking, name='college_pin_checking'),
-    path('06161632061e1e65410001450900034d5a4105661d1e154968646707134514060e67596410131d/', views.scan_qr_Code, name='scan_qr_Code'),
+    # for scan the QR Code
+    path('06161632061e1e65410001450900034d5a4105661d1e154968646707134514060e67596410131d/<str:person>/', views.scan_qr_Code, name='scan_qr_Code'),
+    # for Generate the QR Code
     path('111d0d11060a68466355171d1f3646691d53171e0c1315321e456602661719190b791d46111316121c1c5965/', views.generate_QR_code, name='generate_QR_code'),
+    # for Verify QR Code
     path("verify-qr/", views.verify_qr, name="verify_qr"),
-    path('0d1d1004150c47434911170f1510004167410d1d0a02111f1e46590d131d1e111b4e421c0d1b1414150b684253171e0c131509/', lambda request : views.personal_code_verification(request,"Faculty"), name='personal_code_verification'),
-    path('0d1d1004150a4c5a45071d1a1c1501674a4a06024515170159456606060d116401476846021617110d1b6650590214/', lambda request : views.personal_code_creation(request,"Faculty"), name='personal_code_creation'),
+    # for Personal Code Verification 
+    path('0d1d1004150c47434911170f1510004167410d1d0a02111f1e46590d131d1e111b4e421c0d1b1414150b684253171e0c131509/', lambda request : views.personal_code_verification(request,"Faculty"), name='faculty_personal_code_verification'),
+    path('3130453736496365262966343043296b6965326633342945716a1c2f303630392a636f702b66462b34296269692b354547462b6462/', lambda request : views.personal_code_verification(request,"Admin"), name='admin_personal_code_verification'),
+    path('3130453736496365262966343043296b6965326633342945716a1c2f303630392a636f702b66462b34296269692b35452d433364707039/', lambda request : views.personal_code_verification(request,"Student"), name='student_personal_code_verification'),
+    # for Personal Code Creation
+    path('0d1d1004150a4c5a45071d1a1c1501674a4a06024515170159456606060d116401476846021617110d1b6650590214/', lambda request : views.personal_code_creation(request,"Faculty"), name='faculty_personal_code_creation'),
+    path('3646392d34336c7a1c2f353532642c7926263929452964346c62262a43333039497f25283032/', lambda request : views.personal_code_creation(request,"Admin"), name='admin_personal_code_creation'),
+    path('3646392d34336c7a1c2f353532642c7926263929452964346c62262a43333039496e26653030362c/', lambda request : views.personal_code_creation(request,"Student"), name='student_personal_code_creation'),
+    # for Leave Request Making
     path('041c101b152b1e4f49060708152f49434d410647451e1d0244621c071c18680d1b6650590233/',lambda request : views.leave_request_making(request, "Faculty"), name='faculty_leave_request_making'),
+    
     path('2d453930302f701d693844372d30341e666e2b363468394679277a342a373364356e286f29324868432f2665f2/', views.leave_details, name='leave_details'),
     path('041c101b170a487a1c06041815374968646707321d1e15164e674f00134868101d59665a0b01183364014768462b/', views.admin_leave_page, name="admin_leave_page"),
     path('332b3768001c43504b06294515020e43281c1a061505170e4612460d13481e1d0244621c0700181f16074b4266551c101d1037/', views.admin_leave_api, name="admin_leave_api"),

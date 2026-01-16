@@ -145,7 +145,7 @@ class Faculty(models.Model):
     user_id=models.CharField(max_length=50,null=True,)
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
-    attendance_pin = models.CharField(max_length=5, default='00000')
+    personal_pin = models.CharField(max_length=5, default='00000')
     chat_identifier = models.CharField(max_length=100,unique=False,null=True,blank=True)
     online_status = models.BooleanField(default=False)
     last_seen = models.DateTimeField(default=timezone.now)
@@ -243,6 +243,7 @@ class Student(models.Model):
     last_seen = models.DateTimeField(default=timezone.now)
     followed_faculty = models.ManyToManyField(Faculty, related_name='followers', blank=True)
     permission = models.BooleanField(default=False)
+    personal_pin = models.CharField(max_length=5, default='00000')
     
     def save(self, *args, **kwargs):
         if not self.chat_identifier:
@@ -350,7 +351,7 @@ class Admin(models.Model):
     user_id=models.CharField(max_length=50,null=True,)
     username=models.EmailField()
     password=models.CharField(max_length=15,null=True)
-    attendance_pin = models.CharField(max_length=5, default='00000')
+    personal_pin = models.CharField(max_length=5, default='00000')
     
     permission = models.BooleanField(default=False)
     
@@ -369,24 +370,7 @@ class AdminDocuments(models.Model):
     def __str__(self):
         return f"{self.admin.name}-{self.uploaded_at}"  
     
-class Attendance(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    lecture_number = models.IntegerField()  # e.g., 1, 2, 3 for the day
-    date = models.DateField(auto_now_add=True)
-    status = models.CharField(max_length=10, choices=[('Present', 'Present'), ('Absent', 'Absent'), ('Leave', 'Leave')])
-    timing = models.TimeField(auto_now_add=True,null=True)
-
-    class Meta:
-        unique_together = ('student', 'course', 'lecture_number', 'date')
-
-    def _str_(self):
-        return f"{self.student.name} - Lecture {self.lecture_number} - {self.date}"
-
 from django.db import models
-from django.core.validators import MinValueValidator
 
 # Example of what your model might look like
 class FeeStructure(models.Model):
@@ -533,28 +517,53 @@ class Subject_Details(models.Model):
     def __str__(self):
         return f"{self.serial_no}-{self.course}-{self.level}-Sem:{self.semester}"
 
-# FOR Faculty Attendance
+# FOR QR GENERATION
 class QR_code(models.Model):
     date = models.CharField(max_length=50, unique=True)
     time = models.CharField(max_length=50, unique=True)
     timestamp = models.CharField(max_length=50, unique=True)
     token = models.CharField(max_length=100, unique=True)
     random_data = models.CharField(max_length=50, unique=True)
-
+    expired = models.BooleanField(default=False)
+    processed = models.BooleanField(default=False)
+    expiry_time = models.CharField(max_length=20,null=True)
+    
     def __str__(self):
         return f"token:{self.token}-data{self.random_data}"
 
+# FOR STUDENT ATTENDANCE
+class Attendance(models.Model):
+    college_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    lecture = models.IntegerField()
+    date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=[('Present', 'Present'), ('Absent', 'Absent'), ('Leave', 'Leave'), ('Pending', 'Pending')])
+    timing = models.TimeField(auto_now_add=True,null=True)
+    leave_time = models.PositiveIntegerField()
+    
+    class Meta:
+        unique_together = ('college_id', 'lecture', 'date')
+
+    def _str_(self):
+        return f"{self.college_id.name} - Lecture {self.lecture} - {self.date}"
+
+# FOR FACULTY AND ADMIN ATTENDANCE
 class Faculty_and_Admin_Attedance(models.Model):
+    CHOICES_STATUS = [('Absent', 'Absent'), 
+                      ('Present', 'Present'), 
+                      ('Leave', 'Leave'), 
+                      ('Pending', 'Pending')]
+    
     collegeID = models.CharField(max_length=20)
-    status = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, choices= CHOICES_STATUS)
     type = models.CharField(max_length=20)
     timing = models.CharField(max_length=20)
-    date = models.CharField(max_length=20)
+    date = models.DateField()
     leave_time = models.IntegerField(null=True)
 
     def __str__(self):
         return f'CollegeID:{self.collegeID}'
 
+# FOR LEAVE REQUESTS
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 class Leave(models.Model):
@@ -566,12 +575,9 @@ class Leave(models.Model):
     
     # Change 1: Consistent naming
     LEAVE_TYPE_CHOICES = [
-        ('Casual Leave', 'Casual Leave'),
-        ('Sick Leave', 'Sick Leave'), 
-        ('Earned Leave', 'Earned Leave'),
-        ('Medical Leave', 'Medical Leave'),
-        ('On Duty Leave', 'On Duty Leave'),
-        ('Other', 'Other')
+        ('Emergency Leave', 'Emergency Leave'),
+        ('Planned Leave', 'Planned Leave'), 
+        ('Short Leave', 'Short Leave'),
     ]
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     college_id = models.CharField(max_length=20)
@@ -587,14 +593,14 @@ class Leave(models.Model):
     reason = models.TextField()
     rejection_reason = models.TextField(default='')
     status = models.CharField(choices=STATUS_CHOICES, max_length=10, default='Pending')
-    
+    leave_time = models.IntegerField(null=True)
     applied_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return f"{self.college_id}-{self.start_date}-{self.end_date}-{self.status}"
 
-# FOR SCHEDULE
+# FOR LAB AND ROOMS CREATION
 class Lab(models.Model):
     NAME_CHOICES = [('Room', 'Room'), ('Lab', 'Lab')]
     name = models.CharField(choices=NAME_CHOICES, max_length=10)

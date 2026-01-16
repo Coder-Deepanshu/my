@@ -45,7 +45,22 @@
 # start_date = '2026-01-12'
 # end_date = '20226-01-17'
 
-dict1 = {'name': 'Math', 'status': 'Pending'}
+# dict1 = [{'name': 'Math', 'status': 'Pending'}, {'name': 'English', 'status': 'Pending'}]
 
-print(dict1['name'
-            ])
+# contents = []
+
+# for value in dict1:
+#     contents.append({'content': value['name']})
+
+# print(contents)
+# for j in (contents):
+#     print(j['content'])
+
+from datetime import datetime, timedelta
+
+now = datetime.now()
+
+new_time = now + timedelta(minutes=30)
+formated_time = new_time.strftime("%H:%M:%S:")
+
+print(formated_time)

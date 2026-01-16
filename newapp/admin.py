@@ -4,6 +4,11 @@ from .models import Department,Level,Position, StudentDocuments,AdminDocuments, 
 
 from .models import DeviceFingerprint, UserDetail, OTPVerification
 
+@admin.register(Level)
+class Level(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('user',)
+
 @admin.register(OTPVerification)
 class OTPVerification(admin.ModelAdmin):
     list_display = ('user', 'otp_code')
@@ -41,8 +46,8 @@ class StudentAddAdmin(admin.ModelAdmin):
 
 @admin.register(Attendance)
 class AttendenceAddAdmin(admin.ModelAdmin):
-    list_display = ('student', 'course', 'faculty')
-    search_fields = ('student', 'course', 'faculty')
+    list_display = ('college_id', 'status', 'date', 'timing', 'leave_time')
+    search_fields = ('college_id', 'status', 'date', 'timing', 'leave_time')
 
 @admin.register(Course)
 class coursesAdmin(admin.ModelAdmin):
@@ -115,8 +120,8 @@ class SubjectDetail(admin.ModelAdmin):
 from .models import QR_code
 @admin.register(QR_code)
 class QR_Code(admin.ModelAdmin):
-    list_display = ('date', 'time', 'timestamp', 'token', 'random_data')
-    fields = ('timestamp', 'token', 'random_data')
+    list_display = ('date', 'time', 'timestamp', 'token', 'random_data', 'expired', 'processed')
+    fields = ('timestamp', 'token', 'random_data', 'expired', 'processed')
 
 from django.contrib import admin
 from .models import Product

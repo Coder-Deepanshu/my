@@ -191,8 +191,10 @@
                                 {% endif %}
                                 <div class="leave-footer">
                                     <span
-                                        class="badge badge-{% if i.status == 'Approved' %}approved{% elif i.status == 'Rejected' %}rejected{% else %}pending{% endif %}">{{ i.status }}</span>
-                                    <button class="btn-action btn-view view-leave" data-id="{{ i.id }}">View Details</button>
+                                        class="badge badge-{% if i.status == 'Approved' %}approved{% elif i.status == 'Rejected' %}rejected{% else %}pending{% endif %}">{{
+                                        i.status }}</span>
+                                    <button class="btn-action btn-view view-leave" data-id="{{ i.id }}">View
+                                        Details</button>
                                 </div>
                             </div>
                             {% endfor %}
@@ -223,12 +225,9 @@
                                             Type</label>
                                         <select class="form-select" id="leaveType" name="leaveType" required>
                                             <option value="">Select Leave Type</option>
-                                            <option value="Casual Leave">Casual Leave</option>
-                                            <option value="Sick Leave">Sick Leave</option>
-                                            <option value="Earned Leave">Earned Leave</option>
-                                            <option value="Medical Leave">Medical Leave</option>
-                                            <option value="On Duty Leave">On Duty Leave</option>
-                                            <option value="Other">Other</option>
+                                            <option value="Emergency Leave">Emergency Leave</option>
+                                            <option value="Planned Leave">Planned Leave</option>
+                                            <option value="Short Leave">Short Leave</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-3">
@@ -255,17 +254,23 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label for="totalDays" class="form-label"><i class="fas fa-calculator"></i>
                                             Total Days</label>
                                         <input type="number" class="form-control" id="totalDays" name="totalDays"
                                             placeholder="0" min="0.5" max="90" step="0.5" readonly>
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label for="contactNumber" class="form-label"><i class="fas fa-phone"></i>
                                             Contact During Leave</label>
                                         <input type="tel" class="form-control" id="contactNumber" name="contactNumber"
                                             placeholder="Enter contact number">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="leaveTime" class="form-label"><i class="fas fa-phone"></i>
+                                            Leave Time</label>
+                                        <input type="number" class="form-control" id="leaveTime" name="leaveTime" max="60" value="0"
+                                            placeholder="Enter Leave time in minutes">
                                     </div>
                                 </div>
 
@@ -401,12 +406,9 @@
                             </label>
                             <select class="form-select" id="updateLeaveType" name="leaveType" required>
                                 <option value="">Select Leave Type</option>
-                                <option value="Casual Leave">Casual Leave</option>
-                                <option value="Sick Leave">Sick Leave</option>
-                                <option value="Earned Leave">Earned Leave</option>
-                                <option value="Medical Leave">Medical Leave</option>
-                                <option value="On Duty Leave">On Duty Leave</option>
-                                <option value="Other">Other</option>
+                                <option value="Emergency Leave">Emergency Leave</option>
+                                <option value="Planned Leave">Planned Leave</option>
+                                <option value="Short Leave">Short Leave</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -626,6 +628,16 @@
                     $('#totalDays').val(diffDays);
                 }
             });
+            document.getElementById('leaveTime').disabled = true;
+            let leaveType = document.getElementById('leaveType');
+            leaveType.addEventListener('change', ()=>{
+                let leaveValue = leaveType.value;
+                if (leaveValue == 'Short Leave'){
+                    document.getElementById('leaveTime').disabled = false;
+                }else{
+                    document.getElementById('leaveTime').disabled = true;
+                }
+            })
 
             // Calculate days between dates
             $('#updateStartDate, #updateEndDate').on('change', function () {
@@ -665,7 +677,8 @@
                     endDate: $('#endDate').val(),
                     totalDays: $('#totalDays').val(),
                     contactNumber: $('#contactNumber').val(),
-                    leaveReason: $('#leaveReason').val()
+                    leaveReason: $('#leaveReason').val(),
+                    leaveTime: $('#leaveTime').val()
                 };
                 console.log(formData)
                 fetch(apiURL, {
@@ -1022,14 +1035,15 @@
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCSRFToken()
-                }})
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
                     hideLoading();
                     document.getElementById('deleteLeaveModal').style.display = 'none';
 
                     if (data.success) {
-                        showMessage('Success',data.success, 'success');
+                        showMessage('Success', data.success, 'success');
                         loadLeaves(); // Refresh the table
                     } else {
                         showMessage('Error', data.error || 'Failed to cancel leave', 'error');
@@ -1039,7 +1053,7 @@
                     hideLoading();
                     showMessage('Error', 'Network error occurred', 'error');
                 });
-            });
+        });
 
         // Event listeners for edit and delete buttons in table
         document.addEventListener('click', function (e) {

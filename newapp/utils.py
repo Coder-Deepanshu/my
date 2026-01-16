@@ -9,29 +9,25 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-
 def is_college_wifi(ip):
     # College Wi-Fi IP Range
     college_network = ipaddress.ip_network("152.59.90.0/24")
     return ipaddress.ip_address(ip) in college_network
 
-def personal_college_pin_for_faculty(order):
+def personal_college_pin(order, user):
+    pin = ''
     if order:
-        pin = '57575'
-    else:
-        pin = ''
-    return pin
-
-def personal_college_pin_for_admin(order):
-    if order:
-        pin = '98128'
-    else:
-        pin = ''
+        if user == 'Admin':        
+             pin = '98128'
+        elif user == 'Faculty':        
+             pin = '98128'
+        elif user == 'Student':        
+             pin = '98128'
     return pin
 
 def valid_timing_for_qr_code(start):
     if start:
-        time_in_minutes = 1
+        time_in_minutes = 1 # in minutes
     else:
         time_in_minutes = 0
     return time_in_minutes

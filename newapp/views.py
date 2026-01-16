@@ -3668,7 +3668,7 @@ def studentCourseDetailView(request):
 # for faculty attendance system 
 # attendance/views.py
 from django.shortcuts import render
-from .utils import get_client_ip, is_college_wifi, personal_college_pin_for_faculty, personal_college_pin_for_admin, valid_timing_for_qr_code
+from .utils import get_client_ip, is_college_wifi, personal_college_pin, valid_timing_for_qr_code
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 
@@ -3677,8 +3677,13 @@ from django.views.decorators.csrf import csrf_exempt
 def check_wifi_ip(request, Person):
     ip = get_client_ip(request)
     allowed = is_college_wifi(ip)
+    print(ip)
     if Person == 'Faculty':
         college_id = request.session.get('faculty_college_id')
+    elif Person == 'Admin':
+        college_id = request.session.get('admin_college_id')
+    elif Person == 'Student':
+        college_id = request.session.get('student_college_id')
 
     context = {
         "ip": ip,
@@ -3691,9 +3696,9 @@ def check_wifi_ip(request, Person):
     date = now.date()
     attendance_detail = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, date = date, type = Person)
     if not attendance_detail.exists():
-        html_page = 'faculty/attendance/check_wifi.html'
+        html_page = 'main/attendance/check_wifi.html'
     else :
-        html_page = 'faculty/attendance/block.html'
+        html_page = 'main/attendance/block.html'
         context['message'] = 'Your Today Attendance Had Been Marked!'
         
     # html_page = 'faculty/attendance/block.html'
@@ -3711,12 +3716,23 @@ def college_pin_checking(request):
             Person = data.get('Person')
             pinInput = data.get('pinInput')
             if Person == 'Faculty':
-                order = True
-                pin = personal_college_pin_for_faculty(order)
+                pin = personal_college_pin(True, 'Faculty')
                 if pin != pinInput :   
                     return JsonResponse({'error':f'Your Pin is not Correct!'})
                 else:   
-                    return JsonResponse({'success':'Match Successfully'})     
+                    return JsonResponse({'success':'Pin Match Successfully'})  
+            elif Person == 'Admin':
+                pin = personal_college_pin(True, 'Admin')
+                if pin != pinInput :   
+                    return JsonResponse({'error':f'Your Pin is not Correct!'})
+                else:   
+                    return JsonResponse({'success':'Pin Match Successfully'})
+            elif Person == 'Student':
+                pin = personal_college_pin(True, 'Student')
+                if pin != pinInput :   
+                    return JsonResponse({'error':f'Your Pin is not Correct!'})
+                else:   
+                    return JsonResponse({'success':'Pin Match Successfully'})   
                      
         except Exception as e:
             return JsonResponse({'error':f'An Error Occured {str(e)}!'})
@@ -3725,8 +3741,8 @@ def college_pin_checking(request):
 
 @csrf_exempt
 @never_cache
-def scan_qr_Code(request):
-    return render(request, 'faculty/attendance/scanning.html')
+def scan_qr_Code(request, person):
+    return render(request, 'main/attendance/scanning.html', {'person': person})
 
 # for QR Code Creating
 import qrcode
@@ -3787,6 +3803,9 @@ def generate_QR_code(request):
     now_time = datetime.now()
     current_date = now_time.date()
     current_time = now_time.time()
+
+    new_time = now_time + timedelta(minutes=30)
+    formated_time = new_time.strftime("%H:%M:%S")
     
     qr_code = QR_code.objects.filter(date = current_date)
 
@@ -3813,7 +3832,7 @@ def generate_QR_code(request):
     elif not qr_code.exists():
         start = True
         time_seconds = int(valid_timing_for_qr_code(start))*60
-        QR_code.objects.create(date = current_date, time = current_time, timestamp = timestamp, token = token, random_data = data)
+        QR_code.objects.create(date = current_date, time = current_time, timestamp = timestamp, token = token, random_data = data, expired = False, expiry_time = str(formated_time))
         qr_data, qr_data_uri = qr_data_generator(timestamp, token, data)
         context =  {
         "qr_data": qr_data,  # Full QR string
@@ -3829,6 +3848,9 @@ def generate_QR_code(request):
         try:
             data = json.loads(request.body)
             completed = data.get('completed')
+            qr_code_expiry = QR_code.objects.get(date = current_date)
+            qr_code_expiry.expired = True
+            qr_code_expiry.save()
             if completed:
                 admin = []
                 faculty = []
@@ -3839,17 +3861,7 @@ def generate_QR_code(request):
                         single_admin = Faculty_and_Admin_Attedance.objects.filter(collegeID = i, date = current_date)
                         if not single_admin.exists():     
                             leave =  Leave.objects.filter(college_id = i, start_date__lte = current_date, end_date__gte = current_date)  
-                            if leave.exists():
-                                status = leave.first().status
-                                if status == 'Pending':
-                                    Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Pending', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
-                                    finalize_time = now() + timedelta(minutes=leave_time)
-                                    finalize_attendance.apply_async(args=[current_date, i], eta=finalize_time)
-                                elif status == 'Approved':
-                                    Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Leave', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
-                                elif status == 'Rejected':
-                                    Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Absent', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
-                            elif not leave.exists():
+                            if not leave.exists():
                                 Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Absent', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
                                 
                             if len(message) == 0:
@@ -3861,17 +3873,7 @@ def generate_QR_code(request):
                         single_faculty = Faculty_and_Admin_Attedance.objects.filter(collegeID = j, date = current_date)
                         if not single_faculty.exists(): 
                             leave =  Leave.objects.filter(college_id = j, start_date__lte = current_date, end_date__gte = current_date)  
-                            if leave.exists():
-                                status = leave.first().status
-                                if status == 'Pending':
-                                    Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Pending', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
-                                    finalize_time = now() + timedelta(minutes=leave_time)
-                                    finalize_attendance.apply_async(args=[current_date, j], eta=finalize_time)
-                                elif status == 'Approved':
-                                    Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Leave', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
-                                elif status == 'Rejected':
-                                    Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Absent', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
-                            elif not leave.exists():
+                            if not leave.exists():
                                 Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Absent', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
                                 
                             if len(message) != 0:
@@ -3886,7 +3888,7 @@ def generate_QR_code(request):
         except Exception as e:
             return JsonResponse({'error': f'An Error Occured: {str(e)}!'})
      
-    return render(request, "faculty/attendance/QR_code.html", context)
+    return render(request, "main/attendance/QR_code.html", context)
 
 
 # QR verification function
@@ -4015,12 +4017,16 @@ def verify_qr(request):
         "message": "Invalid request method. Use POST."
     })
 from .models import Faculty_and_Admin_Attedance
-
+from. models import Attendance
 @csrf_exempt
 @never_cache
 def personal_code_verification(request, Person):
     if Person == 'Faculty':
         college_id = request.session.get('faculty_college_id')
+    elif Person == 'Admin':
+        college_id = request.session.get('admin_college_id')
+    elif Person == 'Student':
+        college_id = request.session.get('student_college_id')
     if request.method == 'POST':
         try:  
             data = json.loads(request.body) 
@@ -4033,12 +4039,38 @@ def personal_code_verification(request, Person):
 
             if Person == 'Faculty':
                 faculty = Faculty.objects.get(college_id = college_id)
-                personal_pin = faculty.attendance_pin
+                personal_pin = faculty.personal_pin
                 if pinInput == personal_pin:
                     faculty_attendance = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, type= Person, date = date)
                     if not faculty_attendance.exists():
                         Faculty_and_Admin_Attedance.objects.create(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
                         return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Attendance Marked Successfully!'})
+                    else:
+                        return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
+                else:
+                    return JsonResponse({'error':'Your Pin is InCorrect!'})
+
+            elif Person == 'Admin':
+                admin = Admin.objects.get(college_id = college_id)
+                personal_pin = admin.personal_pin
+                if pinInput == personal_pin:
+                    admin_attendance = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, type= Person, date = date)
+                    if not admin_attendance.exists():
+                        Faculty_and_Admin_Attedance.objects.create(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
+                        return JsonResponse({'success':f'{admin.name} {admin.last_name} your Attendance Marked Successfully!'})
+                    else:
+                        return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
+                else:
+                    return JsonResponse({'error':'Your Pin is InCorrect!'})
+                
+            elif Person == 'Student':
+                student = Student.objects.get(college_id = college_id)
+                personal_pin = student.personal_pin
+                if pinInput == personal_pin:
+                    student_attendance = Attendance.objects.filter(college_id = college_id, date = date)
+                    if not student_attendance.exists():
+                        Attendance.objects.create(college_id = college_id, status = 'Present', time = timing, date = date, leave_time = 0.0)
+                        return JsonResponse({'success':f'{student.name} {student.last_name} your Attendance Marked Successfully!'})
                     else:
                         return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
                 else:
@@ -4050,13 +4082,18 @@ def personal_code_verification(request, Person):
         'college_id':college_id,
         'Person':Person,
         }
-    return render(request, 'faculty/attendance/biometric_verification.html',context)
+    return render(request, 'main/attendance/biometric_verification.html',context)
 
 @csrf_exempt
 @never_cache
 def personal_code_creation(request,Person):
     if Person == 'Faculty':
         college_id = request.session.get('faculty_college_id')
+    elif Person == 'Admin':
+        college_id = request.session.get('admin_college_id')
+    elif Person == 'Student':
+        college_id = request.session.get('student_college_id')
+        
     if request.method == 'POST':
         try:  
             data = json.loads(request.body) 
@@ -4066,9 +4103,21 @@ def personal_code_creation(request,Person):
 
             if Person == 'Faculty':
                 faculty = Faculty.objects.get(college_id = college_id)
-                faculty.attendance_pin = str(pinInput)
+                faculty.personal_pin = str(pinInput)
                 faculty.save()
                 return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Personal Pin Created Successfully!'})
+
+            elif Person == 'Admin':
+                admin = Admin.objects.get(college_id = college_id)
+                admin.personal_pin = str(pinInput)
+                admin.save()
+                return JsonResponse({'success':f'{admin.name} {admin.last_name} your Personal Pin Created Successfully!'})
+
+            if Person == 'Student':
+                student = Student.objects.get(college_id = college_id)
+                student.personal_pin = str(pinInput)
+                student.save()
+                return JsonResponse({'success':f'{student.name} {student.last_name} your Personal Pin Created Successfully!'})
 
         except Exception as e:
             return JsonResponse({'error':f'An Error Occured {str(e)}!'})        
@@ -4076,7 +4125,7 @@ def personal_code_creation(request,Person):
         'college_id':college_id,
         'Person':Person,
         }
-    return render(request, 'faculty/attendance/personal_code_creation.html',context)
+    return render(request, 'main/attendance/personal_code_creation.html',context)
 
 from .serializers import LeaveSerializer
 import json
@@ -4152,6 +4201,7 @@ def leave_request_making(request, Person):
             'contact_during_leave': form_data.get('contactNumber', '').strip(),
             'reason': form_data.get('leaveReason', '').strip(),
             'status': 'Pending',
+            'leave_time': float(form_data.get('leaveTime', 0))
         }
         
         serializer = LeaveSerializer(data=leave_data)
@@ -4185,7 +4235,7 @@ def leave_request_making(request, Person):
         'used_days': used_days,
         'percentage': percentage
     }
-    return render(request, 'faculty/attendance/leave.html', context)
+    return render(request, 'main/attendance/leave.html', context)
 
 @api_view(['GET'])
 def leave_details(request):

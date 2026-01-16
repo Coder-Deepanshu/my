@@ -175,16 +175,6 @@ EMAIL_HOST_USER = 'edutrack496@gmail.com'
 EMAIL_HOST_PASSWORD = 'xqvw xgmf xfix lyks'
 DEFAULT_FROM_EMAIL = 'edutrack496@gmail.com'
 
-# ==================== CELERY CONFIGURATION ====================
-# Django Database को Celery broker बनाओ
-CELERY_BROKER_URL = 'django://'
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Kolkata'
-CELERY_TASK_TRACK_STARTED = True
-
 # ==================== CACHE ====================
 CACHES = {
     'default': {
@@ -200,3 +190,5 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+UPSTASH_REDIS_URL = "rediss://default:AYBHAAIncDFiM2JmZTU0YjIzZjc0MjU4YjQxNWM0MGVkNGMyYWMxM3AxMzI4Mzk@talented-serval-32839.upstash.io:6379"

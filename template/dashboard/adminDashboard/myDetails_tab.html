@@ -20,12 +20,21 @@
     </div>
 
     <div class="action-card">
+        <div class="action-icon backup">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <h3 class="action-title">Personal Code</h3>
+        <p class="action-desc">Create the Personal Code</p>
+        <a href="{% url 'admin_personal_code_creation' %}" class="action-btn">Open</a>
+    </div>
+
+    <div class="action-card">
         <div class="action-icon birthday">
             <i class="fas fa-calendar-check"></i>
         </div>
-        <h3 class="action-title">My Attendance</h3>
-        <p class="action-desc">View all about your attendance</p>
-        <a href="#" class="action-btn">Open</a>
+        <h3 class="action-title">Attendance</h3>
+        <p class="action-desc">Mark your Attendance</p>
+        <a href="{% url 'admin_check_wifi' %}" class="action-btn">Open</a>
     </div>
 
     <div class="action-card">
