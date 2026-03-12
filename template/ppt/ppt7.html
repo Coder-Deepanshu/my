@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html lang="hi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720" name="viewport"/>
+<title>स्वभाव के आधार पर व्यक्तित्व</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+            overflow: hidden;
+        }
+        .header-section {
+            padding: 35px 60px 20px 60px;
+            background-color: #ffffff;
+            border-bottom: 4px solid #7c3aed;
+        }
+        .slide-title {
+            font-size: 38px;
+            font-weight: 800;
+            color: #7c3aed;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .subtitle {
+            font-size: 17px;
+            font-weight: 500;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+        }
+        .subtitle i {
+            margin-right: 8px;
+            color: #7c3aed;
+        }
+        .quadrant-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 0;
+            padding: 0;
+        }
+        .quadrant {
+            display: flex;
+            flex-direction: column;
+            padding: 30px 40px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .quadrant:hover {
+            transform: scale(1.02);
+            z-index: 10;
+        }
+        .quadrant-sanguine {
+            background-color: #fff7ed;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+        }
+        .quadrant-choleric {
+            background-color: #fef2f2;
+            border-bottom: 2px solid #ffffff;
+        }
+        .quadrant-melancholic {
+            background-color: #eff6ff;
+            border-right: 2px solid #ffffff;
+        }
+        .quadrant-phlegmatic {
+            background-color: #f0fdf4;
+        }
+        .quadrant-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        }
+        .quadrant-icon {
+            width: 50px;
+            min-width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        .icon-sanguine {
+            background-color: #fb923c;
+        }
+        .icon-choleric {
+            background-color: #ef4444;
+        }
+        .icon-melancholic {
+            background-color: #3b82f6;
+        }
+        .icon-phlegmatic {
+            background-color: #10b981;
+        }
+        .quadrant-icon i {
+            font-size: 24px;
+            color: #ffffff;
+        }
+        .quadrant-title-box {
+            flex: 1;
+        }
+        .quadrant-title {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 3px;
+        }
+        .title-sanguine {
+            color: #c2410c;
+        }
+        .title-choleric {
+            color: #991b1b;
+        }
+        .title-melancholic {
+            color: #1e40af;
+        }
+        .title-phlegmatic {
+            color: #065f46;
+        }
+        .quadrant-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+        .trait-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .trait-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .trait-bullet {
+            width: 20px;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            margin-top: 2px;
+        }
+        .bullet-sanguine {
+            background-color: #fed7aa;
+        }
+        .bullet-choleric {
+            background-color: #fecaca;
+        }
+        .bullet-melancholic {
+            background-color: #bfdbfe;
+        }
+        .bullet-phlegmatic {
+            background-color: #bbf7d0;
+        }
+        .trait-bullet i {
+            font-size: 9px;
+        }
+        .bullet-sanguine i {
+            color: #c2410c;
+        }
+        .bullet-choleric i {
+            color: #991b1b;
+        }
+        .bullet-melancholic i {
+            color: #1e40af;
+        }
+        .bullet-phlegmatic i {
+            color: #065f46;
+        }
+        .trait-text {
+            flex: 1;
+        }
+        .trait-text p {
+            font-size: 15px;
+            font-weight: 500;
+            color: #374151;
+            line-height: 1.4;
+        }
+        .note-section {
+            padding: 15px 60px 20px 60px;
+            background-color: #ffffff;
+            border-top: 1px solid #e5e7eb;
+        }
+        .note-content {
+            display: flex;
+            align-items: center;
+            background-color: #fef3c7;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+        .note-icon {
+            font-size: 18px;
+            color: #f59e0b;
+            margin-right: 12px;
+        }
+        .note-text {
+            flex: 1;
+        }
+        .note-text p {
+            font-size: 13px;
+            font-weight: 500;
+            color: #78350f;
+            line-height: 1.4;
+        }
+        .note-label {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<div class="header-section">
+<h1 class="slide-title">
+<p>स्वभाव के आधार पर व्यक्तित्व</p>
+</h1>
+<div class="subtitle">
+<p><i class="fas fa-flask"></i> Hippocrates का चार स्वभाव (Four Temperaments) सिद्धांत</p>
+</div>
+</div>
+<div class="quadrant-container">
+<div class="quadrant quadrant-sanguine">
+<div class="quadrant-header">
+<div class="quadrant-icon icon-sanguine">
+<i class="fas fa-smile-beam"></i>
+</div>
+<div class="quadrant-title-box">
+<div class="quadrant-title title-sanguine">
+<p>संगीन</p>
+</div>
+<div class="quadrant-subtitle title-sanguine">
+<p>Sanguine</p>
+</div>
+</div>
+</div>
+<div class="trait-list">
+<div class="trait-item">
+<div class="trait-bullet bullet-sanguine">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>प्रसन्न और उत्साही स्वभाव</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-sanguine">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>आशावादी दृष्टिकोण</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-sanguine">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>सामाजिक और बातूनी</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-sanguine">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>जीवंत और सक्रिय व्यक्तित्व</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-sanguine">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>नए अनुभवों के प्रति खुलापन</p>
+</div>
+</div>
+</div>
+</div>
+<div class="quadrant quadrant-choleric">
+<div class="quadrant-header">
+<div class="quadrant-icon icon-choleric">
+<i class="fas fa-fire"></i>
+</div>
+<div class="quadrant-title-box">
+<div class="quadrant-title title-choleric">
+<p>कोलेरिक</p>
+</div>
+<div class="quadrant-subtitle title-choleric">
+<p>Choleric</p>
+</div>
+</div>
+</div>
+<div class="trait-list">
+<div class="trait-item">
+<div class="trait-bullet bullet-choleric">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>ऊर्जावान और क्रियाशील</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-choleric">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>निर्णायक और दृढ़-इच्छाशक्ति</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-choleric">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>नेतृत्व क्षमता वाले</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-choleric">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>कभी-कभी क्रोधी और अधीर</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-choleric">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>लक्ष्य-उन्मुख व्यक्तित्व</p>
+</div>
+</div>
+</div>
+</div>
+<div class="quadrant quadrant-melancholic">
+<div class="quadrant-header">
+<div class="quadrant-icon icon-melancholic">
+<i class="fas fa-brain"></i>
+</div>
+<div class="quadrant-title-box">
+<div class="quadrant-title title-melancholic">
+<p>मेलानकोलिक</p>
+</div>
+<div class="quadrant-subtitle title-melancholic">
+<p>Melancholic</p>
+</div>
+</div>
+</div>
+<div class="trait-list">
+<div class="trait-item">
+<div class="trait-bullet bullet-melancholic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>गंभीर और विचारशील</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-melancholic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>विश्लेषणात्मक दृष्टिकोण</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-melancholic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>संवेदनशील और भावुक</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-melancholic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>पूर्णतावादी प्रवृत्ति</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-melancholic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>रचनात्मक और कलात्मक</p>
+</div>
+</div>
+</div>
+</div>
+<div class="quadrant quadrant-phlegmatic">
+<div class="quadrant-header">
+<div class="quadrant-icon icon-phlegmatic">
+<i class="fas fa-dove"></i>
+</div>
+<div class="quadrant-title-box">
+<div class="quadrant-title title-phlegmatic">
+<p>फ्लेगमैटिक</p>
+</div>
+<div class="quadrant-subtitle title-phlegmatic">
+<p>Phlegmatic</p>
+</div>
+</div>
+</div>
+<div class="trait-list">
+<div class="trait-item">
+<div class="trait-bullet bullet-phlegmatic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>शांत और स्थिर स्वभाव</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-phlegmatic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>धैर्यवान और संतुलित</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-phlegmatic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>विश्वसनीय और निष्ठावान</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-phlegmatic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>कम तनाव-प्रवण व्यक्तित्व</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-bullet bullet-phlegmatic">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>शांतिप्रिय और समझौतावादी</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="note-section">
+<div class="note-content">
+<i class="fas fa-info-circle note-icon"></i>
+<div class="note-text">
+<p><span class="note-label">टिप:</span> मिश्रित स्वभाव भी संभव; यह ऐतिहासिक सिद्धांत है जो आधुनिक व्यक्तित्व मनोविज्ञान की नींव रखता है।</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

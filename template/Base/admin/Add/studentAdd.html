@@ -1,0 +1,751 @@
+{% extends "Base/addBase.html" %}
+
+{% block title %}Add Student{% endblock %}
+
+{% block content %}
+<div class="fixed-message-container" id="messageContainer"></div>
+<!-- Main Container -->
+<div class="main-container">
+    <!-- Form Header -->
+    <div class="form-header">
+        <h1 class="form-title">Add New Student</h1>
+        <p class="form-subtitle">
+            <i class="fas fa-info-circle"></i>
+            Please fill in all required fields marked with asterisk (*)
+        </p>
+    </div>
+    <!-- Alert Messages from Django -->
+    {% include "common/message.html" %}
+
+    <!-- Form Container -->
+    <div class="form-container">
+        <!-- Form Navigation -->
+        <div class="form-nav">
+            <div class="nav-steps">
+                <div class="nav-step" data-step="1">
+                    <div class="step-icon">1</div>
+                    <div class="step-title">Basic Information</div>
+                </div>
+                <div class="nav-step" data-step="2">
+                    <div class="step-icon">2</div>
+                    <div class="step-title">Educational Details</div>
+                </div>
+                <div class="nav-step" data-step="3">
+                    <div class="step-icon">3</div>
+                    <div class="step-title">Personal Details</div>
+                </div>
+                <div class="nav-step" data-step="4">
+                    <div class="step-icon">4</div>
+                    <div class="step-title">Contact & Identity</div>
+                </div>
+                <div class="nav-step" data-step="5">
+                    <div class="step-icon">5</div>
+                    <div class="step-title">Login & Status</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <form id="myForm" method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <div class="form-content">
+                <!-- Step 1: Basic Information -->
+                <div class="form-section" id="step-1">
+                    <h3 class="section-title">
+                        <i class="fas fa-user-circle"></i>
+                        Basic Information
+                    </h3>
+
+                    <!-- Profile Picture Upload -->
+                    <div class="profile-upload">
+                        <div class="profile-preview" id="profilePreview">
+                            <div class="profile-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                        <label for="profile-picture" class="upload-btn">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Upload Profile Picture
+                        </label>
+                        <input type="file" id="profile-picture" name="profile_picture" accept="image/*" required>
+                        <p class="form-help">Maximum file size: 2MB. Supported formats: JPG, PNG</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name" class="form-label required">First Name</label>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="Enter first name"
+                                required>
+                            <div class="error-message">Please enter first name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="last_name" class="form-label required">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" class="form-control"
+                                placeholder="Enter last name" required>
+                            <div class="error-message">Please enter last name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label required">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-control"
+                                placeholder="student@college.edu" required>
+                            <div class="error-message">Please enter a valid email address</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label required">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" class="form-control"
+                                placeholder="Enter 10-digit phone number" required>
+                            <div class="error-message">Please enter valid phone number</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dob" class="form-label required">Date of Birth</label>
+                            <input type="date" id="dob" name="dob" class="form-control flatpickr" required>
+                            <div class="error-message">Please select date of birth</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender" class="form-label required">Gender</label>
+                            <select id="gender" name="gender" class="form-select" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                            <div class="error-message">Please select gender</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="martial_status" class="form-label required">Marital Status</label>
+                            <select id="martial_status" name="martial_status" class="form-select" required>
+                                <option value="">Select Marital Status</option>
+                                <option value="Married">Married</option>
+                                <option value="Unmarried">Unmarried</option>
+                            </select>
+                            <div class="error-message">Please select marital status</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="blood_group" class="form-label">Blood Group</label>
+                            <input type="text" id="blood_group" name="blood_group" class="form-control"
+                                placeholder="e.g., O+">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Educational Details -->
+                <div class="form-section" id="step-2">
+                    <h3 class="section-title">
+                        <i class="fas fa-book-open"></i>
+                        Educational Details
+                    </h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="course" class="form-label">Course<i style="color: red;">*your</i></label>
+                            <select id="course" name="course" class="form-select" required>
+                                <option value="">Select Course</option>
+                                <!-- Courses will be loaded via AJAX -->
+                            </select>
+                            <div class="error-message">Please select course</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tenth_percentage" class="form-label required">10th Percentage</label>
+                            <input type="number" id="tenth_percentage" name="tenth_percentage" class="form-control"
+                                step="0.01" min="0" max="100" placeholder="Enter percentage" required>
+                            <div class="error-message">Please enter valid percentage</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tenth_board" class="form-label required">10th Board</label>
+                            <input type="text" id="tenth_board" name="tenth_board" class="form-control"
+                                placeholder="Enter board name" required>
+                            <div class="error-message">Please enter board name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="twelfth_percentage" class="form-label required">12th Percentage</label>
+                            <input type="number" id="twelfth_percentage" name="twelfth_percentage" class="form-control"
+                                step="0.01" min="0" max="100" placeholder="Enter percentage" required>
+                            <div class="error-message">Please enter valid percentage</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="twelfth_board" class="form-label required">12th Board</label>
+                            <input type="text" id="twelfth_board" name="twelfth_board" class="form-control"
+                                placeholder="Enter board name" required>
+                            <div class="error-message">Please enter board name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="previous_college" class="form-label">Previous College<i style="color: red;">* if
+                                    any</i></label>
+                            <input type="text" id="previous_college" name="previous_college" class="form-control"
+                                placeholder="Enter previous college name">
+                            <div class="error-message">Please enter previous college</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Personal Details -->
+                <div class="form-section" id="step-3">
+                    <h3 class="section-title">
+                        <i class="fas fa-id-card"></i>
+                        Personal Details
+                    </h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="father_name" class="form-label required">Father's Name</label>
+                            <input type="text" id="father_name" name="father_name" class="form-control"
+                                placeholder="Enter father's name" required>
+                            <div class="error-message">Please enter father's name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mother_name" class="form-label required">Mother's Name</label>
+                            <input type="text" id="mother_name" name="mother_name" class="form-control"
+                                placeholder="Enter mother's name" required>
+                            <div class="error-message">Please enter mother's name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="father_occupation" class="form-label">Father's Occupation</label>
+                            <input type="text" id="father_occupation" name="father_occupation" class="form-control"
+                                placeholder="Enter occupation">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="father_income" class="form-label required">Father's Annual Income</label>
+                            <input type="number" id="father_income" name="father_income" class="form-control"
+                                placeholder="Enter income" required>
+                            <div class="error-message">Please enter father's income</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nationality" class="form-label required">Nationality</label>
+                            <input type="text" id="nationality" name="nationality" class="form-control" value="Indian"
+                                required>
+                            <div class="error-message">Please enter nationality</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="category" class="form-label required">Category</label>
+                            <select id="category" name="category" class="form-select" required>
+                                <option value="">Select Category</option>
+                                <option value="General">General</option>
+                                <option value="BC(A)">BC(A)</option>
+                                <option value="BC(B)">BC(B)</option>
+                                <option value="SC">SC</option>
+                                <option value="ST">ST</option>
+                                <option value="Others">Others</option>
+                            </select>
+                            <div class="error-message">Please select category</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="religion" class="form-label required">Religion</label>
+                            <select id="religion" name="religion" class="form-select" required>
+                                <option value="">Select Religion</option>
+                                <option value="Hindu">Hindu</option>
+                                <option value="Muslim">Muslim</option>
+                                <option value="Sikh">Sikh</option>
+                                <option value="Christian">Christian</option>
+                                <option value="Jain">Jain</option>
+                                <option value="Buddhist">Buddhist</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="error-message">Please select religion</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Contact & Identity Details -->
+                <div class="form-section" id="step-4">
+                    <h3 class="section-title">
+                        <i class="fas fa-address-book"></i>
+                        Contact & Identity Details
+                    </h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="emergency_contact" class="form-label required">Emergency Contact</label>
+                            <input type="tel" id="emergency_contact" name="emergency_contact" class="form-control"
+                                placeholder="Enter emergency contact number" required>
+                            <div class="error-message">Please enter emergency contact</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address" class="form-label required">Address</label>
+                            <textarea id="address" name="address" class="form-control" rows="2"
+                                placeholder="Complete address" required></textarea>
+                            <div class="error-message">Please enter address</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city" class="form-label required">City</label>
+                            <input type="text" id="city" name="city" class="form-control" placeholder="City" required>
+                            <div class="error-message">Please enter city</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="state" class="form-label required">State</label>
+                            <input type="text" id="state" name="state" class="form-control" placeholder="State"
+                                required>
+                            <div class="error-message">Please enter state</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pin_code" class="form-label required">PIN Code</label>
+                            <input type="text" id="pin_code" name="pin_code" class="form-control" placeholder="PIN code"
+                                required>
+                            <div class="error-message">Please enter PIN code</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="country" class="form-label required">Country</label>
+                            <input type="text" id="country" name="country" class="form-control" value="India" required>
+                            <div class="error-message">Please enter country</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adhar_no" class="form-label required">Aadhar Number</label>
+                            <input type="number" id="adhar_no" name="adhar_no" class="form-control"
+                                placeholder="12-digit Aadhar number" required>
+                            <div class="error-message">Please enter valid Aadhar number</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pan_no" class="form-label">PAN Number</label>
+                            <input type="text" id="pan_no" name="pan_no" class="form-control"
+                                placeholder="10-character PAN">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="family_id" class="form-label">Family ID</label>
+                            <input type="text" id="family_id" name="family_id" class="form-control"
+                                placeholder="Enter family ID">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="family_id_phone_no" class="form-label required">Family ID Phone Number</label>
+                            <input type="number" id="family_id_phone_no" name="family_id_phone_no" class="form-control"
+                                placeholder="Enter phone number" required>
+                            <div class="error-message">Please enter family ID phone number</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Login & Status -->
+                <div class="form-section" id="step-5">
+                    <h3 class="section-title">
+                        <i class="fas fa-key"></i>
+                        Login Credentials & Status
+                    </h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="username" class="form-label required">Username</label>
+                            <input type="text" id="username" name="username" class="form-control"
+                                placeholder="Enter username">
+                            <div class="error-message">Please enter username</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label required">Password</label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                placeholder="Create password">
+                            <div class="error-message">Please enter password</div>
+                            <div class="form-help">Password must be numeric</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password" class="form-label required">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control"
+                                placeholder="Confirm password">
+                            <div class="error-message">Passwords do not match</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="personal_pin" class="form-label required">Personal PIN</label>
+                            <input type="password" id="personal_pin" name="personal_pin" class="form-control"
+                                maxlength="5" placeholder="5-digit PIN" value="00000">
+                            <div class="error-message">PIN must be 5 digits</div>
+                            <div class="form-help">Default PIN is 00000</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Hostel & Transport <i style="color: red;">* if you
+                                    want</i></label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" id="hostel_student" name="hostel_student" value="True">
+                                    Hostel Student
+                                </label>
+                                <label class="checkbox-option">
+                                    <input type="checkbox" id="transport_opted" name="transport_opted" value="True">
+                                    Transport Opted
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <div>
+                    <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                        <i class="fas fa-arrow-left"></i>
+                        Previous
+                    </button>
+                </div>
+                <div>
+                    <button type="reset" class="btn btn-outline" id="resetBtn">
+                        <i class="fas fa-undo"></i>
+                        Reset
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextBtn">
+                        Next
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                        <i class="fas fa-check"></i>
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let prevBtn = $("#prevBtn");
+    let nextBtn = $("#nextBtn");
+    let submitBtn = $("#submitBtn");
+    let resetBtn = $("#resetBtn");
+    let myForm = $("#myForm");
+    let course = $("#course");
+
+    $(document).ready(function () {
+        $(".nav-step").click(function () {
+            $(".nav-step").removeClass("active");
+            $(this).addClass("active");
+
+            sessionStorage.setItem("nav-step", this.dataset.step);
+            BtnHandle(this.dataset.step);
+
+            // remove form section active class
+            $(".form-section").removeClass("active");
+            $(`.form-section[id="step-${this.dataset.step}"]`).addClass("active");
+            console.log(this.dataset.step)
+        });
+
+        // ===== IMAGE UPLOAD PREVIEW + sessionStorage =====
+        $("#profile-picture").change(function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    const base64Image = e.target.result;  // Base64 string
+
+                    // Preview me show karna
+                    const previewHtml = `
+                <img src="${base64Image}" alt="Profile Preview" 
+                     style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            `;
+                    $(".profile-preview").html(previewHtml);
+
+                }
+
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // FOR COURSE
+        $.ajax({
+            url: "/student/courses/",
+            type: "GET",
+            success: function (response) {
+                course.empty();
+
+                let courseRow = "<option value=''>Select Course</option>"
+
+                response.courses.forEach(course => {
+                    courseRow += `<option value="${course.id}">${course.name} ${course.level}</option>`;
+                });
+
+                course.html(courseRow);
+
+                // RESTORE THE DEPARTMENT VALUE FROM SESSION IF ANY
+                Restore();
+            },
+            error: function (xhr) {
+                let errorMessage = "Error showing department.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+            }
+        });
+
+        // FOR Handling the Date
+        let today = new Date();
+        let maxYear = today.getFullYear() - 15;
+        let maxDateObj = new Date(maxYear, today.getMonth(), today.getDate());
+        let maxDate = maxDateObj.toISOString().split("T")[0];
+        let minDate = "2000-01-01";
+
+        $("#dob").attr("min", minDate);
+        $("#dob").attr("max", maxDate);
+    });
+
+    // Save to sessionStorage on change
+    $(document).on("change", "#myForm input, #myForm select, #myForm textarea", function () {
+        let id = $(this).attr("id");
+        let value;
+
+        if ($(this).attr("type") === "radio") {
+            if ($(this).is(":checked")) {
+                value = $(this).val();
+                sessionStorage.setItem(id, value);
+            }
+        } else {
+            value = $(this).val();
+            sessionStorage.setItem(id, value);
+        }
+    });
+
+    // RESTORE VALUES FROM SESSION
+    function Restore() {
+        $("#myForm input, #myForm select, #myForm textarea").each(function () {
+            let id = $(this).attr("id");
+            if (!id) return;
+
+            // Skip file input
+            if ($(this).attr("type") === "file") return;
+
+            let storedValue = sessionStorage.getItem(id);
+            if (storedValue !== null) {
+                if ($(this).attr("type") === "radio") {
+                    if ($(this).val() === storedValue) {
+                        $(this).prop("checked", true);
+                    }
+                } else {
+                    $(this).val(storedValue);
+                }
+            }
+        });
+
+        let nav_step = sessionStorage.getItem("nav-step");
+
+        // SHOW NAV STEP
+        showStep(nav_step);
+
+        // BUTTON HANDLING
+        BtnHandle(nav_step);
+    };
+
+    // SHOW STEP
+    function showStep(step) {
+        if (step) {
+            // console.log(step);
+            $(".nav-step").removeClass("active");
+            $(`.nav-step[data-step="${step}"]`).addClass("active");
+
+            $(".form-section").removeClass("active");
+            $(`.form-section[id="step-${step}"]`).addClass("active");
+
+            sessionStorage.setItem("nav-step", step);
+        } else {
+            $(`.nav-step[data-step="1"]`).addClass("active");
+            $(`.form-section[id="step-1"]`).addClass("active");
+        }
+    }
+
+    // BUTTON HANDLING
+    function BtnHandle(step) {
+        let person = "{{ person }}";
+        nextBtn.show();
+        prevBtn.hide();
+        submitBtn.hide();
+
+        if (step !== "1") {
+            prevBtn.show();
+        }
+        if (person !== "Other") {
+            if (step === '4') {
+                nextBtn.hide();
+                submitBtn.show();
+            }
+        }
+        if (step === '5') {
+            submitBtn.show();
+            nextBtn.hide();
+        }
+    }
+
+    prevBtn.on("click", function () {
+        let activeStep = $(".nav-step.active").data("step");
+        showStep((activeStep - 1).toString());
+        BtnHandle((activeStep - 1).toString());
+    });
+
+    nextBtn.on("click", function () {
+        let activeStep = $(".nav-step.active").data("step");
+        showStep((activeStep + 1).toString());
+        BtnHandle((activeStep + 1).toString())
+    });
+
+    resetBtn.on("click", function () {
+        myForm.trigger("reset");
+        sessionStorage.clear();
+    });
+
+    $("#myForm").submit(function (e) {
+        e.preventDefault();
+        let currentStep = $(".nav-step.active").data("step");
+        let isValid = true;
+        let pan = $("#pan_no").val().trim().toUpperCase();
+        let aadhar = $("#adhar_no").val().trim();
+        let panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+        let aadharPattern = /^[0-9]{12}$/;
+
+        $("#step-" + currentStep + " [required]").each(function () {
+
+            if ($(this).val().trim() === "") {
+                $(this).addClass("error");
+                isValid = false;
+            } else {
+                $(this).removeClass("error");
+            }
+        });
+
+        let firstErrorField = null;
+        let errors = [];
+
+        $("#myForm [required]").each(function () {
+
+            if ($(this).val().trim() === "") {
+
+                $(this).addClass("error");
+                isValid = false;
+
+                let fieldName = $(this).attr("name");
+                errors.push(fieldName + " is required");
+
+                if (!firstErrorField) {
+                    firstErrorField = $(this);
+                }
+
+            } else {
+                $(this).removeClass("error");
+            }
+
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+
+            showMessage(errors.join(", "), "danger");
+
+            // Optional: first error field par focus kare
+            if (firstErrorField) {
+                firstErrorField.focus();
+            }
+
+            return;
+        }
+
+        if (!panPattern.test(pan)) {
+            showMessage("Invalid PAN Number", "danger");
+            $("#pan_no").addClass("error");
+            e.preventDefault();
+            return;
+        } else {
+            $("#pan_no").removeClass("error");
+        }
+
+        if (!aadharPattern.test(aadhar)) {
+            showMessage("Invalid Adhar Number", "danger");
+            $("#adhar_no").addClass("error");
+            e.preventDefault();
+            return;
+        } else {
+            $("#adhar_no").removeClass("error");
+        }
+
+        let formData = new FormData($("#myForm")[0]);
+
+        // for (let pair of formData.entries()) {
+        //     console.log(pair[0] + ': ' + pair[1]);
+        // }
+
+        if (isValid) {
+            $.ajax({
+                url: "/student/",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                success: function () {
+                    showMessage("Student Added successfully!", 'success');
+                    sessionStorage.clear();
+                    myForm.trigger('reset');
+                    $(".profile-preview").last().remove();
+                    $(".profile-preview").empty();
+
+                    let html = `<div class='profile-placeholder'>
+                                    <i class='fas fa-user'></i>
+                                </div>`
+
+                    $(".profile-preview").html(html);
+
+                    $(".nav-step").removeClass("active");
+                    $(`.nav-step[data-step="1"]`).addClass("active");
+
+                    $(".form-section").removeClass("active");
+                    $(`.form-section[id="step-1"]`).addClass("active");
+
+                    setTimeout(function () {
+                        location.reload();
+                    }, 180000); // 3 min
+                },
+                error: function (xhr) {
+                    let errorMessage = "Error adding staff.";
+
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.detail) {
+                            errorMessage = xhr.responseJSON.detail;
+                        } else {
+                            let errors = [];
+                            for (let field in xhr.responseJSON) {
+                                errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                            }
+                            errorMessage = errors.join(', ');
+                        }
+                    }
+                    console.log(errorMessage)
+                    showMessage(errorMessage, "danger");
+                }
+        });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,268 @@
+{% extends "Base/base2.html" %}
+
+{% block title %}About{% endblock %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/Home/about.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="animate__animated animate__fadeInDown">About Edutrack</h1>
+        <p class="animate__animated animate__fadeInUp">Transforming education through innovative management solutions
+            that empower institutions to focus on what matters most - student success.</p>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+                <div class="about-image animate__animated animate__fadeInLeft">
+                    <img src="{% static 'images/Home/about.jpg' %}" alt="Edutrack Platform" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-content animate__animated animate__fadeInRight">
+                    <h2>Our Story</h2>
+                    <p>Edutrack was founded in 2010 by a group of educators and technologists who recognized the growing
+                        need for comprehensive education management systems. Frustrated by the disjointed and outdated
+                        systems that plagued educational institutions, our founders set out to create a unified platform
+                        that would streamline operations and enhance the learning experience.</p>
+                    <p>Today, Edutrack serves over 500 educational institutions worldwide, from small private schools to
+                        large university systems. Our platform has evolved to include cutting-edge features like
+                        AI-powered analytics, mobile accessibility, and seamless integration with existing systems.</p>
+                    <p>We remain committed to our original mission: to empower educational institutions with technology
+                        that simplifies administration, enhances learning outcomes, and fosters collaboration between
+                        students, teachers, and administrators.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission Vision Section -->
+<section class="mission-vision">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Mission & Vision</h2>
+            <p>Guiding principles that drive our innovation</p>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="mv-card animate__animated animate__fadeInUp">
+                    <div class="mv-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Our Mission</h3>
+                    <p>To empower educational institutions with innovative technology solutions that streamline
+                        operations, enhance learning experiences, and foster academic excellence through intuitive,
+                        comprehensive, and accessible management systems.</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="mv-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                    <div class="mv-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Our Vision</h3>
+                    <p>To create a world where educational institutions of all sizes can leverage technology to maximize
+                        their impact, where administrative burdens are minimized, and educators can focus on what they
+                        do best - inspiring and shaping future generations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Leadership Team</h2>
+            <p>The passionate individuals driving Edutrack forward</p>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="team-card animate__animated animate__fadeInUp">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+                        alt="Dr. Sarah Johnson" class="team-img">
+                    <h4>Dr. Sarah Johnson</h4>
+                    <p class="text-primary">CEO & Founder</p>
+                    <p>Former university professor with 15+ years in educational technology.</p>
+                    <div class="team-social">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="team-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                    <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+                        alt="Michael Chen" class="team-img">
+                    <h4>Michael Chen</h4>
+                    <p class="text-primary">CTO</p>
+                    <p>Software architect with expertise in cloud-based educational platforms.</p>
+                    <div class="team-social">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="team-card animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=922&q=80"
+                        alt="Emily Rodriguez" class="team-img">
+                    <h4>Emily Rodriguez</h4>
+                    <p class="text-primary">VP of Education</p>
+                    <p>Curriculum specialist focused on implementing technology in classrooms.</p>
+                    <div class="team-social">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success Stories Section -->
+<section class="stories-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Success Stories</h2>
+            <p>How Edutrack has transformed educational institutions</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="story-card animate__animated animate__fadeInLeft">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+                                alt="James Wilson">
+                        </div>
+                        <div class="story-info">
+                            <h4>James Wilson</h4>
+                            <p>Principal, Greenwood High School</p>
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <i class="fas fa-quote-left"></i>
+                        <p>Since implementing Edutrack, our administrative workload has decreased by 45%. The fee
+                            management system alone has saved us over 20 hours per week. But more importantly, we've
+                            seen a marked improvement in student engagement and performance thanks to the analytics
+                            tools.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="story-card animate__animated animate__fadeInRight">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80"
+                                alt="Maria Garcia">
+                        </div>
+                        <div class="story-info">
+                            <h4>Maria Garcia</h4>
+                            <p>Superintendent, Westfield School District</p>
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <i class="fas fa-quote-left"></i>
+                        <p>We rolled out Edutrack across our entire district of 15 schools. The implementation was
+                            seamless, and the training resources were exceptional. Now, we have unified data across all
+                            schools, making district-wide planning and reporting more efficient than ever before.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="story-card animate__animated animate__fadeInLeft">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1776&q=80"
+                                alt="Robert Kim">
+                        </div>
+                        <div class="story-info">
+                            <h4>Robert Kim</h4>
+                            <p>IT Director, Northern University</p>
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <i class="fas fa-quote-left"></i>
+                        <p>The API integration capabilities of Edutrack allowed us to connect it with our existing
+                            systems without any hiccups. The mobile app has been particularly popular with both students
+                            and faculty. Support has been responsive and helpful whenever we've needed assistance.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="story-card animate__animated animate__fadeInRight">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=776&q=80"
+                                alt="Sarah Williams">
+                        </div>
+                        <div class="story-info">
+                            <h4>Sarah Williams</h4>
+                            <p>Registrar, Eastern College</p>
+                        </div>
+                    </div>
+                    <div class="story-text">
+                        <i class="fas fa-quote-left"></i>
+                        <p>Edutrack has revolutionized our enrollment process. What used to take weeks now takes days.
+                            The automated communication tools have significantly reduced no-shows and last-minute
+                            cancellations. Parents especially appreciate the transparency and ease of use.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Partners Section -->
+<section class="partners-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Partners</h2>
+            <p>Trusted by leading educational institutions worldwide</p>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="partner-logo">
+                    <img src="{% static 'images/partner1.jpg' %}" alt="Greenwood University">
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="partner-logo">
+                    <img src="https://via.placeholder.com/200x80/3a56d4/ffffff?text=Northside+Schools"
+                        alt="Northside Schools">
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="partner-logo">
+                    <img src="https://via.placeholder.com/200x80/3f37c9/ffffff?text=Global+Ed+Alliance"
+                        alt="Global Ed Alliance">
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="partner-logo">
+                    <img src="https://via.placeholder.com/200x80/7209b7/ffffff?text=Tech+Learning+Foundation"
+                        alt="Tech Learning Foundation">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/Home/about.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,786 @@
+{% extends "Base/base.html" %}
+
+{% block title %}Course{% endblock %}
+
+{% block content %}
+<div class="fixed-message-container" id="messageContainer"></div>
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>College Course Management</h1>
+        <p>Create and manage academic courses efficiently</p>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<div class="content-container">
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="stat-value" id="departments"></div>
+            <div class="stat-label">Departments</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="stat-value" id="staff"></div>
+            <div class="stat-label">Staff</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-value" id="programs"></div>
+            <div class="stat-label">Programs</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value" id="students"></div>
+            <div class="stat-label">Students</div>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <ul class="nav nav-tabs" id="courseTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button"
+                role="tab" aria-controls="create" aria-selected="true">
+                <i class="fas fa-plus-circle"></i> Create Course
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button"
+                role="tab" aria-controls="manage" aria-selected="false">
+                <i class="fas fa-edit"></i> Manage Courses
+            </button>
+        </li>
+    </ul>
+
+    <!-- Alert Messages from Django -->
+    {% include "common/message.html" %}
+
+    <div class="tab-content" id="courseTabsContent">
+        <!-- Create Course Tab -->
+        <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+            <div class="form-container">
+                <form id="courseForm">
+                    {% csrf_token %}
+
+                    <div class="form-section">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="Image" class="form-label"><i class="fas fa-image"></i> Course
+                                    Image</label>
+                                <input type="file" class="form-control" id="Image" name="image" accept="image/*">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="Name" class="form-label"><i class="fas fa-book"></i>Name</label>
+                                <input type="text" class="form-control" id="Name" name="name"
+                                    placeholder="e.g., Introduction to Computer Science" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2 mb-3">
+                                <label for="Code" class="form-label"><i class="fas fa-code"></i>Code</label>
+                                <input type="text" class="form-control" id="Code" name="code" placeholder="e.g., CS101"
+                                    required>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="department" class="form-label"><i
+                                        class="fas fa-building"></i>Department</label>
+                                <select class="form-select" id="department" name="department" required>
+                                    <option value="" selected disabled>Select Department</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="Level" class="form-label"><i class="fas fa-trophy"></i>Level</label>
+                                <select class="form-select" id="Level" name="level" required>
+                                    <option value="" selected disabled>Select Level</option>
+                                    <option value="AI">AI</option>
+                                    <option value="Honours">Honours</option>
+                                    <option value="General">General</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 mb-3">
+                                <label for="type" class="form-label"><i class="fas fa-trophy"></i>Type</label>
+                                <select class="form-select" id="type" name="type" required>
+                                    <option value="" selected disabled>Select Type</option>
+                                    <option value="UG">UG</option>
+                                    <option value="PG">PG</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Description" class="form-label"><i class="fas fa-align-left"></i>
+                                Description</label>
+                            <textarea class="form-control" id="Description" rows="3" name="description"
+                                placeholder="Describe the course mission and focus areas" required></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="Fee" class="form-label"><i class="fas fa-file-invoice-dollar"></i>
+                                    Fee (Year)</label>
+                                <input type="number" class="form-control" id="Fee" name="fees" min="10000"
+                                    max="50000" value="30000" required>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="semesters" class="form-label"><i class="fas fa-users"></i>Semesters</label>
+                                <input type="number" class="form-control" id="semesters" name="semesters" min="4"
+                                    value="6" required>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="max_student" class="form-label"><i class="fas fa-users"></i>Max
+                                    Student</label>
+                                <input type="number" class="form-control" id="max_student" name="max_student" min="100"
+                                    value="500" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="eligibility" class="form-label"><i class="fas fa-align-left"></i>
+                                Eligibility</label>
+                            <textarea class="form-control" id="eligibility" rows="3" name="eligibility"
+                                placeholder="Describe the eligibility for course" required></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                        <button type="submit" id="submitBtn" class="btn btn-primary">Create Course</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Manage department Tab -->
+        <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+            <div class="table-container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3><i class="fas fa-list"></i> All Courses</h3>
+                    <div class="d-flex gap-2">
+                        <div class="d-flex">
+                            <input type="text" class="form-control me-2" id="searchInput"
+                                placeholder="Search (Name, Code, Type)">
+                            <button type="button" class="btn btn-outline-secondary" id="clearSearch">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="department-table" id="courseTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Level</th>
+                                <th>Type</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courseTableBody">
+                            <!-- Table data will be loaded via AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Section -->
+                <div class="pagination" id="pagination">
+                    <button id="prev-btn" class="btn btn-outline-primary" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span id="pageInfo" class="mx-3">Loading...</span>
+                    <button id="next-btn" class="btn btn-outline-primary" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= VIEW COURSE DETAILS MODAL ================= -->
+<div class="view-overlay" id="viewCourseOverlay">
+    <div class="view-container">
+        <div class="view-header">
+            <div class="view-title">
+                <i class="fas fa-building"></i>
+                Course Details
+            </div>
+            <div class="view-close" onclick="closeModal('viewCourseOverlay')">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+
+        <div class="view-content">
+            <div class="dept-header-card">
+                <div class="dept-icon">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <div class="dept-header-info">
+                    <h2 id="view_dept_name">Computer Science</h2>
+                    <p>
+                        <i class="fas fa-map-marker-alt"></i>
+                        Block A, 3rd Floor | Established: <span id="view_dept_established">2005</span>
+                    </p>
+                    <p>
+                        <span class="badge badge-success" id="view_dept_status">
+                            <i class="fas fa-check-circle"></i> Active
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="section-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Course Information</h3>
+                </div>
+
+                <div class="section-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Department Code</span>
+                            <span class="info-value">
+                                <i class="fas fa-hashtag"></i>
+                                <span id="view_dept_code">CS001</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">HOD Name</span>
+                            <span class="info-value">
+                                <i class="fas fa-user-tie"></i>
+                                <span id="view_hod_name">Dr. Sarah Johnson</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Contact Email</span>
+                            <span class="info-value">
+                                <i class="fas fa-envelope"></i>
+                                <span id="view_dept_email">cs@college.edu</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Contact Phone</span>
+                            <span class="info-value">
+                                <i class="fas fa-phone"></i>
+                                <span id="view_dept_phone">+91 98765 43210</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Location</span>
+                            <span class="info-value">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span id="view_dept_location">Block A, Room 301</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Accreditation</span>
+                            <span class="info-value">
+                                <i class="fas fa-award"></i>
+                                <span id="view_accreditation">NBA Accredited</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="section-header">
+                    <i class="fas fa-align-left"></i>
+                    <h3>About Course</h3>
+                </div>
+                <div class="section-body">
+                    <p style="color: var(--dark); line-height: 1.6; margin-bottom: 0.5rem;" id="view_dept_description">
+                        The Department of Computer Science is committed to excellence in teaching, research, and
+                        innovation. With state-of-the-art laboratories and experienced faculty, we prepare students for
+                        successful careers in technology and research.
+                    </p>
+                    <p style="color: var(--gray); font-size: 0.9rem;">
+                        <i class="fas fa-calendar-alt"></i> Last updated: January 15, 2026
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="view-actions">
+            <button class="btn btn-secondary" onclick="closeModal('viewCourseOverlay')">
+                <i class="fas fa-times"></i> Close
+            </button>
+            <button class="btn btn-primary" onclick="editDepartmentFromView()">
+                <i class="fas fa-edit"></i> Edit Department
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= UPDATE FACULTY MODAL ================= -->
+<div class="update-overlay" id="updateOverlay" style="display: none;">
+    <div class="update-container">
+        <!-- Modal Header -->
+        <div class="update-header">
+            <div class="update-title">
+                <i class="fas fa-user-edit"></i>
+                Update Faculty Details
+            </div>
+            <div class="update-close" onclick="closeModal('updateOverlay')">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+
+        <!-- Current Faculty Info -->
+        <div class="current-info" id="currentFacultyInfo">
+            <i class="fas fa-id-card"></i>
+            <div class="current-info-text">
+                Updating details for: <strong id="facultyNameDisplay">John Doe</strong>
+                (ID: <span id="facultyIdDisplay">FAC001</span>)
+            </div>
+        </div>
+
+        <!-- Alert Messages Container -->
+        <div id="updateAlertContainer"></div>
+
+        <!-- Form Content -->
+        <div class="update-content">
+            <div class="form-grid">
+                <!-- First Name -->
+                <div class="form-group">
+                    <label class="form-label required">
+                        <i class="fas fa-user"></i>
+                        First Name
+                    </label>
+                    <input type="text" id="update_name" class="form-control" placeholder="Enter first name"
+                        value="John">
+                    <div class="error-message" id="error_update_name"></div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="form-group">
+                    <label class="form-label required">
+                        <i class="fas fa-user"></i>
+                        Last Name
+                    </label>
+                    <input type="text" id="update_last_name" class="form-control" placeholder="Enter last name"
+                        value="Doe">
+                    <div class="error-message" id="error_update_last_name"></div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label required">
+                        <i class="fas fa-envelope"></i>
+                        Email Address
+                    </label>
+                    <input type="email" id="update_email" class="form-control" placeholder="faculty@college.edu"
+                        value="john.doe@college.edu">
+                    <div class="error-message" id="error_update_email"></div>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label class="form-label required">
+                        <i class="fas fa-phone-alt"></i>
+                        Phone Number
+                    </label>
+                    <input type="tel" id="update_phone" class="form-control" placeholder="+91 98765 43210"
+                        value="+91 98765 43210">
+                    <div class="error-message" id="error_update_phone"></div>
+                </div>
+
+                <!-- Department -->
+                <div class="form-group">
+                    <label class="form-label required">
+                        <i class="fas fa-building"></i>
+                        Department
+                    </label>
+                    <select id="update_department" class="form-select">
+                        <option value="">Select Department</option>
+                        <option value="Computer Science" selected>Computer Science</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Electrical Engineering">Electrical Engineering</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                    </select>
+                    <div class="error-message" id="error_update_department"></div>
+                </div>
+
+                <!-- Position -->
+                <div class="form-group">
+                    <label class="form-label required">
+                        <i class="fas fa-briefcase"></i>
+                        Position
+                    </label>
+                    <select id="update_position" class="form-select">
+                        <option value="">Select Position</option>
+                        <option value="Professor" selected>Professor</option>
+                        <option value="Associate Professor">Associate Professor</option>
+                        <option value="Assistant Professor">Assistant Professor</option>
+                        <option value="Lecturer">Lecturer</option>
+                        <option value="Visiting Faculty">Visiting Faculty</option>
+                        <option value="Research Scholar">Research Scholar</option>
+                    </select>
+                    <div class="error-message" id="error_update_position"></div>
+                </div>
+            </div>
+
+            <!-- Additional Fields -->
+            <div style="margin-top: 1rem; border-top: 1px dashed var(--border-gray); padding-top: 1.5rem;">
+                <h6
+                    style="display: flex; align-items: center; gap: 0.5rem; color: var(--dark); font-weight: 600; margin-bottom: 1rem;">
+                    <i class="fas fa-asterisk" style="color: var(--danger); font-size: 0.8rem;"></i>
+                    Additional Information
+                </h6>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-calendar"></i>
+                            Date of Joining
+                        </label>
+                        <input type="text" id="update_joining_date" class="form-control" placeholder="Select date"
+                            value="2023-01-15">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i>
+                            Employee ID
+                        </label>
+                        <input type="text" id="update_employee_id" class="form-control" placeholder="Enter employee ID"
+                            value="FAC001" readonly style="background: var(--light-gray);">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="update-actions">
+            <button class="btn btn-secondary" onclick="closeModal('updateOverlay')">
+                <i class="fas fa-times"></i>
+                Cancel
+            </button>
+            <button class="btn btn-primary" onclick="submitUpdate()" id="updateSubmitBtn">
+                <i class="fas fa-check-circle"></i>
+                Update Faculty
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL - RECTIFIED -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Delete Course</h3>
+        </div>
+        <div class="modal-body">
+            <i class="fas fa-trash-alt"></i>
+            <p>Are you sure you want to delete this course?</p>
+            <p style="font-size: 0.9rem; color: var(--gray);">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">
+                <i class="fas fa-times"></i> Cancel
+            </button>
+            <button type="button" class="btn btn-danger" id="deleteConfirm">
+                <i class="fas fa-trash"></i> Yes, Delete
+            </button>
+        </div>
+        <input type="hidden" id="objectId">
+    </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    // COURSE DETAILS
+    const department = $("#department");
+    function courseDetails() {
+        $.ajax({
+            url: "/course/details/",
+            type: "GET",
+            success: function (response) {
+                rows = "<option value='' selected disabled>Select Department</option>"
+
+                response.dept_options.forEach(function (course) {
+                    rows += `<option value='${course.id}'>${course.name}</option>`
+                });
+
+                department.html(rows);
+
+                $("#departments").html(response.departments);
+                $("#staff").html(response.staff);
+                $("#programs").html(response.courses);
+                $("#students").html(response.students);
+
+            },
+            error: function (xhr) {
+                let errorMessage = "Error creating department.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+            }
+        })
+    }
+
+    courseDetails();
+
+    // SUBMIT FORM
+    const courseForm = $("#courseForm");
+    const searchInput = $("#searchInput");
+    const clearSearch = $("#clearSearch");
+    const prevBtn = $("#prev-btn");
+    const nextBtn = $("#next-btn");
+
+    let currentPage = 1;
+    let searchTerm = '';
+
+    // Form Submit
+    courseForm.on("submit", function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "/course/",
+            type: "POST",
+            data: courseForm.serialize(),
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            success: function () {
+                showMessage("Course created successfully!", 'success');
+                courseForm.trigger("reset");
+                courseDetails();
+                loadCourse();
+            },
+            error: function (xhr) {
+                let errorMessage = "Error creating course.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+            }
+        });
+    });
+
+    // SEARCH AND PAGINATION
+
+    // Search
+    searchInput.on("keyup", function () {
+        searchTerm = searchInput.val().trim();
+        currentPage = 1;
+        loadCourse();
+    });
+
+    clearSearch.on("click", function () {
+        searchInput.val('');
+        searchTerm = '';
+        currentPage = 1;
+        loadCourse();
+    });
+
+    searchInput.on("keypress", function (e) {
+        if (e.which === 13) {
+            searchTerm = searchInput.val().trim();
+            currentPage = 1;
+            loadCourse();
+        }
+    });
+
+    // Pagination
+    prevBtn.on("click", function () {
+        if (currentPage > 1) {
+            currentPage--;
+            loadCourse();
+        }
+    });
+
+    nextBtn.on("click", function () {
+        currentPage++;
+        loadCourse();
+    });
+
+    // Initial load
+    loadCourse();
+
+    // Now searchTerm properly passed as parameter
+    function loadCourse() {
+
+        let url = `/course/?page=${currentPage}`;
+
+        if (searchTerm) {
+            url += `&search=${encodeURIComponent(searchTerm)}`;
+        }
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                console.log(response)
+                let rows = "";
+                let courseData = {};
+
+                response.results.forEach(function (cs) {
+                    courseData[cs.id] = cs
+                    sessionStorage.setItem("courseData", JSON.stringify(courseData));
+
+                    let statusIcon = cs.status === true ?
+                        '<i class="fas fa-check-circle text-success"></i>' :
+                        '<i class="fas fa-times-circle text-danger"></i>';
+
+                    rows += `
+                        <tr>
+                            <td>${cs.id}</td>
+                            <td>${cs.name}</td>
+                            <td>${cs.level}</td>
+                            <td>${cs.type}</td>
+                            <td>${cs.department_name}</td>
+                            <td>${statusIcon}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view" id="view" data-id="${cs.id}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" id="edit" data-id="${cs.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" id="delete" data-id="${cs.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                $("#courseTableBody").empty()
+                $("#courseTableBody").html(rows);
+
+                // Pagination control
+                $("#prev-btn").prop('disabled', !response.previous);
+                $("#next-btn").prop('disabled', !response.next);
+
+                // Better page calculation
+                const pageSize = response.results.length || 1;
+                const totalPages = Math.ceil(response.count / pageSize);
+
+                $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
+            },
+            error: function () {
+                showMessage("Error loading departments", "danger");
+            }
+        });
+    }
+
+    // ACTION MODALS
+    const deleteModal = $("#deleteModal");
+    const viewModal = $("#viewCourseOverlay");
+    const editModal = $("#updateOverlay");
+
+    // DELETE
+    $(document).on("click", "#delete", function () {
+        $("#objectId").val(this.dataset.id)
+        deleteModal.show();
+    })
+
+    // VIEW
+    $(document).on("click", "#view", function () {
+        let id = this.dataset.id;
+        let courseData = JSON.parse(sessionStorage.getItem("courseData"))
+        console.log(courseData);
+        viewModal.show();
+    })
+
+    // EDIT
+    $(document).on("click", "#edit", function () {
+        let id = this.dataset.id;
+        let courseData = JSON.parse(sessionStorage.getItem("courseData"))
+        console.log(courseData);
+        editModal.show();
+    })
+
+    // DELETE CONFIRMATION
+    $("#deleteConfirm").on("click", function () {
+        $.ajax({
+            url: `/course/${$("#objectId").val()}/`,
+            type: "DELETE",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            success: function () {
+                showMessage("Course deleted successfully!", 'success');
+                closeModal("deleteModal");
+                loadCourse();
+            },
+            error: function (xhr) {
+                let errorMessage = "Error deleting department.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+                closeModal("deleteModal");
+            }
+        });
+    });
+
+    // FOR CLOSE THE CONTAINER
+    function closeModal(conId) {
+        const container = $(`#${conId}`)
+        container.hide()
+    }
+</script>
+{% endblock %}

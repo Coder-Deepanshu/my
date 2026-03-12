@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html lang="hi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720" name="viewport"/>
+<title>व्यक्तित्व की मुख्य विशेषताएँ</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            display: flex;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+        .left-content {
+            flex: 1;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+        }
+        .right-image {
+            width: 480px;
+            position: relative;
+            overflow: hidden;
+        }
+        .right-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .right-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(124, 58, 237, 0.15);
+            z-index: 1;
+        }
+        .slide-title {
+            font-size: 40px;
+            font-weight: 800;
+            color: #7c3aed;
+            margin-bottom: 35px;
+            line-height: 1.3;
+        }
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            background-color: #ffffff;
+            padding: 18px 22px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .feature-item:hover {
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.15);
+            transform: translateX(5px);
+        }
+        .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            background-color: #ede9fe;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+        }
+        .icon-wrapper i {
+            font-size: 22px;
+            color: #7c3aed;
+        }
+        .feature-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .feature-text p {
+            font-size: 17px;
+            font-weight: 500;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+        .feature-number {
+            font-size: 14px;
+            font-weight: 700;
+            color: #7c3aed;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<div class="left-content">
+<h1 class="slide-title">
+<p>व्यक्तित्व की मुख्य विशेषताएँ</p>
+</h1>
+<div class="features-list">
+<div class="feature-item">
+<div class="icon-wrapper">
+<i class="fas fa-fingerprint"></i>
+</div>
+<div class="feature-text">
+<div class="feature-number">
+<p>01</p>
+</div>
+<p>प्रत्येक व्यक्ति में अद्वितीयता (uniqueness) होती है</p>
+</div>
+</div>
+<div class="feature-item">
+<div class="icon-wrapper">
+<i class="fas fa-dna"></i>
+</div>
+<div class="feature-text">
+<div class="feature-number">
+<p>02</p>
+</div>
+<p>जन्मजात और अर्जित गुणों का संयुक्त मिश्रण</p>
+</div>
+</div>
+<div class="feature-item">
+<div class="icon-wrapper">
+<i class="fas fa-chart-line"></i>
+</div>
+<div class="feature-text">
+<div class="feature-number">
+<p>03</p>
+</div>
+<p>समय और अनुभव के साथ विकासशील प्रकृति</p>
+</div>
+</div>
+<div class="feature-item">
+<div class="icon-wrapper">
+<i class="fas fa-brain"></i>
+</div>
+<div class="feature-text">
+<div class="feature-number">
+<p>04</p>
+</div>
+<p>व्यवहार, निर्णय और संबंधों को प्रभावित करता है</p>
+</div>
+</div>
+<div class="feature-item">
+<div class="icon-wrapper">
+<i class="fas fa-heart"></i>
+</div>
+<div class="feature-text">
+<div class="feature-number">
+<p>05</p>
+</div>
+<p>मानसिक, सामाजिक और भावनात्मक पक्ष समाहित</p>
+</div>
+</div>
+<div class="feature-item">
+<div class="icon-wrapper">
+<i class="fas fa-sync-alt"></i>
+</div>
+<div class="feature-text">
+<div class="feature-number">
+<p>06</p>
+</div>
+<p>संदर्भ-निर्भर और लचीला (situational adaptability)</p>
+</div>
+</div>
+<div class="feature-item">
+<div class="icon-wrapper">
+<i class="fas fa-clipboard-list"></i>
+</div>
+<div class="feature-text">
+<div class="feature-number">
+<p>07</p>
+</div>
+<p>मापनीय: ट्रेट स्केल्स और इन्वेंटरी से आकलन संभव</p>
+</div>
+</div>
+</div>
+</div>
+<div class="right-image">
+<img alt="Personality Psychology Concept" src="https://page.gensparksite.com/slides_images/57f69e911350e5a479bdb74f99be2471.webp"/>
+</div>
+</div>
+</body>
+</html>

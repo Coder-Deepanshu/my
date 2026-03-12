@@ -1,0 +1,156 @@
+{% extends "Base/base3.html" %}
+
+{% block title %}Faculty{% endblock %}
+
+{% block sidebar %}
+<ul class="components">
+    <li>
+        <a href="{% url 'facultyDashboard' %}" class="menu-link" data-id="1">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="2">
+            <i class="fas fa-calendar-alt"></i>My Profile
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="3">
+            <i class="fas fa-users"></i> Students
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="4">
+            <i class="fas fa-book"></i> Staff
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="5">
+            <i class="fas fa-clipboard-list"></i> Result
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="6">
+            <i class="fas fa-check-circle"></i> Staff Setting
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="7">
+            <i class="fas fa-chart-line"></i> Student Setting
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="8">
+            <i class="fas fa-comment"></i> Messages <span class="badge bg-primary ms-2">3</span>
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="9">
+            <i class="fas fa-cog"></i>Main Settings
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="10">
+            <i class="fas fa-file-alt"></i> Reports
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="11">
+            <i class="fas fa-chart-pie"></i> Analytics
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="12">
+            <i class="fas fa-calendar-week"></i> Calendar
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="13">
+            <i class="fas fa-folder"></i> Resources
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-id="14">
+            <i class="fas fa-question-circle"></i> Help Center
+        </a>
+    </li>
+</ul>
+
+{% endblock %}
+
+{% block main_body %}
+<!-- MAIN CONTENT -->
+<div id="content">
+    <!-- header -->
+    <nav class="dashboard-navbar d-flex align-items-center">
+        <div class="d-flex align-items-center w-100">
+            <button type="button" id="sidebarCollapse" class="toggle-btn me-2">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="page-title">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>Dashboard</h3>
+            </div>
+
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <!-- Notifications -->
+                <div class="dropdown">
+                    <a href="#" class="text-decoration-none" data-bs-toggle="dropdown">
+                        <div class="position-relative">
+                            <i class="fas fa-bell fs-5 text-dark-gray"></i>
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                                style="font-size: 0.5rem;"></span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 py-2" style="width: 280px;">
+                        <li class="dropdown-header fw-bold">Notifications</li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-clock text-primary me-2"></i>
+                                Attendance pending for CS101</a>
+                        </li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-file text-warning me-2"></i>
+                                5 assignments to review</a></li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-calendar text-success me-2"></i>
+                                Faculty meeting at 3 PM</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- User Profile -->
+                <div class="dropdown">
+                    <a href="#" class="text-decoration-none d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=Aarav+Sharma&background=4361ee&color=fff&length=2&size=40"
+                            class="rounded-circle" width="38" alt="">
+                        <span class="d-none d-lg-inline fw-semibold text-dark" style="font-size: 0.95rem;">Dr.
+                            Aarav S.</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 py-2">
+                        <li><a class="dropdown-item rounded-3 py-2" href="#"><i class="fas fa-user me-2"></i>
+                                Profile</a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="#"><i class="fas fa-gear me-2"></i>
+                                Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i>
+                                Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN BODY -->
+    <div class="main-body">
+        {% include "common/main_body.html" %}       
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script></script>
+{% endblock %}

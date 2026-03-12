@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>EduTrack | {% block title %}{% endblock %} Dashboard</title>
+    <!-- Bootstrap 5 + icons + fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/Dashboard/dashboard.css' %}">
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar Overlay (for mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-brand">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>EduTrack</span>
+                </a>
+            </div>
+
+            <!-- User Info in Sidebar -->
+            <div class="user-info-sidebar">
+                <div class="user-avatar">AS</div>
+                <div class="user-details">
+                    <h6>Dr. {{ name }}</h6>
+                    <small><i class="fas fa-envelope me-1"></i> {{ email }}</small>
+                </div>
+            </div>
+
+            {% block sidebar %}{% endblock %}
+
+            <div class="sidebar-footer">
+                <i class="fas fa-circle text-success me-1" style="font-size: 0.5rem;"></i> {{ Person }} · v2.4
+            </div>
+        </aside>
+
+        {% block main_body %}{% endblock %}
+    </div>
+
+    <!-- AI Floating Assistant Button -->
+    <button class="ai-float-btn" tab="aiAssistantBtn">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            const sidebar = $('#sidebar');
+            const overlay = $('#sidebarOverlay');
+
+            // Toggle sidebar
+            $('#sidebarCollapse').on('click', function () {
+                sidebar.toggleClass('active');
+                overlay.toggleClass('active');
+
+                if ($(window).width() <= 992) {
+                    $('body').toggleClass('overflow-hidden');
+                }
+            });
+
+            overlay.on('click', function () {
+                sidebar.removeClass('active');
+                overlay.removeClass('active');
+                $('body').removeClass('overflow-hidden');
+            });
+
+            $(window).on('resize', function () {
+                if ($(window).width() > 992) {
+                    sidebar.removeClass('active');
+                    overlay.removeClass('active');
+                    $('body').removeClass('overflow-hidden');
+                }
+            });
+
+            // ========== SLIDER FUNCTIONALITY ==========
+            const slider = document.querySelector('.student-slider');
+            const slides = document.querySelectorAll('.student-slide');
+            const prevBtn = document.querySelector('.student-prev-btn');
+            const nextBtn = document.querySelector('.student-next-btn');
+            const dotsContainer = document.getElementById('sliderDots');
+
+            let currentSlide = 0;
+            const slideCount = slides.length;
+            let autoPlayInterval;
+
+            // Create dots
+            function createDots() {
+                dotsContainer.innerHTML = '';
+                for (let i = 0; i < slideCount; i++) {
+                    const dot = document.createElement('span');
+                    dot.classList.add('student-slider-dot');
+                    if (i === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => goToSlide(i));
+                    dotsContainer.appendChild(dot);
+                }
+            }
+
+            // Go to specific slide
+            function goToSlide(slideIndex) {
+                currentSlide = slideIndex;
+                updateSlider();
+            }
+
+            // Update slider position and dots
+            function updateSlider() {
+                slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+                const dots = document.querySelectorAll('.student-slider-dot');
+                dots.forEach((dot, index) => {
+                    if (index === currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+
+            // Next slide
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slideCount;
+                updateSlider();
+            }
+
+            // Previous slide
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+                updateSlider();
+            }
+
+            // Start auto-play
+            function startAutoPlay() {
+                autoPlayInterval = setInterval(nextSlide, 5000);
+            }
+
+            // Stop auto-play
+            function stopAutoPlay() {
+                clearInterval(autoPlayInterval);
+            }
+
+            // Event listeners for buttons
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function () {
+                    stopAutoPlay();
+                    nextSlide();
+                    startAutoPlay();
+                });
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function () {
+                    stopAutoPlay();
+                    prevSlide();
+                    startAutoPlay();
+                });
+            }
+
+            // Pause auto-play on hover
+            const sliderContainer = document.querySelector('.student-slider-container');
+            if (sliderContainer) {
+                sliderContainer.addEventListener('mouseenter', stopAutoPlay);
+                sliderContainer.addEventListener('mouseleave', startAutoPlay);
+            }
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowLeft') {
+                    stopAutoPlay();
+                    prevSlide();
+                    startAutoPlay();
+                } else if (e.key === 'ArrowRight') {
+                    stopAutoPlay();
+                    nextSlide();
+                    startAutoPlay();
+                }
+            });
+
+            // Touch support for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            slider.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                stopAutoPlay();
+            });
+
+            slider.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                }
+                startAutoPlay();
+            });
+
+            // Initialize slider
+            createDots();
+            updateSlider();
+            startAutoPlay();
+
+            // AI Assistant button
+            $('#aiAssistantBtn').on('click', function () {
+                alert('🤖 EduTrack AI Assistant\n\nHow can I help you today?\n• Check attendance summary\n• Student performance insights\n• Assignment reminders\n• Schedule queries');
+            });
+
+            // Handle dropdowns on mobile
+            $('.dropdown-toggle').on('click', function (e) {
+                if ($(window).width() <= 768) {
+                    e.preventDefault();
+                    $(this).next('.dropdown-menu').toggleClass('show');
+                }
+            });
+
+            // Format current date
+            const today = new Date();
+            $('.date-badge').html(`<i class="fas fa-calendar me-2"></i>${today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`);
+
+            // Add hover effects to action cards
+            $('.action-card').hover(
+                function () { $(this).css('transform', 'translateY(-6px)'); },
+                function () { $(this).css('transform', 'translateY(0)'); }
+            );
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

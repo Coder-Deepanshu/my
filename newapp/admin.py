@@ -1,13 +1,8 @@
 from django.contrib import admin
-from .models import Student,Faculty,Course,Attendance,FeePayment,FeeStructure,Admin, Subject_Details
-from .models import Department,Level,Position, StudentDocuments,AdminDocuments, FacultyDocuments
+from .models import Student,Course,Attendance,FeeStructure
+from .models import Department, Position, StudentDocuments
 
 from .models import DeviceFingerprint, UserDetail, OTPVerification
-
-@admin.register(Level)
-class Level(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('user',)
 
 @admin.register(OTPVerification)
 class OTPVerification(admin.ModelAdmin):
@@ -24,55 +19,13 @@ class DeviceFingerprint(admin.ModelAdmin):
     list_display = ('user', 'fingerprint')
     search_fields = ('user',)
 
-@admin.register(StudentDocuments)
-class StudentDocuments(admin.ModelAdmin):
-    list_display = ('student', 'uploaded_at')
-    search_fields = ('student',)
-
-@admin.register(FacultyDocuments)
-class FacultyDocuments(admin.ModelAdmin):
-    list_display = ('faculty', 'uploaded_at')
-    search_fields = ('faculty',)
-    
-@admin.register(AdminDocuments)
-class AdminDocuments(admin.ModelAdmin):
-    list_display = ('admin', 'uploaded_at')
-    search_fields = ('admin',)
-
-@admin.register(Student)
-class StudentAddAdmin(admin.ModelAdmin):
-    list_display = ('name', 'college_id', 'course')
-    search_fields = ('name', 'college_id', 'course')
 
 @admin.register(Attendance)
 class AttendenceAddAdmin(admin.ModelAdmin):
     list_display = ('college_id', 'status', 'date', 'timing', 'leave_time')
     search_fields = ('college_id', 'status', 'date', 'timing', 'leave_time')
 
-@admin.register(Course)
-class coursesAdmin(admin.ModelAdmin):
-    list_display=('name','years','semesters')
-    search_fields=('name',)
 
-@admin.register(FeeStructure)
-class FeeStructureAdmin(admin.ModelAdmin):
-    list_display = ('course', 'semester', 'year')
-    search_fields = ('course', 'semester', 'year')
-
-@admin.register(FeePayment)
-class FeePaymentAdmin(admin.ModelAdmin):
-    list_display = ('student', )
-    search_fields = ('student', )
-
-@admin.register(Admin)
-class AddAdmin(admin.ModelAdmin):
-    list_display = ('name', )
-    search_fields = ('name', )
-
-@admin.register(Faculty)
-class facultyadmin(admin.ModelAdmin):
-    list_display=('name','college_id','department','qualification','experience','date_of_joining','phone','gender','birthday','address','city','state','state_code')
-    search_fields=('employee_id',)
 
 
 from .models import ChatRoom,Message
@@ -81,54 +34,130 @@ from .models import ChatRoom,Message
 class ChatRoomAdmin(admin.ModelAdmin):
     list_display = ['name', 'participant1','participant2']
     
-
-    
 @admin.register(Message)
 class Message_Student_faculty(admin.ModelAdmin):
     list_display=('chat_room','sender_id','content')
     search_fields=('chat_room','sender_id',)
 
+
+
+
+
+
+
+# FOR SUPERADMIN
+from .models import SuperAdmin
+@admin.register(SuperAdmin)
+class SuperAdmin(admin.ModelAdmin):
+    list_display = ('college_id', "name", "last_name", "username", "password")
+    search_fields = ('college_id', "name", "last_name", "username", "password")
+
+# FOR STAFF
+from .models import Staff
+@admin.register(Staff)
+class Staff(admin.ModelAdmin):
+    list_display = ('college_id', "name", "last_name", "email", "phone")
+    search_fields = ('name', 'college_id',)
+
+# FOR STUDENT
+@admin.register(Student)
+class Student(admin.ModelAdmin):
+    list_display = ('name', 'college_id', 'course')
+    search_fields = ('name', 'college_id', 'course')
+
+# FOR STAFF DOCUMENT
+# from .models import StaffDocument
+# @admin.register(StaffDocument)
+# class StaffDocument(admin.ModelAdmin):
+#     list_display = ('name', 'college_id', 'course')
+#     search_fields = ('name', 'college_id', 'course')
+
+# # FOR STUDENT DOCUMENT
+# from .models import StudentDocuments
+# @admin.register(StudentDocuments)
+# class StudentDocument(admin.ModelAdmin):
+#     list_display = ('name', 'college_id', 'course')
+#     search_fields = ('name', 'college_id', 'course')
+
+# FOR DEPARTMENT
 @admin.register(Department)
 class Department(admin.ModelAdmin):
-    list_display=('name','code')
-    search_fields=('name',)
+    list_display = ('id', 'name','code', 'type', 'description', 'programs', 'status', 'created_at', 'updated_at')
+    search_fields = ('name','code', 'type', 'description', 'programs', 'status', 'created_at', 'updated_at')
 
+# FOR COURSE
+@admin.register(Course)
+class Course(admin.ModelAdmin):
+    list_display=('id', 'image', 'name', 'code', 'level', 'type', 'description', 'fees', 'semesters', 'max_student', 'eligibility', 'created_at', 'updated_at', 'status')
+    search_fields=('image', 'name', 'code', 'level', 'type', 'description', 'fees', 'semesters', 'max_student', 'eligibility', 'created_at', 'updated_at', 'status')
 
+# FOR POSITION
 @admin.register(Position)
 class Position(admin.ModelAdmin):
-    list_display=('name','department','type')
-    search_fields=('name',)
+    list_display = ('id', 'name', 'role', 'type', 'responsibility', 'rank', 'salary', 'status', 'created_at', 'updated_at')
+    search_fields = ('name', 'role', 'type', 'responsibility', 'rank', 'salary', 'status', 'created_at', 'updated_at')
 
-
-from .models import Students,History
-@admin.register(Students)
-class Students(admin.ModelAdmin):
-    list_display=('name','roll_no','course')
-    search_fields=('name',)
-
-
+# FOR HISTORY
+from .models import History
 @admin.register(History)
 class History(admin.ModelAdmin):
     list_display=('content','updatedFrom','updatedTo')
     search_fields=('content',)
 
-@admin.register(Subject_Details)
-class SubjectDetail(admin.ModelAdmin):
-    list_display = ('serial_no', 'course','name','code', 'semester', 'level',)
-    fields=('serial_no', 'course', 'name','code','semester', 'level','content')
+# FOR SUBJECT AND CONTENT
+from .models import Subject
+@admin.register(Subject)
+class Subject(admin.ModelAdmin):
+    list_display = ('id', 'course', 'name', 'code', 'semester', 'department', 'content')
+    fields=('course', 'name', 'code', 'semester', 'department', 'content')
+
+# FOR LAB
+from .models import Lab
+@admin.register(Lab)
+class Lab(admin.ModelAdmin):
+    list_display = ['id', 'name', 'number']
+    fields = ['name', 'number']
+
+# FOR LECTURE
+from .models import Lecture
+@admin.register(Lecture)
+class Lecture(admin.ModelAdmin):
+    list_display = ['id', 'name', 'course', 'semester', 'type', 'start_time', 'end_time']
+    fields = ['name', 'course', 'semester', 'type', 'start_time', 'end_time']
+
+# FOR SCHEDULE
+from .models import Schedule
+@admin.register(Schedule)
+class Schedule(admin.ModelAdmin):
+    list_display = ['id', 'lecture', 'faculty', 'subject', 'lab', 'day_name', 'available']
+    fields = ['lecture', 'faculty', 'subject', 'lab', 'day_name', 'available']
+    
+# FOR FEE STRUCTURE
+from .models import FeeStructure
+@admin.register(FeeStructure)
+class FeeStructure(admin.ModelAdmin):
+    list_display = ["id", "course", "semester", "due_date", "date"]
+    fields = ["course", "semester", "due_date"]
+
+# FOR PAYMENT
+from .models import Payment
+@admin.register(Payment)
+class Payment(admin.ModelAdmin):
+    list_display = ["id", "student", "structure", "paid", "date", "method", "transaction_id", "receipt_number", "verified_by", "remarks"]
+    fields = ["student", "structure", "paid", "date", "method", "transaction_id", "receipt_number", "verified_by", "remarks"]
+
+
+
+
+
+
+
 
 from .models import QR_code
 @admin.register(QR_code)
 class QR_Code(admin.ModelAdmin):
     list_display = ('date', 'time', 'timestamp', 'token', 'random_data', 'expired', 'processed')
     fields = ('timestamp', 'token', 'random_data', 'expired', 'processed')
-
-from django.contrib import admin
-from .models import Product
-
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'created_at']
 
 from .models import Faculty_and_Admin_Attedance
 @admin.register(Faculty_and_Admin_Attedance)
@@ -142,8 +171,5 @@ class Leave(admin.ModelAdmin):
     list_display = ['id', 'college_id', 'leave_type', 'subject', 'start_date', 'end_date', 'total_days', 'contact_during_leave', 'reason', 'status', 'rejection_reason']
     fields = ['college_id', 'leave_type', 'subject', 'start_date', 'end_date', 'total_days', 'contact_during_leave', 'reason', 'status', 'rejection_reason']
 
-from .models import Lab
-@admin.register(Lab)
-class Lab(admin.ModelAdmin):
-    list_display = ['id', 'name', 'number']
-    fields = ['name', 'number']
+
+

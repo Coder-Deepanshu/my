@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html lang="hi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720" name="viewport"/>
+<title>मानसिक आधार पर व्यक्तित्व के प्रकार</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+            overflow: hidden;
+        }
+        .header-section {
+            padding: 40px 60px 25px 60px;
+            background-color: #ffffff;
+            border-bottom: 4px solid #7c3aed;
+        }
+        .slide-title {
+            font-size: 38px;
+            font-weight: 800;
+            color: #7c3aed;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        .subtitle {
+            font-size: 17px;
+            font-weight: 500;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+        }
+        .subtitle i {
+            margin-right: 8px;
+            color: #7c3aed;
+        }
+        .comparison-container {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+            padding: 30px 60px 30px 60px;
+        }
+        .comparison-column {
+            flex: 1;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        .comparison-column:hover {
+            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.2);
+            transform: translateY(-3px);
+        }
+        .column-header {
+            padding: 25px;
+            background-color: #7c3aed;
+            color: #ffffff;
+            text-align: center;
+        }
+        .column-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        .column-subtitle {
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        .column-image {
+            width: 100%;
+            height: 140px;
+            background-color: #ede9fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .column-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .column-content {
+            flex: 1;
+            padding: 20px 25px;
+        }
+        .trait-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .trait-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        .trait-icon {
+            width: 24px;
+            min-width: 24px;
+            height: 24px;
+            background-color: #ede9fe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            margin-top: 2px;
+        }
+        .trait-icon i {
+            font-size: 11px;
+            color: #7c3aed;
+        }
+        .trait-text {
+            flex: 1;
+        }
+        .trait-text p {
+            font-size: 15px;
+            font-weight: 500;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+        .ambivert-section {
+            padding: 20px 60px 30px 60px;
+            background-color: #ffffff;
+            border-top: 1px solid #e5e7eb;
+        }
+        .ambivert-card {
+            background-color: #fef3c7;
+            border-radius: 12px;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            border-left: 5px solid #f59e0b;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .ambivert-icon {
+            width: 60px;
+            min-width: 60px;
+            height: 60px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+        }
+        .ambivert-icon i {
+            font-size: 28px;
+            color: #f59e0b;
+        }
+        .ambivert-content {
+            flex: 1;
+        }
+        .ambivert-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #78350f;
+            margin-bottom: 8px;
+        }
+        .ambivert-title-sub {
+            font-size: 15px;
+            font-weight: 600;
+            color: #92400e;
+        }
+        .ambivert-description {
+            font-size: 15px;
+            font-weight: 500;
+            color: #78350f;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+        .energy-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #7c3aed;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .energy-label i {
+            margin-right: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<div class="header-section">
+<h1 class="slide-title">
+<p>मानसिक आधार पर व्यक्तित्व के प्रकार</p>
+</h1>
+<div class="subtitle">
+<p><i class="fas fa-user-graduate"></i> Carl Jung का वर्गीकरण</p>
+</div>
+</div>
+<div class="comparison-container">
+<div class="comparison-column">
+<div class="column-header">
+<div class="column-title">
+<p>अंतर्मुखी</p>
+</div>
+<div class="column-subtitle">
+<p>Introvert</p>
+</div>
+</div>
+<div class="column-image">
+<img alt="Introvert Personality" src="https://page.gensparksite.com/slides_images/f6e4d7b02422709d46a575b54616fc6e.webp"/>
+</div>
+<div class="column-content">
+<div class="energy-label">
+<p><i class="fas fa-bolt"></i> ऊर्जा का स्रोत</p>
+</div>
+<div class="trait-list">
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>शांत और आत्मचिंतन पसंद</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>एकांत में रहना पसंद करते हैं</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>ऊर्जा अंदरूनी चिंतन से पाते हैं</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>गहरे संबंध बनाना पसंद करते हैं</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>बोलने से पहले सोचते हैं</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>लिखित संचार में बेहतर</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="comparison-column">
+<div class="column-header">
+<div class="column-title">
+<p>बहिर्मुखी</p>
+</div>
+<div class="column-subtitle">
+<p>Extrovert</p>
+</div>
+</div>
+<div class="column-image">
+<img alt="Extrovert Personality" src="https://page.gensparksite.com/slides_images/f6e4d7b02422709d46a575b54616fc6e.webp"/>
+</div>
+<div class="column-content">
+<div class="energy-label">
+<p><i class="fas fa-bolt"></i> ऊर्जा का स्रोत</p>
+</div>
+<div class="trait-list">
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>मिलनसार और बातूनी स्वभाव</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>समूह में सक्रिय रहना पसंद</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>ऊर्जा सामाजिक सहभाग से पाते हैं</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>नए लोगों से मिलना पसंद करते हैं</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>बोलते समय सोचते हैं</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>मौखिक संचार में बेहतर</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="ambivert-section">
+<div class="ambivert-card">
+<div class="ambivert-icon">
+<i class="fas fa-balance-scale"></i>
+</div>
+<div class="ambivert-content">
+<div class="ambivert-title">
+<p>उभयमुखी (Ambivert) <span class="ambivert-title-sub">— संतुलित व्यक्तित्व</span></p>
+</div>
+<div class="ambivert-description">
+<p>परिस्थिति अनुसार अंतर्मुखी और बहिर्मुखी दोनों के गुण दिखाते हैं। संतुलित सामाजिक-एकांत प्राथमिकताएँ। कभी सामाजिक समारोह में सक्रिय, कभी एकांत में आरामदायक।</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

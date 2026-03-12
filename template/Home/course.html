@@ -1,0 +1,395 @@
+{% extends "Base/base2.html" %}
+
+{% block title %}Course{% endblock %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/Home/course.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Slider -->
+<section class="hero-slider">
+    <div id="mainCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active"
+                style="background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                <div class="carousel-caption">
+                    <h2 class="animate__animated animate__fadeInDown">Quality Education for Tomorrow's Leaders</h2>
+                    <p class="animate__animated animate__fadeInUp">Join Edutrack College to shape your future with our
+                        industry-relevant programs and experienced faculty.</p>
+                    <a href="#courses" class="btn btn-primary animate__animated animate__fadeInUp">Explore Courses</a>
+                </div>
+            </div>
+            <div class="carousel-item"
+                style="background-image: url('https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                <div class="carousel-caption">
+                    <h2 class="animate__animated animate__fadeInDown">State-of-the-Art Campus Facilities</h2>
+                    <p class="animate__animated animate__fadeInUp">Experience learning in a modern environment with
+                        advanced labs, library, and sports facilities.</p>
+                    <a href="#features" class="btn btn-primary animate__animated animate__fadeInUp">View Facilities</a>
+                </div>
+            </div>
+            <div class="carousel-item"
+                style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                <div class="carousel-caption">
+                    <h2 class="animate__animated animate__fadeInDown">Placement Opportunities with Top Companies</h2>
+                    <p class="animate__animated animate__fadeInUp">Our students have been placed in leading
+                        organizations with attractive packages.</p>
+                    <a href="#testimonials" class="btn btn-primary animate__animated animate__fadeInUp">Success
+                        Stories</a>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</section>
+
+<!-- Courses Section -->
+<section class="courses-section" id="courses">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Courses</h2>
+            <p>Explore our wide range of undergraduate and postgraduate programs</p>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="course-card">
+                    <div class="course-img"
+                        style="background-image: url('https://images.unsplash.com/photo-1550439062-609e1531270e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">Bachelor of Computer Applications (BCA)</h3>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 Years</span>
+                            <span><i class="fas fa-user-graduate"></i> Degree</span>
+                        </div>
+                        <p class="course-desc">Comprehensive program focusing on computer applications, software
+                            development, and programming languages.</p>
+                        <ul class="course-features">
+                            <li><i class="fas fa-check"></i> Programming in Java, Python, C++</li>
+                            <li><i class="fas fa-check"></i> Web Development</li>
+                            <li><i class="fas fa-check"></i> Database Management</li>
+                            <li><i class="fas fa-check"></i> Software Engineering</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary w-100">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="course-card">
+                    <div class="course-img"
+                        style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">Bachelor of Business Administration (BBA)</h3>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 Years</span>
+                            <span><i class="fas fa-user-graduate"></i> Degree</span>
+                        </div>
+                        <p class="course-desc">Develop business acumen and management skills for a successful career in
+                            corporate world.</p>
+                        <ul class="course-features">
+                            <li><i class="fas fa-check"></i> Marketing Management</li>
+                            <li><i class="fas fa-check"></i> Financial Accounting</li>
+                            <li><i class="fas fa-check"></i> Human Resource Management</li>
+                            <li><i class="fas fa-check"></i> Business Communication</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary w-100">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="course-card">
+                    <div class="course-img"
+                        style="background-image: url('https://images.unsplash.com/photo-1581092921461-eab62e97a780?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">Bachelor of Commerce (B.Com)</h3>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 Years</span>
+                            <span><i class="fas fa-user-graduate"></i> Degree</span>
+                        </div>
+                        <p class="course-desc">Comprehensive understanding of commerce, accounting, economics, and
+                            business laws.</p>
+                        <ul class="course-features">
+                            <li><i class="fas fa-check"></i> Financial Accounting</li>
+                            <li><i class="fas fa-check"></i> Business Economics</li>
+                            <li><i class="fas fa-check"></i> Corporate Law</li>
+                            <li><i class="fas fa-check"></i> Taxation</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary w-100">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="course-card">
+                    <div class="course-img"
+                        style="background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">Master of Computer Applications (MCA)</h3>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 2 Years</span>
+                            <span><i class="fas fa-user-graduate"></i> Postgraduate</span>
+                        </div>
+                        <p class="course-desc">Advanced program in computer applications with focus on software
+                            development and system design.</p>
+                        <ul class="course-features">
+                            <li><i class="fas fa-check"></i> Advanced Algorithms</li>
+                            <li><i class="fas fa-check"></i> Machine Learning</li>
+                            <li><i class="fas fa-check"></i> Cloud Computing</li>
+                            <li><i class="fas fa-check"></i> Big Data Analytics</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary w-100">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="course-card">
+                    <div class="course-img"
+                        style="background-image: url('https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">Master of Business Administration (MBA)</h3>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 2 Years</span>
+                            <span><i class="fas fa-user-graduate"></i> Postgraduate</span>
+                        </div>
+                        <p class="course-desc">Develop strategic thinking and leadership skills for senior management
+                            positions.</p>
+                        <ul class="course-features">
+                            <li><i class="fas fa-check"></i> Strategic Management</li>
+                            <li><i class="fas fa-check"></i> Financial Management</li>
+                            <li><i class="fas fa-check"></i> Marketing Strategy</li>
+                            <li><i class="fas fa-check"></i> Leadership Development</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary w-100">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="course-card">
+                    <div class="course-img"
+                        style="background-image: url('https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80')">
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">Bachelor of Science (B.Sc) IT</h3>
+                        <div class="course-info">
+                            <span><i class="fas fa-clock"></i> 3 Years</span>
+                            <span><i class="fas fa-user-graduate"></i> Degree</span>
+                        </div>
+                        <p class="course-desc">Focus on information technology concepts, networking, and software
+                            development.</p>
+                        <ul class="course-features">
+                            <li><i class="fas fa-check"></i> Data Structures</li>
+                            <li><i class="fas fa-check"></i> Computer Networks</li>
+                            <li><i class="fas fa-check"></i> Web Technologies</li>
+                            <li><i class="fas fa-check"></i> Database Systems</li>
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary w-100">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="container">
+        <div class="section-title">
+            <h2>Why Choose Edutrack College</h2>
+            <p>Discover what makes us the preferred choice for quality education</p>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Experienced Faculty</h3>
+                    <p>Learn from industry experts and academic veterans with years of teaching experience.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3>Modern Infrastructure</h3>
+                    <p>State-of-the-art labs, smart classrooms, and extensive library resources.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3>Placement Assistance</h3>
+                    <p>Dedicated placement cell with track record of excellent placement opportunities.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Industry Partnerships</h3>
+                    <p>Collaborations with leading companies for internships and live projects.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Student Support</h3>
+                    <p>Comprehensive support services including counseling and career guidance.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Quality Education</h3>
+                    <p>Curriculum designed to meet industry standards and global requirements.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4 mb-md-0">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="15">0</div>
+                    <div class="stat-text">Years of Excellence</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4 mb-md-0">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="5000">0</div>
+                    <div class="stat-text">Students</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="200">0</div>
+                    <div class="stat-text">Faculty Members</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number" data-count="95">0</div>
+                    <div class="stat-text">Placement %</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section" id="testimonials">
+    <div class="container">
+        <div class="section-title">
+            <h2>What Our Students Say</h2>
+            <p>Hear from our alumni about their experience at Edutrack College</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">The BCA program at Edutrack provided me with strong technical foundation
+                        that helped me secure a job at a leading IT company even before graduation.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Rahul Sharma">
+                        </div>
+                        <div class="author-info">
+                            <h5>Rahul Sharma</h5>
+                            <p>BCA Graduate, Software Engineer at TechSolutions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">The industry-oriented curriculum and experienced faculty of the BBA
+                        program gave me the confidence to start my own business right after college.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Priya Patel">
+                        </div>
+                        <div class="author-info">
+                            <h5>Priya Patel</h5>
+                            <p>BBA Graduate, Founder at StartUp Ventures</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">The MCA program's focus on practical learning through projects and
+                        internships prepared me perfectly for the challenges of the corporate world.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Amit Kumar">
+                        </div>
+                        <div class="author-info">
+                            <h5>Amit Kumar</h5>
+                            <p>MCA Graduate, Senior Developer at GlobalSoft</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">The campus facilities and extracurricular activities at Edutrack helped
+                        me develop not just academically but also as a well-rounded individual.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Neha Gupta">
+                        </div>
+                        <div class="author-info">
+                            <h5>Neha Gupta</h5>
+                            <p>B.Com Graduate, Chartered Accountant</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Institution?</h2>
+            <p>Join thousands of educational institutions that have streamlined their operations with Edutrack. Get
+                started today with our free trial.</p>
+            <a href="{% url 'enroll' %}" class="btn btn-primary me-3">Enroll Now</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/Home/course.js' %}"></script>
+{% endblock %}

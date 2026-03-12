@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Profile | Edutrack - Education Management System</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #eef2ff;
+            --primary-dark: #3a56d4;
+            --secondary: #4cc9f0;
+            --accent: #7209b7;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --dark: #1e293b;
+            --dark-gray: #475569;
+            --gray: #94a3b8;
+            --light-gray: #f1f5f9;
+            --border-gray: #e2e8f0;
+            --white: #ffffff;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            
+            /* Transitions */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            
+            /* Border Radius */
+            --radius: 10px;
+            --radius-lg: 20px;
+            --radius-xl: 30px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f8f8 0%, #f1f1f1 100%);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .animated-bg span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 25s infinite;
+            bottom: -150px;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+                border-radius: 50%;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: var(--radius-full);
+        }
+
+        /* Main Container */
+        .profile-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            padding: 2.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .profile-header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        /* Profile Image with Animation */
+        .profile-image-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition-bounce);
+        }
+
+        .profile-image:hover {
+            transform: scale(1.1) rotate(5deg);
+            border-color: white;
+        }
+
+        .profile-status {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            border: 3px solid white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .profile-title h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-title p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-full);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: var(--transition);
+        }
+
+        .badge:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-light), white);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            transition: var(--transition-bounce);
+            border: 1px solid var(--border-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: rotate(360deg);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Navigation Tabs */
+        .profile-tabs {
+            padding: 0 2rem;
+            border-bottom: 2px solid var(--border-gray);
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: var(--transition);
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tab-btn.active::after {
+            transform: scaleX(1);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            padding: 2rem;
+            max-height: 600px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Info Cards */
+        .info-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-gray);
+            transition: var(--transition);
+        }
+
+        .info-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card-header i {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-light), white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .info-card-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dark);
+            padding: 0.75rem;
+            background: var(--light-gray);
+            border-radius: var(--radius);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary), var(--accent));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-description {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Publications Grid */
+        .publications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .publication-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--border-gray);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .publication-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .publication-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .publication-year {
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            background: linear-gradient(135deg, var(--primary-light), white);
+            color: var(--primary-dark);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .publication-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .publication-authors {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .publication-journal {
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Courses Grid */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .course-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-gray);
+            transition: var(--transition);
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .course-header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 1.5rem;
+        }
+
+        .course-code {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .course-body {
+            padding: 1.5rem;
+        }
+
+        .course-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--dark-gray);
+        }
+
+        .course-detail i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        .progress {
+            height: 8px;
+            background: var(--light-gray);
+            border-radius: var(--radius-full);
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: var(--radius-full);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding: 2rem;
+            border-top: 2px solid var(--border-gray);
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: var(--transition-bounce);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+            transform: translateY(-3px);
+        }
+
+        /* Achievement Cards */
+        .achievement-card {
+            background: linear-gradient(135deg, var(--warning-light), white);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--warning-light);
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .achievement-content h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .achievement-content p {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .profile-header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-title h1 {
+                font-size: 2rem;
+            }
+
+            .profile-badges {
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .tab-content {
+                padding: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .achievement-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .profile-image-wrapper {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .tab-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <span style="left: 10%; animation-duration: 20s;"></span>
+        <span style="left: 20%; animation-duration: 25s; animation-delay: 2s;"></span>
+        <span style="left: 30%; animation-duration: 22s; animation-delay: 4s;"></span>
+        <span style="left: 40%; animation-duration: 28s; animation-delay: 1s;"></span>
+        <span style="left: 50%; animation-duration: 24s; animation-delay: 3s;"></span>
+        <span style="left: 60%; animation-duration: 26s; animation-delay: 5s;"></span>
+        <span style="left: 70%; animation-duration: 21s; animation-delay: 2.5s;"></span>
+        <span style="left: 80%; animation-duration: 23s; animation-delay: 3.5s;"></span>
+        <span style="left: 90%; animation-duration: 27s; animation-delay: 1.5s;"></span>
+    </div>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <!-- Glass Card -->
+        <div class="glass-card">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-header-content">
+                    <div class="profile-image-wrapper">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" 
+                             alt="Profile" class="profile-image">
+                        <div class="profile-status"></div>
+                    </div>
+                    
+                    <div class="profile-title">
+                        <h1>Dr. Sarah Johnson</h1>
+                        <p>
+                            <i class="fas fa-map-marker-alt"></i>
+                            Professor, Computer Science Department
+                        </p>
+                        
+                        <div class="profile-badges">
+                            <span class="badge">
+                                <i class="fas fa-id-card"></i>
+                                FAC001
+                            </span>
+                            <span class="badge">
+                                <i class="fas fa-calendar"></i>
+                                Since 2020
+                            </span>
+                            <span class="badge">
+                                <i class="fas fa-graduation-cap"></i>
+                                Ph.D. in Computer Science
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Courses Teaching</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value">245</div>
+                    <div class="stat-label">Total Students</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">Publications</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Achievements</div>
+                </div>
+            </div>
+
+            <!-- Profile Tabs -->
+            <div class="profile-tabs">
+                <button class="tab-btn active" onclick="showTab('personal')">
+                    <i class="fas fa-user"></i> Personal Info
+                </button>
+                <button class="tab-btn" onclick="showTab('professional')">
+                    <i class="fas fa-briefcase"></i> Professional
+                </button>
+                <button class="tab-btn" onclick="showTab('courses')">
+                    <i class="fas fa-book"></i> Courses
+                </button>
+                <button class="tab-btn" onclick="showTab('publications')">
+                    <i class="fas fa-file-alt"></i> Publications
+                </button>
+                <button class="tab-btn" onclick="showTab('achievements')">
+                    <i class="fas fa-trophy"></i> Achievements
+                </button>
+                <button class="tab-btn" onclick="showTab('timeline')">
+                    <i class="fas fa-history"></i> Timeline
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Personal Info Tab -->
+                <div class="tab-pane active" id="personal">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="fas fa-user-circle"></i>
+                            <h3>Basic Information</h3>
+                        </div>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-user"></i> Full Name
+                                </span>
+                                <span class="info-value">Dr. Sarah Elizabeth Johnson</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-id-card"></i> Employee ID
+                                </span>
+                                <span class="info-value">FAC001</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-calendar"></i> Date of Birth
+                                </span>
+                                <span class="info-value">15 March 1985</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-venus-mars"></i> Gender
+                                </span>
+                                <span class="info-value">Female</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-flag"></i> Nationality
+                                </span>
+                                <span class="info-value">Indian</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-language"></i> Languages
+                                </span>
+                                <span class="info-value">English, Hindi, French</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="fas fa-address-card"></i>
+                            <h3>Contact Information</h3>
+                        </div>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-envelope"></i> Email
+                                </span>
+                                <span class="info-value">sarah.johnson@edutrack.edu</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-phone"></i> Phone
+                                </span>
+                                <span class="info-value">+91 98765 43210</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-map-marker-alt"></i> Address
+                                </span>
+                                <span class="info-value">123 Tech Park, Electronic City, Bangalore - 560100</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-globe"></i> Website
+                                </span>
+                                <span class="info-value">www.drsarahjohnson.com</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Info Tab -->
+                <div class="tab-pane" id="professional">
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h3>Education</h3>
+                        </div>
+                        
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">2012 - 2016</div>
+                                <div class="timeline-title">Ph.D. in Computer Science</div>
+                                <div class="timeline-description">Indian Institute of Technology, Bombay<br>Specialization: Artificial Intelligence & Machine Learning</div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-date">2010 - 2012</div>
+                                <div class="timeline-title">M.Tech in Computer Science</div>
+                                <div class="timeline-description">Indian Institute of Technology, Delhi<br>CGPA: 9.2/10</div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-date">2006 - 2010</div>
+                                <div class="timeline-title">B.Tech in Computer Science</div>
+                                <div class="timeline-description">National Institute of Technology, Trichy<br>CGPA: 8.9/10</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="fas fa-briefcase"></i>
+                            <h3>Work Experience</h3>
+                        </div>
+                        
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">2020 - Present</div>
+                                <div class="timeline-title">Professor</div>
+                                <div class="timeline-description">Edutrack University, Computer Science Department<br>Teaching Advanced AI, Machine Learning, and Deep Learning</div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-date">2016 - 2020</div>
+                                <div class="timeline-title">Associate Professor</div>
+                                <div class="timeline-description">VIT University, Vellore<br>Research in Natural Language Processing</div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-date">2012 - 2016</div>
+                                <div class="timeline-title">Research Assistant</div>
+                                <div class="timeline-description">IIT Bombay Research Lab<br>Worked on Government funded AI projects</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="fas fa-certificate"></i>
+                            <h3>Certifications</h3>
+                        </div>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-certificate"></i> Certification
+                                </span>
+                                <span class="info-value">Advanced Machine Learning - Stanford Online (2023)</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-certificate"></i> Certification
+                                </span>
+                                <span class="info-value">Deep Learning Specialization - deeplearning.ai (2022)</span>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-certificate"></i> Certification
+                                </span>
+                                <span class="info-value">Data Science Professional - IBM (2021)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Tab -->
+                <div class="tab-pane" id="courses">
+                    <div class="courses-grid">
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-code">CS101</div>
+                                <div class="course-name">Introduction to Programming</div>
+                            </div>
+                            <div class="course-body">
+                                <div class="course-detail">
+                                    <i class="fas fa-users"></i>
+                                    <span>65 Students Enrolled</span>
+                                </div>
+                                <div class="course-detail">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Mon, Wed, Fri • 10:00 AM - 11:30 AM</span>
+                                </div>
+                                <div class="course-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Room 301, Academic Block</span>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Course Progress</span>
+                                        <span>75%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-code">CS301</div>
+                                <div class="course-name">Machine Learning</div>
+                            </div>
+                            <div class="course-body">
+                                <div class="course-detail">
+                                    <i class="fas fa-users"></i>
+                                    <span>45 Students Enrolled</span>
+                                </div>
+                                <div class="course-detail">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Tue, Thu • 2:00 PM - 4:00 PM</span>
+                                </div>
+                                <div class="course-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Lab 105, CS Block</span>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Course Progress</span>
+                                        <span>60%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-header">
+                                <div class="course-code">CS401</div>
+                                <div class="course-name">Deep Learning</div>
+                            </div>
+                            <div class="course-body">
+                                <div class="course-detail">
+                                    <i class="fas fa-users"></i>
+                                    <span>30 Students Enrolled</span>
+                                </div>
+                                <div class="course-detail">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Wed, Fri • 3:30 PM - 5:30 PM</span>
+                                </div>
+                                <div class="course-detail">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>AI Lab, Research Block</span>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Course Progress</span>
+                                        <span>40%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: 40%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publications Tab -->
+                <div class="tab-pane" id="publications">
+                    <div class="publications-grid">
+                        <div class="publication-card">
+                            <span class="publication-year">2024</span>
+                            <h4 class="publication-title">Deep Learning Approaches for Natural Language Understanding</h4>
+                            <p class="publication-authors">Johnson, S., Patel, R., Kumar, A.</p>
+                            <p class="publication-journal">IEEE Transactions on AI, Vol. 15, pp. 234-250</p>
+                        </div>
+
+                        <div class="publication-card">
+                            <span class="publication-year">2023</span>
+                            <h4 class="publication-title">Reinforcement Learning in Autonomous Systems</h4>
+                            <p class="publication-authors">Johnson, S., Sharma, P.</p>
+                            <p class="publication-journal">Journal of Artificial Intelligence Research, Vol. 78</p>
+                        </div>
+
+                        <div class="publication-card">
+                            <span class="publication-year">2022</span>
+                            <h4 class="publication-title">Computer Vision for Healthcare Applications</h4>
+                            <p class="publication-authors">Johnson, S., Gupta, N., Singh, M.</p>
+                            <p class="publication-journal">Medical Image Analysis, Vol. 45</p>
+                        </div>
+
+                        <div class="publication-card">
+                            <span class="publication-year">2021</span>
+                            <h4 class="publication-title">Ethical Considerations in AI Development</h4>
+                            <p class="publication-authors">Johnson, S.</p>
+                            <p class="publication-journal">AI & Society, Springer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements Tab -->
+                <div class="tab-pane" id="achievements">
+                    <div class="achievement-card">
+                        <div class="achievement-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h4>Best Teacher Award 2023</h4>
+                            <p>Recognized for outstanding contribution to computer science education</p>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card">
+                        <div class="achievement-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h4>Excellence in Research Award 2022</h4>
+                            <p>For groundbreaking research in machine learning algorithms</p>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card">
+                        <div class="achievement-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h4>Young Scientist Award 2020</h4>
+                            <p>Presented by Indian Science Congress for AI research</p>
+                        </div>
+                    </div>
+
+                    <div class="achievement-card">
+                        <div class="achievement-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <h4>Google Women Techmakers Scholar</h4>
+                            <p>Selected as one of the top women in technology (2015)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Tab -->
+                <div class="tab-pane" id="timeline">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-date">January 2024</div>
+                            <div class="timeline-title">Published new research paper</div>
+                            <div class="timeline-description">Paper accepted in IEEE Transactions on AI</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-date">December 2023</div>
+                            <div class="timeline-title">Attended International AI Conference</div>
+                            <div class="timeline-description">Presented research at NeurIPS 2023, New Orleans</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-date">October 2023</div>
+                            <div class="timeline-title">Received Best Teacher Award</div>
+                            <div class="timeline-description">University annual awards ceremony</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-date">August 2023</div>
+                            <div class="timeline-title">Started new research collaboration</div>
+                            <div class="timeline-description">Collaboration with MIT on NLP projects</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-date">June 2023</div>
+                            <div class="timeline-title">Completed Google AI residency</div>
+                            <div class="timeline-description">3-month residency at Google AI, Bangalore</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-outline" onclick="editProfile()">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+                <button class="btn btn-primary" onclick="downloadProfile()">
+                    <i class="fas fa-download"></i> Download Profile
+                </button>
+                <button class="btn btn-primary" onclick="shareProfile()">
+                    <i class="fas fa-share-alt"></i> Share Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Tab Switching Function
+        function showTab(tabId) {
+            // Hide all tab panes
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab pane
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Action Functions
+        function editProfile() {
+            alert('Redirecting to edit profile page...');
+            // In real application, redirect to edit page
+        }
+
+        function downloadProfile() {
+            alert('Downloading profile as PDF...');
+            // In real application, generate and download PDF
+        }
+
+        function shareProfile() {
+            alert('Sharing profile link...');
+            // In real application, open share modal
+        }
+
+        // Add floating animation to background elements
+        document.querySelectorAll('.animated-bg span').forEach((span, index) => {
+            span.style.left = Math.random() * 100 + '%';
+            span.style.animationDuration = Math.floor(Math.random() * 10 + 15) + 's';
+            span.style.animationDelay = Math.random() * 5 + 's';
+            span.style.width = Math.random() * 30 + 10 + 'px';
+            span.style.height = span.style.width;
+        });
+
+        // Smooth scroll to top when switching tabs (optional)
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelector('.tab-content').scrollTop = 0;
+            });
+        });
+
+        // Auto-refresh data simulation
+        setInterval(() => {
+            // Simulate real-time data update
+            console.log('Refreshing profile data...');
+        }, 30000); // Refresh every 30 seconds
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,880 @@
+{% extends "Base/CreationBase.html" %}
+
+{% block title %}Schedule{% endblock %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/Creation/schedule.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+
+        <!-- Messages will appear here -->
+        <div id="messageContainer"></div>
+        <!-- Alert Messages -->
+        {% include "common/message.html" %}
+        <!-- Page Header -->
+        <div class="page-header animate__animated animate__fadeIn">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">Create Schedule</h1>
+                    <p class="page-subtitle">Add schedule to your academic curriculum</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="student-info">
+                        <div class="student-avatar">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h5 class="mb-1">{{ detail.name }}</h5>
+                        <p class="mb-0">{{ detail.position }} • College ID: {{ detail.college_id }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lecture Creation Form -->
+        <form id="scheduleForm">
+            {% csrf_token %}
+            <div class="form-card animate__animated animate__fadeIn">
+                <h3 class="form-section-title">Course Information</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="course" class="form-label">Course</label>
+                        <select class="form-select" id="course" required>
+                            <option value="all" selected disabled>Select Course</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }} {{ course.level }}
+                            </option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="semester" class="form-label">Semester</label>
+                        <select class="form-select" id="semester" disabled required>
+                            <option value="">Select Semester</option>
+                            <!-- result loaded here -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="button" class="btn btn-reset-objects" id="resetObjectsBtn">
+                        <i class="fas fa-redo me-2"></i>Reset Objects
+                    </button>
+                    <button type="button" class="btn btn-reset" id="resetBtn">
+                        <i class="fas fa-redo me-2"></i>Reset Form
+                    </button>
+                    <button type="button" class="btn btn-primary" id="filterBtn">
+                        <i class="fas fa-plus-circle me-2"></i>Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div class="main-container" id="scheduleContainer" style="display: none;">
+    <div class="container-header">
+        <h3>Subjects & Schedule Management</h3>
+    </div>
+
+    <div class="column-headers">
+        <div>Subject Name</div>
+        <div>Faculty Name</div>
+        <div>Room Name</div>
+    </div>
+
+    <div class="subjects-container" id="subjectsContainer">
+        <!-- result loaded here -->
+    </div>
+
+    <div class="global-status">
+        <div class="global-status-item">
+            <div class="global-status-color global-status-active"></div>
+            <span>Active Subject</span>
+        </div>
+        <div class="global-status-item">
+            <div class="global-status-color global-status-inactive"></div>
+            <span>Inactive Subject</span>
+        </div>
+    </div>
+</div>
+
+<!-- REST CONFIRMATION CONTAINER -->
+<div id="resetOverlay" class="reset-overlay">
+    <div class="reset-container">
+        <div class="reset-icon">🔄</div>
+        <div class="reset-message" id="resetMessage">
+            Do You Want to Reset Selected Details?<br>
+        </div>
+        <div class="reset-buttons">
+            <button class="reset-btn reset-cancel" onclick="hideResetConfirmation()">
+                Cancel
+            </button>
+            <button class="reset-btn reset-confirm" onclick="confirmResetObjects()">
+                Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const course = $("#course");
+    const semester = $("#semester");
+    const csrftoken = getCookie("csrftoken");
+    const scheduleContainer = $("#scheduleContainer");
+    const filterBtn = $("#filterBtn");
+
+    // Reset form function
+    $("#resetBtn").on("click", function () {
+        resetForm();
+    });
+
+    function resetForm() {
+        $("#scheduleForm")[0].reset();
+        if (scheduleContainer) {
+            scheduleContainer.empty();
+            scheduleContainer.hide();
+        }
+
+    };
+
+    // FOR HANDLE THE COURSE
+    course.on("change", function () {
+        $.ajax({
+            url: "/schedule/course_details/",
+            method: "GET",
+            data: {
+                course_id: course.val()
+            },
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                console.log(response)
+
+                semester.prop("disabled", false);
+
+                semester.empty();
+                semester.append('<option value="">Select Semester</option>')
+                for (let i=1; i<response.data.semesters+1; i++){
+                    semester.append(`<option value="${i}">Semester - ${i}</option>`);
+                }
+            },
+            error: function (xhr) {
+                errorShowing(xhr)
+            }
+        })
+    })
+
+    // FOR HANDLE THE GENERATE BUTTON
+    filterBtn.on("click", function () {
+        if (course.val() == "" || semester.val() == "") {
+            showMessage("Please Select Options !", "danger");
+            return;
+        }
+        $.ajax({
+            url: "/schedule/schedule_details/",
+            method: "GET",
+            data: {
+                course_id: course.val(),
+                semester: semester.val()
+            },
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                const subjectsContainer = $("#subjectsContainer");
+                subjectsContainer.empty();
+                scheduleContainer.show();
+
+                response.subjects.forEach((sub, index) => {
+
+                    let facultyOptions = sub.faculties
+                        .map(fal => `
+                                <option value="${fal.id}">
+                                    ${fal.name} ${fal.last_name ?? ''}
+                                </option>`).join('');
+
+                    let LabOptions = sub.labs
+                        .map(lab => `
+                                <option value="${lab.id}">
+                                    ${lab.name} ${lab.number}
+                                </option>`).join('');
+
+                    subjectsContainer.append(`
+                        <div class="subject-row" data-id="${sub.id}">
+                            <div class="subject-header">
+                                    <div class="subject-name">${sub.name}</div>
+
+                                    <div class="faculty-select-wrapper">
+                                        <select class="faculty-select" data-subject-id="${sub.id}">
+                                            <option value="" selected disabled>Select Faculty</option>
+                                            ${facultyOptions}
+                                        </select>
+                                    </div>
+
+                                    <div class="toggle-container">
+                                        <div class="lab-select-wrapper">
+                                        <select class="lab-select" data-subject-id="${sub.id}">
+                                            <option value="" selected disabled>Select Lab</option>
+                                            ${LabOptions}
+                                        </select>
+                                        </div>
+                                        <span class="expand-icon">▼</span>
+                                    </div>
+                                </div>
+
+                                <div class="schedule-container" id="schedule-${sub.id}"></div>
+                            </div>`);
+                });
+
+                slotCreation();
+
+                // Expand/collapse schedule functionality
+                document.querySelectorAll('.subject-header').forEach(header => {
+                    header.addEventListener('click', function (e) {
+                        // Don't trigger if clicking on these elements
+                        if (e.target.classList.contains('toggle-switch') ||
+                            e.target.classList.contains('toggle-slider') ||
+                            e.target.type === 'checkbox' ||
+                            e.target.classList.contains('faculty-select') ||
+                            e.target.classList.contains('faculty-select-wrapper') ||
+                            e.target.classList.contains('lab-select') ||
+                            e.target.classList.contains('lab-select-wrapper') ||
+                            e.target.closest('.faculty-select-wrapper') ||
+                            e.target.closest('.lab-select-wrapper')) {
+                            return;
+                        }
+
+                        const row = this.closest('.subject-row');
+                        const subjectId = row.dataset.id;
+                        const scheduleContainer = document.getElementById(`schedule-${subjectId}`);
+                        const expandIcon = this.querySelector('.expand-icon');
+
+                        // Toggle active class
+                        this.classList.toggle('active');
+
+                        // Toggle schedule visibility
+                        scheduleContainer.classList.toggle('expanded');
+
+                        // Rotate expand icon
+                        expandIcon.classList.toggle('expanded');
+                    });
+                });
+            },
+            error: function (xhr) {
+                errorShowing(xhr)
+            }
+        })
+    });
+
+    // FOR CREATING THE SLOTS
+    function slotCreation() {
+        $.ajax({
+            url: "/schedule/slots_details/",
+            method: "GET",
+            data: {
+                course_id: course.val(),
+                semester: semester.val()
+            },
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                console.log(response)
+                // Load schedules for existing subjects
+                document.querySelectorAll(`.subject-row`).forEach(row => {
+                    const subjectId = row.getAttribute("data-id");
+                    const scheduleContainer = document.getElementById(`schedule-${subjectId}`);
+                    const facultySelect = document.querySelector(`.faculty-select[data-subject-id="${subjectId}"]`)
+                    const labSelect = document.querySelector(`.lab-select[data-subject-id="${subjectId}"]`)
+                    facultyandLabDataFunc(subjectId, facultySelect.value, labSelect.value);
+                    facultySlots(subjectId)
+                    if (scheduleContainer) {
+                        scheduleContainer.innerHTML = generateScheduleHTML(subjectId, response);
+                    }
+                });
+
+                // Initial attachment for existing schedules
+                document.querySelectorAll('.schedule-container').forEach(container => {
+                    const subjectId = container.id.split('-')[1];
+                    attachScheduleListeners(subjectId, response.days, response.lecture);
+                });
+
+            },
+            error: function (xhr) {
+                errorShowing(xhr)
+            }
+        })
+    }
+    let facultyAndLabData = {};
+    // FOR CREATING THE FACULTY AND LAB DATA 
+    function facultyandLabDataFunc(subjectId, facultySelect, labSelect) {
+        if (!facultyAndLabData[subjectId]) {
+            facultyAndLabData[subjectId] = ["", ""];
+        }
+
+        facultyAndLabData[subjectId][0] = facultySelect;
+        facultyAndLabData[subjectId][1] = labSelect;
+        sessionStorage.setItem("facultyAndLabData", JSON.stringify(facultyAndLabData));
+    }
+
+    // FUNCTION FOR CREATING SLOTS
+    // Function to generate schedule HTML in ROW FORMAT
+    function generateScheduleHTML(subjectId, response) {
+        const scheduleData = response.scheduleData;
+        const timeSlots = response.lecture;
+        const days = response.days;
+        const dates = response.countList;
+
+        sessionStorage.setItem("scheduleData", JSON.stringify(scheduleData));
+        sessionStorage.setItem("lecture", JSON.stringify(timeSlots));
+        sessionStorage.setItem("days", JSON.stringify(days));
+        // Create day headers row
+        let html = `
+                <div class="day-header-row">
+                    <div class="day-header-cell" style="flex: 0.5; background: transparent; border: none;"></div>
+            `;
+
+        // Add day headers
+        days.forEach((day, index) => {
+            html += `
+                    <div class="day-header-cell">
+                        <div class="day-name">${day}</div>
+                        <div class="day-date">${dates[index]}</div>
+                    </div>
+                `;
+        });
+
+        html += `</div>`;
+
+        // Create schedule table
+        html += `<table class="schedule-table">`;
+
+        // Add table header
+        html += `<thead><tr>`;
+        html += `<th>Time Slot</th>`;
+        days.forEach(day => {
+            html += `<th>${day}</th>`;
+        });
+        html += `</tr></thead>`;
+
+        // Add table body with time slots
+        html += `<tbody>`;
+
+        timeSlots.forEach((time, timeIndex) => {
+            html += `<tr>`;
+            html += `<td class="time-cell">${time.slot}</td>`;
+
+            // Add schedule slots for each day
+            days.forEach((day, dayIndex) => {
+                const isFree = scheduleData[timeIndex] && scheduleData[timeIndex][dayIndex]["status"];
+                const slotId = scheduleData[timeIndex] && scheduleData[timeIndex][dayIndex]["id"];
+                const subId = scheduleData[timeIndex] && scheduleData[timeIndex][dayIndex]["subjectId"];
+                const { statusClass, titleText } = statusChange(parseInt(subjectId), subId, isFree);
+
+                html += `
+                        <td class="day-cell">
+                            <div class="schedule-slot ${statusClass}" 
+                                 data-time="${timeIndex}" 
+                                 data-day="${dayIndex}"
+                                 data-slot="${slotId}"
+                                 data-id="${subjectId}-${time.id}-${day}-${null}"
+                                 title="${day} ${time.slot}: ${titleText}">
+                            </div>
+                        </td>
+                    `;
+            });
+
+            html += `</tr>`;
+        });
+
+        html += `</tbody></table>`;
+
+        // Add status indicator
+        html += `
+                <div class="status-indicator">
+                    <div class="status-item">
+                        <div class="status-color status-free"></div>
+                        <span>Available Time Slot</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-color status-occupied"></div>
+                        <span>Class Scheduled</span>
+                    </div>
+                </div>
+                <div class="instructions">Click on time slot circles to toggle availability</div>
+            `;
+
+        return html;
+    }
+
+    // SIMPLE FUNCTION FOR CHANGE THE STATUS WITH CLASS
+    function statusChange(subjectId1, subjectId2, isFree) {
+        let statusClass = "free";
+        let titleText = "Available";
+
+        if (subjectId2) {
+            if (subjectId1 === subjectId2) {
+                if (isFree) {
+                    statusClass = 'free';
+                    titleText = 'Available';
+                } else {
+                    statusClass = 'occupied';
+                    titleText = 'Occupied';
+                }
+            } else {
+                statusClass = 'another';
+                titleText = 'Other Subject';
+            }
+        }
+        return { statusClass, titleText }
+    }
+
+    // Toggle schedule slot functionality
+    function attachScheduleListeners(subjectId, days, timeSlots) {
+        const scheduleContainer = document.getElementById(`schedule-${subjectId}`);
+        if (!scheduleContainer) return;
+
+        scheduleContainer.querySelectorAll('.schedule-slot').forEach(slot => {
+            slot.addEventListener('click', function () {
+                if (!this.classList.contains("another") &&
+                    !this.classList.contains("free") &&
+                    !this.classList.contains("faculty-free") &&
+                    !this.classList.contains("faculty-another") &&
+                    !this.classList.contains("room-free") &&
+                    !this.classList.contains("room-another") &&
+                    !this.classList.contains("room-faculty-another")) {
+                    let status = false;
+                    let title = "";
+                    if (this.classList.contains("room-faculty-free")) {
+                        this.classList.remove("room-faculty-free")
+                        this.classList.add("occupied")
+                        title = "Occupied"
+                    }
+                    // occupied
+                    else {
+                        this.classList.remove("occupied")
+                        let facultyStatus = this.dataset.facultyStatus;
+                        let labStatus = this.dataset.labStatus;
+                        status = true;
+
+                        if (facultyStatus === true && labStatus === true) {
+                            this.classList.add("room-faculty-free");
+                            title = "Combination free"
+                        } else if (facultyStatus === true && labStatus === false) {
+                            this.classList.add("faculty-free");
+                            title = "Faculty Free"
+                        } else if (facultyStatus === false && labStatus === true) {
+                            this.classList.add("room-free");
+                            title = "Room Free"
+                        } else {
+                            this.classList.add("free");
+                            title = "Available"
+                        }
+                    }
+
+                    // Update title
+                    const dayIndex = this.dataset.day;
+                    const timeIndex = this.dataset.time;
+                    const dayName = days[dayIndex];
+                    const timeSlot = timeSlots[timeIndex].slot;
+
+                    this.title = `${dayName} ${timeSlot}: ${title}`;
+
+                    const subId = (this.dataset.id).split("-")[0];
+                    const facId = (this.dataset.id).split("-")[3];
+                    const labId = (this.dataset.id).split("-")[4];
+                    const id = this.dataset.slot;
+                    // console.log(facId)
+                    let slotData = {
+                        available: status,
+                        subject: subId,
+                    }
+
+                    if (facId !== undefined && facId !== null && facId !== "" && facId !== "null") {
+                        slotData.faculty = facId
+                    }
+
+                    if (labId !== undefined && labId !== null && labId !== "" && labId !== "null") {
+                        slotData.lab = labId
+                    }
+
+                    changeSlot(id, slotData);
+                    // Add animation
+                    this.style.transform = 'scale(1.3)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                }
+            });
+        });
+    }
+
+    // FOR CHANGE THE SLOTS STATUS
+    function changeSlot(id, slotData) {
+        $.ajax({
+            url: `/schedule/${id}/`,
+            method: "PATCH",
+            headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(slotData),
+            success: function (response) {
+                slotCreation();
+                showMessage("Success", "success");
+            },
+            error: function (xhr) {
+                errorShowing(xhr)
+            }
+        });
+    }
+
+    // FOR CHANGING THE SLOTS ACCORDING TO FACULTY
+    $(document).on("change", ".faculty-select", function () {
+        let facultySelect = $(this).val();
+        let subjectId = $(this).data("subject-id");
+
+        if (!facultySelect) {
+            return;
+        }
+
+        let data = JSON.parse(sessionStorage.getItem("facultyAndLabData"))
+
+        data[subjectId] ??= ["", ""];
+
+        data[subjectId][0] = facultySelect
+        sessionStorage.setItem("facultyAndLabData", JSON.stringify(data));
+
+        facultySlots(subjectId);
+    })
+
+    // FOR CHANGING THE SLOTS ACCORDING TO LABS
+    $(document).on("change", ".lab-select", function () {
+        let labSelect = $(this).val();
+        let subjectId = $(this).data("subject-id");
+
+        if (!labSelect) {
+            return;
+        }
+
+        let data = JSON.parse(sessionStorage.getItem("facultyAndLabData"))
+
+        data[subjectId] ??= ["", ""];
+
+        data[subjectId][1] = labSelect
+        sessionStorage.setItem("facultyAndLabData", JSON.stringify(data));
+
+        facultySlots(subjectId);
+    })
+
+    function facultySlots(subjectId) {
+        let data = JSON.parse(sessionStorage.getItem("facultyAndLabData"));
+        let facultySelect = data[subjectId][0];
+        let labSelect = data[subjectId][1];
+
+        // Agar dono empty hain to return
+        if (!facultySelect && !labSelect) {
+            return;
+        }
+
+        console.log(facultySelect, labSelect)
+        $.ajax({
+            url: `/schedule/faculty_slot_details/`,
+            method: "GET",
+            data: {
+                faculty_id: facultySelect || '',
+                lab_id: labSelect || ''
+            },
+            headers: {
+                "X-CSRFToken": csrftoken,
+            },
+            success: function (response) {
+                console.log(response)
+                // Faculty ya lab ke according alag-alag call karein
+                if (facultySelect && labSelect) {
+                    changeScheduleStatusForFacultyAndLab(subjectId, facultySelect, labSelect, response);
+                } else {
+                    if (facultySelect) {
+                        changeScheduleStatusForFaculty(subjectId, facultySelect, response);
+                    }
+                    if (labSelect) {
+                        changeScheduleStatusForLab(subjectId, labSelect, response);
+                    }
+                }
+            },
+            error: function (xhr) {
+                errorShowing(xhr);
+            }
+        });
+    }
+
+    // Alag function faculty ke liye
+    function changeScheduleStatusForFaculty(subjectId, facultyId, response) {
+        const scheduleContainer = document.getElementById(`schedule-${subjectId}`);
+        const scheduleData = JSON.parse(sessionStorage.getItem("scheduleData"));
+        const timeSlots = JSON.parse(sessionStorage.getItem("lecture"));
+        const days = JSON.parse(sessionStorage.getItem("days"));
+        const facultyData = response.facultyData;
+        const facultyDataHas = response.facultyDataHas || false;
+
+        if (!scheduleContainer) return;
+
+        timeSlots.forEach(function (element1, timeIndex) {
+            days.forEach(function (element2, dayIndex) {
+                const realSlotId = scheduleData[timeIndex] && scheduleData[timeIndex][dayIndex]["id"];
+                let slot = scheduleContainer.querySelector(`.schedule-slot[data-slot="${realSlotId}"]`);
+
+                if (!slot) return;
+
+                // Update slot ID with faculty ID
+                slot.dataset.id = `${subjectId}-${element1.id || timeIndex}-${element2}-${facultyId || 'null'}`;
+
+                // Check faculty availability
+                if (facultyData[timeIndex] && facultyData[timeIndex][dayIndex]) {
+                    const facultyStatus = facultyData[timeIndex][dayIndex]["status"];
+                    let title = `${element2} ${element1.slot}: `;
+                    slot.dataset.labStatus = false;
+                    if (slot.classList.contains("faculty-free") ||
+                        slot.classList.contains("faculty-another") ||
+                        slot.classList.contains("free")) {
+                        slot.classList.remove("faculty-free", "faculty-another", "free");
+
+                        if (facultyStatus === true) {
+                            slot.classList.add("faculty-free");
+                            slot.dataset.facultyStatus = true;
+                            title += "Faculty Free";
+                        } else {
+                            slot.classList.add("faculty-another");
+                            slot.dataset.facultyStatus = false;
+                            title += "Faculty Selected";
+                        }
+                        slot.title = title;
+                    }
+                }
+            });
+        });
+    }
+
+    // Alag function lab ke liye
+    function changeScheduleStatusForLab(subjectId, labId, response) {
+        const scheduleContainer = document.getElementById(`schedule-${subjectId}`);
+        const scheduleData = JSON.parse(sessionStorage.getItem("scheduleData"));
+        const timeSlots = JSON.parse(sessionStorage.getItem("lecture"));
+        const days = JSON.parse(sessionStorage.getItem("days"));
+        const labData = response.labData;
+        const labDataHas = response.labDataHas || false;
+
+        if (!scheduleContainer) return;
+
+        timeSlots.forEach(function (element1, timeIndex) {
+            days.forEach(function (element2, dayIndex) {
+                const realSlotId = scheduleData[timeIndex] && scheduleData[timeIndex][dayIndex]["id"];
+                let slot = scheduleContainer.querySelector(`.schedule-slot[data-slot="${realSlotId}"]`);
+
+                if (!slot) return;
+
+                // Reset lab related classes
+                if (slot.classList.contains("room-free") ||
+                    slot.classList.contains("room-another")) {
+                    slot.classList.remove("room-free", "room-another");
+                    slot.classList.add("free");
+                }
+
+                // Check lab availability
+                if (labData[timeIndex] && labData[timeIndex][dayIndex]) {
+                    const labStatus = labData[timeIndex][dayIndex]["status"];
+
+                    let title = `${element2} ${element1.slot}: `;
+                    slot.dataset.facultyStatus = false;
+                    if (slot.classList.contains("room-free") ||
+                        slot.classList.contains("room-another") ||
+                        slot.classList.contains("free")) {
+                        slot.classList.remove("room-free", "room-another", "free");
+
+                        if (facultyStatus === true) {
+                            slot.classList.add("room-free");
+                            slot.dataset.facultyStatus = true;
+                            title += "Room Free";
+                        } else {
+                            slot.classList.add("room-another");
+                            slot.dataset.facultyStatus = false;
+                            title += "Room Selected";
+                        }
+                        slot.title = title;
+                    }
+                }
+            });
+        });
+    }
+
+    // Alag function faculty ke liye
+    function changeScheduleStatusForFacultyAndLab(subjectId, facultyId, labId, response) {
+        const scheduleContainer = document.getElementById(`schedule-${subjectId}`);
+        const scheduleData = JSON.parse(sessionStorage.getItem("scheduleData"));
+        const timeSlots = JSON.parse(sessionStorage.getItem("lecture"));
+        const days = JSON.parse(sessionStorage.getItem("days"));
+        const facultyData = response.facultyData;
+        const labData = response.labData;
+
+        if (!scheduleContainer) return;
+
+        timeSlots.forEach(function (element1, timeIndex) {
+            days.forEach(function (element2, dayIndex) {
+                const realSlotId = scheduleData[timeIndex] && scheduleData[timeIndex][dayIndex]["id"];
+                let slot = scheduleContainer.querySelector(`.schedule-slot[data-slot="${realSlotId}"]`);
+
+                if (!slot) return;
+
+                // Update slot ID with faculty ID
+                slot.dataset.id = `${subjectId}-${element1.id || timeIndex}-${element2}-${facultyId || 'null'}-${labId}`;
+
+                // Check faculty availability
+                if (facultyData[timeIndex] && facultyData[timeIndex][dayIndex] && labData[timeIndex] && labData[timeIndex][dayIndex]) {
+                    const facultyStatus = facultyData[timeIndex][dayIndex]["status"];
+                    const labStatus = labData[timeIndex][dayIndex]["status"]
+                    let title = `${element2} ${element1.slot}: `
+                    slot.dataset.facultyStatus = facultyStatus;
+                    slot.dataset.labStatus = labStatus;
+
+                    if (slot.classList.contains("faculty-free") ||
+                        slot.classList.contains("faculty-another") ||
+                        slot.classList.contains("room-free") ||
+                        slot.classList.contains("room-another") ||
+                        slot.classList.contains("room-faculty-free") ||
+                        slot.classList.contains("room-faculty-another") ||
+                        slot.classList.contains("free")) {
+                        slot.classList.remove("free", "faculty-free", "faculty-another", "room-free", "room-another", "room-faculty-free", "room-faculty-another");
+
+                        if (facultyStatus === true && labStatus === true) {
+                            slot.classList.add("room-faculty-free");
+                            title += "Free Combination"
+                        } else if (facultyStatus === true && labStatus === false) {
+                            slot.classList.add("faculty-free");
+                            title += "Faculty Free"
+                        } else if (facultyStatus === false && labStatus === true) {
+                            slot.classList.add("room-free");
+                            title += "Room Free"
+                        } else {
+                            slot.classList.add("room-faculty-another");
+                            title += "Selected Combination"
+                        }
+                        slot.title = title;
+                    }
+                }
+            });
+        });
+    }
+
+    // Show reset confirmation
+    $("#resetObjectsBtn").on("click", function () {
+        $('#resetOverlay').addClass('active');
+    })
+
+    // Hide reset confirmation
+    function hideResetConfirmation() {
+        $('#resetOverlay').removeClass('active');
+    }
+
+    // Close when clicking outside
+    $('#resetOverlay').on('click', function (e) {
+        if (e.target === this) {
+            hideResetConfirmation();
+        }
+    });
+
+    // Close with Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            hideResetConfirmation();
+        }
+    });
+
+    function confirmResetObjects() {
+
+        $.ajax({
+            url: "/schedule/reset/",
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify({
+                course_id: course.val(),
+                semester: semester.val()
+            }),
+            success: function (response) {
+                showMessage(response.success, "success");
+            },
+            error: function (xhr) {
+                errorShowing(xhr)
+            }
+        })
+        hideResetConfirmation();
+        resetForm();
+    }
+
+    function errorShowing(xhr) {
+        let errorMessage = "An error occurred while uploading the details.";
+
+        if (xhr.status === 404) {
+            errorMessage = "Server endpoint not found. Please check the URL.";
+        } else if (xhr.responseJSON && xhr.responseJSON.error) {
+            errorMessage = xhr.responseJSON.error;
+        } else if (xhr.responseText) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.detail) {
+                    errorMessage = response.detail;
+                } else if (response.error) {
+                    errorMessage = response.error;
+                }
+            } catch (e) {
+                errorMessage = xhr.responseText.substring(0, 100);
+            }
+        }
+
+        showMessage(errorMessage, "danger");
+        // resetForm();
+    }
+
+    // Function to show alert messages
+    function showMessage(message, type) {
+        // Remove existing alerts
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => {
+            alert.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => alert.remove(), 300);
+        });
+
+        // Create new alert
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        alertDiv.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+        document.body.appendChild(alertDiv);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            alertDiv.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => alertDiv.remove(), 300);
+        }, 3000);
+    }
+</script>
+{% endblock %}

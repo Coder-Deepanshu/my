@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q, Sum
-from .models import Student, Faculty, Course, Attendance,Admin, FeeStructure, FeePayment # Import the new Attendance model
+from .models import Student,Course, Attendance, FeeStructure
 from django.http import JsonResponse
 import json # For handling JSON data from AJAX requests
 from django.db.models.functions import Coalesce
@@ -25,142 +25,194 @@ def home(request):
 def feature(request):
     return render(request,'Home/feature.html')
 
-def success_stories(request):
-    return render(request,'Home/success_stories.html')
+def about(request):
+    return render(request,'Home/about.html')
 
 def contact(request):
     return render(request,'Home/contact.html')
 
-def pricing(request):
-    return render(request,'Home/pricing.html')
-
-def demo(request):
-    return render(request,'Home/demo.html')
+def course(request):
+    return render(request,'Home/course.html')
 
 def enroll(request):
     return render(request,'Home/enroll.html')
 
-def new_enroll(request):
-    return render(request,'Home/new_enroll.html')
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from .models import Student, Staff, SuperAdmin
+from django.contrib.auth.models import User
 
-import random
-from .models import *
-from .models import  OTPVerification
-from newapp.utils import special_login_permission, special_login_detail
-from django.views.decorators.cache import never_cache
+class login(viewsets.ViewSet):
 
+    @action(detail=False, methods=['get'])
+    def import_page(self, request): 
+        return render(request, 'Home/login.html')
 
-# views.py me
-def special_login(request):
-    start = True
-    permission = special_login_permission(start)
-    
-    if permission == 'Access':
-        html_page = 'Home/special_login.html'
-    elif permission == 'Block':
-        html_page = 'faculty/attendance/Block.html'
-    
-    if request.method == 'POST':
-        data = json.loads(request.body)
+    @action(detail=False, methods=['get'])
+    def verify_college_id(self, request):
+        college_id = request.GET.get("college_id")
+        request.session['college_id'] = college_id
+        person = ''
+        
         try:
-            username = data.get('username')
-            password = data.get('password')
-            detect_username, detect_password = special_login_detail(start)  # ✅ Yeh line change karo
+            obj = Student.objects.get(college_id = college_id)
+            person = "Student"
             
-            if str(username) == detect_username and str(password) == detect_password:  
-                request.session['username1'] = username
-                request.session['admin_college_id'] = 'AD2025**'  
-                request.session['role'] = 'SpecialLogin'
-                return JsonResponse({'success': 'Login Successfully!'})
-            else:
-                return JsonResponse({'error': 'Invalid credentials!'})
-        except Exception as e:
-            return JsonResponse({'error': f'An error occurred: {str(e)}'})
-    
-    return render(request, html_page)
+        except Student.DoesNotExist:
+            try:
+                obj = Staff.objects.get(college_id = college_id)
+                person = obj.position.role
 
+            except Staff.DoesNotExist:
+                try:
+                    obj = SuperAdmin.objects.get(college_id = college_id)
+                    person = obj.position.role
+       
+                except SuperAdmin.DoesNotExist:
+                    person = "Other"
+                    return JsonResponse({"person": person})        
+        request.session['person'] = person
+        return JsonResponse({'person': person})
 
-def verify_collegeID(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        try:
-            userID = data.get('userID')
-            prefix = userID[:2]
-            
-            if prefix == 'AD':
-                admin = Admin.objects.filter(college_id=userID)
-                if admin.exists():
-                    request.session['userID'] = userID
-                    return JsonResponse({'success': "Verified"})
+    @action(detail=False, methods=['get'])
+    def verify_login_details(self, request):
+        college_id = request.session.get("college_id")
+        person = request.session.get("person")
+        username = request.GET.get("username")
+        password = request.GET.get("password")
+        user = ''
+        
+        if person == "Student":
+            try:
+                member = Student.objects.get(college_id = college_id)
+                user = member.user
+                page = "/facultyDashboard/"
+            except Student.DoesNotExist:
+                return JsonResponse({"error": "User Does'nt Exits with this Info."})
+        else:
+            try:
+                if person == "Admin":
+                    member = Staff.objects.get(college_id = college_id, position__role = person)
+                    user = member.user
+                    page = "/adminDashboard/"
+                elif person == "Faculty":
+                    member = Staff.objects.get(college_id = college_id, position__role = person)
+                    user = member.user
+                    page = "/facultyDashboard/"
+                elif person == "Superadmin":
+                    member = SuperAdmin.objects.get(college_id = college_id, position__role = person)
+                    user = member.user
+                    page = "/facultyDashboard/"
                 else:
-                    return JsonResponse({'error': 'ID not exists'}) 
+                    return JsonResponse({"error": "User Does'nt Exits with this Info."})
                 
-            elif prefix == 'GK':
-                faculty = Faculty.objects.filter(college_id=userID)
-                if faculty.exists():
-                    request.session['userID'] = userID
-                    return JsonResponse({'success': "Verified"})
-                else:
-                    return JsonResponse({'error': 'ID not exists'}) 
-
-            elif prefix == 'ST':
-                student = Student.objects.filter(college_id=userID)
-                if student.exists():
-                    request.session['userID'] = userID
-                    return JsonResponse({'success': "Verified"})
-                else:
-                    return JsonResponse({'error': 'ID not exists'})   
+            except Staff.DoesNotExist:
+                    return JsonResponse({"error": "User Does'nt Exits with this Info."})
+                
+        try:
+            if username == user.username and password == member.password:
+                return JsonResponse({"page": page})
             else:
-                return JsonResponse({'error': 'Invalid College ID'})  
-                    
+                return JsonResponse({"error": f"Invalid Login Credentials!"})
         except Exception as e:
-            return JsonResponse({'error': f'An error Occurred: {str(e)}'})
-    else:
-        return JsonResponse({'error': 'Method Not Found'})
+            return JsonResponse({"error": f"An error Occured: {str(e)}"})
 
-def generate_device_fingerprint(request):
-    # Collect various device information
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
-    accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
-    accept_encoding = request.META.get('HTTP_ACCEPT_ENCODING', '')
+from django.shortcuts import render
+from .models import User
+class Dashboard(viewsets.ViewSet):
+    @action(detail=False, methods=["get"])
+    def faculty(request):
+        return render(request, "Dashboard/facultyDashboard.html")
+    @action(detail=False, methods=["get"])
+    def student(request):
+        return render(request, "Dashboard/studentDashboard.html")
+    @action(detail=False, methods=["get"])
+    def admin(request):
+        return render(request, "Dashboard/adminDashboard.html")
+
+
+
+# def verify_collegeID(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         try:
+#             userID = data.get('userID')
+#             prefix = userID[:2]
+            
+#             if prefix == 'AD':
+#                 admin = Admin.objects.filter(college_id=userID)
+#                 if admin.exists():
+#                     request.session['userID'] = userID
+#                     return JsonResponse({'success': "Verified"})
+#                 else:
+#                     return JsonResponse({'error': 'ID not exists'}) 
+                
+#             elif prefix == 'GK':
+#                 faculty = Faculty.objects.filter(college_id=userID)
+#                 if faculty.exists():
+#                     request.session['userID'] = userID
+#                     return JsonResponse({'success': "Verified"})
+#                 else:
+#                     return JsonResponse({'error': 'ID not exists'}) 
+
+#             elif prefix == 'ST':
+#                 student = Student.objects.filter(college_id=userID)
+#                 if student.exists():
+#                     request.session['userID'] = userID
+#                     return JsonResponse({'success': "Verified"})
+#                 else:
+#                     return JsonResponse({'error': 'ID not exists'})   
+#             else:
+#                 return JsonResponse({'error': 'Invalid College ID'})  
+                    
+#         except Exception as e:
+#             return JsonResponse({'error': f'An error Occurred: {str(e)}'})
+#     else:
+#         return JsonResponse({'error': 'Method Not Found'})
+
+# def generate_device_fingerprint(request):
+#     # Collect various device information
+#     user_agent = request.META.get('HTTP_USER_AGENT', '')
+#     accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
+#     accept_encoding = request.META.get('HTTP_ACCEPT_ENCODING', '')
     
-    # Screen resolution (client side se milega)
-    screen_resolution = request.POST.get('screen_res', '')  # JavaScript se bhejna hoga
+#     # Screen resolution (client side se milega)
+#     screen_resolution = request.POST.get('screen_res', '')  # JavaScript se bhejna hoga
     
-    # Timezone
-    timezone = request.POST.get('timezone', '')  # JavaScript se bhejna hoga
+#     # Timezone
+#     timezone = request.POST.get('timezone', '')  # JavaScript se bhejna hoga
     
-    # Platform information
-    platform_info = {
-        'system': platform.system(),
-        'release': platform.release(),
-        'version': platform.version(),
-        'architecture': platform.architecture()[0],
-        'processor': platform.processor(),
-    }
+#     # Platform information
+#     platform_info = {
+#         'system': platform.system(),
+#         'release': platform.release(),
+#         'version': platform.version(),
+#         'architecture': platform.architecture()[0],
+#         'processor': platform.processor(),
+#     }
     
-    # Network information
-    hostname = socket.gethostname()
-    mac_address = ':'.join(['{:02x}'.format((uuid.getnode() >> elements) & 0xff) 
-                           for elements in range(0,8*6,8)][::-1])
+#     # Network information
+#     hostname = socket.gethostname()
+#     mac_address = ':'.join(['{:02x}'.format((uuid.getnode() >> elements) & 0xff) 
+#                            for elements in range(0,8*6,8)][::-1])
     
-    # Combine all data
-    fingerprint_data = {
-        'user_agent': user_agent,
-        'accept_language': accept_language,
-        'accept_encoding': accept_encoding,
-        'screen_resolution': screen_resolution,
-        'timezone': timezone,
-        'platform': platform_info,
-        'hostname': hostname,
-        'mac_address': mac_address,
-    }
+#     # Combine all data
+#     fingerprint_data = {
+#         'user_agent': user_agent,
+#         'accept_language': accept_language,
+#         'accept_encoding': accept_encoding,
+#         'screen_resolution': screen_resolution,
+#         'timezone': timezone,
+#         'platform': platform_info,
+#         'hostname': hostname,
+#         'mac_address': mac_address,
+#     }
     
-    # Create hash
-    fingerprint_string = json.dumps(fingerprint_data, sort_keys=True)
-    device_id = hashlib.sha256(fingerprint_string.encode()).hexdigest()
+#     # Create hash
+#     fingerprint_string = json.dumps(fingerprint_data, sort_keys=True)
+#     device_id = hashlib.sha256(fingerprint_string.encode()).hexdigest()
     
-    return device_id
+#     return device_id
 
 # get client_ip address
 def get_client_ip(request):
@@ -199,2814 +251,916 @@ def send_otp_email(user_email, otp):
         print(f"📧 Email skipped: {str(e)}")
     return True
 
-def login_view(request):
-    if request.method == 'POST':
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            user_id = request.session.get('userID')
-            fingerprint_id = request.POST.get('fingerprint')
-            role = request.POST.get('role')
-            ip = get_client_ip(request)
+# def login_view(request):
+#     if request.method == 'POST':
+#         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+#             username = request.POST.get('username')
+#             password = request.POST.get('password')
+#             user_id = request.session.get('userID')
+#             fingerprint_id = request.POST.get('fingerprint')
+#             role = request.POST.get('role')
+#             ip = get_client_ip(request)
             
-            if not username or not password :
-                return JsonResponse({
-                    'success': False,
-                    'error': 'Please fill all the fields'
-                })
+#             if not username or not password :
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': 'Please fill all the fields'
+#                 })
             
-            try:
-                if role == 'admin':
-                    admin = Admin.objects.filter(email=username)
-                    if admin.exists():
-                        admin_detail = admin.first()
-                        filter_user_id = admin_detail.college_id
+#             try:
+#                 if role == 'admin':
+#                     admin = Admin.objects.filter(email=username)
+#                     if admin.exists():
+#                         admin_detail = admin.first()
+#                         filter_user_id = admin_detail.college_id
                         
-                        if user_id == filter_user_id:
-                            filter_password = admin_detail.phone
-                            if filter_password == password:
-                                # Get or create UserDetail object
-                                user_detail, created = UserDetail.objects.get_or_create(
-                                    username=username,
-                                    defaults={
-                                        'user_id': user_id,
-                                        'password': password,
-                                        'email': username
-                                    }
-                                )
+#                         if user_id == filter_user_id:
+#                             filter_password = admin_detail.phone
+#                             if filter_password == password:
+#                                 # Get or create UserDetail object
+#                                 user_detail, created = UserDetail.objects.get_or_create(
+#                                     username=username,
+#                                     defaults={
+#                                         'user_id': user_id,
+#                                         'password': password,
+#                                         'email': username
+#                                     }
+#                                 )
                                 
-                                # Check device fingerprint
-                                existing_fp = DeviceFingerprint.objects.filter(
-                                    user=user_detail,
-                                    fingerprint=fingerprint_id
-                                ).first()
+#                                 # Check device fingerprint
+#                                 existing_fp = DeviceFingerprint.objects.filter(
+#                                     user=user_detail,
+#                                     fingerprint=fingerprint_id
+#                                 ).first()
                                 
-                                if existing_fp:
-                                    # Normal login - trusted device
-                                    existing_fp.ip_address = ip
-                                    existing_fp.last_login = timezone.now()
-                                    existing_fp.is_suspicious = False
-                                    existing_fp.save()
+#                                 if existing_fp:
+#                                     # Normal login - trusted device
+#                                     existing_fp.ip_address = ip
+#                                     existing_fp.last_login = timezone.now()
+#                                     existing_fp.is_suspicious = False
+#                                     existing_fp.save()
                                     
-                                    # Set session data
-                                    request.session['username1'] = f"{admin_detail.name} {admin_detail.last_name}"
-                                    request.session['admin_college_id'] = user_id 
-                                    request.session['role'] = role
+#                                     # Set session data
+#                                     request.session['username1'] = f"{admin_detail.name} {admin_detail.last_name}"
+#                                     request.session['admin_college_id'] = user_id 
+#                                     request.session['role'] = role
                                     
-                                    return JsonResponse({
-                                        'success': True,
-                                        'message': f'Welcome {admin_detail.name} {admin_detail.last_name}!',
-                                        'redirect_url': '/Admin/Dashboard/',
-                                        'otp_required': False
-                                    })
-                                else:
-                                    # New/suspicious device - send OTP
-                                    otp = str(random.randint(100000, 999999))
+#                                     return JsonResponse({
+#                                         'success': True,
+#                                         'message': f'Welcome {admin_detail.name} {admin_detail.last_name}!',
+#                                         'redirect_url': '/Admin/Dashboard/',
+#                                         'otp_required': False
+#                                     })
+#                                 else:
+#                                     # New/suspicious device - send OTP
+#                                     otp = str(random.randint(100000, 999999))
                                     
-                                    # Create OTP with UserDetail object
-                                    OTPVerification.objects.create(
-                                        user=user_detail,
-                                        otp_code=otp,
-                                        is_verified=False
-                                    )
+#                                     # Create OTP with UserDetail object
+#                                     OTPVerification.objects.create(
+#                                         user=user_detail,
+#                                         otp_code=otp,
+#                                         is_verified=False
+#                                     )
                                     
-                                    # Send OTP email with SSL fix
-                                    email_sent = send_otp_email(username, otp)
+#                                     # Send OTP email with SSL fix
+#                                     email_sent = send_otp_email(username, otp)
                                     
-                                    if email_sent:
-                                        # Store verification data in session
-                                        request.session['verify_user'] = username
-                                        request.session['verify_role'] = role
-                                        request.session['verify_fingerprint'] = fingerprint_id
-                                        request.session['verify_ip'] = ip
+#                                     if email_sent:
+#                                         # Store verification data in session
+#                                         request.session['verify_user'] = username
+#                                         request.session['verify_role'] = role
+#                                         request.session['verify_fingerprint'] = fingerprint_id
+#                                         request.session['verify_ip'] = ip
                                         
-                                        return JsonResponse({
-                                            'success': True,
-                                            'message': 'OTP sent to your email',
-                                            'redirect_url': '/verify_otp/',
-                                            'otp_required': True
-                                        })
-                                    else:
-                                        return JsonResponse({
-                                            'success': False,
-                                            'error': 'Failed to send OTP. Please try again.'
-                                        })
-                            else:
-                                return JsonResponse({
-                                    'success': False,
-                                    'error': 'Invalid Password'
-                                })
-                        else:
-                            return JsonResponse({
-                                'success': False,
-                                'error': 'Invalid College ID'
-                            })
-                    else:
-                        return JsonResponse({
-                            'success': False,
-                            'error': 'Invalid Credentials'
-                        })
+#                                         return JsonResponse({
+#                                             'success': True,
+#                                             'message': 'OTP sent to your email',
+#                                             'redirect_url': '/verify_otp/',
+#                                             'otp_required': True
+#                                         })
+#                                     else:
+#                                         return JsonResponse({
+#                                             'success': False,
+#                                             'error': 'Failed to send OTP. Please try again.'
+#                                         })
+#                             else:
+#                                 return JsonResponse({
+#                                     'success': False,
+#                                     'error': 'Invalid Password'
+#                                 })
+#                         else:
+#                             return JsonResponse({
+#                                 'success': False,
+#                                 'error': 'Invalid College ID'
+#                             })
+#                     else:
+#                         return JsonResponse({
+#                             'success': False,
+#                             'error': 'Invalid Credentials'
+#                         })
                 
-                # Faculty and student roles same structure mein rahenge
-                elif role == 'faculty':
-                    faculty = Faculty.objects.filter(email=username)
-                    if faculty.exists():
-                        faculty_detail = faculty.first()
-                        filter_user_id = faculty_detail.college_id
+#                 # Faculty and student roles same structure mein rahenge
+#                 elif role == 'faculty':
+#                     faculty = Faculty.objects.filter(email=username)
+#                     if faculty.exists():
+#                         faculty_detail = faculty.first()
+#                         filter_user_id = faculty_detail.college_id
                         
-                        if user_id == filter_user_id:
-                            filter_password = faculty_detail.phone
-                            if filter_password == password:
-                                user_detail, created = UserDetail.objects.get_or_create(
-                                    username=username,
-                                    defaults={
-                                        'user_id': user_id,
-                                        'password': password,
-                                        'email': username
-                                    }
-                                )
+#                         if user_id == filter_user_id:
+#                             filter_password = faculty_detail.phone
+#                             if filter_password == password:
+#                                 user_detail, created = UserDetail.objects.get_or_create(
+#                                     username=username,
+#                                     defaults={
+#                                         'user_id': user_id,
+#                                         'password': password,
+#                                         'email': username
+#                                     }
+#                                 )
                                 
-                                existing_fp = DeviceFingerprint.objects.filter(
-                                    user=user_detail,
-                                    fingerprint=fingerprint_id
-                                ).first()
+#                                 existing_fp = DeviceFingerprint.objects.filter(
+#                                     user=user_detail,
+#                                     fingerprint=fingerprint_id
+#                                 ).first()
                                 
-                                if existing_fp:
-                                    request.session['username2'] = f"{faculty_detail.name} {faculty_detail.last_name}"
-                                    request.session['faculty_college_id'] = user_id 
-                                    request.session['role'] = role
+#                                 if existing_fp:
+#                                     request.session['username2'] = f"{faculty_detail.name} {faculty_detail.last_name}"
+#                                     request.session['faculty_college_id'] = user_id 
+#                                     request.session['role'] = role
                                     
-                                    return JsonResponse({
-                                        'success': True,
-                                        'message': f'Welcome {faculty_detail.name} {faculty_detail.last_name}!',
-                                        'redirect_url': '/Faculty/Dashboard/',
-                                        'otp_required': False
-                                    })
-                                else:
-                                    otp = str(random.randint(100000, 999999))
-                                    OTPVerification.objects.create(
-                                        user=user_detail,
-                                        otp_code=otp,
-                                        is_verified=False
-                                    )
+#                                     return JsonResponse({
+#                                         'success': True,
+#                                         'message': f'Welcome {faculty_detail.name} {faculty_detail.last_name}!',
+#                                         'redirect_url': '/Faculty/Dashboard/',
+#                                         'otp_required': False
+#                                     })
+#                                 else:
+#                                     otp = str(random.randint(100000, 999999))
+#                                     OTPVerification.objects.create(
+#                                         user=user_detail,
+#                                         otp_code=otp,
+#                                         is_verified=False
+#                                     )
                                     
-                                    email_sent = send_otp_email(username, otp)
+#                                     email_sent = send_otp_email(username, otp)
                                     
-                                    if email_sent:
-                                        request.session['verify_user'] = username
-                                        request.session['verify_role'] = role
-                                        request.session['verify_fingerprint'] = fingerprint_id
-                                        request.session['verify_ip'] = ip
+#                                     if email_sent:
+#                                         request.session['verify_user'] = username
+#                                         request.session['verify_role'] = role
+#                                         request.session['verify_fingerprint'] = fingerprint_id
+#                                         request.session['verify_ip'] = ip
                                         
-                                        return JsonResponse({
-                                            'success': True,
-                                            'message': 'OTP sent to your email',
-                                            'redirect_url': '/verify_otp/',
-                                            'otp_required': True
-                                        })
-                                    else:
-                                        return JsonResponse({
-                                            'success': False,
-                                            'error': 'Failed to send OTP. Please try again.'
-                                        })
-                            else:
-                                return JsonResponse({
-                                    'success': False,
-                                    'error': 'Invalid Password'
-                                })
-                        else:
-                            return JsonResponse({
-                                'success': False,
-                                'error': 'Invalid College ID'
-                            })
-                    else:
-                        return JsonResponse({
-                            'success': False,
-                            'error': 'Invalid Credentials'
-                        })
+#                                         return JsonResponse({
+#                                             'success': True,
+#                                             'message': 'OTP sent to your email',
+#                                             'redirect_url': '/verify_otp/',
+#                                             'otp_required': True
+#                                         })
+#                                     else:
+#                                         return JsonResponse({
+#                                             'success': False,
+#                                             'error': 'Failed to send OTP. Please try again.'
+#                                         })
+#                             else:
+#                                 return JsonResponse({
+#                                     'success': False,
+#                                     'error': 'Invalid Password'
+#                                 })
+#                         else:
+#                             return JsonResponse({
+#                                 'success': False,
+#                                 'error': 'Invalid College ID'
+#                             })
+#                     else:
+#                         return JsonResponse({
+#                             'success': False,
+#                             'error': 'Invalid Credentials'
+#                         })
                 
-                elif role == 'student':
-                    student = Student.objects.filter(email=username)
-                    if student.exists():
-                        student_detail = student.first()
-                        filter_user_id = student_detail.college_id
+#                 elif role == 'student':
+#                     student = Student.objects.filter(email=username)
+#                     if student.exists():
+#                         student_detail = student.first()
+#                         filter_user_id = student_detail.college_id
                         
-                        if user_id == filter_user_id:
-                            filter_password = student_detail.phone
-                            if filter_password == password:
-                                user_detail, created = UserDetail.objects.get_or_create(
-                                    username=username,
-                                    defaults={
-                                        'user_id': user_id,
-                                        'password': password,
-                                        'email': username
-                                    }
-                                )
+#                         if user_id == filter_user_id:
+#                             filter_password = student_detail.phone
+#                             if filter_password == password:
+#                                 user_detail, created = UserDetail.objects.get_or_create(
+#                                     username=username,
+#                                     defaults={
+#                                         'user_id': user_id,
+#                                         'password': password,
+#                                         'email': username
+#                                     }
+#                                 )
                                 
-                                existing_fp = DeviceFingerprint.objects.filter(
-                                    user=user_detail,
-                                    fingerprint=fingerprint_id
-                                ).first()
+#                                 existing_fp = DeviceFingerprint.objects.filter(
+#                                     user=user_detail,
+#                                     fingerprint=fingerprint_id
+#                                 ).first()
                                 
-                                if existing_fp:
-                                    request.session['username3'] = f"{student_detail.name} {student_detail.last_name}"
-                                    request.session['student_college_id'] = user_id 
-                                    request.session['role'] = role
+#                                 if existing_fp:
+#                                     request.session['username3'] = f"{student_detail.name} {student_detail.last_name}"
+#                                     request.session['student_college_id'] = user_id 
+#                                     request.session['role'] = role
                                     
-                                    return JsonResponse({
-                                        'success': True,
-                                        'message': f'Welcome {student_detail.name} {student_detail.last_name}!',
-                                        'redirect_url': '/Student/Dashboard/',
-                                        'otp_required': False
-                                    })
-                                else:
-                                    otp = str(random.randint(100000, 999999))
-                                    OTPVerification.objects.create(
-                                        user=user_detail,
-                                        otp_code=otp,
-                                        is_verified=False
-                                    )
+#                                     return JsonResponse({
+#                                         'success': True,
+#                                         'message': f'Welcome {student_detail.name} {student_detail.last_name}!',
+#                                         'redirect_url': '/Student/Dashboard/',
+#                                         'otp_required': False
+#                                     })
+#                                 else:
+#                                     otp = str(random.randint(100000, 999999))
+#                                     OTPVerification.objects.create(
+#                                         user=user_detail,
+#                                         otp_code=otp,
+#                                         is_verified=False
+#                                     )
                                     
-                                    email_sent = send_otp_email(username, otp)
+#                                     email_sent = send_otp_email(username, otp)
                                     
-                                    if email_sent:
-                                        request.session['verify_user'] = username
-                                        request.session['verify_role'] = role
-                                        request.session['verify_fingerprint'] = fingerprint_id
-                                        request.session['verify_ip'] = ip
+#                                     if email_sent:
+#                                         request.session['verify_user'] = username
+#                                         request.session['verify_role'] = role
+#                                         request.session['verify_fingerprint'] = fingerprint_id
+#                                         request.session['verify_ip'] = ip
                                         
-                                        return JsonResponse({
-                                            'success': True,
-                                            'message': 'OTP sent to your email',
-                                            'redirect_url': '/verify_otp/',
-                                            'otp_required': True
-                                        })
-                                    else:
-                                        return JsonResponse({
-                                            'success': False,
-                                            'error': 'Failed to send OTP. Please try again.'
-                                        })
-                            else:
-                                return JsonResponse({
-                                    'success': False,
-                                    'error': 'Invalid Password'
-                                })
-                        else:
-                            return JsonResponse({
-                                'success': False,
-                                'error': 'Invalid College ID'
-                            })
-                    else:
-                        return JsonResponse({
-                            'success': False,
-                            'error': 'Invalid Credentials'
-                        })
+#                                         return JsonResponse({
+#                                             'success': True,
+#                                             'message': 'OTP sent to your email',
+#                                             'redirect_url': '/verify_otp/',
+#                                             'otp_required': True
+#                                         })
+#                                     else:
+#                                         return JsonResponse({
+#                                             'success': False,
+#                                             'error': 'Failed to send OTP. Please try again.'
+#                                         })
+#                             else:
+#                                 return JsonResponse({
+#                                     'success': False,
+#                                     'error': 'Invalid Password'
+#                                 })
+#                         else:
+#                             return JsonResponse({
+#                                 'success': False,
+#                                 'error': 'Invalid College ID'
+#                             })
+#                     else:
+#                         return JsonResponse({
+#                             'success': False,
+#                             'error': 'Invalid Credentials'
+#                         })
                 
-            except Exception as e:
-                return JsonResponse({
-                    'success': False,
-                    'error': f'An error occurred: {str(e)}'
-                })
+#             except Exception as e:
+#                 return JsonResponse({
+#                     'success': False,
+#                     'error': f'An error occurred: {str(e)}'
+#                 })
         
-        else:
-            messages.error(request, "Invalid request method")
-            return redirect('login')
+#         else:
+#             messages.error(request, "Invalid request method")
+#             return redirect('login')
     
-    return render(request, 'Home/login.html')
+#     return render(request, 'Home/login.html')
 
-def verify_otp_view(request):
-    if request.method == 'GET':
-        username = request.session.get('verify_user')
-        return render(request, 'verify_otp.html', {'user_email': username})
+# def verify_otp_view(request):
+#     if request.method == 'GET':
+#         username = request.session.get('verify_user')
+#         return render(request, 'verify_otp.html', {'user_email': username})
     
-    elif request.method == 'POST':
-        entered_otp = request.POST.get('otp')
-        username = request.session.get('verify_user')
-        role = request.session.get('verify_role')
-        fingerprint = request.session.get('verify_fingerprint')
-        ip = request.session.get('verify_ip')
+#     elif request.method == 'POST':
+#         entered_otp = request.POST.get('otp')
+#         username = request.session.get('verify_user')
+#         role = request.session.get('verify_role')
+#         fingerprint = request.session.get('verify_fingerprint')
+#         ip = request.session.get('verify_ip')
         
-        if not username or not entered_otp:
-            messages.error(request, "Invalid OTP verification request")
-            return redirect('login')
+#         if not username or not entered_otp:
+#             messages.error(request, "Invalid OTP verification request")
+#             return redirect('login')
         
-        try:
-            print(f"Verifying OTP: {entered_otp} for user: {username}")
+#         try:
+#             print(f"Verifying OTP: {entered_otp} for user: {username}")
             
-            user_detail = UserDetail.objects.get(username=username)
+#             user_detail = UserDetail.objects.get(username=username)
             
-            otp_record = OTPVerification.objects.filter(
-                user=user_detail,
-                otp_code=entered_otp, 
-                is_verified=False
-            ).order_by('-created_at').first()
+#             otp_record = OTPVerification.objects.filter(
+#                 user=user_detail,
+#                 otp_code=entered_otp, 
+#                 is_verified=False
+#             ).order_by('-created_at').first()
             
-            print(f"OTP record found: {otp_record}")
+#             print(f"OTP record found: {otp_record}")
             
-            if otp_record:
-                if not otp_record.is_expired():
-                    otp_record.is_verified = True
-                    otp_record.save()
+#             if otp_record:
+#                 if not otp_record.is_expired():
+#                     otp_record.is_verified = True
+#                     otp_record.save()
                     
-                    DeviceFingerprint.objects.create(
-                        user=user_detail,
-                        fingerprint=fingerprint,
-                        ip_address=ip,
-                        last_login=timezone.now(),
-                        is_suspicious=False
-                    )
+#                     DeviceFingerprint.objects.create(
+#                         user=user_detail,
+#                         fingerprint=fingerprint,
+#                         ip_address=ip,
+#                         last_login=timezone.now(),
+#                         is_suspicious=False
+#                     )
                     
-                    if role == 'admin':
-                        admin = Admin.objects.get(email=username)
-                        request.session['username1'] = f"{admin.name} {admin.last_name}"
-                        request.session['admin_college_id'] = request.session.get('userID')
-                        request.session['role'] = role
-                        redirect_url = '/Admin/Dashboard/'
+#                     if role == 'admin':
+#                         admin = Admin.objects.get(email=username)
+#                         request.session['username1'] = f"{admin.name} {admin.last_name}"
+#                         request.session['admin_college_id'] = request.session.get('userID')
+#                         request.session['role'] = role
+#                         redirect_url = '/Admin/Dashboard/'
                         
-                    elif role == 'faculty':
-                        faculty = Faculty.objects.get(email=username)
-                        request.session['username2'] = f"{faculty.name} {faculty.last_name}"
-                        request.session['faculty_college_id'] = request.session.get('userID')
-                        request.session['role'] = role
-                        redirect_url = '/Faculty/Dashboard/'
+#                     elif role == 'faculty':
+#                         faculty = Faculty.objects.get(email=username)
+#                         request.session['username2'] = f"{faculty.name} {faculty.last_name}"
+#                         request.session['faculty_college_id'] = request.session.get('userID')
+#                         request.session['role'] = role
+#                         redirect_url = '/Faculty/Dashboard/'
                         
-                    elif role == 'student':
-                        student = Student.objects.get(email=username)
-                        request.session['username3'] = f"{student.name} {student.last_name}"
-                        request.session['student_college_id'] = request.session.get('userID')
-                        request.session['role'] = role
-                        redirect_url = '/Student/Dashboard/'
+#                     elif role == 'student':
+#                         student = Student.objects.get(email=username)
+#                         request.session['username3'] = f"{student.name} {student.last_name}"
+#                         request.session['student_college_id'] = request.session.get('userID')
+#                         request.session['role'] = role
+#                         redirect_url = '/Student/Dashboard/'
                     
-                    request.session.pop('verify_user', None)
-                    request.session.pop('verify_role', None)
-                    request.session.pop('verify_fingerprint', None)
-                    request.session.pop('verify_ip', None)
+#                     request.session.pop('verify_user', None)
+#                     request.session.pop('verify_role', None)
+#                     request.session.pop('verify_fingerprint', None)
+#                     request.session.pop('verify_ip', None)
                     
-                    messages.success(request, "OTP verified successfully!")
-                    return redirect(redirect_url)
+#                     messages.success(request, "OTP verified successfully!")
+#                     return redirect(redirect_url)
                     
-                else:
-                    messages.error(request, "OTP has expired. Please login again.")
-                    otp_record.delete()
-                    return redirect('login')
-            else:
-                messages.error(request, "Invalid OTP. Please try again.")
-                return render(request, 'verify_otp.html', {'user_email': username})
+#                 else:
+#                     messages.error(request, "OTP has expired. Please login again.")
+#                     otp_record.delete()
+#                     return redirect('login')
+#             else:
+#                 messages.error(request, "Invalid OTP. Please try again.")
+#                 return render(request, 'verify_otp.html', {'user_email': username})
                 
-        except UserDetail.DoesNotExist:
-            messages.error(request, "User not found. Please login again.")
-            return redirect('login')
-        except Exception as e:
-            messages.error(request, f"An error occurred: {str(e)}")
-            return redirect('login')
+#         except UserDetail.DoesNotExist:
+#             messages.error(request, "User not found. Please login again.")
+#             return redirect('login')
+#         except Exception as e:
+#             messages.error(request, f"An error occurred: {str(e)}")
+#             return redirect('login')
 
 
-from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
-def forget_password(request):
-    if request.method == 'POST':
-        college_id = request.POST.get('collegeId')
-        
-        if not college_id:
-            return JsonResponse({
-                'success': False,
-                'error': 'College ID is required'
-            }, status=400)
-        
-        try:
-            # Check if college_id starts with specific prefixes
-            if college_id.startswith('ST'):
-                student_detail = Student.objects.get(college_id=college_id)
-                return JsonResponse({
-                    'success': True,
-                    'username': student_detail.email,  # Using email as username
-                    'user_id': student_detail.college_id,
-                    'password': student_detail.phone  # Phone is being used as password
-                })
-            elif college_id.startswith('GK'):
-                faculty_detail = Faculty.objects.get(college_id=college_id)
-                return JsonResponse({
-                    'success': True,
-                    'username': faculty_detail.email,  # Using email as username
-                    'user_id': faculty_detail.college_id,
-                    'password': faculty_detail.phone  # Phone is being used as password
-                })
-            elif college_id.startswith('AD'):
-                admin_detail = Admin.objects.get(college_id=college_id)
-                return JsonResponse({
-                    'success': True,
-                    'username': admin_detail.email,  # Using email as username
-                    'user_id': admin_detail.college_id,
-                    'password': admin_detail.phone  # Phone is being used as password
-                })
-            else:
-                return JsonResponse({
-                    'success': False,
-                    'error': 'Invalid College ID format'
-                }, status=400)
-                
-        except Student.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'Student not found with this College ID'
-            }, status=404)
-        except Faculty.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'Faculty not found with this College ID'
-            }, status=404)
-        except Admin.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'Admin not found with this College ID'
-            }, status=404)
-        except Exception as e:
-            return JsonResponse({
-                'success': False,
-                'error': f'An error occurred: {str(e)}'
-            }, status=500)
-    
-    # For GET requests or other methods
-    return JsonResponse({
-        'success': False,
-        'error': 'Invalid request method. Use POST.'
-    }, status=400)
 
-def admin_adding_page(request):
-    role = request.session.get('role')
-    username = request.session.get('User_name')
-    return render(request,'admin/admin_page.html',{'username':username,'role':role})
 
-def admin_card(request):
-    role = request.session.get('role')
-    username = request.session.get('User_name')
-    admin_details = Admin.objects.all()
-    return render(request,'admin/admin_card.html',{'username':username,'admin_details':admin_details,'role':role})
 
-# profile details   
-def profile_details(request):
-    role = request.session.get('role')
+from rest_framework.viewsets import ModelViewSet
+from newapp.pagination import CommonPagination
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import action
 
-    if role == 'faculty':
-        faculty_id=request.session.get('faculty_college_id')
-        details=Faculty.objects.get(college_id=faculty_id)
-        return render(request,'main/profile.html',{'faculty':details,'role':role})
-    elif role == 'student':
-        student_id=request.session.get('student_college_id')
-        details=Student.objects.get(college_id=student_id)
-        return render(request,'main/profile.html',{'student':details,'role':role})
-    elif role == 'admin':
-        admin_id=request.session.get('admin_college_id')
-        details=Admin.objects.get(college_id=admin_id)
-        return render(request,'main/profile.html',{'admin':details,'role':role})
+# FOR STAFF
+from .serializers import StaffSerializer, PositionMiniSerializer, DepartmentMiniSerializer
+from .models import Staff, Position
+class StaffAPI(ModelViewSet):
+    queryset = Staff.objects.all()
+    serializer_class = StaffSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
-# for uploading picture 
-def profile_upload(request):
-    role = request.session.get('role')
-    if role == 'student':
-        try:
-            student = Student.objects.get(college_id=request.session.get('student_college_id'))
-        except Student.DoesNotExist:
-            return redirect('dashboard2')
-        
-        if request.method == 'POST' and 'profile_picture' in request.FILES:
-            student.profile_picture = request.FILES['profile_picture']
-            student.save()
-            messages.success(request, 'Profile picture updated successfully!')
-            return redirect('profile_details')
-        
-    elif role == 'faculty':
-        try:
-            faculty = Faculty.objects.get(college_id=request.session.get('faculty_college_id'))
-        except Faculty.DoesNotExist:
-            return redirect('dashboard1')
-        
-        if request.method == 'POST' and 'profile_picture' in request.FILES:
-            faculty.profile_picture = request.FILES['profile_picture']
-            faculty.save()
-            messages.success(request, 'Profile picture updated successfully!')
-            return redirect('profile_details')
-    elif role == 'admin':
-        try:
-            admin = Admin.objects.get(college_id=request.session.get('admin_college_id'))
-        except Admin.DoesNotExist:
-            return redirect('dashboard')
-        
-        if request.method == 'POST' and 'profile_picture' in request.FILES:
-            admin.profile_picture = request.FILES['profile_picture']
-            admin.save()
-            messages.success(request, 'Profile picture updated successfully!')
-            return redirect('profile_details')
-    
-# for id card
-def id_card(request):
-    role=request.session.get('role')
-    context = {}
-    context['role'] = role
-    
-    try:
-        # Check user type and add appropriate details to context
-        if role == 'student':
-            student = Student.objects.get(college_id=request.session.get('student_college_id'))
-            context['detail'] = student
-            context['user_type'] = 'Student'
-        elif role == 'faculty':
-            faculty = Faculty.objects.get(college_id=request.session.get('faculty_college_id'))
-            context['detail'] = faculty
-            context['user_type'] = 'Faculty'
-        elif role == 'admin':
-            admin = Admin.objects.get(college_id=request.session.get('admin_college_id'))
-            context['detail'] = admin
-            context['user_type'] = 'Admin'
+    @action(detail=False, methods=['get'])
+    def import_page(self, request):
+        person = request.session.get("person")
+        if not person:
+            person = "Other"
             
-    except (Student.DoesNotExist, Faculty.DoesNotExist,Admin.DoesNotExist):
-        return redirect('logoutdoor')
+        context = {
+            "person": person
+            }
+        return render(request, "admin/Add/staffAdd.html", context)
+
+    @action(detail=False, methods=['get'])
+    def import_bulk_page(self, request):
+        return render(request, "admin/Bulk/staffBulk.html")
+
+    @action(detail=False, methods=['get'])
+    def departments(self, request):
+        departments = Department.objects.all().exclude(name = "SuperAdmin")
+        departments = DepartmentMiniSerializer(departments, many=True)
+        return JsonResponse({"departments": departments.data})
+
+    @action(detail=False, methods=['get'])
+    def positions(self, request):
+        department = request.GET.get("dept_id")
+        occ_positions = Staff.objects.filter(department=department).values_list("position_id", flat=True)
+        available_positions = Position.objects.exclude(rank=1).exclude(id__in=occ_positions)
+        serializer = PositionMiniSerializer(available_positions, many=True)
+        return JsonResponse({"positions": serializer.data})
+
+    @action(detail=False, methods=['post'])
+    def import_excel(self, request):
+        department = request.GET.get("dept_id")
+        occ_positions = Staff.objects.filter(department=department).values_list("position_id", flat=True)
+        available_positions = Position.objects.exclude(rank=1).exclude(id__in=occ_positions)
+        serializer = PositionMiniSerializer(available_positions, many=True)
+        return JsonResponse({"positions": serializer.data})
     
-    return render(request, 'main/id_card.html', context)
+# FOR STUDENT
+from .serializers import StudentSerializer
+from .models import Student
+class StudentAPI(ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
 
-# for admin dashboard
-def dashboard_view(request):
-    # Check if the user is logged in
-    role = request.session.get('role')
-    username = request.session.get('username1')
-    college_id = request.session.get('admin_college_id')
-    if username:
-        return render(request, 'dashboard/dashboard.html', {'username': username,'college_id':college_id,'role':role})
-    else:
-        return redirect('login') 
+    @action(detail=False, methods=['get'])
+    def import_page(self, request):
+        return render(request, "admin/Add/studentAdd.html")
 
-# for faculty dashboard
-def dashboard1(request):
-    # Check if the user is logged in
-    role = request.session.get('role')
-    username = request.session.get('username2')  # Retrieve username from session
-    if username:
-        return render(request, 'dashboard/dashboard1.html', {'username': username,'role':role})
-    else:
-        return redirect('login')  # Redirect to login if not logged in
+    @action(detail=False, methods=["get"])
+    def courses(self, request):
+        context = {
+            "courses": Options().CourseOptions()
+            }
+        return JsonResponse(context)
 
-# for student dashboard
-def dashboard2(request):
-    # Check if the user is logged in
-    role = request.session.get('role')
-    username = request.session.get('username3')
-    college_id = request.session.get('student_college_id')
-    detail = Student.objects.get(college_id = college_id)  # Retrieve username from session
-    if username:
-        return render(request, 'dashboard/dashboard2.html', {'username': username,'detail':detail,'role':role, 'college_id':college_id})
-    else:
-        return redirect('login') 
+# FOR DEPARTMENT
+from .serializers import DepartmentSerializer
+from rest_framework.decorators import action
+from .models import Department
+from .service import Details
+class DepartmentAPI(ModelViewSet):
+    queryset = Department.objects.all().order_by("id")
+    serializer_class = DepartmentSerializer
+    pagination_class = CommonPagination
+    
+    search_fields = ['name', 'code', 'type']     
 
-# for logout from account
-def logout_view(request):
-    # Clear session data
-    request.session.flush()
-    return redirect('login')
+    @action(detail=False, methods=['get'])
+    def import_page(self, request):
+        return render(request, "admin/Creation/departmentCreation.html")
 
-from .models import StudentDocuments, AdminDocuments, FacultyDocuments
-# for single students operations 
-def student_functions(request):
-    context = {}
-    role = request.session.get('role')
-    context['role'] = role
-    context['course'] = Course.objects.all().order_by('id')
-
-    if request.method == "POST":
-        action = request.POST.get("action")
-
-        # Add student
-        if action == "add":
-            try:
-                # Generate college ID
-                max_id = Student.objects.aggregate(max_id=models.Max('college_id'))['max_id']
-                
-                if max_id is None:
-                    college_id = 'ST20250'  # Initial ID
-                else:
-                    try:
-                        # Extract numeric part and increment
-                        numeric_part = int(max_id[2:])  # Remove 'ST' prefix
-                        college_id = f'ST{numeric_part + 1}'
-                    except (ValueError, IndexError):
-                        college_id = 'ST20250'  # Fallback if format is wrong
-
-                email = request.POST.get("email")
-                phone = request.POST.get("phone")
-                
-                # Convert tenth and twelfth percent to Decimal
-                tenth_percent = Decimal(request.POST.get("tenthgpa", 0))
-                twelfth_percent = Decimal(request.POST.get("twelthgpa", 0))
-                
-                # Convert adhar_no to BigInteger
-                adhar_no = int(request.POST.get("adharno", 0))
-
-                user_detail = UserDetail.objects.filter(user_id = college_id)
-                if not user_detail.exists():
-                    UserDetail.objects.create(username = email, user_id = college_id, password = phone)
-                else :
-                    messages.error(request, "User Already Exists")
-                
-                Student.objects.create(
-                    college_id=college_id,
-                    name=request.POST.get("name"),
-                    last_name=request.POST.get("lastName"),
-                    father_name=request.POST.get("fathername"),
-                    mother_name=request.POST.get('mothername'),
-                    occupation=request.POST.get('occupation'),
-                    income=request.POST.get('income'),
-                    email=email,
-                    phone=phone,
-                    other_phone_no=request.POST.get("otherphone"),
-                    gender=request.POST.get("gender"),
-                    course_id=request.POST.get("course"),
-                    department = request.POST.get("course").department.id,
-                    birthday=request.POST.get("birthday"),
-                    address=request.POST.get("address"),
-                    city=request.POST.get("city"),
-                    state=request.POST.get("state"),
-                    state_code=request.POST.get("zipcode"),
-                    date_of_joining=request.POST.get("startDate"),
-                    tenth_percent=tenth_percent,
-                    twelfth_percent=twelfth_percent,
-                    adhar_no=adhar_no,
-                    pan_no=request.POST.get("panno"),
-                    family_id=request.POST.get("familyid"),
-                    family_id_phone_no=request.POST.get("familyidphone"),
-                    category=request.POST.get("caste"),
-                    nationality=request.POST.get("nationality"),
-                    religion=request.POST.get("religion"),
-                    martial_status=request.POST.get("martialstatus"),
-                    user_id=college_id, 
-                    username=email,
-                    password=phone,
-                    semester=1,  # Default value
-                    year=1,     # Default value
-                    country="India"  # Default value
-                )
-                detail = Student.objects.get(college_id = college_id)
-                StudentDocuments.objects.create(student = detail ,pic1 = None, pic2 = None, pic3 = None,
-                pic4 = None, pic5 = None, pic6 = None, pic7 = None, pic8 = None, pic9 = None)
-                messages.success(request, f"Student added successfully with ID: {college_id}!")
-                return redirect(reverse('student_function') + '?success=true')  # Redirect to avoid form resubmission
-            except Exception as e:
-                messages.error(request, f"Error: {str(e)}")
-
-        # View student
-        elif action == "view":
-            college_id = request.POST.get("college_id")
-            try:
-                student = Student.objects.get(college_id=college_id)
-                context["student"] = student
-            except Student.DoesNotExist:
-                messages.error(request, "No student found with this college ID.")
-
-        # Delete student
-        elif action == "delete":
-            college_id = request.POST.get("college_id")
-            try:
-                student = Student.objects.get(college_id=college_id)
-                student.delete()
-                messages.success(request, "Student deleted successfully.")
-                return redirect('student_function')  # Redirect to avoid form resubmission
-            except Student.DoesNotExist:
-                messages.error(request, "Student not found.")
-
-        # Alter student
-        elif action == "alter":
-            try:
-                student = Student.objects.get(college_id=request.POST.get("college_id"))
-                student.name = request.POST.get("name")
-                student.last_name = request.POST.get("lastName")
-                student.father_name = request.POST.get("father_name")
-                student.mother_name = request.POST.get("mother_name")
-                student.email = request.POST.get("email")
-                student.phone = request.POST.get("phone")
-                student.other_phone_no = request.POST.get("other_phone")
-                student.address = request.POST.get("address")
-                student.city = request.POST.get("city")
-                student.state = request.POST.get("state")
-                student.state_code = request.POST.get("state_code")
-                student.save()
-                messages.success(request, "Student details updated successfully.")
-                return redirect('student_function')  # Redirect to avoid form resubmission
-            except Student.DoesNotExist:
-                messages.error(request, "Student not found.")
-            except Exception as e:
-                messages.error(request, f"Error: {str(e)}")
-
-    return render(request, "student/student_page.html", context)
-# for  faculty management
-from django.db import models
-def faculty_functions(request):
-    context = {}
-    role = request.session.get('role')
-    context['role'] = role
-    context['position'] = Position.objects.filter(role = 'Faculty')
-    context['department'] = Department.objects.filter(type = 'Faculty')
-    if request.method == "POST":
-        action = request.POST.get("action")
-
-        # Add faculty
-        if action == "add":
-            try:
-                # Auto-generate employee ID
-                max_id = Faculty.objects.aggregate(max_id=models.Max('college_id'))['max_id']
-                
-                if max_id is None:
-                    college_id = 'GK20250'  # Initial ID
-                else:
-                    try:
-                        # Extract numeric part and increment
-                        numeric_part = int(max_id[2:])  # Remove 'GK' prefix
-                        college_id = f'GK{numeric_part + 1}'
-                    except (ValueError, IndexError):
-                        college_id = 'GK20250'  # Fallback if format is wrong
-                email = request.POST.get("email")
-                phone =  request.POST.get("phone") 
-                adhar_no = int(request.POST.get("adharno", 0)) 
-
-                user_detail = UserDetail.objects.filter(user_id = college_id)
-                if not user_detail.exists():
-                    UserDetail.objects.create(username = email, user_id = college_id, password = phone)
-                else :
-                    messages.error(request, "User Already Exists")     
-                # Create faculty with all required fields
-                Faculty.objects.create(
-                    college_id=college_id,
-                    name=request.POST.get("name"),
-                    last_name=request.POST.get("lastName"),
-                    father_name=request.POST.get("fathername"),
-                    mother_name=request.POST.get("mothername"),
-                    email=email,
-                    phone=phone,
-                    other_phone_no=request.POST.get("otherphone"),
-                    position_id=request.POST.get("position"),
-                    gender=request.POST.get("gender"),
-                    department_id=request.POST.get("department"),
-                    qualification=request.POST.get("qualification"),
-                    address=request.POST.get("address"),
-                    city=request.POST.get("city"),
-                    state=request.POST.get("state"),
-                    state_code=request.POST.get("zipcode"),
-                    date_of_joining=request.POST.get("startDate"),
-                    experience=request.POST.get("experience"),
-                    birthday=request.POST.get("birthday"),
-                    category=request.POST.get("caste"),
-                    nationality=request.POST.get("nationality", "Indian"),
-                    religion=request.POST.get("religion"),
-                    adhar_no=adhar_no,
-                    pan_no=request.POST.get("panno"),
-                    martial_status=request.POST.get("martialstatus"),
-                    user_id=college_id, 
-                    username=email,
-                    password=phone,
-                    country='India'
-                )
-                detail = Faculty.objects.get(college_id = college_id)
-                FacultyDocuments.objects.create(faculty = detail ,pic1 = None, pic2 = None, pic3 = None,
-                pic4 = None, pic5 = None)
-                messages.success(request, F"Faculty added successfully with ID: {college_id}!")
-            except Exception as e:
-                messages.error(request, f"Error adding faculty: {str(e)}")
-
-        # View faculty
-        elif action == "view":
-            college_id = request.POST.get("college_id")
-            try:
-                faculty = Faculty.objects.get(college_id=college_id)
-                context["faculty"] = faculty
-            except Faculty.DoesNotExist:
-                messages.error(request, "No faculty found with this ID.")
-            except Exception as e:
-                messages.error(request, f"Error viewing faculty: {str(e)}")
-
-        # Delete faculty
-        elif action == "delete":
-            college_id = request.POST.get("college_id")
-            try:
-                faculty = Faculty.objects.get(college_id=college_id)
-                faculty.delete()
-                messages.success(request, "Faculty deleted successfully.")
-            except Faculty.DoesNotExist:
-                messages.error(request, "Faculty not found.")
-            except Exception as e:
-                messages.error(request, f"Error deleting faculty: {str(e)}")
-
-        # Alter faculty
-        elif action == "alter":
-            college_id = request.POST.get("college_id")
-            try:
-                faculty = Faculty.objects.get(college_id=college_id)
-                
-                # Update all fields
-                faculty.name = request.POST.get("name")
-                faculty.last_name = request.POST.get("lastName")
-                faculty.father_name = request.POST.get("father_name")
-                faculty.mother_name = request.POST.get("mother_name")
-                faculty.email = request.POST.get("email")
-                faculty.phone = request.POST.get("phone")
-                faculty.other_phone_no = request.POST.get("other_phone")
-                faculty.address = request.POST.get("address")
-                faculty.city = request.POST.get("city")
-                faculty.state = request.POST.get("state")
-                faculty.state_code = request.POST.get("state_code") 
-                faculty.save()
-                messages.success(request, "Faculty details updated successfully.")
-            except Faculty.DoesNotExist:
-                messages.error(request, "Faculty not found.")
-            except Exception as e:
-                messages.error(request, f"Error updating faculty: {str(e)}")
-
-    return render(request, "faculty/faculty_page.html", context)
-
-
-# For admin management 
-from django.contrib.auth.models import User
-# for functions related to admin
-def admin_functions(request):
-    context = {}
-    role = request.session.get('role')
-    context['role'] = role
-    context['position'] = Position.objects.filter(role = 'Admin')
-    context['department'] = Department.objects.filter(type = 'Admin')
-
-    if request.method == "POST":
-        action = request.POST.get("action")
-
-        # Add admin
-        if action == "add":
-            try:
-                # Auto-generate employee ID
-                max_id = Admin.objects.aggregate(max_id=models.Max('college_id'))['max_id']
-                
-                if max_id is None:
-                    college_id = 'AD20251'  # Initial ID
-                else:
-                    try:
-                        # Extract numeric part and increment
-                        numeric_part = int(max_id[2:])  # Remove 'GK' prefix
-                        college_id = f'AD{numeric_part + 1}'
-                    except (ValueError, IndexError):
-                        college_id = 'AD20251'  # Fallback if format is wrong
-                email = request.POST.get("email")
-                phone =  request.POST.get("phone")  
-                adhar_no = int(request.POST.get("adharno", 0))  
-
-                user_detail = UserDetail.objects.filter(user_id = college_id)
-                if not user_detail.exists():
-                    UserDetail.objects.create(username = email, user_id = college_id, password = phone)
-                else :
-                    messages.error(request, "User Already Exists")      
-                # Create admin with all required fields
-                Admin.objects.create(
-                    college_id=college_id,
-                    name=request.POST.get("name"),
-                    last_name=request.POST.get("lastName"),
-                    father_name=request.POST.get("fathername"),
-                    mother_name=request.POST.get("mothername"),
-                    email=email,
-                    phone=phone,
-                    other_phone_no=request.POST.get("otherphone"),
-                    position_id=request.POST.get("position"),
-                    gender=request.POST.get("gender"),
-                    department_id=request.POST.get("department"),
-                    qualification=request.POST.get("qualification"),
-                    address=request.POST.get("address"),
-                    city=request.POST.get("city"),
-                    state=request.POST.get("state"),
-                    state_code=request.POST.get("zipcode"),
-                    country=request.POST.get("country", "India"),
-                    date_of_joining=request.POST.get("startDate"),
-                    experience=request.POST.get("experience"),
-                    birthday=request.POST.get("birthday"),
-                    category=request.POST.get("caste"),
-                    nationality=request.POST.get("nationality", "Indian"),
-                    religion=request.POST.get("religion"),
-                    adhar_no=adhar_no,
-                    pan_no=request.POST.get("panno"),
-                    martial_status=request.POST.get("martialstatus"),
-                    user_id=college_id, 
-                    username=email,
-                    password=phone,
-                )
-                User.objects.create_user(username=email,password=phone,is_staff=True,is_superuser=True)
-                detail = Admin.objects.get(college_id = college_id)
-                AdminDocuments.objects.create(admin = detail ,pic1 = None, pic2 = None, pic3 = None,
-                pic4 = None, pic5 = None)
-                messages.success(request, f"Admin added successfully with ID {college_id}!")
-            except Exception as e:
-                messages.error(request, f"Error adding admin: {str(e)}")
-
-        # View admin
-        elif action == "view":
-            college_id = request.POST.get("college_id")
-            try:
-                admin = Admin.objects.get(college_id=college_id)
-                context["admin"] = admin
-            except Admin.DoesNotExist:
-                messages.error(request, "No admin found with this ID.")
-            except Exception as e:
-                messages.error(request, f"Error viewing admin: {str(e)}")
-
-        # Delete admin
-        elif action == "delete":
-            college_id = request.POST.get("college_id")
-            try:
-                admin = Admin.objects.get(college_id=college_id)
-                admin_profile = get_object_or_404(User,username=college_id)
-
-                admin_profile.delete()
-                admin.delete()
-                messages.success(request, "Admin deleted successfully.")
-            except Admin.DoesNotExist:
-                messages.error(request, "Admin not found.")
-            except Exception as e:
-                messages.error(request, f"Error deleting admin: {str(e)}")
-
-        # Alter admin
-        elif action == "alter":
-            college_id = request.POST.get("college_id")
-            try:
-                admin = Admin.objects.get(college_id=college_id)
-                
-                # Update all fields
-                admin.name = request.POST.get("name")
-                admin.last_name = request.POST.get("lastName")
-                admin.father_name = request.POST.get("father_name")
-                admin.mother_name = request.POST.get("mother_name")
-                admin.email = request.POST.get("email")
-                admin.phone = request.POST.get("phone")
-                admin.other_phone_no = request.POST.get("other_phone")
-                admin.address = request.POST.get("address")
-                admin.city = request.POST.get("city")
-                admin.state = request.POST.get("state")
-                admin.state_code = request.POST.get("state_code")
-                
-                admin.save()
-                messages.success(request, "Admin details updated successfully.")
-            except Admin.DoesNotExist:
-                messages.error(request, "Admin not found.")
-            except Exception as e:
-                messages.error(request, f"Error updating admin: {str(e)}")
-
-    return render(request, "admin/admin_page.html", context)
-
-#  for multiple student filtering
-from django.template.loader import render_to_string
-from django.core.paginator import Paginator
-
-def course_details(request, template):
-    role = request.session.get('role')
-
-    try:
-        # Get all courses from Course model (not from Student records)
-        if template != 'chat/page2.html':
-            courses = Course.objects.all().values_list('name', flat=True)
-            students = Student.objects.all()
-            page_obj = None
-               
-        else:
-            courses = Course.objects.all().values_list('name', flat=True)
-            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-            students = Student.objects.filter(followed_faculty=faculty)
-            return render(request, 'chat/page2.html', {
-                'faculty': faculty,
-                'courses': courses, 
-                'students': students, 
-                'role': role  # Removed duplicate 'role' parameter
-            })
-
-    except Exception as e:
-        messages.error(request, f"Error loading courses: {str(e)}")
-        return render(request, template, {
-            'courses': [],
-            'students': [], 
-            'faculty': [], 
-            'role': role,
-            'page_obj': []  # Added missing page_obj for error case
-        })
-
-def filtered_students(request, template):
-    try:
-        filters = {
-            'course': request.GET.get('course', 'all'),
-            'year': request.GET.get('year', 'all'),
-            'semester': request.GET.get('semester', 'all'),
-            'college_id': request.GET.get('college_id', '')
+    @action(detail=False, methods=['get'])
+    def details(self, request):
+        courses = Course.objects.count()
+        departments = Department.objects.count()
+        staff = Staff.objects.count()
+        students = Student.objects.count()
+        context = {
+            "courses": courses,
+            "departments": departments,
+            "staff": staff,
+            "student": students
         }
+        return JsonResponse(context)
+
+# FOR COURSE
+from .serializers import CourseSerializer, DepartmentMiniSerializer
+from .models import Course
+class CourseAPI(ModelViewSet):
+    queryset = Course.objects.all().order_by("id")
+    serializer_class = CourseSerializer
+    pagination_class = CommonPagination
+    search_fields = ['name', 'code', 'type']     
+
+    @action(detail=False, methods=['get'])
+    def import_page(self, request):
+        return render(request, "admin/Creation/courseCreation.html")
+
+    @action(detail=False, methods=['get'])
+    def details(self, request):
+        courses = Course.objects.count()
+        departments = Department.objects.count()
+        staff = Staff.objects.count()
+        students = Student.objects.count()
+
+        department = Department.objects.all().exclude(type = "Administrative")
+        department = DepartmentMiniSerializer(department, many=True)
         
-        # Check which template we're using to determine the base queryset
-        if template != 'chat/student_list_partial.html':
-            students = Student.objects.all()
-            
-        else:
-            faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-            students = Student.objects.filter(followed_faculty=faculty)
-        
-        # Apply filters
-        if filters['course'] != 'all':
-            students = students.filter(course=filters['course'])
-        if filters['year'] != 'all':
-            students = students.filter(year=filters['year'])
-        if filters['semester'] != 'all':
-            students = students.filter(semester=filters['semester'])
-        if filters['college_id']:
-            students = students.filter(college_id__icontains=filters['college_id'])
-            
-    except Exception as e:
-        return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
-
-    html = render_to_string(template, {'students': students})
-    return JsonResponse({'html': html})
-
-# FOR FEES MANAGEMENT OF STUDENT
-# for student, for viewing fees
-def student_fees_view(request):
-    role = request.session.get('role')
-    college_id = request.session.get('student_college_id')
-    try:
-        student = Student.objects.get(college_id=college_id)
-        course = student.course# student course name
-        year = student.course.years # student course time period
-        batch = student.date_of_joining.year # fetch the student starting year only 
-        totalFee = float(int(course.fees_per_year)*year)
-        fee = 0 # total fee in starting is zero
-        paid = 0 # total fee payment in starting is zero
-        pending = 0 # (if any pending payment), in starting pending payment is zero
-        advance = 0 #(if student paid extra payment)
-        percent = 0 # payment percentage
-        paymentDetails = None
-        adj_year = [0]
-        adj_sem = [0]
-        
-        data = [] # for showing year seperately
-        s = 0 # starting point
-        e = 2 # ending point
-        for i in range(1, year+1):   
-            for j in range(s+i, e+i):
-                feeStructure = FeeStructure.objects.filter(course = course.id, batch = str(batch), year = str(i), semester = str(j))
-                dic1 = {'year':i, 'semester':j, }
-                
-                if feeStructure.exists():
-                    payment = FeePayment.objects.filter(student = student, fee_structure = feeStructure.first())
-                    dueDate = feeStructure.first().due_date # due date for fee payment
-                    amount1 = float(feeStructure.first().amount) # structure amount access
-                    fee += amount1
-                    if payment.exists():
-                        # render payment history
-                        paymentDetails = FeePayment.objects.filter(student = student).order_by('payment_date')
-                            
-                        # calculate amount1 and amount2
-                        amount2 = float(payment.aggregate(total=Sum('amount_paid'))['total']) # payment amount access
-                        
-                        # calculate the total paid amount
-                        paid += amount2
-                        percent = (amount2/amount1)*100
-                       
-                        if amount1 == amount2 :
-                            dic1['status'] = 'Paid'
-                            dic1['feeAmt'] = amount1
-                                
-                        elif amount1 != amount2:
-                            if amount1 > amount2 :
-                                due = amount1 - amount2
-                                pending += due
-                                dic1['status'] = 'Pending'
-                                dic1['due'] = due
-                                dic1['dueDate'] = dueDate
-                                dic1['feeAmt'] = amount1
-                                                  
-                            elif amount2 > amount1 :
-                                overdue = amount2 - amount1
-                                advance += overdue
-                                dic1['status'] = 'Overdue'
-                                dic1['overdue'] = overdue
-                                dic1['dueDate'] = dueDate
-                                dic1['feeAmt'] = amount1
-                    else:
-                        dic1['status'] = 'Pending'           
-                        dic1['dueDate'] = dueDate
-                        dic1['feeAmt'] = float(feeStructure.first().amount)
-                        dic1['showBtn'] = 'Yes'
-                        adj_year[0] = 0
-                        adj_sem[0] = 0
-                        
-                else:
-                    dic1['status'] = "No-fee"
-                    dic1['showBtn'] = 'No'
-                    
-                data.append(dic1)
-            s+=1
-            e+=1 
-            
-        return render(request, 'student/student_fees_view.html', {'student':student, 'totalFee':totalFee, 'data':data, 'role':role, 'fee':fee, 'paid':paid, 'pending':pending, 'advance':advance, 'percent':percent, 'paymentDetails':paymentDetails})
-                 
-    except Student.DoesNotExist:
-        messages.error(request, "Student not found")
-        return render(request, 'main/error.html', {
-        'message': 'Student not found with the provided ID.'
-    })
-
-    except Exception as e:
-        messages.error(request, f"An error occurred: {str(e)}")
-        return render(request, 'main/error.html', {
-        'message': f'An unexpected error occurred while processing your request: {str(e)}'
-    })
-# for admin - for payment of fees
-def feePayment(request):
-            students = Student.objects.all()
-            data = []
-            
-            for student in students:
-                batch = student.date_of_joining.year
-                course = Course.objects.get(id=student.course.id)
-                s = 0 # starting point
-                e = 2 # ending point 
-                Amt1 = 0 # actual amount
-                Amt2 = 0 # paid amount
-                due = 0
-                overdue = 0
-                totalFee = int(course.fees_per_year * course.years)
-                year = course.years
-                for i in range(1, year+1):   
-                    for j in range(s + i, e + i):
-                        feeStructure = FeeStructure.objects.filter(
-                            year=str(i), 
-                            semester=str(j), 
-                            batch=batch, 
-                            course=course.id
-                        )
-                        
-                        if feeStructure.exists():
-                            fee_structure = feeStructure.first()
-                            Amt1 += float(fee_structure.amount)
-                            
-                            feePayment = FeePayment.objects.filter(
-                                student=student, 
-                                fee_structure=fee_structure
-                            )
-                            
-                            if feePayment.exists():
-                                Amt2 += float(feePayment.aggregate(total=Sum('amount_paid'))['total'])                                  
-                    s += 1
-                    e += 1
-               
-                # Determine status
-                if (Amt1>0) and (Amt2>0):
-                    percent = (Amt2/Amt1)*100
-                    if Amt1 == Amt2:
-                       data.append({'status':'Paid', 'student': student, 'total':totalFee, 'paid':Amt2, 'percent':percent})
-                    elif Amt1 > Amt2:
-                        data.append({'status':'Due', 'student':student, 'total':totalFee, 'paid':Amt2, 'due':Amt1-Amt2, 'percent':percent})
-                    elif Amt2 > Amt1:
-                        data.append({'status':'Overdue', 'student':student, 'total':totalFee, 'paid':Amt2, 'overdue':Amt2-Amt1, 'percent':percent})
-                elif (Amt1>0) and (Amt2 == 0):
-                    data.append({'status':'Pending', 'student':student, 'total':totalFee})
-                else:
-                    data.append({'status':'New', 'student':student, 'total':totalFee})
-
-            return render(request, 'admin/admin_fee_management.html',{'data':data})
-
-def single_student_fees_view(request, college_id):
-    role = request.session.get('role')
-    try:
-        # filtering varible
-        student = Student.objects.get(college_id=college_id)
-        course = student.course# student course name
-        year = student.course.years # student course time period
-        batch = student.date_of_joining.year # fetch the student starting year only
-
-        # top html container variables 
-        totalFee = float(int(course.fees_per_year)*year)
-        fee = 0 # total fee in starting is zero
-        paid = 0 # total fee payment in starting is zero
-        pending = 0 # (if any pending payment), in starting pending payment is zero
-        advance = 0 #(if student paid extra payment)
-        percent = 0 # payment percentage
-
-        # last variable which show all transaction history
-        paymentDetails = None
-        adj_year = [0]
-        adj_sem = [0]
-        
-        data = [] # for showing year seperately
-        s = 0 # starting point
-        e = 2 # ending point
-        for i in range(1, year+1):   
-            for j in range(s+i, e+i):
-                feeStructure = FeeStructure.objects.filter(course = course.id, batch = str(batch), year = str(i), semester = str(j))
-                dic1 = {'year':i, 'semester':j, }
-                
-                if feeStructure.exists():
-                    payment = FeePayment.objects.filter(student = student, fee_structure = feeStructure.first())
-                    dueDate = feeStructure.first().due_date # due date for fee payment
-                    if payment.exists():
-                        dic1['singlePayment'] = payment
-                        # render payment history
-                        paymentDetails = FeePayment.objects.filter(student = student).order_by('payment_date') 
-                        # calculate amount1 and amount2
-                        amount1 = float(feeStructure.first().amount) # structure amount access
-                        amount2 = float(payment.aggregate(total=Sum('amount_paid'))['total']) # payment amount access
-                        
-                        # calculate the total paid amount
-                        fee += amount1
-                        paid += amount2
-                        percent = (amount2/amount1)*100
-                       
-                        if amount1 == amount2 :
-                            dic1['status'] = 'Paid'
-                            dic1['feeAmt'] = amount1
-                            dic1['paid'] = amount2
-                                
-                        elif amount1 != amount2:
-                            if amount1 > amount2 :
-                                due = amount1 - amount2
-                                pending += due
-                                dic1['status'] = 'Due'
-                                dic1['due'] = due
-                                dic1['dueDate'] = dueDate
-                                dic1['feeAmt'] = amount1
-                                dic1['showBtn'] = 'Yes'
-                                dic1['paid'] = amount2
-                                              
-                            elif amount2 > amount1 :
-                                overdue = amount2 - amount1
-                                advance += overdue
-                                dic1['status'] = 'Overdue'
-                                dic1['overdue'] = overdue
-                                dic1['dueDate'] = dueDate
-                                dic1['feeAmt'] = amount1
-                                dic1['showBtn'] = 'No'
-                                dic1['paid'] = amount2
-
-                    else:
-                        dic1['status'] = 'Pending'           
-                        dic1['dueDate'] = dueDate
-                        dic1['feeAmt'] = float(feeStructure.first().amount)
-                        dic1['showBtn'] = 'Yes'
-                        adj_year[0] = 0
-                        adj_sem[0] = 0
-                        
-                else:
-                    dic1['status'] = "No-fee"
-                    dic1['showBtn'] = 'No'
-                    
-                data.append(dic1)
-            s+=1
-            e+=1 
-            
-        return render(request, 'student/student_fee_detail.html', {'student':student, 'totalFee':totalFee, 'data':data, 'role':role, 'fee':fee, 'paid':paid, 'pending':pending, 'advance':advance, 'percent':percent, 'paymentDetails':paymentDetails})
-                 
-    except Student.DoesNotExist:
-        messages.error(request, "Student not found")
-        return render(request, 'main/error.html', {
-        'message': 'Student not found with the provided ID.'
-    })
-
-    except Exception as e:
-        messages.error(request, f"An error occurred: {str(e)}")
-        return render(request, 'main/error.html', {
-        'message': f'An unexpected error occurred while processing your request: {str(e)}'
-    })
-
-# PAYNOW FUNCTION FOR SHOWING THE PAYMENT DETAIL TO ADMIN ON CLICK PAY NOW BUTTON
-from django.db.models import Max
-from .models import Student, FeeStructure, FeePayment  # Replace your_app with your actual app name
-def payNow(request):
-    if request.method == 'POST':
-        try:
-            info = json.loads(request.body)
-            college_id = info.get('college_id')
-            S_year = str(info.get('year'))
-            S_sem = str(info.get('semester'))
-            
-            student = Student.objects.get(college_id=college_id)
-            course = Course.objects.get(id = student.course.id)
-            year = student.course.years
-            batch = student.date_of_joining.year
-            s = 0
-            e = 2 
-            feeShow = 0 # showing actual fees
-            payment = 0 # your actual payment
-            due = 0
-            extra = 0
-            data = []
-            for i in range(1, year + 1):   
-                for j in range(s + i, e + i):   
-                    feeStructure = FeeStructure.objects.filter(year=str(i), semester=str(j), course = course.id, batch = str(batch)) 
-                    
-                    # GENERATE RECEIPT NUMBER
-                    current_year = str(datetime.now().year)
-                    max_receipt_result = FeePayment.objects.aggregate(max_receipt_no=Max('receipt_number'))
-                    max_receipt_no = max_receipt_result['max_receipt_no']
-                            
-                    if max_receipt_no is None:
-                        receipt_no = 'GK' + current_year + 'RC1'
-                    else:
-                        try:
-                            numeric_part = int(max_receipt_no[8:])
-                            receipt_no = f'GK{current_year}RC{numeric_part + 1}'
-                        except (ValueError, IndexError):
-                            receipt_no = 'GK' + current_year + 'RC1'
-
-                    # GENERATE TRANSACTION ID
-                    max_tr_result = FeePayment.objects.aggregate(max_tr_id=Max('transaction_id'))
-                    max_tr_id = max_tr_result['max_tr_id']
-                            
-                    if max_tr_id is None:
-                        TR_id = 'GK' + current_year + 'TR1'
-                    else:
-                        try:
-                            numeric_part = int(max_tr_id[8:])
-                            TR_id = f'GK{current_year}TR{numeric_part + 1}'
-                        except (ValueError, IndexError):
-                            TR_id = 'GK' + current_year + 'TR1'
-
-                    # REAL WORK START NOW
-                    if feeStructure.exists(): 
-                        feeShow = float(feeStructure.first().amount) 
-                        feePayment = FeePayment.objects.filter(fee_structure=feeStructure.first(), student=student)
-                        amount1 = float(feeStructure.first().amount)
-                        if feePayment.exists():
-                            amount2 = float(feePayment.aggregate(total=Sum('amount_paid'))['total'])
-                            if amount1 == amount2 :
-                                if int(S_year) == i and int(S_sem) == j:
-                                    data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Paid', 'payment': amount1})
-                                    break        
-                            else:
-                                if amount1 > amount2:
-                                    pending = amount1 - amount2
-                                    due += pending
-                                    if S_year == str(i) and S_sem == str(j):
-                                        data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Due', 'due':due, 'extra':extra, 'payment':due})
-                                        break
-                                
-                                elif amount2 > amount1:
-                                    ex = amount2 - amount1
-                                    extra += ex
-                        else:
-                            payment = amount1
-                            if (j and int(S_sem)) != 1:  
-                                if due != 0:
-                                    payment += float(due)
-                                elif extra !=0:
-                                    payment -= float(extra)
-                                data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'Pending','due':due, 'extra':extra, 'payment':payment})
-                                break
-                        
-                            elif (j and int(S_sem)) == 1:
-                                data.append({'TR_id': TR_id, 'receipt_no':receipt_no, 'feeShow':feeShow, 'status':'New', 'due':due, 'extra':extra, 'payment': payment})
-                                break
-                s += 1
-                e += 1        
-            return JsonResponse({'data': data})
-            
-        except Student.DoesNotExist:
-            return JsonResponse({'error': 'Student not found'}, status=404)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid Method'}, status=400)
-    
-# for submit the fee form:
-def submitFee(request):
-    admin_college_id = request.session.get('admin_college_id')
-    if request.method == 'POST':
-        try:
-            # Check content type to handle both FormData and JSON
-            if request.content_type == 'application/json':
-                data = json.loads(request.body)
-            else:
-                # Handle form data
-                data = {
-                    'clickedSem':request.POST.get('clickedSem'),
-                    'clickedYear':request.POST.get('clickedYear'),
-                    'college_id':request.POST.get('college_id'),
-                    'totalFee': request.POST.get('totalFee'),
-                    'paidFee': request.POST.get('paidFee'),
-                    'receipt_no': request.POST.get('receipt_no'),
-                    'transaction_id': request.POST.get('transaction_id'),
-                    'method': request.POST.get('method'),
-                    'extra_amount': request.POST.get('extra_amount'),
-                    'due_amount': request.POST.get('due_amount'),
-                    'remark': request.POST.get('remark'),
-                    }
-            
-            # Validate required fields
-            required_fields = ['totalFee', 'paidFee', 'receipt_no', 'transaction_id', 'method', 'extra_amount', 'due_amount']
-            
-            for field in required_fields:
-                if not data.get(field):
-                    return JsonResponse({'error': f'An error occured {field} is required!'}, status=400)
-            s = 0
-            e = 2
-            college_id = data.get('college_id')
-            student = Student.objects.get(college_id = college_id)
-
-            year = student.course.years
-            sem = student.course.semesters
-            course = student.course
-            batch = student.date_of_joining.year
-            # fetch from Ajax Function
-            actualFee = float(data.get('totalFee'))
-            amount_paid = float(data.get('paidFee'))
-            clickedYear = data.get('clickedYear')
-            clickedSem = data.get('clickedSem')
-            payment_method = data.get('method')
-            transaction_id = data.get('transaction_id')
-            receipt_number = data.get('receipt_no')
-            remark = data.get('remark')
-            # variables
-            due_list = []
-            for i in range(1, year+1):
-                for j in range(s+i, e+i):
-                    feeStructure = FeeStructure.objects.filter(year=str(i), semester=str(j), course = course.id, batch = str(batch)) 
-                    if feeStructure.exists():
-                        amount1 = float(feeStructure.first().amount)
-                        feePayment = FeePayment.objects.filter(fee_structure=feeStructure.first(), student=student)
-                        if feePayment.exists():
-                            due = {}
-                            amount2 = float(feePayment.aggregate(total=Sum('amount_paid'))['total']) 
-                            if amount1 == amount2:
-                                due['year'] = i
-                                due['semester'] = j
-                                due['amount'] = 0 
-                                due['extra'] = 0
-                            else:
-                                if amount1 > amount2:
-                                    due['year'] = i
-                                    due['semester'] = j
-                                    due['amount'] = amount1-amount2 
-                                    due['extra'] = 0
-                                    if i == int(clickedYear) and j == int(clickedSem):
-                                        FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = amount_paid,
-                                            payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
-                                            remarks = remark, verified_by = admin_college_id)
-                                        return JsonResponse({'success': 'Fee Submitted Successfully!'})
-                                elif amount1 < amount2:
-                                    due['year'] = i
-                                    due['semester'] = j
-                                    due['amount'] = 0
-                                    due['extra'] = amount2-amount1
-                            due_list.append(due)
-
-                            #  if payment not exist 
-                        elif i == int(clickedYear) and j == int(clickedSem):
-                            due_amount = 0
-                            n = 1
-                            
-                            for k in due_list:
-                                TR = f'{transaction_id[0:8]}{int(transaction_id[8:])+n}'
-                                RC = f'{receipt_number[0:8]}{int(receipt_number[8:])+n}'
-                                if len(k) != 0:
-                                    if k['amount'] != 0:
-                                        due_amount += k['amount']
-                                        due_fee_structure = FeeStructure.objects.filter(batch = str(batch), year = str(k['year']), semester = str(k['semester']), course = course.id)
-                                        FeePayment.objects.create(student = student, fee_structure = due_fee_structure.first(), amount_paid = float(k['amount']),
-                                            payment_method = payment_method, transaction_id = TR, receipt_number = RC,
-                                            remarks = 'Pay Due Amount First', verified_by = admin_college_id)
-                                    elif k['extra'] != 0:
-                                        extra_fee_structure = FeeStructure.objects.filter(batch = str(batch), year = str(k['year']), semester = str(k['semester']), course = course.id)
-                                        payment = FeePayment.objects.get(student = student, fee_structure = extra_fee_structure.first())
-                                        payment_date = payment.payment_date
-                                        actual_pay = payment.amount_paid
-                                        payment.amount_paid = float(actual_pay) - float(k['extra'])
-                                        FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = float(k['extra']),
-                                            payment_method = payment_method, transaction_id = TR, receipt_number = RC,
-                                            remarks = 'Adjust Extra Payment', verified_by = admin_college_id, payment_date = payment_date)
-                                        payment.save()
-                                        
-                                n+=1             
-                            FeePayment.objects.create(student = student, fee_structure = feeStructure.first(), amount_paid = amount_paid-float(due_amount),
-                                            payment_method = payment_method, transaction_id = transaction_id, receipt_number = receipt_number,
-                                            remarks = remark, verified_by = admin_college_id)
-                            return JsonResponse({'success': 'Fee Submitted Successfully!'})
-                s += 1
-                e += 1
-                
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data!'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error':f'An error occured {str(e)}!'}, status = 500)
-    else:
-        return JsonResponse({'error':'Invalid Method!'}, status = 400)
-
-# for fee structure creation
-def fee_structure_creation(request):
-    role = request.session.get('role')
-    courses = Course.objects.all()
-    students = Student.objects.all()
-    values = FeeStructure.objects.all().order_by("structure_id")
-    paginator = Paginator(values, 1)  # Changed from 1 to reasonable number
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-                
-                # for ajax working
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        data = []
-        for i in page_obj:
-            data.append({
-                'structure_id': i.structure_id, 
-                'course': i.course, 
-                'year': i.year, 
-                'semester': i.semester, 
-                'due_date': i.due_date.strftime("%Y-%m-%d"), 
-                'batch': i.batch, 
-                'amount': i.amount
-                 })
-        return JsonResponse({
-                        "data1": data, 
-                        "has_next": page_obj.has_next(), 
-                        "has_prev": page_obj.has_previous(),
-                        "page_number": page_obj.number, 
-                        "total_pages": paginator.num_pages  # Fixed variable name
-                    })
-                    
-    context = {
-            'courses':courses, 
-            'students': students, 
-            'role': role, 
-            'page_obj': page_obj
-            }
-    return render(request, 'Creation/feeStructureCreation.html', context)
-        
-def get_courses_details(request):
-   
-    try:
-      if request.method == 'POST':
-        data = json.loads(request.body)
-        course_name = data.get('course_name')
-        if not course_name or course_name == 'all':
-            return JsonResponse({'error': 'Please select a valid course'}, status=400)
-            
-        # Get the course - make sure name matching is case-insensitive
-        course = Course.objects.filter(id__iexact=course_name).first()
-        if not course:
-            return JsonResponse({'error': f'Course "{id}" not found'}, status=404)
-            
-        return JsonResponse({
-            'years': list(range(1, course.years + 1)),
-            'semesters': list(range(1, course.semesters + 1)),
-        })
-    except Exception as e:
-        return JsonResponse({'error': f'Server error: {str(e)}'}, status=500)
-    
-from django.db.models import Max, IntegerField
-from django.db.models.functions import Cast, Substr
-def sendBatch(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        course = data.get('course')
-        course_detail = Course.objects.get(id = course)
-        year = data.get('year')
-        semester = data.get('semester')
-        try:
-            max_id = Student.objects.annotate(id_as_int = Cast(Substr('college_id',3),IntegerField()))
-            max_id = max_id.filter(year = int(year), semester = int(semester), course = course_detail)
-            if max_id.exists():
-               max_id = max_id.aggregate(Max('id_as_int'))['id_as_int__max']
-               max_id = 'ST' + str(max_id)
-               student = Student.objects.get(college_id = str(max_id))
-                # get course fees:
-               fees = float((Course.objects.get(id = course).fees_per_year)/2)
-               return JsonResponse({'batch':student.date_of_joining.year,'fees':fees})
-            else:
-                return JsonResponse({'error':'Student Does not exist with this Infomation!'},status=400)        
-        except Exception as e:
-            return JsonResponse({'error': f'An error Occured: {str(e)}'}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid Method'}, status=400)
-
-def createFeeStructure(request):
-    if request.method == 'POST':
-        try:
-            # Check content type to handle both FormData and JSON
-            if request.content_type == 'application/json':
-                data = json.loads(request.body)
-            else:
-                # Handle form data
-                data = {
-                    'course': request.POST.get('course'),
-                    'dueDate': request.POST.get('dueDate'),
-                    'year': request.POST.get('year'),
-                    'semester': request.POST.get('semester'),
-                    'feeAmt': request.POST.get('feeAmt'),
-                    'batch': request.POST.get('batch')
-                }
-            
-            # Validate required fields
-            required_fields = ['course', 'dueDate', 'year', 'semester', 'feeAmt', 'batch']
-            for field in required_fields:
-                if not data.get(field):
-                    return JsonResponse({'error': f'{field} is required'}, status=400)
-
-            # Auto-generate structure ID
-            max_id = FeeStructure.objects.aggregate(max_id=models.Max('structure_id'))['max_id']          
-            if max_id is None:
-                structure_id = 'FS20251'  # Initial ID
-            else:
-                try:
-                    # Extract numeric part and increment
-                    numeric_part = int(max_id[2:])  # Remove 'FS' prefix
-                    structure_id = f'FS{numeric_part + 1}'
-                except (ValueError, IndexError):
-                    structure_id = 'FS20251'
-
-            # Create FeeStructure object (NOT Course)
-            checking = FeeStructure.objects.filter(
-                course=data.get('course'),
-                year=data.get('year'),
-                semester=data.get('semester'),
-                amount=float(data.get('feeAmt')),
-                batch=data.get('batch'))
-
-            if checking.exists():
-                return JsonResponse({'error': 'Fee Structure created Already!'})
-            else:
-                FeeStructure.objects.create(
-                structure_id=structure_id,
-                course=data.get('course'),
-                due_date=data.get('dueDate'),
-                year=data.get('year'),
-                semester=data.get('semester'),
-                amount=float(data.get('feeAmt')),
-                batch=data.get('batch')  # Changed from for_year to batch
-            )
-                return JsonResponse({'success': 'Fee Structure Created Successfully'})
-            
-        except Exception as e:
-            return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid Method'}, status=400)
-
-def fetchBatch(request):
-    if request.method == 'POST':
-            data = json.loads(request.body)
-            course = data.get('course')
-            year = data.get('year')
-            semester = data.get('semester')
-            batch = data.get('batch')
-            try:
-                if not batch or batch == ''  :
-                    all_detail = FeeStructure.objects.filter(course = course, year = year, semester = semester)
-                    if all_detail.exists():
-                        batch = all_detail.order_by('batch').values_list('batch',flat=True)
-                        return JsonResponse({'batch':list(batch)})
-                    else:
-                        return JsonResponse({'error':'No Fee Structure Fouded with this Information!'},status = 400)
-                elif batch != '':
-                    all_detail = FeeStructure.objects.filter(course = course, year = year, semester = semester, batch = batch).order_by('structure_id')
-                    if all_detail.exists():
-                        info = []
-                        for i in all_detail:
-                            info.append({'structure_id':i.structure_id, 'course':i.course, 'year':i.year, 'semester':i.semester, 'due_date':i.due_date.strftime("%Y-%m-%d"), 'batch':i.batch, 'amount':i.amount})
-                        return JsonResponse({'info':info})
-                    else:
-                        return JsonResponse({'error':'No Fee Structure Fouded with this Information!'},status = 400)
-                             
-            except Exception as e:
-                return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid Method'}, status=400)
-
-def deleteStructure(request,structure_id):
-    try:
-        value_copy = structure_id
-        structure = FeeStructure.objects.get(structure_id = structure_id)
-        structure.delete()
-        return JsonResponse({'success':f"Fee Structure Deleted Successfully with ID: {value_copy}"})
-    except Exception as e:
-        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
-
-            
-
-# chatting management :
-from .models import Student, Faculty, ChatRoom, Message
-# Update your chat_home view in views.py
-def chat_home(request):
-    role = request.session.get('role')
-    user_id = None
-    
-    if role == 'student':
-        user_id = request.session.get('student_college_id')
-        student = Student.objects.get(college_id=user_id)
-        faculty_id = request.GET.get('faculty_id')
-        
-        if not faculty_id:
-            return redirect('faculty_filtering')  # Redirect if no faculty selected
-            
-        try:
-            faculty = Faculty.objects.get(college_id=faculty_id)
-            # Check if student follows this faculty
-            if faculty not in student.followed_faculty.all():
-                messages.error(request, "You must follow this faculty first")
-                return redirect('faculty_filtering')
-                
-            return render(request, 'chat/chat1.html', {
-                'current_user': student,
-                'other_user': faculty,
-                'role': role
-            })
-        except Faculty.DoesNotExist:
-            messages.error(request, "Faculty not found")
-            return redirect('faculty_filtering')
-            
-    elif role == 'faculty':
-        user_id = request.session.get('faculty_college_id')
-        faculty = Faculty.objects.get(college_id=user_id)
-        student_id = request.GET.get('student_id')
-        
-        if not student_id:
-            # Show faculty's student list for selection
-            students = Student.objects.filter(followed_faculty=faculty)
-            return render(request, 'chat/page2.html', {
-                'faculty': faculty,
-                'students': students,
-                'role': role
-            })
-            
-        try:
-            student = Student.objects.get(college_id=student_id)
-            # Check if student follows this faculty
-            if faculty not in student.followed_faculty.all():
-                messages.error(request, "This student doesn't follow you")
-                return redirect('faculty_student_list')
-                
-            return render(request, 'chat/chat2.html', {
-                'current_user': faculty,
-                'other_user': student,
-                'role': role
-            })
-        except Student.DoesNotExist:
-            messages.error(request, "Student not found")
-            return redirect('faculty_student_list')
-            
-    elif role == 'admin':
-        # Admin chat logic remains same
-        pass
-    else:
-        return redirect('login')
-
- # for get all faculty details 
-@csrf_exempt
-def get_faculty_details(request):
-    role = request.session.get('role')
-
-    if role == 'student':
-        try:
-            department = Course.objects.all()
-            all_faculty = Faculty.objects.all()
-            
-            # Check which faculty are followed by the student
-            student_id = request.session.get('student_college_id')
-            followed_faculty = []
-            if student_id:
-                student = Student.objects.get(college_id=student_id)
-                followed_faculty = student.followed_faculty.all().values_list('college_id', flat=True)
-            
-            return render(request, ['chat/page.html','faculty/faculty_page.html'], {
-                'faculty': all_faculty,
-                'department': department,
-                'followed_faculty': followed_faculty
-            })
-        except Faculty.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Faculty not found'})
-
-# for faculty filtering
-def faculty_filtering(request):
-    if not request.session.get('student_college_id'):
-        messages.error(request, "Please login as student first")
-        return redirect('login')
-        
-    filters = {
-        'department': request.GET.get('department', 'all'),
-        'name': request.GET.get('name', '')
-    }
-
-    faculty = Faculty.objects.all()
-    
-    if filters['department'] != 'all':
-        faculty = faculty.filter(department=filters['department'])
-    if filters['name']:
-        faculty = faculty.filter(name__icontains=filters['name'])
-
-    # Check which faculty are followed by the student
-    student_id = request.session.get('student_college_id')
-    followed_faculty = []
-    if student_id:
-        student = Student.objects.get(college_id=student_id)
-        followed_faculty = student.followed_faculty.all().values_list('college_id', flat=True)
-
-    html = render_to_string('chat/faculty_list_partial.html', {
-        'faculty_detail': faculty,
-        'followed_faculty': followed_faculty
-    })
-    return JsonResponse({'html': html})
-
-# for handling following functions
-from django.urls import reverse 
-@csrf_exempt
-def toggle_follow(request):
-    if request.method == 'POST':
-        try:
-            faculty_id = request.POST.get('faculty_id')
-            student_id = request.session.get('student_college_id')
-            
-            if not student_id:
-                return JsonResponse({
-                    'status': 'error', 
-                    'message': 'Student not logged in',
-                    'redirect': reverse('login')
-                })
-            
-            faculty = Faculty.objects.get(college_id=faculty_id)
-            student = Student.objects.get(college_id=student_id)
-            
-            if faculty in student.followed_faculty.all():
-                student.followed_faculty.remove(faculty)
-                is_following = False
-                message = 'Successfully unfollowed faculty'
-            else:
-                student.followed_faculty.add(faculty)
-                is_following = True
-                message = 'Successfully followed faculty'
-                
-            return JsonResponse({
-                'status': 'success',
-                'is_following': is_following,
-                'faculty_id': faculty_id,
-                'message': message
-            })
-            
-        except Faculty.DoesNotExist:
-            return JsonResponse({
-                'status': 'error', 
-                'message': 'Faculty not found'
-            }, status=404)
-        except Student.DoesNotExist:
-            return JsonResponse({
-                'status': 'error', 
-                'message': 'Student not found',
-                'redirect': reverse('login')
-            }, status=404)
-        except Exception as e:
-            return JsonResponse({
-                'status': 'error', 
-                'message': str(e)
-            }, status=500)
-    
-    return JsonResponse({
-        'status': 'error', 
-        'message': 'Invalid request method'
-    }, status=400)
-
-# for sending all info about all students for faculty portal ----not working filtering
-def faculty_student_list(request):
-    if not request.session.get('faculty_college_id'):
-        messages.error(request, "Please login as faculty first")
-        return redirect('login')
-    
-    try:
-   
-        faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-        students = Student.objects.filter(followed_faculty=faculty)
-     
-        
-        return render(request, 'chat/page2.html', {
-            'faculty': faculty,
-            'students': students,
-       
-            'role': 'faculty'
-        })
-    except Faculty.DoesNotExist:
-        messages.error(request, "Faculty not found")
-        return redirect('login')
-# for sending courses details
-def send_course_details(request):
-    course_name = request.GET.get('course')
-    try:
-        course = Course.objects.get(name=course_name)
-        return JsonResponse({
-            'no_of_years': course.no_of_years,
-            'no_of_semesters': course.no_of_semesters
-        })
-    except Course.DoesNotExist:
-        return JsonResponse({'error': 'Course not found'}, status=404)
-
-# for student filtering
-def student_filter_details(request):
-    if not request.session.get('faculty_college_id'):
-        return JsonResponse({'status': 'error', 'message': 'Please login as faculty first'})
-        
-    try:
-        faculty = Faculty.objects.get(college_id=request.session['faculty_college_id'])
-        students = Student.objects.filter(followed_faculty=faculty)
-        
-        filters = {
-            'course': request.GET.get('course', 'all'),
-            'year': request.GET.get('year', 'all'),
-            'semester': request.GET.get('semester', 'all'),
-            'college_id': request.GET.get('college_id', '')
+        context = {
+            "courses": courses,
+            "departments": departments,
+            "staff": staff,
+            "students": students,
+            "dept_options": department.data
         }
+        return JsonResponse(context)
 
-        if filters['course'] != 'all':
-            students = students.filter(course=filters['course'])
-        if filters['year'] != 'all':
-            students = students.filter(year=filters['year'])
-        if filters['semester'] != 'all':
-            students = students.filter(semester=filters['semester'])
-        if filters['college_id']:
-            students = students.filter(college_id__icontains=filters['college_id'])
+# FOR POSITION
+from .serializers import PositionSerializer
+from .models import Position
+class PositionAPI(ModelViewSet):
+    queryset = Position.objects.all().order_by("id")
+    serializer_class = PositionSerializer
+    pagination_class = CommonPagination
+    search_fields = ['name', 'role', 'type', 'rank']     
 
-        html = render_to_string('chat/student_list_partial.html', {
-            'students': students
-        })
-        return JsonResponse({'html': html})
-        
-    except Faculty.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Faculty not found'})
+    @action(detail=False, methods=['get'])
+    def import_page(self, request):
+        return render(request, "admin/Creation/positionCreation.html")
+
+# FOR FEE STRUCTURE
+from .models import FeeStructure
+from .serializers import FeeStrctureSerializers
+class FeeStructureAPI(ModelViewSet):
+    queryset = FeeStructure.objects.all()
+    serializer_class = FeeStrctureSerializers
+
+    @action(detail=False, methods=["get"])
+    def import_page(self, request):
+        context = {
+            "courses": Options().CourseOptions()
+            }
+        return render(request, "admin/Creation/feeStructureCreation.html", context)
     
+    @action(detail=False, methods=["post"])
+    def bulk(self, request):
+        semester = request.data.get("semester")
+        due_date = request.data.get("due_date")
+        course_list = request.data.get("course_list")
 
-# for create chat room
-from .models import ChatRoom, Message, Student, Faculty
-import logging
-from django.core.cache import cache
+        count = 0
 
-logger = logging.getLogger(__name__)
-@csrf_exempt
-def create_chat_room(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            participant1 = data.get('participant1')
-            participant2 = data.get('participant2')
-            
-            # Check if room already exists
-            room = ChatRoom.objects.filter(
-                Q(participant1=participant1, participant2=participant2) |
-                Q(participant1=participant2, participant2=participant1)
-            ).first()
+        for i in course_list:
+            student = Student.objects.filter(semester = semester, course_id = int(i)).order_by('-id').first()
+            if not student:
+                continue
+            batch = str(student.doj.year)
+            obj = FeeStructure.objects.filter(course_id=int(i), semester=semester, batch = batch).first()
 
-            if not room:
-                room = ChatRoom.objects.create(
-                    name=f"Chat between {participant1} and {participant2}",
-                    participant1=participant1,
-                    participant2=participant2
-                )
+            if not obj:
+                FeeStructure.objects.create(course_id=int(i),semester=semester, due_date=due_date, batch = batch)
+                count += 1
 
-            return JsonResponse({
-                'status': 'success',
-                'room_id': str(room.id),
-                'message': 'Chat room ready'
-            })
+        message = ""
 
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-# for gwt messages
-@csrf_exempt
-def get_messages(request, room_id):
-    try:
-        current_user = request.GET.get('current_user')
-        if not current_user:
-            return JsonResponse({'status': 'error', 'message': 'current_user parameter missing'}, status=400)
+        if count != 0:
+            message = f"Out of {len(course_list)} only {count}"
 
-        try:
-            chat_room = ChatRoom.objects.get(id=room_id)
-        except ChatRoom.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Chat room not found'}, status=404)
+        return JsonResponse({"message": f"{message} Structure are Created Successfully!"})
+    
+# COMMON
+from django.db.models import Q
+class Common(viewsets.ViewSet):
+    @action(detail=False, methods=["get"])
+    def semester(self, request):
+        course_id = request.GET.get("course_id")
+        semesters = Course.objects.get(id = course_id).semesters
+        return JsonResponse({"semesters": semesters})
+    
+    @action(detail=False, methods=["get"])
+    def search_course(self, request):
+        query = request.GET.get("q")
 
-        # Verify user is participant
-        if current_user not in [chat_room.participant1, chat_room.participant2]:
-            return JsonResponse({'status': 'error', 'message': 'Not a participant'}, status=403)
-
-        # Get last message ID if provided
-        last_message_id = request.GET.get('last_message_id')
-        
-        # Get messages after last_message_id if provided, otherwise get all
-        if last_message_id:
-            messages = Message.objects.filter(
-                chat_room=chat_room,
-                id__gt=last_message_id
-            ).order_by('timestamp')
-        else:
-            messages = Message.objects.filter(chat_room=chat_room).order_by('timestamp')
-
-        # Mark messages as delivered
-        Message.objects.filter(
-            chat_room=chat_room,
-            is_delivered=False,
-        ).exclude(sender_id=current_user).update(is_delivered=True)
-
-        # Get typing status from cache
-        other_user = chat_room.participant2 if chat_room.participant1 == current_user else chat_room.participant1
-        is_typing = cache.get(f'typing_{room_id}_{other_user}', False)
-
-        # Get other user's online status
-        other_user_status = get_user_status(other_user)
-
-        messages_data = []
-        for msg in messages:
-            messages_data.append({
-                'id': msg.id,
-                'sender': msg.sender_id,
-                'content': msg.content,
-                'timestamp': msg.timestamp.isoformat(),
-                'is_delivered': msg.is_delivered,
-                'is_read': msg.is_read
-            })
-
-        return JsonResponse({
-            'status': 'success',
-            'messages': messages_data,
-            'is_typing': is_typing,
-            'other_user_status': other_user_status
-        })
-
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-# for get user status 
-def get_user_status(user_identifier):
-    try:
-        if user_identifier.startswith('faculty_'):
-            faculty_id = user_identifier.replace('faculty_', '')
-            faculty = Faculty.objects.get(college_id=faculty_id)
-            return {
-                'online': faculty.online_status,
-                'last_seen': faculty.last_seen.strftime('%Y-%m-%d %H:%M') if faculty.last_seen else None
-            }
-        elif user_identifier.startswith('student_'):
-            student_id = user_identifier.replace('student_', '')
-            student = Student.objects.get(college_id=student_id)
-            return {
-                'online': student.online_status,
-                'last_seen': student.last_seen.strftime('%Y-%m-%d %H:%M') if student.last_seen else None
-            }
-    except Exception as e:
-        logger.error(f"Error getting user status for {user_identifier}: {str(e)}")
-        return None
-# for sending message
-@csrf_exempt
-def send_message(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            room_id = data.get('room_id')
-            sender_id = data.get('sender_id')
-            content = data.get('content', '').strip()
-            
-            if not all([room_id, sender_id, content]):
-                return JsonResponse({'status': 'error', 'message': 'Missing fields'}, status=400)
-
-            try:
-                chat_room = ChatRoom.objects.get(id=room_id)
-            except ChatRoom.DoesNotExist:
-                return JsonResponse({'status': 'error', 'message': 'Room not found'}, status=404)
-
-            if sender_id not in [chat_room.participant1, chat_room.participant2]:
-                return JsonResponse({'status': 'error', 'message': 'Not a participant'}, status=403)
-
-            message = Message.objects.create(
-                chat_room=chat_room,
-                sender_id=sender_id,
-                content=content,
-                is_delivered=True
+        courses = Course.objects.filter(
+            Q(name__icontains = query)|
+            Q(code__icontains = query)|
+            Q(level__icontains = query)|
+            Q(department__name__icontains = query)
             )
 
-            # Update last activity for the chat room
-            chat_room.last_activity = timezone.now()
-            chat_room.save()
-
-            return JsonResponse({
-                'status': 'success',
-                'message_id': str(message.id),
-                'timestamp': message.timestamp.isoformat()
-            })
-
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+        data = list(courses.values("id", "name", "level"))
+        return JsonResponse({"data": data})
+        
     
-    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
 
-# for updating typing status---------not working
-@csrf_exempt
-def update_typing_status(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            room_id = data.get('room_id')
-            user_id = data.get('user_id')
-            is_typing = data.get('is_typing', False)
-            
-            # Store typing status in cache (expires after 5 seconds)
-            cache.set(f'typing_{room_id}_{user_id}', is_typing, timeout=5)
-            
-            return JsonResponse({'status': 'success'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
 
-# for update the read remark-------not working
-@csrf_exempt
-def mark_messages_as_read(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            room_id = data.get('room_id')
-            reader_id = data.get('reader_id')
-            
-            if not all([room_id, reader_id]):
-                return JsonResponse(
-                    {'status': 'error', 'message': 'Missing required fields'},
-                    status=400
-                )
 
-            # Mark messages as read where reader is not the sender
-            updated_count = Message.objects.filter(
-                chat_room_id=room_id,
-                is_read=False
-            ).exclude(sender_id=reader_id).update(
-                is_read=True,
-                read_at=timezone.now()
-            )
-            
-            return JsonResponse({
-                'status': 'success',
-                'updated_count': updated_count
-            })
-        except Exception as e:
-            logger.exception("Error marking messages as read")
-            return JsonResponse(
-                {'status': 'error', 'message': str(e)}, 
-                status=400
-            )
-    return JsonResponse(
-        {'status': 'error', 'message': 'Invalid request'}, 
-        status=400
-    )
 
-# for delete chat 
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-import json
-import logging
 
-@csrf_exempt
-def delete_chat(request, room_id):
-    if request.method == 'DELETE':
-        try:
-            # Get user identifier from request body
-            data = json.loads(request.body)
-            current_user_identifier = data.get('user_identifier')
-            
-            if not current_user_identifier:
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'User identifier not provided'
-                }, status=400)
+        
 
-            chat_room = get_object_or_404(ChatRoom, id=room_id)
-            
-            # Verify user is a participant in this chat
-            if current_user_identifier not in [chat_room.participant1, chat_room.participant2]:
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'You are not authorized to delete this chat'
-                }, status=403)
-            
-            # Delete all messages first
-            Message.objects.filter(chat_room=chat_room).delete()
-            
-            # Then delete the chat room
-            chat_room.delete()
-            
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Chat deleted successfully'
-            })
-            
-        except Exception as e:
-            logger.error(f"Error deleting chat: {str(e)}")
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Failed to delete chat. Please try again.'
-            }, status=500)
+# FOR CREATING THE LABS
+import pandas as pd
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import status
+from .models import Lab
+from .serializers import LabSerializers, LabExcelImportSerializers
+class LabAPI(ModelViewSet):
+    queryset = Lab.objects.all()
+    serializer_class = LabSerializers
+    parser_classes = [MultiPartParser, FormParser]
+
+    @action(detail=False, methods=['post'], url_path='import-excel', serializer_class=LabExcelImportSerializers)
+    def import_excel(self, request):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        file = serializer.validated_data['file']
+        df = pd.read_excel(file)
+
+        df.columns = df.columns.str.strip()
+        df = df.dropna(how='all')
+
+        data = df.to_dict(orient='records')
+
+        new_records = []
+        skipped = 0
+
+        for row in data:
+            try:
+                department_name = str(row.get('department')).strip()
+
+                department = Department.objects.filter(
+                            Q(name__iexact=department_name) |
+                            Q(code__iexact=department_name)
+                            ).first()
+                
+                if not department:
+                    skipped += 1
+                    continue
+
+                # duplicate check
+                if Lab.objects.filter( number=row['number'], name=row['name'], type=row['type'], department=department).exists():
+                    skipped += 1
+                    continue
+
+                new_records.append({ "name": row['name'], "number": row['number'], "type": row['type'], "facility": row.get('facility', ''),
+                "capacity": row.get('capacity', 0), "status": row.get('status', 'Available'), "floor": row.get('floor', 0), "department": department.id })
+
+            except Exception:
+                skipped += 1
+                continue
+
+        if new_records:
+            lab_serializer = LabSerializers(data=new_records, many=True)
+            lab_serializer.is_valid(raise_exception=True)
+            lab_serializer.save()
+
+        return Response({ "message": "Excel imported successfully", "added": len(new_records), "skipped": skipped }, status=status.HTTP_201_CREATED)
+  
+    @action(detail=False, methods=['get'])
+    def import_page(self, request):
+        college_id = request.session.get("college_id")
     
-    return JsonResponse({
-        'status': 'error',
-        'message': 'Invalid request method'
-    }, status=405)
-
-from django.shortcuts import get_object_or_404, redirect
-from django.core.paginator import Paginator
-from .models import Department, Faculty, Student, Course
-from .serializers import DepartmentSerializers
-
-from django.core.paginator import Paginator
-
-from django.core.paginator import Paginator
-from django.http import JsonResponse
-import json
-
-def department_creation(request):
-    role = request.session.get('role')
-    
-    # Count stats
-    students = Student.objects.count()
-    faculty = Faculty.objects.count()
-    courses = Course.objects.count()
-    departments = Department.objects.count()
-
-    # programs
-    programs = Course.objects.all().order_by('id')
-    
-    # AJAX request for pagination/search
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        try:
-            # Get search query
-            search_query = request.GET.get('search', '')
-            page = request.GET.get('page', 1)
-            
-            # Get departments with search filter
-            departments_list = Department.objects.all().order_by('id')
-            
-            if search_query:
-                departments_list = departments_list.filter(
-                    name__icontains=search_query
-                ) | departments_list.filter(
-                    code__icontains=search_query
-                ) | departments_list.filter(
-                    type__icontains=search_query
-                )
-            
-            # Pagination
-            paginator = Paginator(departments_list, 10)
-            page_obj = paginator.page(page)
-            
-            # Prepare response data
-            departments_data = []
-            for dept in page_obj:
-                departments_data.append({
-                    'department_id': dept.id,
-                    'name': dept.name,
-                    'type': dept.type,
-                    'code': dept.code,
-                    'faculty_count': dept.faculty_count,
-                    'programs_count': dept.programs_count,
-                })
-            
-            return JsonResponse({
-                'departments': departments_data,
-                'has_previous': page_obj.has_previous(),
-                'has_next': page_obj.has_next(),
-                'current_page': page_obj.number,
-                'total_pages': paginator.num_pages,
-                'total_departments': paginator.count
-            })
-            
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    
-    # POST request for creating department
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            department_data = {
-                'name': data.get('deptName', '').strip(),
-                'code': data.get('deptCode', ''),
-                'type': data.get('deptType', ''),
-                'description': data.get('deptDescription', ''),
-                'programs_count': data.get('deptProgram', ''),
-                'faculty_count': data.get('deptFaculty', '')
+        context = {
+            "detail": Details("SuperAdmin", college_id).detail(),
+            "departments": Options().DeptOptions("Academic")
             }
+        return render(request, "admin/Creation/labCreation.html", context)
 
-            serializer = DepartmentSerializers(data=department_data)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse({'success': 'Department Created Successfully!'})
-            else:
-                return JsonResponse({'error': f'An Error Occurred: {serializer.errors}'}, status=400)
-        except json.JSONDecodeError as e:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400) 
-        except Exception as e:
-            return JsonResponse({'error': f'An Error Occurred: {str(e)}'}, status=500)
 
-    if request.method == 'DELETE':
+# FOR CREATING THE LECTURES
+from .serializers import LectureSerializers
+from .models import Lecture
+from .utils import time_per_lecture, interval_time
+
+class lectureAPI(ModelViewSet):
+    queryset = Lecture.objects.all()
+    serializer_class = LectureSerializers
+
+    @action(detail=False, methods=['get'])
+    def import_page(self, request):
+        college_id = request.session.get("college_id")
+        context = {
+            "detail": Details("SuperAdmin", college_id).detail(),
+            "courses": Options().CourseOptions()
+            }
+        return render(request, "admin/Creation/lectureCreation.html", context)
+
+    @action(detail=False, methods=['get'])
+    def lecture_details(self, request):
         try:
-            data = json.loads(request.body)
-            department_id = data.get('Id')
-            
-            try:
-                department = Department.objects.get(id=department_id)
-                department.delete()
-                return JsonResponse({'success': 'Department deleted successfully!'})
-            except Department.DoesNotExist:
-                return JsonResponse({'error': 'Department not found!'}, status=404)
-                
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            course_id = request.GET.get("course_id")
+            course = Course.objects.get(id = course_id)
+            serializer = CourseSerializer(course)
+            lectureTime, start, at = time_per_lecture(True)
+            intervalOccur, intervalTime = interval_time(True)
 
-    if request.method == 'PUT':
-        try:
-            data = json.loads(request.body)
-            department_id = data.get('Id')
-            name = data.get('name', '').strip()
-            
-            if not name:
-                return JsonResponse({'error': 'Department name is required!'}, status=400)
-            
-            try:
-                department = Department.objects.get(id=department_id)
-                department.name = name
-                department.save()
-                return JsonResponse({'success': 'Department updated successfully!'})
-            except Department.DoesNotExist:
-                return JsonResponse({'error': 'Department not found!'}, status=404)
-                
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    # Initial page load
-    context = {
-        'departments': departments,
-        'faculty': faculty,
-        'students': students,
-        'courses': courses,
-        'role': role,
-        'programs':programs
-    }
-    
-    return render(request, 'Creation/department.html', context)
-
-from .serializers import DepartmentSerializers
-
-def get_department_detail(request):
-    if request.method == 'GET':
-        department_id = request.GET.get('id')
+            context = {
+            'data': serializer.data,
+            'lectureTime': lectureTime,
+            'intervalOccur': intervalOccur,
+            'intervalTime': intervalTime,
+            'start': start,
+            'at': at
+            }
+            return JsonResponse(context)
         
-        if not department_id:
-            return JsonResponse({'error': 'Department ID is required!'}, status=400)
+        except Exception as e : 
+            return JsonResponse({'error': f"An Error Occured: {str(e)}!"})
+
+    @action(detail=False, methods=['post'])
+    def create_lectures(self, request):
+        data = request.data
+        new_record = []
+        added = 0
+        skipped = 0
+        for row in data:
+            course = row['course']
+            semester = row['semester']
+            name = row['name']
+            lecture = Lecture.objects.filter(course = course, semester = semester, name = name)
+            if lecture.exists():
+                skipped += 1
+                continue
+            new_record.append(row)
+            added += 1
+            
+        if new_record:   
+            lecture_serializer = LectureSerializers(data=new_record, many=True)
+            lecture_serializer.is_valid(raise_exception=True)
+            lecture_serializer.save()
+
+        return JsonResponse(
+            {"message": "Lecture Created Successfully!", "added": len(new_record), "skipped":skipped},
+            status=status.HTTP_201_CREATED
+        )
         
+# FOR CREATING THE SCHEDULES
+from .models import Schedule, Lecture
+from .serializers import ScheduleSerilizer
+from .signals import daysName
+from .utils import schedule
+from .service import set_date_formate
+from django.db.models import Count
+from .pagination import standardPagination
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+from rest_framework.filters import OrderingFilter
+from .service import Details
+from .serializers import CourseMiniSerializer
+
+class scheduleAPI(ModelViewSet):
+    queryset = Schedule.objects.all()
+    serializer_class = ScheduleSerilizer
+    pagination_class = standardPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ["id", "faculty", "lecture__semester", "lecture__course"]
+    search_fields = ["lab", "faculty"]
+    ordering = ["id", "lecture", "day_name"]
+    
+    @action(detail=False, methods=['get'])
+    def import_page(self, request):
+        college_id = request.session.get("college_id")
+        course = Course.objects.all().order_by("id")
+        serializers = CourseMiniSerializer(course, many=True)
+        context = {
+            "detail": Details("SuperAdmin", college_id).detail(),
+            "courses": serializers.data
+            }
+        return render(request, "admin/Creation/scheduleCreation.html", context)
+
+    @action(detail=False, methods=['get'])
+    def import_student_page(self, request):
+        college_id = request.session.get("college_id")
+        context = {
+            "detail" :Details("Student", college_id).detail(),            
+        }
+        return render(request, "student/studentSchedule.html", context)
+
+    @action(detail=False, methods=['get'])
+    def course_details(self, request):
         try:
-            department = Department.objects.get(id=department_id)
-            
-            # Use serializer
-            serializer = DepartmentSerializers(department)
-            
-            # Add extra fields if needed
-            data = serializer.data
-            data['created_at'] = department.created_at.strftime('%Y-%m-%d %H:%M:%S')
-            data['updated_at'] = department.updated_at.strftime('%Y-%m-%d %H:%M:%S')
-            
-            return JsonResponse({'department': data})
-            
-        except Department.DoesNotExist:
-            return JsonResponse({'error': 'Department not found!'}, status=404)
+            course_id = request.GET.get('course_id')  
+            course = Course.objects.get(id = course_id)
+            serializers = CourseSerializer(course)
+            return JsonResponse({"data": serializers.data})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
+            return JsonResponse({"error": f"An Error Occured : {str(e)} !"})
+        
+    @action(detail=False, methods=['get'])
+    def schedule_details(self, request):
+      try:
+        course_id = request.GET.get("course_id")
+        semester = request.GET.get("semester")
+        subjects = Subject.objects.filter(course = course_id, semester = semester)
+        serializers = SubjectMiniSerializers(subjects, many=True)           
+        context = {
+            "subjects": serializers.data
+            }
+        return JsonResponse(context)
+        
+      except Exception as e:
+          return JsonResponse({"error": f"An Error Occured : {str(e)}!"})
 
-# course craetion
-from .models import Department, Course, Level
-from .serializers import CourseSerializers
+    @action(detail=False, methods=['get'])
+    def slots_details(self, request):
+      try:
+        course_id = request.GET.get("course_id")
+        semester = request.GET.get("semester")
 
-from django.core.paginator import Paginator
-from django.http import JsonResponse
-import json
-from .models import Course, Department, Level
-from .serializers import CourseSerializers
+        days = daysName(schedule(True))
+        short_days = [day[:3] for day in days]
 
-def course_creation(request):
-    # Get all departments and levels for dropdown
-    department_list = Department.objects.all()
-    level_list = Level.objects.all()
-    
-    # AJAX request for pagination/search
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        try:
-            # Get search query
-            search_query = request.GET.get('search', '')
-            page = request.GET.get('page', 1)
-            
-            # Get courses with search filter
-            courses_list = Course.objects.all().select_related('department', 'level').order_by('name')
-            
-            if search_query:
-                courses_list = courses_list.filter(
-                    name__icontains=search_query
-                ) | courses_list.filter(
-                    code__icontains=search_query
-                ) | courses_list.filter(
-                    department__name__icontains=search_query
-                )
-            
-            # Pagination - 10 items per page
-            paginator = Paginator(courses_list, 10)
-            page_obj = paginator.page(page)
-            
-            # Prepare response data
-            courses_data = []
-            for course in page_obj:
-                courses_data.append({
-                    'id': course.id,
-                    'name': course.name,
-                    'code': course.code,
-                    'department': course.department.name,
-                    'department_id': course.department.id,
-                    'level': course.level.name,
-                    'level_id': course.level.id,
-                    'years': course.years,
-                    'semesters': course.semesters,
-                    'student_capacity': course.student_capacity,
-                    'fees_per_year': course.fees_per_year,
-                    'description': course.description,
-                    'created_at': course.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                    'updated_at': course.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
-                })
-            
-            return JsonResponse({
-                'courses': courses_data,
-                'has_previous': page_obj.has_previous(),
-                'has_next': page_obj.has_next(),
-                'current_page': page_obj.number,
-                'total_pages': paginator.num_pages,
-                'total_courses': paginator.count
-            })
-            
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-    
-    # POST request for creating course
-    if request.method == 'POST':
-        try:
-            # Check if it's form data (with image) or JSON data
-            if 'application/json' in request.content_type:
-                data = json.loads(request.body)
+        objects = Lecture.objects.filter(course = course_id, semester = semester, type = "lecture")
+
+        lectures = []
+        for lec in objects:
+            lectures.append({"id": lec.id, "slot": f"{set_date_formate(lec.start_time)}-{set_date_formate(lec.end_time)}"})
+
+        countList = []
+        for day in days:
+            count = Schedule.objects.filter(lecture__course = course_id, lecture__semester = semester, day_name = day, available = False)
+            countList.append(f"{count.count()}/{objects.count()}")
+         
+        scheduleData = []
+        for i in objects:
+            data_list = []
+            for j in days:
+                slot = Schedule.objects.filter(lecture = i.id, day_name = j).first()
                 
-                # Handle JSON data (for AJAX without image)
-                course_data = {
-                    'name': data.get('courseName', '').strip(),
-                    'code': data.get('courseCode', '').strip(),
-                    'department': data.get('courseDepartment'),
-                    'level': data.get('courseLevel'),
-                    'years': data.get('courseDuration'),
-                    'semesters': data.get('courseSemesters', 2),  # Default 2 semesters per year
-                    'description': data.get('courseDescription', ''),
-                    'student_capacity': data.get('studentCapacity'),
-                    'fees_per_year': data.get('courseFees'),
-                    'image': None  # Image not supported via JSON
-                }
-                
-                serializer = CourseSerializers(data=course_data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return JsonResponse({'success': 'Course Created Successfully!'})
+                if slot:
+                    if slot.available:
+                        data_list.append({"status": True, "id": slot.id, "subjectId": slot.subject.id if slot.subject and not slot.available else 0})
+
+                    else:
+                        data_list.append({"status": False, "id": slot.id, "subjectId": slot.subject.id if slot.subject and not slot.available else 0})
+                    
                 else:
-                    return JsonResponse({'error': f'Validation Error: {serializer.errors}'}, status=400)
+                    data_list.append({"status": False, "id": slot.id, "subjectId": slot.subject.id if slot.subject and not slot.available else 0})
                     
-            else:
-                # Handle form data with image
-                name = request.POST.get('courseName', '').strip()
-                code = request.POST.get('courseCode', '').strip()
-                department_id = request.POST.get('courseDepartment')
-                level_id = request.POST.get('courseLevel')
-                years = request.POST.get('courseDuration')
-                description = request.POST.get('courseDescription', '')
-                student_capacity = request.POST.get('studentCapacity')
-                fees_per_year = request.POST.get('courseFees')
-                image = request.FILES.get('courseImage')
-                
-                # Get department and level instances
-                try:
-                    department = Department.objects.get(id=department_id)
-                    level = Level.objects.get(name=level_id)
-                except (Department.DoesNotExist, Level.DoesNotExist) as e:
-                    return JsonResponse({'error': f'Invalid department or level: {str(e)}'}, status=400)
-                
-                # Calculate semesters (2 per year)
-                semesters = int(years) * 2 if years else 2
-                
-                # Create course
-                course = Course(
-                    name=name,
-                    code=code,
-                    department=department,
-                    level=level,
-                    years=years,
-                    semesters=semesters,
-                    description=description,
-                    student_capacity=student_capacity,
-                    fees_per_year=fees_per_year,
-                    image=image
-                )
-                course.save()
-                
-                return JsonResponse({'success': 'Course Created Successfully!'})
-                
-        except json.JSONDecodeError as e:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400) 
-        except Exception as e:
-            return JsonResponse({'error': f'An Error Occurred: {str(e)}'}, status=500)
-    
-    # Initial page load
-    context = {
-        'department_list': department_list,
-        'level_list': level_list,
-    }
-    
-    return render(request, 'Creation/course_creation.html', context)
-
-# Add these functions for delete, update, view
-def delete_course(request):
-    if request.method == 'DELETE':
-        try:
-            data = json.loads(request.body)
-            course_id = data.get('Id')
+            scheduleData.append(data_list)
             
-            try:
-                course = Course.objects.get(id=course_id)
-                course.delete()
-                return JsonResponse({'success': 'Course deleted successfully!'})
-            except Course.DoesNotExist:
-                return JsonResponse({'error': 'Course not found!'}, status=404)
-                
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-
-def update_course(request):
-    if request.method == 'PUT':
-        try:
-            data = json.loads(request.body)
-            course_id = data.get('Id')
-            name = data.get('name', '').strip()
-            
-            if not name:
-                return JsonResponse({'error': 'Course name is required!'}, status=400)
-            
-            try:
-                course = Course.objects.get(id=course_id)
-                course.name = name
-                course.save()
-                return JsonResponse({'success': 'Course updated successfully!'})
-            except Course.DoesNotExist:
-                return JsonResponse({'error': 'Course not found!'}, status=404)
-                
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-
-def get_course_detail(request):
-    if request.method == 'GET':
-        course_id = request.GET.get('id')
-        
-        if not course_id:
-            return JsonResponse({'error': 'Course ID is required!'}, status=400)
-        
-        try:
-            course = Course.objects.get(id=course_id)
-            
-            # Prepare course data
-            course_data = {
-                'id': course.id,
-                'name': course.name,
-                'code': course.code,
-                'department': course.department.name,
-                'level': course.level.name,
-                'years': course.years,
-                'semesters': course.semesters,
-                'description': course.description,
-                'student_capacity': course.student_capacity,
-                'fees_per_year': course.fees_per_year,
-                'created_at': course.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                'updated_at': course.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
-                'image_url': course.image.url if course.image else None
+        context = {
+            "days": short_days,
+            "lecture": lectures,
+            "scheduleData": scheduleData,
+            "countList": countList
             }
+
+        return JsonResponse(context)
+      except Exception as e:
+          return JsonResponse({"error": f"An Error Occured : {str(e)}!"})
+
+    @action(detail=False, methods=['get'])
+    def faculty_slot_details(self, request):
+      try:
+        faculty_id = request.GET.get("faculty_id") 
+        lab_id = request.GET.get("lab_id")
+        
+        days = daysName(schedule(True))
+        facultyData = []
+        labData = []
+        lecture = Lecture.objects.values('course').annotate(total=Count('id')) .order_by("-total").first()
+
+        max_lectures = lecture['total']
+        for lec in range(1, max_lectures+1):
+            data_list = []
+            lab_data_list = []
+            for day in days:
+                # for faculty
+                if faculty_id != "":
+                    f = Schedule.objects.filter(faculty = faculty_id ,day_name=day, lecture__name = f"Lecture {lec}").first()
+                    if f: 
+                        if f.available:           
+                            data_list.append({"status": True, "id": f.id})
+                        else:
+                            data_list.append({"status": False, "id": f.id})              
+                    else:
+                        data_list.append({"status": True, "id": 0})
+                else:
+                    data_list.append({"status": False, "id": 0})
+
+                # for labs 
+                if lab_id != "": 
+                    l = Schedule.objects.filter(lab = lab_id ,day_name=day, lecture__name = f"Lecture {lec}").first()
+                    if l: 
+                        if l.available:           
+                            lab_data_list.append({"status": True, "id": l.id})
+                        else:
+                            lab_data_list.append({"status": False, "id": l.id})              
+                    else:
+                        lab_data_list.append({"status": True, "id": 0})
+                else:
+                    lab_data_list.append({"status": False, "id": 0})
+            facultyData.append(data_list)
+            labData.append(lab_data_list)
+
+        context = {
+            "facultyData": facultyData,
+            "labData": labData,
+            }
+
+        return JsonResponse(context)
+      except Exception as e:
+          return JsonResponse({"error": f"An Error Occured : {str(e)}!"})
+
+    @action(detail=False, methods=['post'])
+    def reset(self, request):
+        try:
+            data = request.data
+            course_id = data.get("course_id")
+            semester = data.get("semester")
+            schedule_data =Schedule.objects.all()
             
-            return JsonResponse({'course': course_data})
-            
-        except Course.DoesNotExist:
-            return JsonResponse({'error': 'Course not found!'}, status=404)
+            if course_id :
+                schedule_data = schedule_data.filter(lecture__course = course_id)
+
+            if semester :
+                schedule_data = schedule_data.filter(lecture__semester = semester)
+      
+            schedule_data.update( faculty = None, subject = None, lab = None, available = True)
+            return JsonResponse({"success": f"Objects Reset SuccessFully!"})
+  
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-   
-    
-# Created Positions
-from .models import Position, Department
-
-def position_creation(request):
-    role = request.session.get('role')
-    details = Position.objects.all().order_by('position_id')
-    paginator = Paginator(details,10)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        data = []
-        for position in page_obj:
-            data.append({
-                "position_id":position.position_id,
-                "name": position.name,
-                "department": position.department.name,
-                "type": position.type,
-                "salary": position.salary,
-                "role": position.role,
-                "level":position.level, 
-                
-            })
-        return JsonResponse({
-            "details": data,
-            "has_next": page_obj.has_next(),
-            "has_prev": page_obj.has_previous(),
-            "page_number": page_obj.number,
-            "total_pages": paginator.num_pages
-        })     
-    try:
-        # Get lists for both GET and POST requests
-        faculty_department_list = Department.objects.filter(type='Faculty')
-        admin_department_list = Department.objects.filter(type='Admin')
-        
-        if request.method == 'POST':
-            action = request.POST.get('form_name')
-            if action == 'adminPositionForm':
-                try:
-                    # Get form data
-                    position_name = request.POST.get('adminPosition')
-                    department_id = request.POST.get('adminDepartment')
-                    level = request.POST.get('adminLevel')
-                    
-                    # Check if position already exists
-                    existing_position = Position.objects.filter(
-                        name=position_name,
-                        department_id=department_id,
-                        level=level,
-                        role='Admin'
-                    ).first()
-                    
-                    if existing_position:
-                        messages.error(request, f"Admin position '{position_name}' already exists in this department with the same level!")
-                    else:
-                        # Get and convert form data
-                        salary_str = request.POST.get('adminSalary')
-                        # Clean salary string - remove any non-numeric characters
-                        salary_str = ''.join(filter(str.isdigit, salary_str))
-                        salary = int(salary_str) if salary_str else 0
-                        
-                        role_filter = Position.objects.filter(role='Admin')
-                        
-                        # Check if any admin positions exist
-                        if not role_filter.exists():
-                            position_id = 'GKP-AD-1'  # Initial ID
-                        else:
-                            max_id = role_filter.aggregate(max_id=models.Max('position_id'))['max_id']
-                            
-                            if max_id is None:
-                                position_id = 'GKP-AD-1'
-                            else:
-                                try:
-                                    # Extract numeric part and increment
-                                    numeric_part = int(max_id.split('-')[-1])  # Get the last part after splitting by '-'
-                                    position_id = f'GKP-AD-{numeric_part + 1}'
-                                except (ValueError, IndexError):
-                                    position_id = 'GKP-AD-1'
-                        
-                        # Handle both possible field names for requirement
-                        requirement = request.POST.get('adminRequirment') or request.POST.get('adminRequirement')
-                        if not requirement:
-                            messages.error(request, "Requirement field is required")
-                            raise ValueError("Requirement field is required")
-                        
-                        # Create position with foreign key IDs
-                        Position.objects.create(
-                            position_id=position_id,
-                            name=position_name,
-                            type=request.POST.get('adminType'),
-                            department_id=department_id,
-                            level=level,
-                            salary=salary,
-                            role='Admin',
-                            specialization=request.POST.get('adminSpecialization'),
-                            requirment=requirement,
-                            responsibility=request.POST.get('adminResponsibility'),
-                        )
-                        messages.success(request, "Admin Position Created Successfully!")
-                        return redirect('position_creation')  # Redirect to prevent form resubmission
-                    
-                except ValueError as e:
-                    if "Requirement field is required" in str(e):
-                        # Already handled by error message above
-                        pass
-                    else:
-                        messages.error(request, "Invalid number format in form data")
-                except Exception as e:
-                    messages.error(request, f"Error adding position: {str(e)}")
-
-            elif action == 'facultyPositionForm':
-                try:
-                    # Get form data
-                    position_name = request.POST.get('facultyPosition')
-                    department_id = request.POST.get('facultyDepartment')
-                    level = request.POST.get('facultyLevel')
-                    
-                    # Check if position already exists
-                    existing_position = Position.objects.filter(
-                        name=position_name,
-                        department_id=department_id,
-                        level=level,
-                        role='Faculty'
-                    ).first()
-                    
-                    if existing_position:
-                        messages.error(request, f"Faculty position '{position_name}' already exists in this department with the same level!")
-                    else:
-                        # Get and convert form data
-                        salary_str = request.POST.get('facultySalary')
-                        # Clean salary string - remove any non-numeric characters
-                        salary_str = ''.join(filter(str.isdigit, salary_str))
-                        salary = int(salary_str) if salary_str else 0
-                        
-                        role_filter = Position.objects.filter(role='Faculty')
-                        
-                        # Check if any faculty positions exist
-                        if not role_filter.exists():
-                            position_id = 'GKP-FA-1'  # Initial ID
-                        else:
-                            max_id = role_filter.aggregate(max_id=models.Max('position_id'))['max_id']
-                            
-                            if max_id is None:
-                                position_id = 'GKP-FA-1'
-                            else:
-                                try:
-                                    # Extract numeric part and increment
-                                    numeric_part = int(max_id.split('-')[-1])  # Get the last part after splitting by '-'
-                                    position_id = f'GKP-FA-{numeric_part + 1}'
-                                except (ValueError, IndexError):
-                                    position_id = 'GKP-FA-1'
-                        
-                        # Handle both possible field names for requirement
-                        requirement = request.POST.get('facultyRequirment') or request.POST.get('facultyRequirement')
-                        if not requirement:
-                            messages.error(request, "Requirement field is required")
-                            raise ValueError("Requirement field is required")
-                        
-                        # Create position with foreign key IDs
-                        Position.objects.create(
-                            position_id=position_id,
-                            name=position_name,
-                            type=request.POST.get('facultyType'),
-                            department_id=department_id,
-                            level=level,
-                            role='Faculty',
-                            salary=salary,
-                            specialization=request.POST.get('facultySpecialization'),
-                            requirment=requirement,
-                            responsibility=request.POST.get('facultyResponsibility'),
-                        )
-                        messages.success(request, "Faculty Position Created Successfully!")
-                        return redirect('position_creation')  # Redirect to prevent form resubmission
-                    
-                except ValueError as e:
-                    if "Requirement field is required" in str(e):
-                        # Already handled by error message above
-                        pass
-                    else:
-                        messages.error(request, "Invalid number format in form data")
-                except Exception as e:
-                    messages.error(request, f"Error adding position: {str(e)}")
-        
-        # Return with context for both GET and POST
-        return render(request, 'position.html', {
-            'faculty_department_list': faculty_department_list,
-            'admin_department_list': admin_department_list,
-            'details': details,
-            'role':role,
-            'page_obj':page_obj
-        })
-            
-    except Exception as e:
-        messages.error(request, f"Error loading page: {str(e)}")
-        return render(request, 'position.html', {
-            'faculty_department_list': [],
-            'admin_department_list': [],
-            'details': [],
-            'role':[],
-            'page_obj':[]
-        })
+            return JsonResponse({"error": f"An Error Occurred: {str(e)}"})
 
 def studentFine(request):
     role = request.session.get('role')
@@ -3024,338 +1178,11 @@ def chatHistory(request):
     role = request.session.get('role')
     return render(request,'main/chatHistory.html',{'role':role})
 
-from django.db.models import Max
-from .models import History, Student, Faculty, Admin
-from django.shortcuts import render, get_object_or_404
-import json
 
-def historySender(request, type):
-    role = request.session.get('role')
-    data = []
-    
-    if type == 'Admin':
-        
-        history = History.objects.filter(reciver_type__iexact='Admin').values("updatedTo")
-        history = history.annotate(latest_time=Max("updatedAt")).values_list("updatedTo", "latest_time")
-        for i in history:
-            try:
-                detail = Admin.objects.get(college_id=str(i[0]))
-                name = str(detail.name + " " + detail.last_name)
-                data.append({
-                    "name": name, 
-                    "college_id": detail.college_id, 
-                    "department": detail.department.name, 
-                    "position": detail.position.name, 
-                    "last_update": i[1]
-                })
-            except Admin.DoesNotExist:
-                continue
-                
-    elif type == 'Faculty':
-        history = History.objects.filter(reciver_type__iexact='Faculty').values("updatedTo")
-        history = history.annotate(latest_time=Max("updatedAt")).values_list("updatedTo", "latest_time")
-        for i in history:
-            try:
-                detail = Faculty.objects.get(college_id=str(i[0]))
-                name = str(detail.name + " " + detail.last_name)
-                data.append({
-                    "name": name, 
-                    "college_id": detail.college_id, 
-                    "department": detail.department.name, 
-                    "position": detail.position.name, 
-                    "last_update": i[1]
-                })
-            except Faculty.DoesNotExist:
-                continue
-                
-    elif type == 'Student':
-        history = History.objects.filter(reciver_type__iexact='Student').values("updatedTo")
-        history = history.annotate(latest_time=Max("updatedAt")).values_list("updatedTo", "latest_time")
-        for i in history:
-            try:
-                detail = Student.objects.get(college_id=str(i[0]))
-                name = str(detail.name + " " + detail.last_name)
-                data.append({
-                    "name": name, 
-                    "college_id": detail.college_id, 
-                    "course": detail.course.name, 
-                    "level": detail.course.code, 
-                    "last_update": i[1]
-                })
-            except Student.DoesNotExist:
-                continue
-    
-    return render(request, 'main/history.html', {
-        'role': role, 
-        'type': type, 
-        'data': data
-    })
-   
-def get_updatedToDetails(request,college_id):
-    id_prefix = str(college_id[0:2])
-    details = None
-    if id_prefix == 'AD':
-        try:
-           details = Admin.objects.get(college_id = college_id)
-           name = str(details.name + " " + details.last_name) 
-           return JsonResponse({"name":name, "college_id":details.college_id, 
-             "row4":details.position.name, "row3":details.department.name})
-           
-        except Admin.DoesNotExist:
-            return JsonResponse({"error": "Admin not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    elif id_prefix == 'GK':
-        try:
-           details = Faculty.objects.get(college_id = college_id)
-           name = str(details.name + " " + details.last_name)
-           return JsonResponse({"name":name, "college_id":details.college_id, 
-             "row4":details.position.name, "row3":details.department.name})
-           
-        except Faculty.DoesNotExist:
-            return JsonResponse({"error": "Faculty not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    elif id_prefix == 'ST': 
-        try:
-            details = Student.objects.get(college_id = college_id)
-            name = str(details.name + " " + details.last_name)
-            course = details.course.name
-            
-            return JsonResponse({"name":name, "college_id":details.college_id, 
-             "row3":course, "row4":details.course.code})
-        except Student.DoesNotExist:
-            return JsonResponse({"error": "Student not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-from django.db.models import F
-def getHistory(request,college_id):
-    id_prefix = str(college_id[0:2])
-    details = None
-    if id_prefix == 'ST':
-        try:
-            details = Student.objects.get(college_id = college_id)
-            name = str(details.name + " " + details.last_name)
-            course = str(details.course.name + " - " + details.course.level.name + f" - ({details.course.department.name})")
-            year = details.date_of_joining.year
-            end_year = int(year) + int(details.course.no_of_years)
-            batch = str(str(year) + " - " + str(end_year))
-            # getting history:
-            history = list(History.objects.filter(updatedTo = college_id, reciver_type = 'Student').values('history_id','position','updatedFrom','updatedAt','updatedTo','content','type'))
-            return JsonResponse({"name":name, "college_id":details.college_id, 
-             "Row3":course, "Row4":batch, "history": history})
-        except Student.DoesNotExist:
-            return JsonResponse({"error": "Student not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-        
-    elif id_prefix == 'AD':
-        try:
-           details = Admin.objects.get(college_id = college_id)
-           name = str(details.name + " " + details.last_name) 
-           history = list(History.objects.filter(updatedTo = college_id, reciver_type = 'Admin').values('history_id','position','updatedFrom','updatedAt','updatedTo','content','type'))
-           return JsonResponse({"name":name, "college_id":details.college_id, 
-             "Row4":str(details.position.name) + " - " + str(details.position.position_id), "Row3":str(details.department.name) + " - " + str(details.department.department_id),
-            'history':history})
-           
-        except Admin.DoesNotExist:
-            return JsonResponse({"error": "Admin not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    
-    elif id_prefix == 'GK':
-        try:
-           details = Faculty.objects.get(college_id = college_id)
-           name = str(details.name + " " + details.last_name)
-           history = list(History.objects.filter(updatedTo = college_id, reciver_type = 'Faculty').values('history_id','position','updatedFrom','updatedAt','updatedTo','content','type'))
-           return JsonResponse({"name":name, "college_id":details.college_id, 
-             "Row4":str(details.position.name) + " - " + str(details.position.position_id), "Row3":str(details.department.name) + " - " + str(details.department.department_id),
-            'history': history})
-           
-        except Faculty.DoesNotExist:
-            return JsonResponse({"error": "Faculty not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-def deleteHistory(request,college_id):
-    prefix_id = college_id[0:2]
-    if prefix_id == 'ST':
-        try:
-            copy_id = college_id
-            history = History.objects.filter(updatedTo = college_id)
-            history.delete()
-            return JsonResponse({'success': f'{copy_id} History Deleted Successfully!'})
-        except Exception as e:
-           return JsonResponse({'error':f"An error occurred: {str(e)}"})
-
-from .models import StudentDocuments, AdminDocuments, FacultyDocuments
-# for uploading documents of faculty,student and admin
-def document(request, type):
-    user_id = None
-    detail = None
-    role = request.session.get('role')
-    batch = None
-    
-    try:
-        if type == 'Student':
-            user_id = request.session.get('student_college_id')
-            detail = Student.objects.get(college_id=user_id)
-            permission = detail.permission
-            # Get or create documents object
-            documents, created = StudentDocuments.objects.get_or_create(student=detail)
-            
-            year = detail.date_of_joining.year
-            end_year = int(year) + int(detail.course.no_of_years)
-            batch = str(str(year) + " - " + str(end_year))
-            
-            if request.method == 'POST':
-                for i in range(1, 10):
-                    field_name = f"pic{i}"
-                    uploaded_file = request.FILES.get(field_name)  # Changed to request.FILES
-                    if uploaded_file:
-                        setattr(documents, field_name, uploaded_file)
-                setattr(detail, 'permission', False)
-                detail.save()
-                documents.save()
-                messages.success(request, "Document Uploaded Successfully!")
-                
-        elif type == 'Faculty':
-            user_id = request.session.get('faculty_college_id')
-            detail = Faculty.objects.get(college_id=user_id)
-            permission = detail.permission
-            documents, created = FacultyDocuments.objects.get_or_create(faculty=detail)
-            
-            if request.method == 'POST':
-                for i in range(1, 6):  # Faculty has only 5 documents
-                    field_name = f"pic{i}"
-                    uploaded_file = request.FILES.get(field_name)  # Changed to request.FILES
-                    if uploaded_file:
-                        setattr(documents, field_name, uploaded_file)
-                setattr(detail, 'permission', False)
-                detail.save()
-                documents.save()
-                messages.success(request, "Document Uploaded Successfully!")
-                
-        elif type == 'Admin':
-            user_id = request.session.get('admin_college_id')
-            detail = Admin.objects.get(college_id=user_id)
-            permission = detail.permission
-            documents, created = AdminDocuments.objects.get_or_create(admin=detail)
-            
-            if request.method == 'POST':
-                for i in range(1, 6):  # Admin has only 5 documents
-                    field_name = f"pic{i}"
-                    uploaded_file = request.FILES.get(field_name)  # Changed to request.FILES
-                    if uploaded_file:
-                        setattr(documents, field_name, uploaded_file)
-                setattr(detail, 'permission', False)
-                detail.save()
-                documents.save()
-                messages.success(request, "Document Uploaded Successfully!")
-                
-    except Exception as e:
-        messages.error(request, f"An error occurred: {str(e)}")
-        
-    return render(request, 'main/document.html', {
-        'type': type, 
-        'detail': detail, 
-        'role': role, 
-        'batch': batch, 
-        'documents': documents,
-        'permission':permission
-    })
-
-
-def getDocuments(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        college_id = data.get('college_id')
-        documentid = data.get('documentid')
-        exists = None
-        prefix_id = college_id[0:2]
-        
-        if prefix_id == 'AD':
-            detail = Admin.objects.get(college_id = college_id)
-            exists = AdminDocuments.objects.filter(admin = detail).exists()
-            if exists:
-                return JsonResponse({'success':True})
-            else : 
-                return JsonResponse({'success':False})
-        elif prefix_id == 'GK':
-            detail = Faculty.objects.get(college_id = college_id)
-            exists = FacultyDocuments.objects.filter(faculty = detail).exists()
-            if exists:
-                return JsonResponse({'success':True})
-            else : 
-                return JsonResponse({'success':False})
-        else :
-            detail = Student.objects.get(college_id = college_id)
-            exists = StudentDocuments.objects.filter(student = detail).exists()
-            if exists:
-                return JsonResponse({'success':True})
-            else : 
-                return JsonResponse({'success':False})
-            
-               
-def viewDocuments(request, college_id, documentid):
-    role = request.session.get('role')
-    try:
-        prefix_id = college_id[0:2]
-        docName = None
-        
-        if prefix_id == 'AD':
-            detail = Admin.objects.get(college_id=college_id)
-            documents = AdminDocuments.objects.get(admin=detail)
-            docName = getattr(documents, documentid, None)
-            
-        elif prefix_id == 'GK':
-            detail = Faculty.objects.get(college_id=college_id)
-            documents = FacultyDocuments.objects.get(faculty=detail)
-            docName = getattr(documents, documentid, None)
-            
-        else:
-            detail = Student.objects.get(college_id=college_id)
-            documents = StudentDocuments.objects.get(student=detail)  # Fixed: student
-            docName = getattr(documents, documentid, None)
-            
-        if not docName:
-            return render(request, 'main/viewDocument.html', {
-                'error': 'Document not found'
-            })
-            
-        return render(request, 'main/viewDocument.html', {'docName': docName,'role':role})
-        
-    except Exception as e:
-        return render(request, 'main/viewDocument.html', {
-            'error': f'Error loading document: {str(e)}'
-        })
-     
-def demo2(request):
-    return render(request, 'demo2.html')
 
 # FOR STUDENT ASSIGNMENT
 def faculty_student_assignment(request):
-    role = request.session.get('role')
-    faculty_college_id = request.session.get('faculty_college_id')
-    faculty = Faculty.objects.get(college_id = faculty_college_id)
-    name = f'{faculty.name} {faculty.last_name}'
-    department = f'{faculty.department.name} - {faculty.department.code}'
-    position = f'{faculty.position.name} - {faculty.position.level}'
-    now = datetime.now()
-    date = now.date()
-
-    context = {
-        'role':role,
-        'college_id':faculty_college_id,
-        'name':name,
-        'department':department,
-        'position':position,
-        'date':date
-        }
-    return render(request, 'faculty/studentAssignment.html', context)
+    return render(request, 'faculty/studentAssignment.html')
 
 def studentAssignment(request):
     return render(request,'student/studentAssignment.html')
@@ -3366,383 +1193,168 @@ def studentSchedule(request):
 def studentResultView(request):
     return render(request,'student/studentResultView.html')
 
-def BulkStudentManagement(request):
-    role = request.session.get('role')
-    
-    # Read GET parameters
-    page_number = request.GET.get("page", 1)
-    course = request.GET.get('course', 'all')
-    college_id = request.GET.get('college_id', '')
-    year = request.GET.get('year', 'all')
-    semester = request.GET.get('semester', 'all')
-
-    students = Student.objects.all().order_by('college_id')
-
-    # 🔥 Filter only when values are valid
-    if course != 'all':
-        try:
-            course_obj = Course.objects.get(id=course)
-            students = students.filter(course=course_obj)
-        except Course.DoesNotExist:
-            pass  # Avoid crashing
-
-    if year != "all":
-        students = students.filter(year=year)
-
-    if semester != "all":
-        students = students.filter(semester=semester)
-
-    if college_id != "":
-        students = students.filter(college_id=college_id)
-
-    # Pagination apply after filters
-    paginator = Paginator(students, 50)
-    page_obj = paginator.get_page(page_number)
-
-    # AJAX Response
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        data = []
-        for student in page_obj:
-            data.append({
-                'image': student.profile_picture.url if student.profile_picture else None,
-                'college_id': student.college_id,
-                'name': f"{student.name} {student.last_name}",
-                'father_name': student.father_name,
-                'course': f"{student.course.code} - {student.course.level}",
-                'class': f"{student.year} Year / {student.semester} Sem",
-                'phone1': student.phone,
-                'phone2': student.other_phone_no,
-            })
-
-        return JsonResponse({
-            "students": data,
-            "page_number": page_obj.number,
-            "total_page": paginator.num_pages,
-            "has_next": page_obj.has_next(),
-            "has_prev": page_obj.has_previous(),
-        })
-
-    courses = Course.objects.all().order_by('id')
-
-    return render(request, 'bulkActions/student/studentActions.html', {
-        'courses': courses,
-        'page_obj': page_obj,
-        'role': role
-    })
-
-def semester_and_year(request):
-    if request.method == 'POST':
-        try:  
-            data = json.loads(request.body) 
-            course_id = data.get('course_id')
-            course = Course.objects.get(id = course_id)
-            year = list(range(1,course.years + 1))
-            semester = list(range(1,course.semesters + 1))
-            level = course.level.name
-            return JsonResponse({'year':year, 'semester':semester ,'success':'work successfully!', 'level':level})
-        except Exception as e:
-            return JsonResponse({'error':f'An Error Occured {str(e)}!'})
-    else:
-        return JsonResponse({'error':'An Error Occured : Invalid Request!'})
-
-def SelectedEditData(request):
-    if request.method == 'POST':
-        try:  
-           data = json.loads(request.body)
-           SelectedList = data.get('SelectedList')
-           data = []
-           for i in SelectedList:
-               student = Student.objects.get(college_id = i)
-               data.append({
-                   'profile':student.profile_picture.url if student.profile_picture else None,
-                   'college_id':student.college_id,
-                   'name': f'{student.name} {student.last_name}',
-                   'father_name':student.father_name,
-                   'permission': student.permission,
-                   'course':f'{student.course.name} {student.course.level}'
-                   })
-               
-           return JsonResponse({'data':data}) 
-        except Exception as e:
-            return JsonResponse({'error':f'An Error Occured {str(e)}!'})
-    else:
-        return JsonResponse({'error':'An Error Occured : Invalid Request!'})
-
-def EditSelectedSubmit(request):
-    if request.method == 'POST':
-        try:  
-           data = json.loads(request.body)
-           collegeID = data.get('collegeID')
-           permission = data.get('permission')
-           i_range = len(collegeID)
-           for i in range(i_range):
-               college_id = collegeID[i]
-               student = Student.objects.get(college_id = college_id)
-               student.permission = True if permission[i]=='Yes' else False
-               student.save()
-           return JsonResponse({'success':f'{i_range + 1} Student Edited Successfully!'}) 
-        except Exception as e:
-            return JsonResponse({'error':f'An Error Occured {str(e)}!'})
-    else:
-        return JsonResponse({'error':'An Error Occured : Invalid Request!'})
-
-
 # FOR creating subjects 
-def subjectCreation(request):
-    role = request.session.get('role')
-    admin_id = request.session.get('admin_college_id')
-    admin = Admin.objects.get(college_id = admin_id)
-    name = f'{admin.name} {admin.last_name}'
-    position = f'{admin.position.name}-{admin.position.level} ({admin.department.name})'
-    courseData = request.GET.get('courseData',None)
-    # AJAX Response
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        if courseData:
-            courseData = json.loads(courseData)
-        else:
-            return JsonResponse({"error": "No data received!"})
+from .models import Subject
+from rest_framework.viewsets import ModelViewSet
+from .serializers import SubjectSerializers, SubjectMiniSerializers
+from rest_framework.decorators import action
+from .service import Options
+class subjectCreation(ModelViewSet):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializers
 
-        course = courseData.get('course')
-        level = courseData.get('level')
-        semester = courseData.get('semester')
-        subject = courseData.get('subjects', [])
-        course_filter = Subject_Details.objects.filter(course = course, level = level, semester = semester)
-        max_id = Subject_Details.objects.aggregate(max_id = models.Max('serial_no'))['max_id']
-        year = datetime.now().year
-        if max_id is None:
-            serial_no = f'SUB-{year}-1'
-        else:
-            try:
-                numeric_part = int(max_id[9:])
-                serial_no = f'SUB-{year}-{numeric_part+1}'
-            except(ValueError, IndexError):
-                serial_no = f'SUB-{year}-1'
-        if not course_filter.exists():
-            try:
-                for i in subject : 
-                    Subject_Details.objects.create(serial_no = serial_no, course = course, semester = semester, name = i['name'], code = i['code'], level = level)
-                    
-                return JsonResponse({'success':f"Subject Submmited Successfully!"})
-            except Exception as e:
-                return JsonResponse({'error':f"An Error Occured: {str(e)}!"})
-        else:
-            return JsonResponse({'error':f"Subjects Already Exists!"})
-        # return JsonResponse({'success':f"Subject Submmited Successfully! {subject}"})
-            
-    courses = Course.objects.all().order_by('id')
+    @action(detail= False, methods=['get'])
+    def import_page(self,request):
+        college_id = request.session.get("college_id")
+        context = {
+            "detail": Details("SuperAdmin", college_id).detail(),
+            "courses": Options().CourseOptions(),
+            "departments": Options().DeptOptions("Academic")
+            }
+        return render(request, 'admin/Creation/subjectCreation.html', context)
 
-    return render(request, 'admin/subjectCreation.html', {
-        'courses': courses,
-        'role': role,
-        'name':name,
-        'position':position,
-        'admin_id':admin_id
-    })
-
-def contentCreation(request):
-    role = request.session.get('role')
-    admin_id = request.session.get('admin_college_id')
-    admin = Admin.objects.get(college_id = admin_id)
-    name = f'{admin.name} {admin.last_name}'
-    position = f'{admin.position.name}-{admin.position.level} ({admin.department.name})'
-    contentData = request.GET.get('courseData',None)
-    # AJAX Response
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        if contentData:
-            contentData = json.loads(contentData)
-        else:
-            return JsonResponse({"error": "No data received!"})
-
-        course = contentData.get('course')
-        level = contentData.get('level')
-        semester = contentData.get('semester')
-        subject = contentData.get('subject')
-        contents = contentData.get('contents', [])        
-        content_filter = Subject_Details.objects.get(course = course, level = level, semester = semester, name = subject)
-        all_content = []
-        if len(contents) !=0:
-            for i in contents:
-                content_dict = {}
-            # all_content.append(i['name'])
-                # content_dict[str(i['name'])] = 'Pending'
-                content_dict['name'] = str(i['name'])
-                content_dict['status'] = 'Pending'
-                all_content.append(content_dict)
-            content_filter.content = all_content
-            content_filter.save()
-            return JsonResponse({'success':f"Content Submmited Successfully!"})
-        else:
-            content_filter.content = []
-            return JsonResponse({'success':f"Content Submmited Successfully with null!"})
-        
-            
-    courses = Course.objects.all().order_by('id')
-
-    return render(request, 'admin/contentCreation.html', {
-        'courses': courses,
-        'role': role,
-        'name':name,
-        'position':position,
-        'admin_id':admin_id
-    })
-
-def subjectFilter(request):
-    if request.method == 'POST':
-        try:  
-            data = json.loads(request.body) 
-            course = data.get('course')
-            semester = data.get('semester')
-            subjects = Subject_Details.objects.filter(course = course, semester = semester)
-            if subjects.exists():
-                data = []
-                for name in subjects.values_list('name', flat=True):
-                    data.append({'name':name})
-                    
-                return JsonResponse({'data':data})
-            else:
-                return JsonResponse({'error':'Subject Not Found!'})
-                     
-        except Exception as e:
-            return JsonResponse({'error':f'An Error Occured {str(e)}!'})
-    else:
-        return JsonResponse({'error':'An Error Occured : Invalid Request!'})
-
-def studentCourseDetailView(request):
-    role = request.session.get('role')
-    student_college_id = request.session.get('student_college_id')
-    student = Student.objects.get(college_id = student_college_id)
+    @action(detail= False, methods=['get'])
+    def import_content_page(self,request):
+        college_id = request.session.get("college_id")
+        context = {
+            "detail": Details("SuperAdmin", college_id).detail(),
+            "courses": Options().CourseOptions()
+            }
+        return render(request, 'admin/Creation/contentCreation.html', context)
     
-    name = f'{student.name} {student.last_name}'
-    course = f'{student.course.code}-{student.course.level.name}'
-    no_semester = student.course.semesters
-
-    subject = Subject_Details.objects.filter(
-        course = student.course.id,
-        level = student.course.level.name
-    )
-
-    semester = request.GET.get('semester')
-
-    # AJAX Request
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        semester_subjects = subject.filter(semester = semester)
-        data = []
-
-        for sub in semester_subjects:
-            contents = []
-            # status = []
-
-            # Handle Dict type JSON
-            if isinstance(sub.content, dict):
-                for key, value in sub.content.items():
-                    contents.append({'content': value['name']})
-
-            # Handle List type JSON
-            elif isinstance(sub.content, list):
-                for value in sub.content:
-                    contents.append({'content': value['name']})
-                    # status.append({'state': value.status})
-
-            data.append({
-            'name': sub.name,
-            'code':sub.code,
-            'contents': contents,
-            # 'status': status
-             })
-
-        return JsonResponse({'subject': data})
-
-
-    # First Load -> Default Semester 1
-    subject = subject.filter(semester=1)
-
-    return render(request, 'student/studentCourseDetailView.html', {
-        'college_id': student_college_id,
-        'name': name,
-        'course': course,
-        'year': range(1, no_semester+1),
-        'role': role,
-        'subject': subject
-    })
-
-# for faculty attendance system 
-# attendance/views.py
-from django.shortcuts import render
-from .utils import get_client_ip, is_college_wifi, personal_college_pin, valid_timing_for_qr_code
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
-
-@csrf_exempt
-@never_cache
-def check_wifi_ip(request, Person):
-    ip = get_client_ip(request)
-    allowed = is_college_wifi(ip)
-    print(ip)
-    if Person == 'Faculty':
-        college_id = request.session.get('faculty_college_id')
-    elif Person == 'Admin':
-        college_id = request.session.get('admin_college_id')
-    elif Person == 'Student':
-        college_id = request.session.get('student_college_id')
-
-    context = {
-        "ip": ip,
-        "allowed": allowed,
-        'college_id':college_id,
-        'Person':Person,
-        'request_name':'Block'
-    }
-    now = datetime.now()
-    date = now.date()
-    attendance_detail = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, date = date, type = Person)
-    if not attendance_detail.exists():
-        html_page = 'main/attendance/check_wifi.html'
-    else :
-        html_page = 'main/attendance/block.html'
-        context['message'] = 'Your Today Attendance Had Been Marked!'
-        
-    # html_page = 'faculty/attendance/block.html'
-    # if allowed : 
-    context.pop('request_name')
-    return render(request, html_page, context)
-
-@csrf_exempt
-@never_cache
-def college_pin_checking(request):
-    if request.method == 'POST':
-        try:  
-            data = json.loads(request.body) 
-            college_id = data.get('college_id')
-            Person = data.get('Person')
-            pinInput = data.get('pinInput')
-            if Person == 'Faculty':
-                pin = personal_college_pin(True, 'Faculty')
-                if pin != pinInput :   
-                    return JsonResponse({'error':f'Your Pin is not Correct!'})
-                else:   
-                    return JsonResponse({'success':'Pin Match Successfully'})  
-            elif Person == 'Admin':
-                pin = personal_college_pin(True, 'Admin')
-                if pin != pinInput :   
-                    return JsonResponse({'error':f'Your Pin is not Correct!'})
-                else:   
-                    return JsonResponse({'success':'Pin Match Successfully'})
-            elif Person == 'Student':
-                pin = personal_college_pin(True, 'Student')
-                if pin != pinInput :   
-                    return JsonResponse({'error':f'Your Pin is not Correct!'})
-                else:   
-                    return JsonResponse({'success':'Pin Match Successfully'})   
-                     
+    @action(detail=False, methods=['get'])
+    def course_details(self, request):
+        try:
+            course_id = request.GET.get('course_id')  
+            course = Course.objects.get(id = course_id)
+            serializers = CourseSerializer(course)
+            return JsonResponse({"data": serializers.data})
         except Exception as e:
-            return JsonResponse({'error':f'An Error Occured {str(e)}!'})
-    else:
-        return JsonResponse({'error':'An Error Occured : Invalid Request!'})
+            return JsonResponse({"error": f"An Error Occured : {str(e)} !"})
 
-@csrf_exempt
-@never_cache
-def scan_qr_Code(request, person):
-    return render(request, 'main/attendance/scanning.html', {'person': person})
+    @action(detail=False, methods=['get'])
+    def subject_details(self, request):
+        try:
+            course_id = request.GET.get('course_id')
+            semester = request.GET.get('semester')
+            subjects = Subject.objects.filter(course = course_id, semester = semester)
+            serializer = SubjectMiniSerializers(subjects, many = True)
+            return JsonResponse({"data": serializer.data})
+        except Exception as e:
+            return JsonResponse({"error": f"An Error Occured : {str(e)} !"}) 
+
+    @action(detail= False, methods=['post'])
+    def subject_create(self, request):
+        data = request.data
+        new_record = []
+        added = 0
+        skipped = 0
+        for row in data:
+            course = row['course']
+            semester = row['semester']
+            department = row['department']
+            name = row['name']
+            subject = Subject.objects.filter(course = course, semester = semester, department = department, name = name)
+            if subject.exists():
+                skipped += 1
+                continue
+            new_record.append(row)
+            added += 1
+            
+        if new_record: 
+            serializers = SubjectSerializers(data=new_record, many=True)
+            serializers.is_valid(raise_exception=True)
+            serializers.save()
+        return JsonResponse({"success": "Subjects Created SuccessFully!", "data": data})
+
+
+# # for faculty attendance system 
+# # attendance/views.py
+# from django.shortcuts import render
+# from .utils import get_client_ip, is_college_wifi, personal_college_pin, valid_timing_for_qr_code
+# from django.views.decorators.cache import never_cache
+# from django.views.decorators.csrf import csrf_exempt
+
+# # for wifi ip verification
+# @csrf_exempt
+# @never_cache
+# def check_wifi_ip(request, Person):
+#     ip = get_client_ip(request)
+#     allowed = is_college_wifi(ip)
+#     print(ip)
+#     if Person == 'Faculty':
+#         college_id = request.session.get('faculty_college_id')
+#     elif Person == 'Admin':
+#         college_id = request.session.get('admin_college_id')
+#     elif Person == 'Student':
+#         college_id = request.session.get('student_college_id')
+
+#     context = {
+#         "ip": ip,
+#         "allowed": allowed,
+#         'college_id':college_id,
+#         'Person':Person,
+#         'request_name':'Block'
+#     }
+#     now = datetime.now()
+#     date = now.date()
+#     attendance_detail = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, date = date, type = Person)
+#     if not attendance_detail.exists():
+#         html_page = 'main/attendance/check_wifi.html'
+#     else :
+#         html_page = 'main/attendance/block.html'
+#         context['message'] = 'Your Today Attendance Had Been Marked!'
+        
+#     # html_page = 'faculty/attendance/block.html'
+#     # if allowed : 
+#     context.pop('request_name')
+#     return render(request, html_page, context)
+
+# # for college pin verification
+# @csrf_exempt
+# @never_cache
+# def college_pin_checking(request):
+#     if request.method == 'POST':
+#         try:  
+#             data = json.loads(request.body) 
+#             college_id = data.get('college_id')
+#             Person = data.get('Person')
+#             pinInput = data.get('pinInput')
+#             if Person == 'Faculty':
+#                 pin = personal_college_pin(True, 'Faculty')
+#                 if pin != pinInput :   
+#                     return JsonResponse({'error':f'Your Pin is not Correct!'})
+#                 else:   
+#                     return JsonResponse({'success':'Pin Match Successfully'})  
+#             elif Person == 'Admin':
+#                 pin = personal_college_pin(True, 'Admin')
+#                 if pin != pinInput :   
+#                     return JsonResponse({'error':f'Your Pin is not Correct!'})
+#                 else:   
+#                     return JsonResponse({'success':'Pin Match Successfully'})
+#             elif Person == 'Student':
+#                 pin = personal_college_pin(True, 'Student')
+#                 if pin != pinInput :   
+#                     return JsonResponse({'error':f'Your Pin is not Correct!'})
+#                 else:   
+#                     return JsonResponse({'success':'Pin Match Successfully'})   
+                     
+#         except Exception as e:
+#             return JsonResponse({'error':f'An Error Occured {str(e)}!'})
+#     else:
+#         return JsonResponse({'error':'An Error Occured : Invalid Request!'})
+
+# # FOR FACULTY AND ADMIN
+# @csrf_exempt
+# @never_cache
+# def scan_qr_Code(request, person):
+#     return render(request, 'main/attendance/scanning.html', {'person': person})
+
+# # FOR STUDENT
+# @csrf_exempt
+# @never_cache
+# def otp_process(request):
+#     return render(request, 'main/attendance/OTP_process.html')
 
 # for QR Code Creating
 import qrcode
@@ -3784,641 +1396,624 @@ def qr_data_generator(timestamp, token, data):
     
     return qr_data, qr_data_uri
 
-from .utils import background_leave_time
-from django.utils.timezone import now
-from datetime import timedelta
-from .tasks import finalize_attendance
-@csrf_exempt
-@never_cache
-def generate_QR_code(request):
-    # current timestamp
-    timestamp = int(time.time())
+# from .utils import background_leave_time
+# from django.utils.timezone import now
+# from datetime import timedelta
+# @csrf_exempt
+# @never_cache
+# def generate_QR_code(request):
+#     # current timestamp
+#     timestamp = int(time.time())
     
-    # unique token
-    token = uuid.uuid4().hex
+#     # unique token
+#     token = uuid.uuid4().hex
 
-    # QR data - format: timestamp=...&token=...&data=...
-    data = generate_random_token()
+#     # QR data - format: timestamp=...&token=...&data=...
+#     data = generate_random_token()
     
-    now_time = datetime.now()
-    current_date = now_time.date()
-    current_time = now_time.time()
+#     now_time = datetime.now()
+#     current_date = now_time.date()
+#     current_time = now_time.time()
 
-    new_time = now_time + timedelta(minutes=30)
-    formated_time = new_time.strftime("%H:%M:%S")
+#     new_time = now_time + timedelta(minutes=30)
+#     formated_time = new_time.strftime("%H:%M:%S")
     
-    qr_code = QR_code.objects.filter(date = current_date)
+#     qr_code = QR_code.objects.filter(date = current_date)
 
-    if qr_code.exists():
-        qr_code = qr_code.first()
-        current_time = datetime.strptime(str(current_time), '%H:%M:%S.%f')
-        set_time = datetime.strptime(str(qr_code.time), '%H:%M:%S.%f')
-        start = True
-        seconds = int(valid_timing_for_qr_code(start))*60
-        time_seconds = int(seconds) - int((current_time - set_time).total_seconds())     
-        qr_data, qr_data_uri = qr_data_generator(qr_code.timestamp, qr_code.token, qr_code.random_data)
-        if time_seconds < 0:
-            time_seconds = 0
-            qr_data = '.........................'
-        context =  {
-        "qr_data": qr_data,  # Full QR string
-        "generated_time":qr_code.date + ' ' + qr_code.time,
-        "qr_image": qr_data_uri,  # Pass base64 image
-        "random_data": data,  # Random 40 digits
-        "token": token,  # UUID token
-        "time_seconds":time_seconds
-        }
+#     if qr_code.exists():
+#         qr_code = qr_code.first()
+#         current_time = datetime.strptime(str(current_time), '%H:%M:%S.%f')
+#         set_time = datetime.strptime(str(qr_code.time), '%H:%M:%S.%f')
+#         start = True
+#         seconds = int(valid_timing_for_qr_code(start))*60
+#         time_seconds = int(seconds) - int((current_time - set_time).total_seconds())     
+#         qr_data, qr_data_uri = qr_data_generator(qr_code.timestamp, qr_code.token, qr_code.random_data)
+#         if time_seconds < 0:
+#             time_seconds = 0
+#             qr_data = '.........................'
+#         context =  {
+#         "qr_data": qr_data,  # Full QR string
+#         "generated_time":qr_code.date + ' ' + qr_code.time,
+#         "qr_image": qr_data_uri,  # Pass base64 image
+#         "random_data": data,  # Random 40 digits
+#         "token": token,  # UUID token
+#         "time_seconds":time_seconds
+#         }
 
-    elif not qr_code.exists():
-        start = True
-        time_seconds = int(valid_timing_for_qr_code(start))*60
-        QR_code.objects.create(date = current_date, time = current_time, timestamp = timestamp, token = token, random_data = data, expired = False, expiry_time = str(formated_time))
-        qr_data, qr_data_uri = qr_data_generator(timestamp, token, data)
-        context =  {
-        "qr_data": qr_data,  # Full QR string
-        "generated_time": timestamp,
-        "qr_image": qr_data_uri,  # Pass base64 image
-        "random_data": data,  # Random 40 digits
-        "token": token,  # UUID token
-        "time_seconds":time_seconds
-        }
+#     elif not qr_code.exists():
+#         start = True
+#         time_seconds = int(valid_timing_for_qr_code(start))*60
+#         QR_code.objects.create(date = current_date, time = current_time, timestamp = timestamp, token = token, random_data = data, expired = False, expiry_time = str(formated_time))
+#         qr_data, qr_data_uri = qr_data_generator(timestamp, token, data)
+#         context =  {
+#         "qr_data": qr_data,  # Full QR string
+#         "generated_time": timestamp,
+#         "qr_image": qr_data_uri,  # Pass base64 image
+#         "random_data": data,  # Random 40 digits
+#         "token": token,  # UUID token
+#         "time_seconds":time_seconds
+#         }
 
-    if request.method == 'POST':
-        leave_time = background_leave_time(True)
-        try:
-            data = json.loads(request.body)
-            completed = data.get('completed')
-            qr_code_expiry = QR_code.objects.get(date = current_date)
-            qr_code_expiry.expired = True
-            qr_code_expiry.save()
-            if completed:
-                admin = []
-                faculty = []
-                message = ''
-                if Admin.objects.exists(): 
-                    admin = Admin.objects.values_list('college_id', flat=True)
-                    for i in admin:
-                        single_admin = Faculty_and_Admin_Attedance.objects.filter(collegeID = i, date = current_date)
-                        if not single_admin.exists():     
-                            leave =  Leave.objects.filter(college_id = i, start_date__lte = current_date, end_date__gte = current_date)  
-                            if not leave.exists():
-                                Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Absent', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
+#     if request.method == 'POST':
+#         leave_time = background_leave_time(True)
+#         try:
+#             data = json.loads(request.body)
+#             completed = data.get('completed')
+#             qr_code_expiry = QR_code.objects.get(date = current_date)
+#             qr_code_expiry.expired = True
+#             qr_code_expiry.save()
+#             if completed:
+#                 admin = []
+#                 faculty = []
+#                 message = ''
+#                 if Admin.objects.exists(): 
+#                     admin = Admin.objects.values_list('college_id', flat=True)
+#                     for i in admin:
+#                         single_admin = Faculty_and_Admin_Attedance.objects.filter(collegeID = i, date = current_date)
+#                         if not single_admin.exists():     
+#                             leave =  Leave.objects.filter(college_id = i, start_date__lte = current_date, end_date__gte = current_date)  
+#                             if not leave.exists():
+#                                 Faculty_and_Admin_Attedance.objects.create(collegeID = i ,status = 'Absent', type= 'Admin', timing = current_time, date = current_date, leave_time = 0.0)
                                 
-                            if len(message) == 0:
-                                message += 'Admin'
+#                             if len(message) == 0:
+#                                 message += 'Admin'
 
-                if Faculty.objects.exists():
-                    faculty = Faculty.objects.values_list('college_id', flat=True)
-                    for j in faculty:
-                        single_faculty = Faculty_and_Admin_Attedance.objects.filter(collegeID = j, date = current_date)
-                        if not single_faculty.exists(): 
-                            leave =  Leave.objects.filter(college_id = j, start_date__lte = current_date, end_date__gte = current_date)  
-                            if not leave.exists():
-                                Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Absent', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
+#                 if Faculty.objects.exists():
+#                     faculty = Faculty.objects.values_list('college_id', flat=True)
+#                     for j in faculty:
+#                         single_faculty = Faculty_and_Admin_Attedance.objects.filter(collegeID = j, date = current_date)
+#                         if not single_faculty.exists(): 
+#                             leave =  Leave.objects.filter(college_id = j, start_date__lte = current_date, end_date__gte = current_date)  
+#                             if not leave.exists():
+#                                 Faculty_and_Admin_Attedance.objects.create(collegeID = j ,status = 'Absent', type= 'Faculty', timing = current_time, date = current_date, leave_time = 0.0)
                                 
-                            if len(message) != 0:
-                                message += ' and Faculty'
-                            else:
-                                message +='Faculty'
+#                             if len(message) != 0:
+#                                 message += ' and Faculty'
+#                             else:
+#                                 message +='Faculty'
 
-                if len(message)!= 0 :
-                    message += ' Attendance Marked!'
-                return JsonResponse({'success':f'{message}'}) 
+#                 if len(message)!= 0 :
+#                     message += ' Attendance Marked!'
+#                 return JsonResponse({'success':f'{message}'}) 
                         
-        except Exception as e:
-            return JsonResponse({'error': f'An Error Occured: {str(e)}!'})
+#         except Exception as e:
+#             return JsonResponse({'error': f'An Error Occured: {str(e)}!'})
      
-    return render(request, "main/attendance/QR_code.html", context)
+#     return render(request, "main/attendance/QR_code.html", context)
 
+# # for genrating the OTP for student Attendance
+# @csrf_exempt
+# def  otp_creation(request):
+#     return render(request, 'main/attendance/OTP.html')
 
-# QR verification function
-@csrf_exempt
-def verify_qr(request):
-    if request.method == "POST":
-        try:
-            import json
-            data = json.loads(request.body)
-            qr_data = data.get("qr_data", "")
-            now = datetime.now()
-            current_time = now.time()
-            current_date = now.date()
+# # QR verification function
+# @csrf_exempt
+# def verify_qr(request):
+#     if request.method == "POST":
+#         try:
+#             import json
+#             data = json.loads(request.body)
+#             qr_data = data.get("qr_data", "")
+#             now = datetime.now()
+#             current_time = now.time()
+#             current_date = now.date()
             
-            # QR code database se fetch karo
-            qr_code = QR_code.objects.filter(date=current_date)
+#             # QR code database se fetch karo
+#             qr_code = QR_code.objects.filter(date=current_date)
             
-            if not qr_data:
-                return JsonResponse({
-                    "status": "error",
-                    "message": "No QR data received"
-                })
+#             if not qr_data:
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "message": "No QR data received"
+#                 })
             
-            # Agar database me QR code nahi hai
-            if not qr_code.exists():
-                return JsonResponse({
-                    "status": "error",
-                    "message": "No QR code generated for today"
-                })
+#             # Agar database me QR code nahi hai
+#             if not qr_code.exists():
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "message": "No QR code generated for today"
+#                 })
             
-            qr_code = qr_code.first()
-            db_data = qr_code.random_data
-            token = qr_code.token
-            qr_time = qr_code.time
+#             qr_code = qr_code.first()
+#             db_data = qr_code.random_data
+#             token = qr_code.token
+#             qr_time = qr_code.time
             
-            # Parse QR data
-            params = {}
-            for item in qr_data.split("&"):
-                if "=" in item:
-                    key, value = item.split("=", 1)
-                    params[key] = value
+#             # Parse QR data
+#             params = {}
+#             for item in qr_data.split("&"):
+#                 if "=" in item:
+#                     key, value = item.split("=", 1)
+#                     params[key] = value
             
-            # Check if required parameters exist
-            if "ts" not in params:
-                return JsonResponse({
-                    "status": "error",
-                    "message": "Missing timestamp in QR code"
-                })
+#             # Check if required parameters exist
+#             if "ts" not in params:
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "message": "Missing timestamp in QR code"
+#                 })
             
-            # Get timestamp
-            try:
-                ts = int(params.get("ts", "0"))
-            except ValueError:
-                return JsonResponse({
-                    "status": "error",
-                    "message": "Invalid timestamp in QR"
-                })
+#             # Get timestamp
+#             try:
+#                 ts = int(params.get("ts", "0"))
+#             except ValueError:
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "message": "Invalid timestamp in QR"
+#                 })
             
-            # Time calculation - fixed
-            current_time_obj = datetime.strptime(str(current_time), '%H:%M:%S.%f')
-            set_time_obj = datetime.strptime(str(qr_time), '%H:%M:%S.%f')
+#             # Time calculation - fixed
+#             current_time_obj = datetime.strptime(str(current_time), '%H:%M:%S.%f')
+#             set_time_obj = datetime.strptime(str(qr_time), '%H:%M:%S.%f')
             
-            time_diff = int((current_time_obj - set_time_obj).total_seconds())
+#             time_diff = int((current_time_obj - set_time_obj).total_seconds())
             
-            # Valid time check
-            valid_time = int(valid_timing_for_qr_code(True)) * 60
+#             # Valid time check
+#             valid_time = int(valid_timing_for_qr_code(True)) * 60
             
-            # Context dictionary initialize karo
-            context = {
-                "timestamp": ts,
-                "token": token,
-                "data": db_data,
-                "scanned_at": str(current_time)
-            }
+#             # Context dictionary initialize karo
+#             context = {
+#                 "timestamp": ts,
+#                 "token": token,
+#                 "data": db_data,
+#                 "scanned_at": str(current_time)
+#             }
             
-            # Time remaining calculation
-            if time_diff > 0:
-                remaining = valid_time - time_diff
-                if remaining < 0:
-                    remaining = 0
-                hour = remaining // 3600
-                minutes = (remaining % 3600) // 60
-                seconds = remaining % 60
-                context["time_remaining"] = f'{hour:02d}:{minutes:02d}:{seconds:02d}'
-            else:
-                context["time_remaining"] = "00:00:00"
+#             # Time remaining calculation
+#             if time_diff > 0:
+#                 remaining = valid_time - time_diff
+#                 if remaining < 0:
+#                     remaining = 0
+#                 hour = remaining // 3600
+#                 minutes = (remaining % 3600) // 60
+#                 seconds = remaining % 60
+#                 context["time_remaining"] = f'{hour:02d}:{minutes:02d}:{seconds:02d}'
+#             else:
+#                 context["time_remaining"] = "00:00:00"
             
-            # Expiry check
-            if time_diff > valid_time:
-                hour_passed = time_diff // 3600
-                minutes_passed = (time_diff % 3600) // 60
-                seconds_passed = time_diff % 60
-                return JsonResponse({
-                    "status": "error",
-                    "message": f"QR Code expired ({hour_passed:02d}:{minutes_passed:02d}:{seconds_passed:02d} seconds ago)"
-                })
+#             # Expiry check
+#             if time_diff > valid_time:
+#                 hour_passed = time_diff // 3600
+#                 minutes_passed = (time_diff % 3600) // 60
+#                 seconds_passed = time_diff % 60
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "message": f"QR Code expired ({hour_passed:02d}:{minutes_passed:02d}:{seconds_passed:02d} seconds ago)"
+#                 })
             
-            # Extract data from QR
-            param_token = params.get("token", "N/A")
-            param_random_data = params.get("data", "N/A")
+#             # Extract data from QR
+#             param_token = params.get("token", "N/A")
+#             param_random_data = params.get("data", "N/A")
             
-            # Verify QR data
-            if (str(token) == param_token) and (str(db_data) == param_random_data):
-                context['message'] = 'Attendance Marked Successfully!'
-                context['status'] = 'success'
-            else:
-                context['message'] = 'You are Scanning Wrong QR Code!'
-                context['status'] = 'error'
+#             # Verify QR data
+#             if (str(token) == param_token) and (str(db_data) == param_random_data):
+#                 context['message'] = 'Attendance Marked Successfully!'
+#                 context['status'] = 'success'
+#             else:
+#                 context['message'] = 'You are Scanning Wrong QR Code!'
+#                 context['status'] = 'error'
             
-            return JsonResponse(context)
+#             return JsonResponse(context)
             
-        except json.JSONDecodeError:
-            return JsonResponse({
-                "status": "error",
-                "message": "Invalid JSON data"
-            })
-        except Exception as e:
-            print(f"Error: {e}")
-            return JsonResponse({
-                "status": "error",
-                "message": f"Server error: {str(e)}"
-            })
+#         except json.JSONDecodeError:
+#             return JsonResponse({
+#                 "status": "error",
+#                 "message": "Invalid JSON data"
+#             })
+#         except Exception as e:
+#             print(f"Error: {e}")
+#             return JsonResponse({
+#                 "status": "error",
+#                 "message": f"Server error: {str(e)}"
+#             })
     
-    return JsonResponse({
-        "status": "error", 
-        "message": "Invalid request method. Use POST."
-    })
-from .models import Faculty_and_Admin_Attedance
-from. models import Attendance
-@csrf_exempt
-@never_cache
-def personal_code_verification(request, Person):
-    if Person == 'Faculty':
-        college_id = request.session.get('faculty_college_id')
-    elif Person == 'Admin':
-        college_id = request.session.get('admin_college_id')
-    elif Person == 'Student':
-        college_id = request.session.get('student_college_id')
-    if request.method == 'POST':
-        try:  
-            data = json.loads(request.body) 
-            college_id = data.get('college_id')
-            Person = data.get('Person')
-            pinInput = data.get('pinInput')
-            now = datetime.now()
-            timing = now.time()
-            date = now.date()
+#     return JsonResponse({
+#         "status": "error", 
+#         "message": "Invalid request method. Use POST."
+#     })
+# from .models import Faculty_and_Admin_Attedance
+# from. models import Attendance
+# @csrf_exempt
+# @never_cache
+# def personal_code_verification(request, Person):
+#     if Person == 'Faculty':
+#         college_id = request.session.get('faculty_college_id')
+#     elif Person == 'Admin':
+#         college_id = request.session.get('admin_college_id')
+#     elif Person == 'Student':
+#         college_id = request.session.get('student_college_id')
+#     if request.method == 'POST':
+#         try:  
+#             data = json.loads(request.body) 
+#             college_id = data.get('college_id')
+#             Person = data.get('Person')
+#             pinInput = data.get('pinInput')
+#             now = datetime.now()
+#             timing = now.time()
+#             date = now.date()
 
-            if Person == 'Faculty':
-                faculty = Faculty.objects.get(college_id = college_id)
-                personal_pin = faculty.personal_pin
-                if pinInput == personal_pin:
-                    faculty_attendance = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, type= Person, date = date)
-                    if not faculty_attendance.exists():
-                        Faculty_and_Admin_Attedance.objects.create(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
-                        return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Attendance Marked Successfully!'})
-                    else:
-                        return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
-                else:
-                    return JsonResponse({'error':'Your Pin is InCorrect!'})
+#             if Person == 'Faculty':
+#                 faculty = Faculty.objects.get(college_id = college_id)
+#                 personal_pin = faculty.personal_pin
+#                 if pinInput == personal_pin:
+#                     faculty_attendance = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, type= Person, date = date)
+#                     if not faculty_attendance.exists():
+#                         Faculty_and_Admin_Attedance.objects.create(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
+#                         return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Attendance Marked Successfully!'})
+#                     else:
+#                         return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
+#                 else:
+#                     return JsonResponse({'error':'Your Pin is InCorrect!'})
 
-            elif Person == 'Admin':
-                admin = Admin.objects.get(college_id = college_id)
-                personal_pin = admin.personal_pin
-                if pinInput == personal_pin:
-                    admin_attendance = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, type= Person, date = date)
-                    if not admin_attendance.exists():
-                        Faculty_and_Admin_Attedance.objects.create(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
-                        return JsonResponse({'success':f'{admin.name} {admin.last_name} your Attendance Marked Successfully!'})
-                    else:
-                        return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
-                else:
-                    return JsonResponse({'error':'Your Pin is InCorrect!'})
+#             elif Person == 'Admin':
+#                 admin = Admin.objects.get(college_id = college_id)
+#                 personal_pin = admin.personal_pin
+#                 if pinInput == personal_pin:
+#                     admin_attendance = Faculty_and_Admin_Attedance.objects.filter(collegeID = college_id, type= Person, date = date)
+#                     if not admin_attendance.exists():
+#                         Faculty_and_Admin_Attedance.objects.create(collegeID = college_id, status = 'Present', type= Person, timing = timing, date = date, leave_time = 0.0)
+#                         return JsonResponse({'success':f'{admin.name} {admin.last_name} your Attendance Marked Successfully!'})
+#                     else:
+#                         return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
+#                 else:
+#                     return JsonResponse({'error':'Your Pin is InCorrect!'})
                 
-            elif Person == 'Student':
-                student = Student.objects.get(college_id = college_id)
-                personal_pin = student.personal_pin
-                if pinInput == personal_pin:
-                    student_attendance = Attendance.objects.filter(college_id = college_id, date = date)
-                    if not student_attendance.exists():
-                        Attendance.objects.create(college_id = college_id, status = 'Present', time = timing, date = date, leave_time = 0.0)
-                        return JsonResponse({'success':f'{student.name} {student.last_name} your Attendance Marked Successfully!'})
-                    else:
-                        return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
-                else:
-                    return JsonResponse({'error':'Your Pin is InCorrect!'})
+#             elif Person == 'Student':
+#                 student = Student.objects.get(college_id = college_id)
+#                 personal_pin = student.personal_pin
+#                 if pinInput == personal_pin:
+#                     student_attendance = Attendance.objects.filter(college_id = college_id, date = date)
+#                     if not student_attendance.exists():
+#                         Attendance.objects.create(college_id = college_id, status = 'Present', time = timing, date = date, leave_time = 0.0)
+#                         return JsonResponse({'success':f'{student.name} {student.last_name} your Attendance Marked Successfully!'})
+#                     else:
+#                         return JsonResponse({'error':f'Your Today Attendance had been Marked!'})
+#                 else:
+#                     return JsonResponse({'error':'Your Pin is InCorrect!'})
 
-        except Exception as e:
-            return JsonResponse({'error':f'An Error Occured {str(e)}!'})  
-    context = {
-        'college_id':college_id,
-        'Person':Person,
-        }
-    return render(request, 'main/attendance/biometric_verification.html',context)
+#         except Exception as e:
+#             return JsonResponse({'error':f'An Error Occured {str(e)}!'})  
+#     context = {
+#         'college_id':college_id,
+#         'Person':Person,
+#         }
+#     return render(request, 'main/attendance/biometric_verification.html',context)
 
-@csrf_exempt
-@never_cache
-def personal_code_creation(request,Person):
-    if Person == 'Faculty':
-        college_id = request.session.get('faculty_college_id')
-    elif Person == 'Admin':
-        college_id = request.session.get('admin_college_id')
-    elif Person == 'Student':
-        college_id = request.session.get('student_college_id')
+# @csrf_exempt
+# @never_cache
+# def personal_code_creation(request,Person):
+#     if Person == 'Faculty':
+#         college_id = request.session.get('faculty_college_id')
+#     elif Person == 'Admin':
+#         college_id = request.session.get('admin_college_id')
+#     elif Person == 'Student':
+#         college_id = request.session.get('student_college_id')
         
-    if request.method == 'POST':
-        try:  
-            data = json.loads(request.body) 
-            college_id = data.get('college_id')
-            Person = data.get('Person')
-            pinInput = data.get('pinInput')
+#     if request.method == 'POST':
+#         try:  
+#             data = json.loads(request.body) 
+#             college_id = data.get('college_id')
+#             Person = data.get('Person')
+#             pinInput = data.get('pinInput')
 
-            if Person == 'Faculty':
-                faculty = Faculty.objects.get(college_id = college_id)
-                faculty.personal_pin = str(pinInput)
-                faculty.save()
-                return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Personal Pin Created Successfully!'})
+#             if Person == 'Faculty':
+#                 faculty = Faculty.objects.get(college_id = college_id)
+#                 faculty.personal_pin = str(pinInput)
+#                 faculty.save()
+#                 return JsonResponse({'success':f'{faculty.name} {faculty.last_name} your Personal Pin Created Successfully!'})
 
-            elif Person == 'Admin':
-                admin = Admin.objects.get(college_id = college_id)
-                admin.personal_pin = str(pinInput)
-                admin.save()
-                return JsonResponse({'success':f'{admin.name} {admin.last_name} your Personal Pin Created Successfully!'})
+#             elif Person == 'Admin':
+#                 admin = Admin.objects.get(college_id = college_id)
+#                 admin.personal_pin = str(pinInput)
+#                 admin.save()
+#                 return JsonResponse({'success':f'{admin.name} {admin.last_name} your Personal Pin Created Successfully!'})
 
-            if Person == 'Student':
-                student = Student.objects.get(college_id = college_id)
-                student.personal_pin = str(pinInput)
-                student.save()
-                return JsonResponse({'success':f'{student.name} {student.last_name} your Personal Pin Created Successfully!'})
+#             if Person == 'Student':
+#                 student = Student.objects.get(college_id = college_id)
+#                 student.personal_pin = str(pinInput)
+#                 student.save()
+#                 return JsonResponse({'success':f'{student.name} {student.last_name} your Personal Pin Created Successfully!'})
 
-        except Exception as e:
-            return JsonResponse({'error':f'An Error Occured {str(e)}!'})        
-    context = {
-        'college_id':college_id,
-        'Person':Person,
-        }
-    return render(request, 'main/attendance/personal_code_creation.html',context)
+#         except Exception as e:
+#             return JsonResponse({'error':f'An Error Occured {str(e)}!'})        
+#     context = {
+#         'college_id':college_id,
+#         'Person':Person,
+#         }
+#     return render(request, 'main/attendance/personal_code_creation.html',context)
 
-from .serializers import LeaveSerializer
-import json
-from datetime import datetime
-from django.utils import timezone
-from .pagination import LeavePagination
-from rest_framework.views import APIView
-from rest_framework.decorators import api_view
-from .utils import leaves_limit
+# from .serializers import LeaveSerializer
+# import json
+# from datetime import datetime
+# from django.utils import timezone
+# from .pagination import LeavePagination
+# from rest_framework.views import APIView
+# from rest_framework.decorators import api_view
+# from .utils import leaves_limit
 
-def leave_request_making(request, Person):
-    role = request.session.get('role')
+# def leave_request_making(request, Person):
+#     role = request.session.get('role')
     
-    if Person == 'Faculty':
-        college_id = request.session.get('faculty_college_id')
-        detail = Faculty.objects.get(college_id=college_id)
-        name = f'{detail.name} {detail.last_name}'
-        position = f'{detail.position.name} Level-{detail.position.level}'
-        department = f'{detail.department.name}'
+#     if Person == 'Faculty':
+#         college_id = request.session.get('faculty_college_id')
+#         detail = Faculty.objects.get(college_id=college_id)
+#         name = f'{detail.name} {detail.last_name}'
+#         # position = f'{detail.position.name-{detail.position.level}'
+#         department = f'{detail.department.name}'
 
-    if Person == 'Admin':
-        college_id = request.session.get('admin_college_id')
-        detail = Admin.objects.get(college_id=college_id)
-        name = f'{detail.name} {detail.last_name}'
-        position = f'{detail.position.name} Level-{detail.position.level}'
-        department = f'{detail.department.name}'
+#     if Person == 'Admin':
+#         college_id = request.session.get('admin_college_id')
+#         detail = Admin.objects.get(college_id=college_id)
+#         name = f'{detail.name} {detail.last_name}'
+#         # position = f'{detail.position.name-{detail.position.level}'
+#         department = f'{detail.department.name}'
         
-    leaves = Leave.objects.filter(college_id=college_id)
-    total_applied = leaves.count()
-    pending = leaves.filter(status = 'Pending').count()
-    approved = leaves.filter(status = 'Approved').count()
-    rejected = leaves.filter(status = 'Rejected').count()
-    leave_days = leaves_limit(True)
-    used_days = approved
-    percentage = (used_days/leave_days)*100
-    leaves = leaves.order_by("applied_on")[:5]
+#     leaves = Leave.objects.filter(college_id=college_id)
+#     total_applied = leaves.count()
+#     pending = leaves.filter(status = 'Pending').count()
+#     approved = leaves.filter(status = 'Approved').count()
+#     rejected = leaves.filter(status = 'Rejected').count()
+#     leave_days = leaves_limit(True)
+#     used_days = approved
+#     percentage = (used_days/leave_days)*100
+#     leaves = leaves.order_by("applied_on")[:5]
 
-    if request.method == 'POST':
-      try:
-        form_data = json.loads(request.body)
-        college_id = form_data.get('college_id')
+#     if request.method == 'POST':
+#       try:
+#         form_data = json.loads(request.body)
+#         college_id = form_data.get('college_id')
         
         
-        if college_id and college_id[0:2] == 'GK':
-            try:
-                user = Faculty.objects.get(college_id=college_id)
-                # Get ContentType object
-                content_type_obj = ContentType.objects.get_for_model(user)
-                # Use the ID (pk) instead of object
-                content_type_id = content_type_obj.id
-            except Faculty.DoesNotExist:
-                return JsonResponse({'error': 'Faculty not found'}, status=404)
-        else:
-            return JsonResponse({'error': 'Invalid college ID format'}, status=400)
+#         if college_id and college_id[0:2] == 'GK':
+#             try:
+#                 user = Faculty.objects.get(college_id=college_id)
+#                 # Get ContentType object
+#                 content_type_obj = ContentType.objects.get_for_model(user)
+#                 # Use the ID (pk) instead of object
+#                 content_type_id = content_type_obj.id
+#             except Faculty.DoesNotExist:
+#                 return JsonResponse({'error': 'Faculty not found'}, status=404)
+#         else:
+#             return JsonResponse({'error': 'Invalid college ID format'}, status=400)
         
-        # Convert string dates to Date objects
-        try:
-            start_date = datetime.strptime(form_data.get('startDate'), '%Y-%m-%d').date() if form_data.get('startDate') else None
-            end_date = datetime.strptime(form_data.get('endDate'), '%Y-%m-%d').date() if form_data.get('endDate') else None
-        except ValueError as e:
-            return JsonResponse({'error': 'Invalid date format. Use YYYY-MM-DD'}, status=400)
+#         # Convert string dates to Date objects
+#         try:
+#             start_date = datetime.strptime(form_data.get('startDate'), '%Y-%m-%d').date() if form_data.get('startDate') else None
+#             end_date = datetime.strptime(form_data.get('endDate'), '%Y-%m-%d').date() if form_data.get('endDate') else None
+#         except ValueError as e:
+#             return JsonResponse({'error': 'Invalid date format. Use YYYY-MM-DD'}, status=400)
         
-        # Map form fields to model fields - use content_type_id instead of content_type_obj
-        leave_data = {
-            'content_type': content_type_id,  # CHANGED: Use ID instead of object
-            'college_id': form_data.get('college_id', '').strip(),
-            'subject': form_data.get('leaveSubject', '').strip(),
-            'start_date': start_date,
-            'end_date': end_date,
-            'department': user.department.id,
-            'total_days': int(form_data.get('totalDays', 0)),
-            'leave_type': form_data.get('leaveType', '').strip(),
-            'contact_during_leave': form_data.get('contactNumber', '').strip(),
-            'reason': form_data.get('leaveReason', '').strip(),
-            'status': 'Pending',
-            'leave_time': float(form_data.get('leaveTime', 0))
-        }
+#         # Map form fields to model fields - use content_type_id instead of content_type_obj
+#         leave_data = {
+#             'content_type': content_type_id,  # CHANGED: Use ID instead of object
+#             'college_id': form_data.get('college_id', '').strip(),
+#             'subject': form_data.get('leaveSubject', '').strip(),
+#             'start_date': start_date,
+#             'end_date': end_date,
+#             'department': user.department.id,
+#             'total_days': int(form_data.get('totalDays', 0)),
+#             'leave_type': form_data.get('leaveType', '').strip(),
+#             'contact_during_leave': form_data.get('contactNumber', '').strip(),
+#             'reason': form_data.get('leaveReason', '').strip(),
+#             'status': 'Pending',
+#             'leave_time': float(form_data.get('leaveTime', 0))
+#         }
         
-        serializer = LeaveSerializer(data=leave_data)
+#         serializer = LeaveSerializer(data=leave_data)
         
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({'success': 'Leave application submitted successfully!'}, status=201)
-        else:
-            print(serializer.errors)
-            return JsonResponse({'error': serializer.errors}, status=400)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return JsonResponse({'success': 'Leave application submitted successfully!'}, status=201)
+#         else:
+#             print(serializer.errors)
+#             return JsonResponse({'error': serializer.errors}, status=400)
             
-      except json.JSONDecodeError as e:
-        return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-      except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return JsonResponse({'error': str(e)}, status=500)
+#       except json.JSONDecodeError as e:
+#         return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+#       except Exception as e:
+#         import traceback
+#         traceback.print_exc()
+#         return JsonResponse({'error': str(e)}, status=500)
     
-    context = {
-        'role': role,
-        'college_id': college_id,
-        'name': name,
-        'position': position,
-        'department': department,
-        'leaves': leaves, 
-        'total_applied': total_applied,
-        'pending': pending,
-        'approved': approved,
-        'rejected': rejected,
-        'leave_days': leave_days,
-        'used_days': used_days,
-        'percentage': percentage
-    }
-    return render(request, 'main/attendance/leave.html', context)
+#     context = {
+#         'role': role,
+#         'college_id': college_id,
+#         'name': name,
+#         # 'position': position,
+#         'department': department,
+#         'leaves': leaves, 
+#         'total_applied': total_applied,
+#         'pending': pending,
+#         'approved': approved,
+#         'rejected': rejected,
+#         'leave_days': leave_days,
+#         'used_days': used_days,
+#         'percentage': percentage
+#     }
+#     return render(request, 'main/attendance/leave.html', context)
 
-@api_view(['GET'])
-def leave_details(request):
-    if request.method == 'GET':
-        try:
-            college_id = request.GET.get('college_id')
-            queryset = Leave.objects.filter(college_id = college_id).order_by("-applied_on")
-            search = request.GET.get("search")
-            if search:
-                queryset = queryset.filter(
-                    Q(leave_type__icontains = search) |
-                    Q(subject__icontains = search) |
-                    Q(start_date__icontains = search)|
-                    Q(end_date__icontains = search) |
-                    Q(status__icontains = search)
-                    )
-            status = request.GET.get("status")
-            if status:
-                queryset = queryset.filter(status = status)
-            paginator = LeavePagination()
-            paginated_queryset = paginator.paginate_queryset(queryset, request)
-            serializer = LeaveSerializer(paginated_queryset, many=True)
-            return paginator.get_paginated_response(serializer.data)     
+# @api_view(['GET'])
+# def leave_details(request):
+#     if request.method == 'GET':
+#         try:
+#             college_id = request.GET.get('college_id')
+#             queryset = Leave.objects.filter(college_id = college_id).order_by("-applied_on")
+#             search = request.GET.get("search")
+#             if search:
+#                 queryset = queryset.filter(
+#                     Q(leave_type__icontains = search) |
+#                     Q(subject__icontains = search) |
+#                     Q(start_date__icontains = search)|
+#                     Q(end_date__icontains = search) |
+#                     Q(status__icontains = search)
+#                     )
+#             status = request.GET.get("status")
+#             if status:
+#                 queryset = queryset.filter(status = status)
+#             paginator = LeavePagination()
+#             paginated_queryset = paginator.paginate_queryset(queryset, request)
+#             serializer = LeaveSerializer(paginated_queryset, many=True)
+#             return paginator.get_paginated_response(serializer.data)     
             
-        except json.JSONDecodeError as e:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)         
+#         except json.JSONDecodeError as e:
+#             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=500)         
             
-def admin_leave_page(request):
-    role = request.session.get('role')
-    admin_college_id = request.session.get('admin_college_id')
-    now = datetime.now()
-    admin_ct = ContentType.objects.get_for_model(Admin)
-    faculty_ct = ContentType.objects.get_for_model(Faculty)
-    today_leaves = Leave.objects.filter(applied_on=now.date())
-    today_leaves = today_leaves.filter(content_type__in=[admin_ct, faculty_ct])
-    pending_leaves = today_leaves.filter(status='Pending').count()
-    this_month_leaves = Leave.objects.filter(applied_on__month=now.month, applied_on__year=now.year)
-    this_month_leaves = this_month_leaves.filter(content_type__in=[admin_ct, faculty_ct])
-    this_month_approved_leaves = this_month_leaves.filter(status='Approved')
-    approval_rate = (this_month_approved_leaves.count()/this_month_leaves.count())*100
+# def admin_leave_page(request):
+#     role = request.session.get('role')
+#     admin_college_id = request.session.get('admin_college_id')
+#     now = datetime.now()
+#     admin_ct = ContentType.objects.get_for_model(Admin)
+#     faculty_ct = ContentType.objects.get_for_model(Faculty)
+#     today_leaves = Leave.objects.filter(applied_on=now.date())
+#     today_leaves = today_leaves.filter(content_type__in=[admin_ct, faculty_ct])
+#     pending_leaves = today_leaves.filter(status='Pending').count()
+#     this_month_leaves = Leave.objects.filter(applied_on__month=now.month, applied_on__year=now.year)
+#     this_month_leaves = this_month_leaves.filter(content_type__in=[admin_ct, faculty_ct])
+#     this_month_approved_leaves = this_month_leaves.filter(status='Approved')
+#     approval_rate = (this_month_approved_leaves.count()/this_month_leaves.count())*100
 
-    total_leaves = Leave.objects.all()
-    total_leaves = total_leaves.filter(content_type__in=[admin_ct, faculty_ct])
-    total_pending = total_leaves.filter(status = 'Pending').count()
-    total_approved = total_leaves.filter(status = 'Approved').count()
-    total_rejected = total_leaves.filter(status = 'Rejected').count()
+#     total_leaves = Leave.objects.all()
+#     total_leaves = total_leaves.filter(content_type__in=[admin_ct, faculty_ct])
+#     total_pending = total_leaves.filter(status = 'Pending').count()
+#     total_approved = total_leaves.filter(status = 'Approved').count()
+#     total_rejected = total_leaves.filter(status = 'Rejected').count()
 
-    departments = Department.objects.all().order_by('id')
+#     departments = Department.objects.all().order_by('id')
 
-    context = {
-        'role':role,
-        'college_id':admin_college_id,
-        'today_leaves':today_leaves.count(),
-        'pending_leaves':pending_leaves,
-        'this_month_leaves':this_month_leaves.count(),
-        'approval_rate':approval_rate,
-        'total_leaves':total_leaves.count(),
-        'total_pending':total_pending,
-        'total_approved':total_approved,
-        'total_rejected':total_rejected,
-        'departments':departments
-        }
+#     context = {
+#         'role':role,
+#         'college_id':admin_college_id,
+#         'today_leaves':today_leaves.count(),
+#         'pending_leaves':pending_leaves,
+#         'this_month_leaves':this_month_leaves.count(),
+#         'approval_rate':approval_rate,
+#         'total_leaves':total_leaves.count(),
+#         'total_pending':total_pending,
+#         'total_approved':total_approved,
+#         'total_rejected':total_rejected,
+#         'departments':departments
+#         }
 
-    return render(request, 'admin/admin_leave_checking.html', context)
+#     return render(request, 'admin/admin_leave_checking.html', context)
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.utils.dateparse import parse_date
-@api_view(['GET'])
-def admin_leave_api(request):
-    if request.method == 'GET':
-        try:
-            # Yeh line change karo - pehle hi order_by add karo
-            queryset = Leave.objects.all().order_by('applied_on')  # <-- IMPORTANT
+# from rest_framework.decorators import api_view
+# from rest_framework.response import Response
+# from django.utils.dateparse import parse_date
+# @api_view(['GET'])
+# def admin_leave_api(request):
+#     if request.method == 'GET':
+#         try:
+#             # Yeh line change karo - pehle hi order_by add karo
+#             queryset = Leave.objects.all().order_by('applied_on')  # <-- IMPORTANT
 
-            search = request.GET.get('search')
-            if search:
-               queryset = queryset.filter(
-                   Q(college_id__icontains = search)|
-                   Q(leave_type__icontains = search)|
-                   Q(status__icontains = search)
-                   )
+#             search = request.GET.get('search')
+#             if search:
+#                queryset = queryset.filter(
+#                    Q(college_id__icontains = search)|
+#                    Q(leave_type__icontains = search)|
+#                    Q(status__icontains = search)
+#                    )
 
-            # filteration
-            status = request.GET.get('status')
-            department = request.GET.get('department')
-            from_date = request.GET.get('from_date')
-            to_date = request.GET.get('to_date')
+#             # filteration
+#             status = request.GET.get('status')
+#             department = request.GET.get('department')
+#             from_date = request.GET.get('from_date')
+#             to_date = request.GET.get('to_date')
             
-            if status:
-                queryset = queryset.filter(status__iexact = status)
+#             if status:
+#                 queryset = queryset.filter(status__iexact = status)
 
-            if department:
-                admin_college_ids = Admin.objects.filter(department_id=department).values_list('college_id', flat=True)
-                faculty_college_ids = Faculty.objects.filter(department_id=department).values_list('college_id', flat=True)
-                queryset = queryset.filter(college_id__in=list(admin_college_ids) + list(faculty_college_ids))
+#             if department:
+#                 admin_college_ids = Admin.objects.filter(department_id=department).values_list('college_id', flat=True)
+#                 faculty_college_ids = Faculty.objects.filter(department_id=department).values_list('college_id', flat=True)
+#                 queryset = queryset.filter(college_id__in=list(admin_college_ids) + list(faculty_college_ids))
 
-            if from_date and to_date:
-                      # Django ka built-in parse_date use karo
-                    from_date_obj = parse_date(from_date)
-                    to_date_obj = parse_date(to_date)
+#             if from_date and to_date:
+#                       # Django ka built-in parse_date use karo
+#                     from_date_obj = parse_date(from_date)
+#                     to_date_obj = parse_date(to_date)
     
-                    if from_date_obj and to_date_obj:
-                     # Simple date range filter
-                        queryset = queryset.filter(applied_on__date__range=[from_date_obj, to_date_obj])
-            # pagination
-            paginator = LeavePagination()
-            paginated_queryset = paginator.paginate_queryset(queryset, request)
-            serializer = LeaveSerializer(paginated_queryset, many=True)
-            return paginator.get_paginated_response(serializer.data)
+#                     if from_date_obj and to_date_obj:
+#                      # Simple date range filter
+#                         queryset = queryset.filter(applied_on__date__range=[from_date_obj, to_date_obj])
+#             # pagination
+#             paginator = LeavePagination()
+#             paginated_queryset = paginator.paginate_queryset(queryset, request)
+#             serializer = LeaveSerializer(paginated_queryset, many=True)
+#             return paginator.get_paginated_response(serializer.data)
 
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=400)
 
-@api_view(['GET', 'PATCH', 'DELETE', 'PUT'])   
-def admin_leave_api_view(request, id):
-    if request.method == 'GET':
-        try:       
-            leave = Leave.objects.get(id=id)
-            serializer = LeaveSerializer(leave)
-            return JsonResponse(serializer.data)
-        except Leave.DoesNotExist:
-            return JsonResponse({'error': "No Leave Found !"})
-        except Exception as e:
-            return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
+# @api_view(['GET', 'PATCH', 'DELETE', 'PUT'])   
+# def admin_leave_api_view(request, id):
+#     if request.method == 'GET':
+#         try:       
+#             leave = Leave.objects.get(id=id)
+#             serializer = LeaveSerializer(leave)
+#             return JsonResponse(serializer.data)
+#         except Leave.DoesNotExist:
+#             return JsonResponse({'error': "No Leave Found !"})
+#         except Exception as e:
+#             return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
 
-    if request.method in ['PATCH', 'PUT']:
-        try:
-            leave = Leave.objects.get(id=id)
-            data = request.data.copy()
+#     if request.method in ['PATCH', 'PUT']:
+#         try:
+#             leave = Leave.objects.get(id=id)
+#             data = request.data.copy()
             
-            # If updating status, use admin_response field
-            if 'status' in data:
-                data['admin_response'] = data['status']
+#             # If updating status, use admin_response field
+#             if 'status' in data:
+#                 data['admin_response'] = data['status']
                 
-            serializer = LeaveSerializer(leave, data=data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse({'success': "Leave response Updated Successfully!"})
-            return JsonResponse({'error': serializer.errors}, status=400)
+#             serializer = LeaveSerializer(leave, data=data, partial=True)
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 return JsonResponse({'success': "Leave response Updated Successfully!"})
+#             return JsonResponse({'error': serializer.errors}, status=400)
             
-        except Leave.DoesNotExist:
-            return JsonResponse({'error': "No Leave Found !"})
-        except Exception as e:
-            return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
+#         except Leave.DoesNotExist:
+#             return JsonResponse({'error': "No Leave Found !"})
+#         except Exception as e:
+#             return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
 
-    if request.method == 'DELETE':
-        try:
-            leave = Leave.objects.get(id=id)
+#     if request.method == 'DELETE':
+#         try:
+#             leave = Leave.objects.get(id=id)
             
-            # Check if leave can be deleted (only pending leaves can be deleted)
-            if leave.status != 'Pending':
-                return JsonResponse({'error': "Only pending leaves can be cancelled!"}, status=400)
+#             # Check if leave can be deleted (only pending leaves can be deleted)
+#             if leave.status != 'Pending':
+#                 return JsonResponse({'error': "Only pending leaves can be cancelled!"}, status=400)
                 
-            cancellation_reason = request.data.get('cancellation_reason', '')
-            leave.delete()
-            return JsonResponse({'success': "Leave Cancelled Successfully!"})
-        except Leave.DoesNotExist:
-            return JsonResponse({'error': "No Leave Found !"})
-        except Exception as e:
-            return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
-
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.permissions import IsAuthenticated
-from .models import Lab
-from .serializers import LabSerializers
-from .pagination import LabPagination
-
-class LabViewsSet(ModelViewSet):
-    queryset = Lab.objects.all().order_by("-id")
-    serializer_class = LabSerializers
-    pagination_class = LabPagination
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        search = self.request.query_params.get('search')
-        if search:
-            qs = qs.filter(name__icontains = search)
-            qs = qs.filter(number__icontains = search)
-        return qs
-    
+#             cancellation_reason = request.data.get('cancellation_reason', '')
+#             leave.delete()
+#             return JsonResponse({'success': "Leave Cancelled Successfully!"})
+#         except Leave.DoesNotExist:
+#             return JsonResponse({'error': "No Leave Found !"})
+#         except Exception as e:
+#             return JsonResponse({'error': f"An Error Occured: {str(e)} !"})
 
 
 
@@ -4428,52 +2023,5 @@ class LabViewsSet(ModelViewSet):
 
 
 
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-import os
-from django.conf import settings
-
-def login1(request):
-    if request.method == 'POST':
-        password = request.POST.get('password', '')
-        
-        if password == 'Deepanshu':
-            # Generate screenshot using JavaScript in template
-            return render(request, 'photo.html')
-        else:
-            return render(request, 'chat_login.html', {'error': 'Wrong password!'})
-    
-    return render(request, 'chat_login.html')
-
-def download_photo(request):
-    # Path to your photo
-    photo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'photo.jpg')
-    
-    if os.path.exists(photo_path):
-        with open(photo_path, 'rb') as f:
-            response = HttpResponse(f.read(), content_type='image/jpeg')
-            response['Content-Disposition'] = 'attachment; filename="photo.jpg"'
-            return response
-    return HttpResponse("Photo not found", status=404)
-
-
-    
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.models import User
-from .models import ChatMessage
-
-def chat_page(request, user_id):
-    # Jis student se baat karni hai uska data
-    other_user = get_object_or_404(User, id=user_id)
-    
-    # Purani chat history load karne ke liye (Optional)
-    room_name = f'{min(request.user.id, other_user.id)}_{max(request.user.id, other_user.id)}'
-    messages = ChatMessage.objects.filter(thread_name=room_name).order_create('timestamp')
-
-    return render(request, 'chat_room.html', {
-        'other_user': other_user,
-        'messages': messages
-    })
-
-
+# redis practise
 

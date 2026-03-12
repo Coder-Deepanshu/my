@@ -1,0 +1,538 @@
+  :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #3f37c9;
+      --accent: #7209b7;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --light-gray: #e9ecef;
+      --transition: all 0.3s ease;
+  }
+
+  body {
+      background-color: #f5f7fb;
+      color: var(--dark);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+  }
+
+  /* Header Styles */
+  .header {
+      background: white;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+  }
+
+  .navbar-brand {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.8rem;
+  }
+
+  .nav-link {
+      color: var(--dark);
+      font-weight: 500;
+      margin: 0 10px;
+      transition: var(--transition);
+  }
+
+  .nav-link:hover {
+      color: var(--primary);
+  }
+
+  .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      padding: 12px 30px;
+      border-radius: 8px;
+      transition: var(--transition);
+      font-weight: 600;
+  }
+
+  .btn-primary:hover {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+  }
+
+  /* Page Header */
+  .page-header {
+      padding: 100px 0 60px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      color: white;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+  }
+
+  .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') center/cover no-repeat;
+      opacity: 0.1;
+  }
+
+  .page-header h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      position: relative;
+  }
+
+  .page-header p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto;
+      position: relative;
+  }
+
+  /* Enrollment Process */
+  .process-section {
+      padding: 80px 0;
+      background: white;
+  }
+
+  .section-title {
+      text-align: center;
+      margin-bottom: 50px;
+  }
+
+  .section-title h2 {
+      font-size: 2.2rem;
+      color: var(--dark);
+      margin-bottom: 15px;
+      position: relative;
+      display: inline-block;
+  }
+
+  .section-title h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+  }
+
+  .section-title p {
+      color: var(--gray);
+      max-width: 600px;
+      margin: 0 auto;
+  }
+
+  .process-steps {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 50px;
+      position: relative;
+  }
+
+  .process-steps::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 2px;
+      background: var(--light-gray);
+      z-index: 1;
+  }
+
+  .process-step {
+      text-align: center;
+      padding: 0 30px;
+      position: relative;
+      z-index: 2;
+  }
+
+  .step-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin: 0 auto 20px;
+      position: relative;
+      transition: var(--transition);
+  }
+
+  .process-step.active .step-icon {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.1);
+  }
+
+  .step-number {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+  }
+
+  .step-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+  }
+
+  /* Enrollment Form */
+  .enroll-section {
+      padding: 80px 0;
+      background: var(--light);
+  }
+
+  .enroll-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin-bottom: 40px;
+  }
+
+  .enroll-header {
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      color: white;
+      padding: 30px;
+      text-align: center;
+  }
+
+  .enroll-content {
+      padding: 40px;
+  }
+
+  /* Form Styles */
+  .form-group {
+      margin-bottom: 25px;
+  }
+
+  .form-label {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+  }
+
+  .form-label i {
+      margin-right: 10px;
+      color: var(--primary);
+  }
+
+  .form-control {
+      padding: 15px 20px;
+      border: 2px solid var(--light-gray);
+      border-radius: 10px;
+      transition: var(--transition);
+      font-size: 1rem;
+  }
+
+  .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+  }
+
+  .form-select {
+      padding: 15px 20px;
+      border: 2px solid var(--light-gray);
+      border-radius: 10px;
+      transition: var(--transition);
+  }
+
+  .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+  }
+
+  .input-group-text {
+      background: white;
+      border: 2px solid var(--light-gray);
+      border-left: none;
+  }
+
+  /* Benefits Section */
+  .benefits-section {
+      padding: 80px 0;
+  }
+
+  .benefit-card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      height: 100%;
+      transition: var(--transition);
+  }
+
+  .benefit-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .benefit-icon {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(67, 97, 238, 0.1);
+      color: var(--primary);
+      font-size: 2rem;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      transition: var(--transition);
+  }
+
+  .benefit-card:hover .benefit-icon {
+      background: var(--primary);
+      color: white;
+  }
+
+  .benefit-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+  }
+
+  /* Testimonials */
+  .testimonials-section {
+      padding: 80px 0;
+      background: var(--light);
+  }
+
+  .testimonial-card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      margin: 20px 0;
+      position: relative;
+  }
+
+  .testimonial-card::before {
+      content: '\201C';
+      font-size: 5rem;
+      color: rgba(67, 97, 238, 0.1);
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      line-height: 1;
+  }
+
+  .testimonial-text {
+      font-style: italic;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+  }
+
+  .testimonial-author {
+      display: flex;
+      align-items: center;
+  }
+
+  .author-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 15px;
+  }
+
+  .author-info h5 {
+      margin-bottom: 5px;
+      font-weight: 600;
+  }
+
+  .author-info p {
+      margin: 0;
+      color: var(--gray);
+      font-size: 0.9rem;
+  }
+
+  /* Footer */
+  .footer {
+      background: var(--dark);
+      color: white;
+      padding: 60px 0 30px;
+  }
+
+  .footer-title {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      position: relative;
+      padding-bottom: 10px;
+  }
+
+  .footer-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--primary);
+  }
+
+  .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+  }
+
+  .footer-links li {
+      margin-bottom: 10px;
+  }
+
+  .footer-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: var(--transition);
+  }
+
+  .footer-links a:hover {
+      color: white;
+      padding-left: 5px;
+  }
+
+  .footer-social {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+  }
+
+  .footer-social a {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-radius: 50%;
+      transition: var(--transition);
+  }
+
+  .footer-social a:hover {
+      background: var(--primary);
+      transform: translateY(-3px);
+  }
+
+  .footer-bottom {
+      text-align: center;
+      padding-top: 30px;
+      margin-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Success Modal */
+  .modal-content {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-header {
+      border-bottom: 1px solid var(--light-gray);
+      padding: 20px 25px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 15px 15px 0 0;
+  }
+
+  .modal-body {
+      padding: 30px;
+      text-align: center;
+  }
+
+  .success-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(76, 175, 80, 0.1);
+      color: #4CAF50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 20px;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 992px) {
+      .page-header h1 {
+          font-size: 2.5rem;
+      }
+
+      .process-steps {
+          flex-wrap: wrap;
+      }
+
+      .process-steps::before {
+          display: none;
+      }
+
+      .process-step {
+          flex: 0 0 50%;
+          margin-bottom: 30px;
+      }
+  }
+
+  @media (max-width: 768px) {
+      .page-header h1 {
+          font-size: 2.2rem;
+      }
+
+      .page-header {
+          padding: 80px 0 50px;
+      }
+
+      .process-step {
+          flex: 0 0 100%;
+      }
+
+      .enroll-content {
+          padding: 30px;
+      }
+
+      .section-title h2 {
+          font-size: 2rem;
+      }
+  }
+
+  @media (max-width: 576px) {
+      .page-header h1 {
+          font-size: 2rem;
+      }
+
+      .navbar-brand {
+          font-size: 1.5rem;
+      }
+
+      .enroll-content {
+          padding: 20px;
+      }
+  }

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html lang="hi">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720" name="viewport"/>
+<title>शारीरिक आधार पर व्यक्तित्व के प्रकार</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            overflow: hidden;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+            overflow: hidden;
+        }
+        .header-section {
+            padding: 45px 60px 30px 60px;
+            background-color: #ffffff;
+            border-bottom: 4px solid #7c3aed;
+        }
+        .slide-title {
+            font-size: 40px;
+            font-weight: 800;
+            color: #7c3aed;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        .subtitle {
+            font-size: 18px;
+            font-weight: 500;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+        }
+        .subtitle i {
+            margin-right: 8px;
+            color: #7c3aed;
+        }
+        .cards-container {
+            flex: 1;
+            display: flex;
+            gap: 35px;
+            padding: 40px 60px 50px 60px;
+            align-items: stretch;
+        }
+        .card {
+            flex: 1;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.2);
+            transform: translateY(-5px);
+        }
+        .card-image {
+            width: 100%;
+            height: 180px;
+            background-color: #ede9fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-image-icon {
+            font-size: 80px;
+            color: #7c3aed;
+            opacity: 0.4;
+        }
+        .card-content {
+            flex: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-header {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ede9fe;
+        }
+        .card-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+        .card-subtitle {
+            font-size: 15px;
+            font-weight: 600;
+            color: #7c3aed;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .card-description {
+            flex: 1;
+        }
+        .trait-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .trait-icon {
+            width: 24px;
+            min-width: 24px;
+            height: 24px;
+            background-color: #ede9fe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            margin-top: 2px;
+        }
+        .trait-icon i {
+            font-size: 11px;
+            color: #7c3aed;
+        }
+        .trait-text {
+            flex: 1;
+        }
+        .trait-text p {
+            font-size: 15px;
+            font-weight: 500;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+        .note-section {
+            padding: 20px 60px 25px 60px;
+            background-color: #ffffff;
+            border-top: 1px solid #e5e7eb;
+        }
+        .note-content {
+            display: flex;
+            align-items: center;
+            background-color: #fef3c7;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+        .note-icon {
+            font-size: 20px;
+            color: #f59e0b;
+            margin-right: 12px;
+        }
+        .note-text {
+            flex: 1;
+        }
+        .note-text p {
+            font-size: 14px;
+            font-weight: 500;
+            color: #78350f;
+            line-height: 1.4;
+        }
+        .note-label {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<div class="header-section">
+<h1 class="slide-title">
+<p>शारीरिक आधार पर व्यक्तित्व के प्रकार</p>
+</h1>
+<div class="subtitle">
+<p><i class="fas fa-user-md"></i> Ernst Kretschmer का वर्गीकरण</p>
+</div>
+</div>
+<div class="cards-container">
+<div class="card">
+<div class="card-image">
+<img alt="Asthenic Body Type" src="https://page.gensparksite.com/slides_images/d8d68141ef1f63f2df4665819fd1efcb.webp"/>
+</div>
+<div class="card-content">
+<div class="card-header">
+<div class="card-title">
+<p>दुबला-पतला</p>
+</div>
+<div class="card-subtitle">
+<p>Asthenic / Leptosomic</p>
+</div>
+</div>
+<div class="card-description">
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>संवेदनशील स्वभाव</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>अंतर्मुखी प्रवृत्ति</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>संकोची व्यक्तित्व</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>लंबा और पतला शारीरिक गठन</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-image">
+<img alt="Athletic Body Type" src="https://page.gensparksite.com/slides_images/ef16825a9580fc0671f44a6e10e125c2.webp"/>
+</div>
+<div class="card-content">
+<div class="card-header">
+<div class="card-title">
+<p>सुदृढ़</p>
+</div>
+<div class="card-subtitle">
+<p>Athletic</p>
+</div>
+</div>
+<div class="card-description">
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>साहसी और आत्मविश्वासी</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>सक्रिय और ऊर्जावान</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>दृढ़ निश्चयी स्वभाव</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>जोखिम लेने की क्षमता</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-image">
+<img alt="Pyknic Body Type" src="https://page.gensparksite.com/slides_images/d8d68141ef1f63f2df4665819fd1efcb.webp"/>
+</div>
+<div class="card-content">
+<div class="card-header">
+<div class="card-title">
+<p>मोटा</p>
+</div>
+<div class="card-subtitle">
+<p>Pyknic</p>
+</div>
+</div>
+<div class="card-description">
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>मिलनसार और सामाजिक</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>हँसमुख स्वभाव</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>सामाजिक सहभागिता पसंद</p>
+</div>
+</div>
+<div class="trait-item">
+<div class="trait-icon">
+<i class="fas fa-check"></i>
+</div>
+<div class="trait-text">
+<p>गोलाकार शारीरिक संरचना</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="note-section">
+<div class="note-content">
+<i class="fas fa-info-circle note-icon"></i>
+<div class="note-text">
+<p><span class="note-label">नोट:</span> यह ऐतिहासिक वर्गीकरण है; आधुनिक मनोविज्ञान में इसकी सीमाएँ मानी जाती हैं।</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

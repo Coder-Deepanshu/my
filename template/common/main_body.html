@@ -1,0 +1,424 @@
+<!-- Dashboard Tab -->
+<div id="1" class="tab-content active">
+    <!-- Image Slider - Added Here -->
+    <div class="student-slider-container">
+        <div class="student-slider">
+            <!-- Slide 1 -->
+            <div class="student-slide">
+                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2070&auto=format&fit=crop"
+                    alt="Library">
+                <div class="student-slide-content">
+                    <h3 class="student-slide-title">Welcome to Faculty Portal</h3>
+                    <p class="student-slide-text">Access your courses, assignments and student data in
+                        one place</p>
+                </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="student-slide">
+                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop"
+                    alt="Classroom">
+                <div class="student-slide-content">
+                    <h3 class="student-slide-title">Teaching Resources</h3>
+                    <p class="student-slide-text">Download teaching materials and manage your course
+                        content</p>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="student-slide">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop"
+                    alt="Campus">
+                <div class="student-slide-content">
+                    <h3 class="student-slide-title">Stay Connected</h3>
+                    <p class="student-slide-text">Communicate with students and fellow faculty members
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="student-slide">
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
+                    alt="Achievements">
+                <div class="student-slide-content">
+                    <h3 class="student-slide-title">Track Student Progress</h3>
+                    <p class="student-slide-text">Monitor academic performance and attendance analytics
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider Controls -->
+        <div class="student-slider-controls">
+            <button class="student-slider-btn student-prev-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="student-slider-btn student-next-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Slider Dots -->
+        <div class="student-slider-dots" id="sliderDots">
+            <!-- Dots will be generated dynamically by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <h2>Welcome back, Dr. Sharma! 👋</h2>
+        <p>Here's what's happening with your courses today</p>
+        <span class="date-badge"><i class="fas fa-calendar me-2"></i>Monday, 23 Feb 2026</span>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="icon-box" style="background: var(--primary-light); color: var(--primary);">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="stat-value">4</div>
+                <div class="stat-label">Active Courses</div>
+                <div class="stat-trend">
+                    <span class="trend-up"><i class="fas fa-arrow-up me-1"></i>+1 this sem</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="icon-box" style="background: #e6f7f0; color: #0f7b5a;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value">128</div>
+                <div class="stat-label">Total Students</div>
+                <div class="stat-trend">
+                    <span class="trend-up"><i class="fas fa-arrow-up me-1"></i> 92% attendance</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="icon-box" style="background: #fef4e6; color: #d97706;">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-value">24</div>
+                <div class="stat-label">Pending Tasks</div>
+                <div class="stat-trend">
+                    <span class="trend-up"><i class="fas fa-clock me-1"></i> 5 due today</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="icon-box" style="background: #fee9e7; color: #c81e1e;">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-value">4.8</div>
+                <div class="stat-label">Rating</div>
+                <div class="stat-trend">
+                    <span class="trend-up"><i class="fas fa-arrow-up me-1"></i> from 128 reviews</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two Column: My Courses + Today's Schedule -->
+    <div class="row g-3 mb-4">
+        <!-- My Courses -->
+        <div class="col-lg-6">
+            <div class="card-modern">
+                <div class="section-header">
+                    <h5><i class="fas fa-book"></i> My Courses</h5>
+                    <a href="#" class="view-all-link">View All <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+
+                <div class="scrollable-card">
+                    <div class="course-item">
+                        <div class="course-color" style="background: var(--primary);"></div>
+                        <div class="course-info">
+                            <h6>CS101 - Introduction to Programming</h6>
+                            <div class="course-meta">
+                                <span><i class="fas fa-user-graduate me-1"></i> 42 students</span>
+                                <span><i class="fas fa-clock me-1"></i> Mon, Wed 10:00 AM</span>
+                            </div>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-percent">75%</div>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: 75%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-item">
+                        <div class="course-color" style="background: var(--success);"></div>
+                        <div class="course-info">
+                            <h6>CS201 - Data Structures & Algorithms</h6>
+                            <div class="course-meta">
+                                <span><i class="fas fa-user-graduate me-1"></i> 38 students</span>
+                                <span><i class="fas fa-clock me-1"></i> Tue, Thu 2:00 PM</span>
+                            </div>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-percent">60%</div>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: 60%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-item">
+                        <div class="course-color" style="background: var(--warning);"></div>
+                        <div class="course-info">
+                            <h6>CS301 - Database Management Systems</h6>
+                            <div class="course-meta">
+                                <span><i class="fas fa-user-graduate me-1"></i> 35 students</span>
+                                <span><i class="fas fa-clock me-1"></i> Wed, Fri 11:30 AM</span>
+                            </div>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-percent">40%</div>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: 40%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-item">
+                        <div class="course-color" style="background: var(--accent);"></div>
+                        <div class="course-info">
+                            <h6>CS401 - Machine Learning</h6>
+                            <div class="course-meta">
+                                <span><i class="fas fa-user-graduate me-1"></i> 28 students</span>
+                                <span><i class="fas fa-clock me-1"></i> Thu 4:00 PM</span>
+                            </div>
+                        </div>
+                        <div class="course-progress">
+                            <div class="progress-percent">25%</div>
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: 25%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Schedule -->
+        <div class="col-lg-6">
+            <div class="card-modern">
+                <div class="section-header">
+                    <h5><i class="fas fa-calendar-alt"></i> Today's Schedule</h5>
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">23 Feb
+                        2026</span>
+                </div>
+
+                <div class="scrollable-card">
+                    <div class="schedule-item">
+                        <div class="schedule-time">10:00 AM</div>
+                        <div class="schedule-info">
+                            <h6>CS101 - Programming</h6>
+                            <p>Room 301 · 42 students</p>
+                        </div>
+                        <span class="schedule-badge">In 2h</span>
+                    </div>
+
+                    <div class="schedule-item">
+                        <div class="schedule-time">12:00 PM</div>
+                        <div class="schedule-info">
+                            <h6>Lunch Break</h6>
+                            <p>Faculty Lounge</p>
+                        </div>
+                        <span class="schedule-badge" style="background: #f0f0f0; color: var(--gray);">1h</span>
+                    </div>
+
+                    <div class="schedule-item">
+                        <div class="schedule-time">2:00 PM</div>
+                        <div class="schedule-info">
+                            <h6>CS201 - Data Structures</h6>
+                            <p>Room 205 · 38 students</p>
+                        </div>
+                        <span class="schedule-badge">Next</span>
+                    </div>
+
+                    <div class="schedule-item">
+                        <div class="schedule-time">4:30 PM</div>
+                        <div class="schedule-info">
+                            <h6>Faculty Meeting</h6>
+                            <p>Conference Room A</p>
+                        </div>
+                        <span class="schedule-badge">Mandatory</span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions mt-3">
+                    <a href="#" class="action-btn">
+                        <i class="fas fa-qrcode"></i>
+                        <span>Take Attendance</span>
+                    </a>
+                    <a href="#" class="action-btn">
+                        <i class="fas fa-upload"></i>
+                        <span>Upload Material</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Students & Notifications Row -->
+    <div class="row g-3">
+        <!-- Recent Student Activity -->
+        <div class="col-lg-7">
+            <div class="card-modern">
+                <div class="section-header">
+                    <h5><i class="fas fa-user-graduate"></i> Recent Student Activity</h5>
+                    <a href="#" class="view-all-link">View All <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+
+                <div class="scrollable-card">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Assignment</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="student-avatar">AP</div>
+                                        <div>
+                                            <div class="fw-semibold">Aarav Patel</div>
+                                            <small class="text-muted">CS101</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Programming</td>
+                                <td>Python Basics</td>
+                                <td><span class="badge-status">Submitted</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="student-avatar">SK</div>
+                                        <div>
+                                            <div class="fw-semibold">Sanya Kapoor</div>
+                                            <small class="text-muted">CS201</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>DSA</td>
+                                <td>Linked Lists</td>
+                                <td><span class="badge-status badge-warning">Late</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="student-avatar">RJ</div>
+                                        <div>
+                                            <div class="fw-semibold">Rohan Joshi</div>
+                                            <small class="text-muted">CS301</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>DBMS</td>
+                                <td>SQL Queries</td>
+                                <td><span class="badge-status">Graded</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="student-avatar">MS</div>
+                                        <div>
+                                            <div class="fw-semibold">Meera Singh</div>
+                                            <small class="text-muted">CS401</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>ML</td>
+                                <td>Regression</td>
+                                <td><span class="badge-status">Submitted</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications & Reminders -->
+        <div class="col-lg-5">
+            <div class="card-modern">
+                <div class="section-header">
+                    <h5><i class="fas fa-bell"></i> Notifications</h5>
+                    <span class="badge bg-danger text-white">3 new</span>
+                </div>
+
+                <div class="scrollable-card">
+                    <div class="notif-item">
+                        <div class="notif-icon" style="background: #e6f7f0; color: var(--success);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="notif-content">
+                            <p>Attendance marked for CS101</p>
+                            <small><i class="fas fa-clock me-1"></i> 10 mins ago</small>
+                        </div>
+                    </div>
+
+                    <div class="notif-item">
+                        <div class="notif-icon" style="background: #fff3d8; color: var(--warning);">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="notif-content">
+                            <p>5 assignments pending review</p>
+                            <small><i class="fas fa-clock me-1"></i> 1 hour ago</small>
+                        </div>
+                    </div>
+
+                    <div class="notif-item">
+                        <div class="notif-icon" style="background: #eef2ff; color: var(--primary);">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="notif-content">
+                            <p>Faculty meeting at 4:30 PM</p>
+                            <small><i class="fas fa-clock me-1"></i> 2 hours left</small>
+                        </div>
+                    </div>
+
+                    <div class="notif-item">
+                        <div class="notif-icon" style="background: #fee9e7; color: var(--danger);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="notif-content">
+                            <p>Assignment deadline today (11:59 PM)</p>
+                            <small><i class="fas fa-clock me-1"></i> CS201 class</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Insights Banner -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card-modern d-flex align-items-center justify-content-between py-2"
+                style="background: linear-gradient(100deg, #f0f5ff, white); border-left: 5px solid var(--primary);">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-robot fs-2 me-3" style="color: var(--primary);"></i>
+                    <span class="fw-medium" style="font-size: 0.95rem;">EduTrack AI Insight: 94%
+                        attendance predicted for your classes this week. 3 students need
+                        attention.</span>
+                </div>
+                <span class="badge bg-primary px-3 py-2 rounded-pill">AI</span>
+            </div>
+        </div>
+    </div>
+</div>

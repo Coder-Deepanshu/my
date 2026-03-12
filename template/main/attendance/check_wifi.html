@@ -3,277 +3,407 @@
 
 <head>
     {% load static %}
+    <!-- SEO Meta Tags -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty PIN Verification | Edutrack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="Faculty PIN Verification System - Secure attendance marking with 5-digit PIN authentication">
+    <meta name="keywords" content="faculty, PIN verification, attendance, security, authentication, edutrack, education management">
+    <meta name="author" content="Edutrack">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#4361ee">
+    <meta property="og:title" content="Faculty PIN Verification | Edutrack">
+    <meta property="og:description" content="Secure 5-digit PIN verification system for faculty attendance marking">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{% static 'images/logo.png' %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    
+    <title>Faculty PIN Verification | Edutrack - Secure Attendance System</title>
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com/ajax/libs">
+    
+    <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/attendance/faculty_admin.css' %}">
+    
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Faculty PIN Verification",
+        "description": "Secure 5-digit PIN authentication system for faculty attendance marking",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Edutrack",
+            "url": "https://edutrack.com"
+        },
+        "mainEntity": {
+            "@type": "Service",
+            "name": "PIN Verification Service",
+            "description": "Secure authentication service for faculty members",
+            "serviceType": "Educational Authentication"
+        }
+    }
+    </script>
 </head>
 
 <body>
-    <div class="container">
+    <div class="container" role="main">
         <div class="pin-container">
             <!-- Header -->
-            <div class="pin-header">
-                <div class="pin-icon">
+            <header class="pin-header" role="banner">
+                <div class="pin-icon" aria-hidden="true">
                     <i class="fas fa-lock"></i>
                 </div>
                 <h1 class="pin-title">College PIN Verification</h1>
                 <p class="pin-subtitle">Secure Attendance Marking System</p>
-            </div>
+            </header>
 
             <!-- Body -->
-            <div class="pin-body">
+            <main class="pin-body" role="main">
+                <div class="visually-hidden">
+                    <h2>PIN Verification Form</h2>
+                    <p>Enter your 5-digit PIN to securely mark attendance. This system ensures authorized access only.</p>
+                </div>
+                
                 {% include 'main/message.html' %}
 
                 <!-- Faculty Information -->
-                <div class="user-info">
-                    <div class="user-avatar">
+                <div class="user-info" role="region" aria-label="User Information">
+                    <div class="user-avatar" aria-hidden="true">
                         {% if Person == 'Faculty' %}
-                        FT
+                        <span aria-label="Faculty">FT</span>
                         {% elif Person == 'Admin' %}
-                        AD
+                        <span aria-label="Admin">AD</span>
                         {% elif Person == 'Student' %}
-                        ST
+                        <span aria-label="Student">ST</span>
                         {% endif %}
                     </div>
                     <div class="user-details">
                         <h6 id="Person" data-id="{{ Person }}">{{ Person }}</h6>
                         <small id="college_id" data-id='{{ college_id }}'>
-                            <i class="fas fa-id-card me-1"></i>
-                            College ID: {{ college_id }}
+                            <i class="fas fa-id-card me-1" aria-hidden="true"></i>
+                            <span class="visually-hidden">College ID:</span>
+                            {{ college_id }}
                         </small>
                     </div>
                 </div>
 
                 <!-- PIN Input Form -->
-                <form id="pinForm">
+                <form id="pinForm" role="form" aria-labelledby="pinFormLabel">
+                    <div class="visually-hidden" id="pinFormLabel">
+                        PIN Verification Form - Enter your 5-digit security PIN
+                    </div>
+                    
                     {% csrf_token %}
 
                     <div class="pin-input-container">
-                        <label class="pin-label">
-                            <i class="fas fa-key me-2"></i>
+                        <label for="pinInput" class="pin-label">
+                            <i class="fas fa-key me-2" aria-hidden="true"></i>
                             Enter Your 5-Digit PIN
                         </label>
                         <div class="pin-input-group">
-                            <input type="password" name="pin" id="pinInput" class="form-control pin-input" maxlength="5"
-                                required placeholder="•••••" autocomplete="off">
-                            <span class="pin-input-icon">
+                            <input type="password" name="pin" id="pinInput" class="form-control pin-input" 
+                                   maxlength="5" required placeholder="•••••" autocomplete="off"
+                                   aria-label="Enter your 5-digit PIN"
+                                   aria-describedby="pinHint">
+                            <span class="pin-input-icon" aria-hidden="true">
                                 <i class="fas fa-lock"></i>
                             </span>
                         </div>
-                        <div class="pin-hint">
-                            <i class="fas fa-info-circle me-1"></i>
+                        <div class="pin-hint" id="pinHint">
+                            <i class="fas fa-info-circle me-1" aria-hidden="true"></i>
                             Enter the 5-digit PIN assigned by your institution
                         </div>
                     </div>
 
                     <!-- Keypad for PIN Entry -->
-                    <div class="keypad-container">
+                    <div class="keypad-container" role="group" aria-label="Virtual keypad for PIN entry">
                         <div class="keypad-title">
-                            <i class="fas fa-keyboard me-1"></i>
+                            <i class="fas fa-keyboard me-1" aria-hidden="true"></i>
                             Use Keypad or Type Directly
                         </div>
                         <div class="keypad" id="keypad">
-                            <div class="keypad-btn" data-digit="1">1</div>
-                            <div class="keypad-btn" data-digit="2">2</div>
-                            <div class="keypad-btn" data-digit="3">3</div>
-                            <div class="keypad-btn" data-digit="4">4</div>
-                            <div class="keypad-btn" data-digit="5">5</div>
-                            <div class="keypad-btn" data-digit="6">6</div>
-                            <div class="keypad-btn" data-digit="7">7</div>
-                            <div class="keypad-btn" data-digit="8">8</div>
-                            <div class="keypad-btn" data-digit="9">9</div>
-                            <div class="keypad-btn keypad-btn-clear" id="clearBtn">
-                                <i class="fas fa-eraser"></i>
-                            </div>
-                            <div class="keypad-btn" data-digit="0">0</div>
-                            <div class="keypad-btn keypad-btn-backspace" id="backspaceBtn">
-                                <i class="fas fa-backspace"></i>
-                            </div>
+                            <button type="button" class="keypad-btn" data-digit="1" aria-label="Digit 1">1</button>
+                            <button type="button" class="keypad-btn" data-digit="2" aria-label="Digit 2">2</button>
+                            <button type="button" class="keypad-btn" data-digit="3" aria-label="Digit 3">3</button>
+                            <button type="button" class="keypad-btn" data-digit="4" aria-label="Digit 4">4</button>
+                            <button type="button" class="keypad-btn" data-digit="5" aria-label="Digit 5">5</button>
+                            <button type="button" class="keypad-btn" data-digit="6" aria-label="Digit 6">6</button>
+                            <button type="button" class="keypad-btn" data-digit="7" aria-label="Digit 7">7</button>
+                            <button type="button" class="keypad-btn" data-digit="8" aria-label="Digit 8">8</button>
+                            <button type="button" class="keypad-btn" data-digit="9" aria-label="Digit 9">9</button>
+                            <button type="button" class="keypad-btn keypad-btn-clear" id="clearBtn" aria-label="Clear PIN">
+                                <i class="fas fa-eraser" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="keypad-btn" data-digit="0" aria-label="Digit 0">0</button>
+                            <button type="button" class="keypad-btn keypad-btn-backspace" id="backspaceBtn" aria-label="Backspace">
+                                <i class="fas fa-backspace" aria-hidden="true"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <button id="submitBtn" class="btn btn-primary w-100 py-3 mt-3">
-                        <i class="fas fa-check-circle me-2"></i>
+                    <button id="submitBtn" class="btn btn-primary w-100 py-3 mt-3" type="submit">
+                        <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
                         Verify PIN & Mark Attendance
                     </button>
                 </form>
 
                 <!-- Security Note -->
-                <div class="security-note">
-                    <i class="fas fa-shield-alt me-2 text-warning"></i>
+                <div class="security-note" role="note" aria-label="Security Notice">
+                    <i class="fas fa-shield-alt me-2 text-warning" aria-hidden="true"></i>
                     <strong>Security Notice:</strong> Your PIN is confidential. Do not share it with anyone.
                     Each PIN is unique and tied to your faculty account.
                 </div>
 
                 <!-- Footer Links -->
-                <div class="pin-footer">
-
-
-                    <a href="#" class="text-decoration-none me-3">
-                        <i class="fas fa-question-circle me-1"></i>
+                <footer class="pin-footer" role="contentinfo">
+                    <a href="#" class="text-decoration-none me-3" aria-label="Get help with PIN verification">
+                        <i class="fas fa-question-circle me-1" aria-hidden="true"></i>
                         Need Help?
                     </a>
-                    <a href="{% url 'logoutdoor' %}" class="text-decoration-none text-danger">
-                        <i class="fas fa-sign-out-alt me-1"></i>
+                    <a href="{% url 'logoutdoor' %}" class="text-decoration-none text-danger" aria-label="Logout from the system">
+                        <i class="fas fa-sign-out-alt me-1" aria-hidden="true"></i>
                         Logout
                     </a>
-                </div>
-            </div>
+                </footer>
+            </main>
         </div>
     </div>
 
+    <!-- Loading Spinner Template -->
+    <template id="loadingSpinner">
+        <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+        Verifying...
+    </template>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    const pinInput = document.getElementById('pinInput');
-    const keypad = document.getElementById('keypad');
-    const clearBtn = document.getElementById('clearBtn');
-    const backspaceBtn = document.getElementById('backspaceBtn');
-    const pinForm = document.getElementById('pinForm');
-    const Person = document.getElementById('Person').getAttribute('data-id');
-    const collegeID = document.getElementById('college_id').getAttribute('data-id'); // यहाँ से college_id ले रहे हैं
-    const submitBtn = document.getElementById('submitBtn');
-
-    // Auto-focus on PIN input
-    pinInput.focus();
-
-    // Toggle password visibility on click
-    pinInput.addEventListener('click', function () {
-        const type = this.getAttribute('type') === 'password' ? 'text' : 'password';
-        this.setAttribute('type', type);
-        setTimeout(() => {
-            this.setAttribute('type', 'password');
-        }, 1000);
-    });
-
-    // Keypad functionality
-    keypad.addEventListener('click', function (e) {
-        if (e.target.classList.contains('keypad-btn') && e.target.hasAttribute('data-digit')) {
-            const digit = e.target.getAttribute('data-digit');
-            if (pinInput.value.length < 5) {
-                pinInput.value += digit;
-                // Add visual feedback
-                e.target.style.backgroundColor = 'var(--primary)';
-                e.target.style.color = 'white';
-                setTimeout(() => {
-                    e.target.style.backgroundColor = '';
-                    e.target.style.color = '';
-                }, 150);
-            }
+    // Responsive Viewport Configuration
+    const viewport = document.querySelector('meta[name="viewport"]');
+    
+    // Adjust viewport for different devices
+    function adjustViewport() {
+        const width = window.innerWidth;
+        
+        if (width < 768) {
+            // Mobile devices
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        } else if (width >= 768 && width < 1200) {
+            // Tablets and small laptops
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=2.0');
+        } else {
+            // Large screens and desktops
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0');
         }
-    });
+    }
+    
+    // Initialize on load and resize
+    window.addEventListener('load', adjustViewport);
+    window.addEventListener('resize', adjustViewport);
+    
+    // Lazy Load Images (for future use)
+    function lazyLoadImages() {
+        const images = document.querySelectorAll('img[data-src]');
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    observer.unobserve(img);
+                }
+            });
+        });
+        
+        images.forEach(img => imageObserver.observe(img));
+    }
+    
+    // DOM Elements Cache
+    const elements = {
+        pinInput: document.getElementById('pinInput'),
+        keypad: document.getElementById('keypad'),
+        clearBtn: document.getElementById('clearBtn'),
+        backspaceBtn: document.getElementById('backspaceBtn'),
+        pinForm: document.getElementById('pinForm'),
+        Person: document.getElementById('Person').getAttribute('data-id'),
+        collegeID: document.getElementById('college_id').getAttribute('data-id'),
+        submitBtn: document.getElementById('submitBtn'),
+        loadingSpinner: document.getElementById('loadingSpinner')
+    };
 
-    // Clear button
-    clearBtn.addEventListener('click', function () {
-        pinInput.value = '';
-        pinInput.focus();
-    });
+    // Initialize PIN input focus
+    function initializePINFocus() {
+        // Wait for DOM to be fully ready
+        setTimeout(() => {
+            elements.pinInput.focus();
+            elements.pinInput.setAttribute('aria-describedby', 'pinHint');
+        }, 100);
+    }
 
-    // Backspace button
-    backspaceBtn.addEventListener('click', function () {
-        pinInput.value = pinInput.value.slice(0, -1);
-        pinInput.focus();
-    });
+    // Keypad button press feedback
+    function animateKeypadButton(button) {
+        if (!button) return;
+        
+        const originalBg = button.style.backgroundColor;
+        const originalColor = button.style.color;
+        
+        button.style.backgroundColor = 'var(--primary)';
+        button.style.color = 'white';
+        button.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            button.style.backgroundColor = originalBg;
+            button.style.color = originalColor;
+            button.style.transform = '';
+        }, 150);
+    }
 
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+    // Enhanced Keypad functionality
+    function setupKeypad() {
+        elements.keypad.addEventListener('click', function (e) {
+            const target = e.target.closest('.keypad-btn');
+            if (!target) return;
+            
+            if (target.hasAttribute('data-digit')) {
+                const digit = target.getAttribute('data-digit');
+                if (elements.pinInput.value.length < 5) {
+                    elements.pinInput.value += digit;
+                    animateKeypadButton(target);
+                    updatePINLengthIndicator();
                 }
             }
-        }
-        return cookieValue;
-    }
-
-    // Form submit event
-    pinForm.addEventListener('submit', function (e) {
-        e.preventDefault(); // Prevent default form submission
-        verifyPin();
-    });
-
-    // Submit button click
-    submitBtn.addEventListener('click', function (e) {
-        e.preventDefault(); // Prevent default form submission
-        verifyPin();
-    });
-
-    function verifyPin() {
-        const pin = pinInput.value.trim();
+        });
         
-        // Validate PIN length
-        if (pin.length !== 5) {
-            showError('Please enter a valid 5-digit PIN');
-            return;
-        }
-
-        console.log("Sending data:", {
-            college_id: collegeID, // यहाँ collegeID use करें (जो हमने ऊपर defined किया)
-            Person: Person,
-            pinInput: pin
-        });
-
-        // Disable button and show loading
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Verifying...';
-        submitBtn.disabled = true;
-
-        fetch("/1117171e150c6b0b45001c18141a0a4e4f61490b0d1c010c59630a071c18521a0665456149160b111b0d484a4130/", {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken")
-            },
-            body: JSON.stringify({
-                'college_id': collegeID, // यहाँ collegeID use करें
-                'Person': Person,
-                'pinInput': pin
-            })
-        })
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
+        // Keyboard navigation for keypad
+        elements.keypad.addEventListener('keydown', function(e) {
+            const keypadButtons = this.querySelectorAll('.keypad-btn[data-digit]');
+            const currentIndex = Array.from(keypadButtons).indexOf(document.activeElement);
+            
+            switch(e.key) {
+                case 'ArrowRight':
+                    e.preventDefault();
+                    if (currentIndex < keypadButtons.length - 1) {
+                        keypadButtons[currentIndex + 1].focus();
+                    }
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    if (currentIndex > 0) {
+                        keypadButtons[currentIndex - 1].focus();
+                    }
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    if (currentIndex + 3 < keypadButtons.length) {
+                        keypadButtons[currentIndex + 3].focus();
+                    }
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    if (currentIndex - 3 >= 0) {
+                        keypadButtons[currentIndex - 3].focus();
+                    }
+                    break;
             }
-            return res.json();
-        })
-        .then(data => {
-            if (data.success) {
-                console.log("Success:", data.success);
-                // Show success message
-                showSuccess('PIN verified successfully! Redirecting...');
-                pinInput.value = '';
-                // Redirect after delay
-                let person = document.getElementById('Person').getAttribute('data-id');
-                setTimeout(() => {
-                    window.location.replace( `/06161632061e1e65410001450900034d5a4105661d1e154968646707134514060e67596410131d/${person}/`)
-                }, 1000);
-            } else if (data.error) {
-                console.log("Error:", data.error);
-                showError(data.error);
-                pinInput.value = '';
-                // Shake animation for wrong PIN
-                pinInput.classList.add('shake');
-                setTimeout(() => {
-                    pinInput.classList.remove('shake');
-                }, 500);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('An error occurred. Please try again.');
-        })
-        .finally(() => {
-            // Reset button
-            submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Verify PIN & Mark Attendance';
-            submitBtn.disabled = false;
         });
     }
 
+    // PIN length indicator
+    function updatePINLengthIndicator() {
+        const length = elements.pinInput.value.length;
+        const hint = document.getElementById('pinHint');
+        if (hint) {
+            hint.innerHTML = `<i class="fas fa-info-circle me-1" aria-hidden="true"></i>
+                             ${length}/5 digits entered`;
+        }
+    }
+
+    // Setup utility buttons
+    function setupUtilityButtons() {
+        elements.clearBtn.addEventListener('click', function () {
+            elements.pinInput.value = '';
+            elements.pinInput.focus();
+            updatePINLengthIndicator();
+            animateKeypadButton(this);
+        });
+
+        elements.backspaceBtn.addEventListener('click', function () {
+            elements.pinInput.value = elements.pinInput.value.slice(0, -1);
+            elements.pinInput.focus();
+            updatePINLengthIndicator();
+            animateKeypadButton(this);
+        });
+    }
+
+    // CSRF Token function
+    function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                return decodeURIComponent(cookie.substring(name.length + 1));
+            }
+        }
+        return null;
+    }
+
+    // Enhanced form submission
+    function setupFormSubmission() {
+        elements.pinForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            verifyPin();
+        });
+
+        elements.submitBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            verifyPin();
+        });
+
+        elements.pinInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                verifyPin();
+            }
+        });
+        
+        // Real-time PIN validation
+        elements.pinInput.addEventListener('input', function(e) {
+            // Allow only numbers
+            this.value = this.value.replace(/\D/g, '');
+            // Limit to 5 digits
+            if (this.value.length > 5) {
+                this.value = this.value.slice(0, 5);
+            }
+            updatePINLengthIndicator();
+        });
+    }
+
+    // PIN visibility toggle
+    function setupPINToggle() {
+        let toggleTimeout;
+        elements.pinInput.addEventListener('click', function () {
+            clearTimeout(toggleTimeout);
+            const type = this.getAttribute('type') === 'password' ? 'text' : 'password';
+            this.setAttribute('type', type);
+            
+            toggleTimeout = setTimeout(() => {
+                if (this.getAttribute('type') === 'text') {
+                    this.setAttribute('type', 'password');
+                }
+            }, 1000);
+        });
+    }
+
+    // Enhanced error handling
     function showError(message) {
         // Remove existing alerts
         const existingAlerts = document.querySelectorAll('.alert');
@@ -282,10 +412,11 @@
         // Create new error alert
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+        alertDiv.setAttribute('role', 'alert');
         alertDiv.innerHTML = `
-            <i class="fas fa-exclamation-circle me-2"></i>
+            <i class="fas fa-exclamation-circle me-2" aria-hidden="true"></i>
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
         `;
         
         // Insert alert before the security note
@@ -293,7 +424,7 @@
         if (securityNote) {
             securityNote.parentNode.insertBefore(alertDiv, securityNote);
         } else {
-            pinForm.appendChild(alertDiv);
+            elements.pinForm.appendChild(alertDiv);
         }
         
         // Auto dismiss after 5 seconds
@@ -302,8 +433,32 @@
                 alertDiv.remove();
             }
         }, 5000);
+        
+        // Shake animation for wrong PIN
+        elements.pinInput.classList.add('shake');
+        setTimeout(() => {
+            elements.pinInput.classList.remove('shake');
+        }, 500);
+        
+        // Announce error to screen readers
+        const liveRegion = document.getElementById('live-region') || (() => {
+            const region = document.createElement('div');
+            region.id = 'live-region';
+            region.className = 'visually-hidden';
+            region.setAttribute('role', 'alert');
+            region.setAttribute('aria-live', 'assertive');
+            region.setAttribute('aria-atomic', 'true');
+            document.body.appendChild(region);
+            return region;
+        })();
+        
+        liveRegion.textContent = message;
+        setTimeout(() => {
+            liveRegion.textContent = '';
+        }, 3000);
     }
 
+    // Enhanced success handling
     function showSuccess(message) {
         // Remove existing alerts
         const existingAlerts = document.querySelectorAll('.alert');
@@ -312,10 +467,11 @@
         // Create new success alert
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+        alertDiv.setAttribute('role', 'alert');
         alertDiv.innerHTML = `
-            <i class="fas fa-check-circle me-2"></i>
+            <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
         `;
         
         // Insert alert before the security note
@@ -323,18 +479,322 @@
         if (securityNote) {
             securityNote.parentNode.insertBefore(alertDiv, securityNote);
         } else {
-            pinForm.appendChild(alertDiv);
+            elements.pinForm.appendChild(alertDiv);
         }
     }
 
-    // Also allow Enter key to submit
-    pinInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            verifyPin();
+    // Main PIN verification function
+    async function verifyPin() {
+        const pin = elements.pinInput.value.trim();
+        
+        // Enhanced validation
+        if (pin.length !== 5) {
+            showError('Please enter exactly 5 digits for your PIN');
+            return;
         }
+        
+        if (!/^\d{5}$/.test(pin)) {
+            showError('PIN should contain only numbers (0-9)');
+            return;
+        }
+
+        // Disable button and show loading
+        const originalContent = elements.submitBtn.innerHTML;
+        elements.submitBtn.innerHTML = elements.loadingSpinner 
+            ? elements.loadingSpinner.innerHTML 
+            : '<i class="fas fa-spinner fa-spin me-2"></i> Verifying...';
+        elements.submitBtn.disabled = true;
+        elements.submitBtn.setAttribute('aria-busy', 'true');
+
+        try {
+            const response = await fetch("/1117171e150c6b0b45001c18141a0a4e4f61490b0d1c010c59630a071c18521a0665456149160b111b0d484a4130/", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({
+                    'college_id': elements.collegeID,
+                    'Person': elements.Person,
+                    'pinInput': pin
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.success) {
+                showSuccess('PIN verified successfully! Redirecting...');
+                elements.pinInput.value = '';
+                
+                // Determine redirect URL based on user role
+                const redirectUrl = elements.Person === 'Student' 
+                    ? '/552a333436296c6b1e322f356838336e6a73396845324337642665362f3768394679277a342a373364447f6666352f33/'
+                    : `/06161632061e1e65410001450900034d5a4105661d1e154968646707134514060e67596410131d/${elements.Person}/`;
+                
+                // Redirect after delay
+                setTimeout(() => {
+                    window.location.replace(redirectUrl);
+                }, 1000);
+                
+            } else if (data.error) {
+                showError(data.error);
+                elements.pinInput.value = '';
+            }
+            
+        } catch (error) {
+            console.error('Network Error:', error);
+            showError('Network error. Please check your connection and try again.');
+        } finally {
+            // Reset button state
+            elements.submitBtn.innerHTML = originalContent;
+            elements.submitBtn.disabled = false;
+            elements.submitBtn.removeAttribute('aria-busy');
+        }
+    }
+
+    // Performance optimization: Debounce resize events
+    let resizeTimeout;
+    function handleResize() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(adjustViewport, 250);
+    }
+
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', function() {
+        // Adjust viewport first
+        adjustViewport();
+        
+        // Initialize components
+        initializePINFocus();
+        setupKeypad();
+        setupUtilityButtons();
+        setupFormSubmission();
+        setupPINToggle();
+        lazyLoadImages();
+        
+        // Add resize listener
+        window.addEventListener('resize', handleResize);
+        
+        // Focus management for accessibility
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                elements.pinInput.focus();
+            }
+        });
+        
+        // Update PIN length indicator initially
+        updatePINLengthIndicator();
     });
-</script>
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', function() {
+        window.removeEventListener('resize', handleResize);
+    });
+    </script>
+    
+    <!-- Additional CSS for responsiveness (added inline to avoid external file dependency) -->
+    <style>
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .pin-container {
+                padding: 1rem;
+                margin: 0.5rem;
+            }
+            
+            .pin-title {
+                font-size: 1.5rem;
+            }
+            
+            .pin-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .keypad-btn {
+                padding: 0.75rem 0;
+                font-size: 1.1rem;
+            }
+            
+            .user-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.25rem;
+            }
+        }
+        
+        @media (min-width: 576px) and (max-width: 768px) {
+            .pin-container {
+                padding: 1.5rem;
+                max-width: 90%;
+                margin: 1rem auto;
+            }
+            
+            .keypad-btn {
+                padding: 1rem 0;
+                font-size: 1.25rem;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 992px) {
+            .pin-container {
+                max-width: 80%;
+                margin: 2rem auto;
+            }
+            
+            .pin-title {
+                font-size: 2rem;
+            }
+            
+            .pin-subtitle {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (min-width: 992px) and (max-width: 1200px) {
+            .pin-container {
+                max-width: 70%;
+                margin: 2.5rem auto;
+            }
+            
+            .keypad {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .pin-container {
+                max-width: 600px;
+                margin: 3rem auto;
+            }
+            
+            .pin-body {
+                padding: 2rem;
+            }
+            
+            .user-info {
+                padding: 1.5rem;
+            }
+            
+            .keypad {
+                max-width: 450px;
+                margin: 0 auto;
+            }
+            
+            .keypad-btn {
+                padding: 1.25rem 0;
+                font-size: 1.35rem;
+                transition: all 0.2s ease;
+            }
+            
+            .keypad-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+        }
+        
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 1400px;
+            }
+            
+            .pin-container {
+                max-width: 650px;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            .pin-footer,
+            .keypad-container,
+            .security-note {
+                display: none;
+            }
+            
+            .pin-container {
+                border: 1px solid #ddd;
+                box-shadow: none;
+            }
+            
+            body {
+                background: white;
+            }
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .pin-input {
+                border: 3px solid #000;
+            }
+            
+            .btn-primary {
+                border: 2px solid #000;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Screen reader utilities */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Enhanced focus styles for accessibility */
+        .keypad-btn:focus,
+        .pin-input:focus,
+        .btn:focus {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+        
+        /* Responsive animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        /* Loading state */
+        .btn[aria-busy="true"] {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        /* Optimize for touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .keypad-btn {
+                min-height: 60px;
+                min-width: 60px;
+            }
+            
+            .btn {
+                padding: 1rem;
+                min-height: 56px;
+            }
+        }
+    </style>
 </body>
 
 </html>

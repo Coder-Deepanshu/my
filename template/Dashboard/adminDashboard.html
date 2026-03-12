@@ -1,0 +1,352 @@
+{% extends "Base/base3.html" %}
+
+{% block title %}Admin{% endblock %}
+
+{% block sidebar %}
+
+<ul class="components">
+    <li>
+        <a href="#" class="menu-link" data-tab="dashboard-tab">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="schedule-tab">
+            <i class="fas fa-calendar-alt"></i> My Schedule
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="students-tab">
+            <i class="fas fa-users"></i> My Students
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="courses-tab">
+            <i class="fas fa-book"></i> My Courses
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="assignments-tab">
+            <i class="fas fa-clipboard-list"></i> Assignments
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="attendance-tab">
+            <i class="fas fa-check-circle"></i> Attendance
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="performance-tab">
+            <i class="fas fa-chart-line"></i> Performance
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="messages-tab">
+            <i class="fas fa-comment"></i> Messages <span class="badge bg-primary ms-2">3</span>
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="settings-tab">
+            <i class="fas fa-cog"></i> Settings
+        </a>
+    </li>
+    <!-- Added extra items to demonstrate scrolling -->
+    <li>
+        <a href="#" class="menu-link" data-tab="reports-tab">
+            <i class="fas fa-file-alt"></i> Reports
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="analytics-tab">
+            <i class="fas fa-chart-pie"></i> Analytics
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="calendar-tab">
+            <i class="fas fa-calendar-week"></i> Calendar
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="resources-tab">
+            <i class="fas fa-folder"></i> Resources
+        </a>
+    </li>
+    <li>
+        <a href="#" class="menu-link" data-tab="help-tab">
+            <i class="fas fa-question-circle"></i> Help Center
+        </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block main_body %}
+<div id="content">
+    <!-- header -->
+    <nav class="dashboard-navbar d-flex align-items-center">
+        <div class="d-flex align-items-center w-100">
+            <button type="button" id="sidebarCollapse" class="toggle-btn me-2">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="page-title">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>Dashboard</h3>
+            </div>
+
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <!-- Notifications -->
+                <div class="dropdown">
+                    <a href="#" class="text-decoration-none" data-bs-toggle="dropdown">
+                        <div class="position-relative">
+                            <i class="fas fa-bell fs-5 text-dark-gray"></i>
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
+                                style="font-size: 0.5rem;"></span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 py-2" style="width: 280px;">
+                        <li class="dropdown-header fw-bold">Notifications</li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-clock text-primary me-2"></i>
+                                Attendance pending for CS101</a>
+                        </li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-file text-warning me-2"></i>
+                                5 assignments to review</a></li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="fas fa-calendar text-success me-2"></i>
+                                Faculty meeting at 3 PM</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- User Profile -->
+                <div class="dropdown">
+                    <a href="#" class="text-decoration-none d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=Aarav+Sharma&background=4361ee&color=fff&length=2&size=40"
+                            class="rounded-circle" width="38" alt="">
+                        <span class="d-none d-lg-inline fw-semibold text-dark" style="font-size: 0.95rem;">Dr.
+                            Aarav S.</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 py-2">
+                        <li><a class="dropdown-item rounded-3 py-2" href="#"><i class="fas fa-user me-2"></i>
+                                Profile</a></li>
+                        <li><a class="dropdown-item rounded-3 py-2" href="#"><i class="fas fa-gear me-2"></i>
+                                Settings</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-sign-out-alt me-2"></i>
+                                Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN BODY -->
+    <div class="main-body">
+        {% include "common/main_body.html" %}
+
+        <!-- Schedule Tab -->
+        <div id="schedule-tab" class="tab-content">
+            <div class="tab-header">
+                <div class="header-content">
+                    <h1>My Schedule</h1>
+                    <p>View and manage your weekly class schedule</p>
+                </div>
+            </div>
+            <div class="card-modern">
+                <h5>Weekly Schedule</h5>
+                <p>Schedule content goes here...</p>
+            </div>
+        </div>
+
+        <!-- Students Tab -->
+        <div id="students-tab" class="tab-content">
+            <div class="tab-header">
+                <div class="header-content">
+                    <h1>My Students</h1>
+                    <p>View and manage your students</p>
+                </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search students...">
+                </div>
+            </div>
+            <div class="card-modern">
+                <h5>Student List</h5>
+                <p>Students content goes here...</p>
+            </div>
+        </div>
+
+        <!-- Courses Tab -->
+        <div id="courses-tab" class="tab-content">
+            <div class="tab-header">
+                <div class="header-content">
+                    <h1>My Courses</h1>
+                    <p>Manage your courses and materials</p>
+                </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search courses...">
+                </div>
+            </div>
+
+            <!-- Faculty Action Cards -->
+            <div class="action-grid">
+                <div class="action-card">
+                    <div class="action-icon setting">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="action-title">Single Faculty</h3>
+                    <p class="action-desc">View and edit individual faculty records</p>
+                    <a href="#" class="action-btn">Open</a>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon birthday">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="action-title">All Faculty</h3>
+                    <p class="action-desc">View and manage complete faculty list</p>
+                    <button class="action-btn">Open</button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon upload">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3 class="action-title">Attendance</h3>
+                    <p class="action-desc">Manage faculty attendance records</p>
+                    <button class="action-btn">Open</button>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon backup">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="action-title">History</h3>
+                    <p class="action-desc">View faculty history and logs</p>
+                    <a href="#" class="action-btn">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignments Tab -->
+        <div id="assignments-tab" class="tab-content">
+            <div class="tab-header">
+                <div class="header-content">
+                    <h1>Assignments</h1>
+                    <p>Create and manage assignments</p>
+                </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search assignments...">
+                </div>
+            </div>
+            <div class="card-modern">
+                <h5>Assignment List</h5>
+                <p>Assignments content goes here...</p>
+            </div>
+        </div>
+
+        <!-- Attendance Tab -->
+        <div id="attendance-tab" class="tab-content">
+            <div class="tab-header">
+                <div class="header-content">
+                    <h1>Attendance</h1>
+                    <p>Mark and track student attendance</p>
+                </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+            </div>
+            <div class="card-modern">
+                <h5>Attendance Records</h5>
+                <p>Attendance content goes here...</p>
+            </div>
+        </div>
+
+        <!-- Performance Tab -->
+        <div id="performance-tab" class="tab-content">
+            <div class="tab-header">
+                <div class="header-content">
+                    <h1>Performance</h1>
+                    <p>Track student performance metrics</p>
+                </div>
+            </div>
+            <div class="card-modern">
+                <h5>Performance Analytics</h5>
+                <p>Performance content goes here...</p>
+            </div>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="messages-tab" class="tab-content">
+            <div class="tab-header">
+                <div class="header-content">
+                    <h1>Messages</h1>
+                    <p>Communicate with students and faculty</p>
+                </div>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search messages...">
+                </div>
+            </div>
+            <div class="card-modern">
+                <h5>Inbox</h5>
+                <p>Messages content goes here...</p>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings-tab" class="tab-content">
+            <div class="tab-header">
+                <div class="header-content">
+                    <h1>Settings</h1>
+                    <p>Configure your account preferences</p>
+                </div>
+            </div>
+            <div class="card-modern">
+                <h5>Account Settings</h5>
+                <p>Settings content goes here...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $('.menu-link').on('click', function (e) {
+        e.preventDefault();
+
+        const tabId = $(this).data('id');
+
+        // Hide all tab contents
+        $('.tab-content').removeClass('active');
+
+        // Show selected tab
+        $('#' + tabId).addClass('active');
+
+        // Update active menu item
+        $('.menu-link').removeClass('active');
+        $(this).addClass('active');
+
+        if ($(window).width() <= 992) {
+            sidebar.removeClass('active');
+            overlay.removeClass('active');
+            $('body').removeClass('overflow-hidden');
+        }
+    });
+
+    const activeTab = $('.tab-content.active').attr('tab');
+    if (activeTab) {
+        $(`.menu-link[data-tab="${activeTab}"]`).addClass('active');
+    } else {
+        $('.menu-link[data-tab="dashboard-tab"]').addClass('active');
+    }
+</script>
+{% endblock %}

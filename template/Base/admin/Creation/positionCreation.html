@@ -1,0 +1,412 @@
+{% extends "Base/base.html" %}
+
+{% block title %}Position{% endblock %}
+
+{% block content %}
+<div class="fixed-message-container" id="messageContainer"></div>
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>College Position Management</h1>
+        <p>Create and manage academic position efficiently</p>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<div class="content-container">
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-building"></i>
+            </div>
+            <!-- <div class="stat-value">{{ position }}</div> -->
+            <div class="stat-label">Departments</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <!-- <div class="stat-value">{{ faculty }}</div> -->
+            <div class="stat-label">Staff</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <!-- <div class="stat-value">{{ courses }}</div> -->
+            <div class="stat-label">Programs</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <!-- <div class="stat-value">{{ students }}</div> -->
+            <div class="stat-label">Students</div>
+        </div>
+    </div>
+</div>
+
+<div class="content-container">
+    <ul class="nav nav-tabs" id="departmentTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button"
+                role="createDepartment" aria-controls="create" aria-selected="true">
+                <i class="fas fa-plus-circle"></i> Create Position
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button"
+                role="manageDepartment">
+                <i class="fas fa-edit"></i> Manage Departments
+            </button>
+        </li>
+    </ul>
+
+    <!-- Alert Messages from Django -->
+    {% include "common/message.html" %}
+
+    <div class="tab-content" id="positionTabContent">
+        <!-- Create Position Tab -->
+        <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+            <div class="form-container">
+                <h3 class="mb-4"><i class="fas fa-plus-circle"></i> Create New Position</h3>
+                <form id="positionForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="name" class="form-label"><i class="fas fa-heading"></i>Position
+                                Name</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                placeholder="e.g., HOD, Professor" required>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="role" class="form-label"><i class="fas fa-code"></i>Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="" selected disabled>Select Role</option>
+                                <option value="Faculty">Faculty</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="type" class="form-label"><i class="fas fa-venus-mars"></i>Type</label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="" selected disabled>Select Type</option>
+                                <option value="Teaching">Teaching</option>
+                                <option value="Non-Teaching">Non-Teaching</option>
+                                <option value="Both">Both</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="rank" class="form-label"><i class="fas fa-graduation-cap"></i>Rank</label>
+                            <select class="form-select" id="rank" name="rank" required>
+                                <option value="" selected disabled>Select Rank</option>
+                                <option value="2">Admin</option>
+                                <option value="3">HOD</option>
+                                <option value="4">Faculty</option>
+                                <option value="5">Normal Staff</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="salary" class="form-label"><i class="fas fa-heading"></i>Salary</label>
+                            <input type="number" class="form-control" id="salary" name="salary" min="10000"
+                                value="10000" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="responsibility" class="form-label"><i class="fas fa-align-left"></i>
+                            Responsibility</label>
+                        <textarea class="form-control" id="responsibility" rows="3" name="responsibility"
+                            placeholder="Describe the position's mission and focus areas" required></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                        <button type="submit" class="btn btn-primary">Create Position</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Manage Departments Tab -->
+        <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+            <div class="table-container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3><i class="fas fa-list"></i> All Position</h3>
+                    <div class="d-flex gap-2">
+                        <div class="d-flex">
+                            <input type="text" class="form-control me-2" id="searchInput"
+                                placeholder="Search (Name, Code, Type)">
+                            <button type="button" class="btn btn-outline-secondary" id="clearSearch">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="department-table" id="positionTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Type</th>
+                                <th>Rank</th>
+                                <th>Created At</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="positionTableBody">
+                            <!-- Table data will be loaded via AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Section -->
+                <div class="pagination" id="pagination">
+                    <button id="prev-btn" class="btn btn-outline-primary" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span id="pageInfo" class="mx-3">Loading...</span>
+                    <button id="next-btn" class="btn btn-outline-primary" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3>Delete Position</h3>
+        <p>Are you sure you want to delete this position?</p>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-danger" id="deleteConfirm">Yes, Delete</button>
+            <button type="button" class="btn btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+        </div>
+        <input type="hidden" id="objectId">
+    </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    const positionForm = $("#positionForm");
+    const rank = $("#rank");
+    const searchInput = $("#searchInput");
+    const clearSearch = $("#clearSearch");
+    const prevBtn = $("#prev-btn");
+    const nextBtn = $("#next-btn");
+
+    let currentPage = 1;
+    let searchTerm = '';
+
+    // Form Submit
+    positionForm.on("submit", function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: "/position/",
+            type: "POST",
+            data: positionForm.serialize(),
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            success: function () {
+                showMessage("Position created successfully!", 'success');
+                positionForm.trigger("reset");
+                loadPosition(currentPage, searchTerm);
+            },
+            error: function (xhr) {
+                let errorMessage = "Error creating position.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+            }
+        });
+    });
+
+    // Search
+    searchInput.on("keyup", function () {
+        searchTerm = searchInput.val().trim();
+        currentPage = 1;
+        loadPosition();
+    });
+
+    clearSearch.on("click", function () {
+        searchInput.val('');
+        searchTerm = '';
+        currentPage = 1;
+        loadPosition();
+    });
+
+    searchInput.on("keypress", function (e) {
+        if (e.which === 13) {
+            searchTerm = searchInput.val().trim();
+            currentPage = 1;
+            loadPosition();
+        }
+    });
+
+    // Pagination
+    prevBtn.on("click", function () {
+        if (currentPage > 1) {
+            currentPage--;
+            loadPosition();
+        }
+    });
+
+    nextBtn.on("click", function () {
+        currentPage++;
+        loadPosition();
+    });
+
+    // Initial load
+    loadPosition();
+
+    // Now searchTerm properly passed as parameter
+    function loadPosition() {
+
+        let url = `/position/?page=${currentPage}`;
+
+        if (searchTerm) {
+            url += `&search=${encodeURIComponent(searchTerm)}`;
+        }
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+
+                let rows = "";
+
+                response.results.forEach(function (pos) {
+
+                    let statusIcon = pos.status === true ?
+                        '<i class="fas fa-check-circle text-success"></i>' :
+                        '<i class="fas fa-times-circle text-danger"></i>';
+
+                    rows += `
+                        <tr>
+                            <td>${pos.id}</td>
+                            <td>${pos.name}</td>
+                            <td>${pos.role}</td>
+                            <td>${pos.type}</td>
+                            <td>${pos.rank}</td>
+                            <td>${pos.created_at || '-'}</td>
+                            <td>${statusIcon}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-view" id="view" data-id="${pos.id}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-action btn-edit" id="edit" data-id="${pos.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-action btn-delete" id="delete" data-id="${pos.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                $("#positionTableBody").empty()
+                $("#positionTableBody").html(rows);
+
+                // Pagination control
+                $("#prev-btn").prop('disabled', !response.previous);
+                $("#next-btn").prop('disabled', !response.next);
+
+                // Better page calculation
+                const pageSize = response.results.length || 1;
+                const totalPages = Math.ceil(response.count / pageSize);
+
+                $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
+            },
+            error: function () {
+                showMessage("Error loading position", "danger");
+            }
+        });
+    }
+
+    const deleteModal = $("#deleteModal");
+    // const viewModal = $("#viewLeaveModal");
+
+    // DELETE
+    $(document).on("click", "#delete", function () {
+        $("#objectId").val(this.dataset.id)
+        deleteModal.show();
+    })
+
+    // VIEW
+    $(document).on("click", "#view", function () {
+        let id = this.dataset.id;
+        viewModal.show();
+    })
+
+
+    $("#deleteConfirm").on("click", function () {
+        $.ajax({
+            url: `/position/${$("#objectId").val()}/`,
+            type: "DELETE",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            success: function () {
+                showMessage("Position deleted successfully!", 'success');
+                closeModal("deleteModal");
+                loadPosition();
+            },
+            error: function (xhr) {
+                let errorMessage = "Error deleting position.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+                closeModal("deleteModal");
+            }
+        });
+    });
+
+    // FOR CLOSE THE CONTAINER
+    function closeModal(conId) {
+        const container = $(`#${conId}`)
+        container.hide()
+    }
+</script>
+{% endblock %}

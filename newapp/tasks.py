@@ -1,19 +1,19 @@
 from celery import shared_task
-from .logic import process_qr_and_leaves
-import logging
+from django.core.mail import send_mail
+import smtplib
+from django.conf import settings
 
-logger = logging.getLogger(__name__)
+@shared_task
+def send_email(email, subject, message):
+    send_mail(
+        subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        [email],
+        fail_silently=False
+    )
+    
+# @shared_task
+# def dashboard(request, page):
+    
 
-@shared_task(name="process_qr_expiry_task")
-def process_qr_expiry_task():
-    """
-    Celery task to process QR expiry and leaves
-    """
-    try:
-        logger.info("🚀 Celery task started: Processing QR expiry")
-        result = process_qr_and_leaves()
-        logger.info("✅ Celery task completed successfully")
-        return "Success"
-    except Exception as e:
-        logger.error(f"❌ Celery task failed: {str(e)}")
-        return f"Error: {str(e)}"

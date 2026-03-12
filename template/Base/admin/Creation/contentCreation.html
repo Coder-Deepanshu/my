@@ -1,0 +1,414 @@
+{% extends "Base/CreationBase.html" %}
+
+{% block title %}Subject{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/subjectCreation.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+
+        <!-- Messages will appear here -->
+        <div id="messageContainer"></div>
+        <!-- Alert Messages -->
+        {% if messages %}
+        <div id="alertContainer">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                <i
+                    class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- Page Header -->
+        <div class="page-header animate__animated animate__fadeIn">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">Create New Content</h1>
+                    <p class="page-subtitle">Add content to your academic curriculum</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="student-info">
+                        <div class="student-avatar">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h5 class="mb-1">{{ detail.name }}</h5>
+                        <p class="mb-0">{{ detail.position }} • Roll No: {{ detail.college_id }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subject Creation Form -->
+        <div class="form-card animate__animated animate__fadeIn">
+            <h3 class="form-section-title">Content Information</h3>
+
+            <form id="subjectForm">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="course" class="form-label">Course</label>
+                        <select class="form-select" id="course" required>
+                            <option value="all" selected disabled>Select Course</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }} {{ course.level }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="semester" class="form-label">Semester</label>
+                        <select class="form-select" id="semester" required disabled>
+                            <option value="" selected disabled>Select Semester</option>
+                            <!-- result loaded here -->
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <select class="form-select" id="subject" required disabled>
+                            <option value="" selected disabled>Select Subject</option>
+                            <!-- result loaded here -->
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="contentCount" class="form-label">Number of Content</label>
+                        <input type="number" class="form-control" id="contentCount" min="1" max="10"
+                            placeholder="Enter number of content" required disabled>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="reset" class="btn btn-reset" id="resetBtn">
+                        <i class="fas fa-redo me-2"></i>Reset Form
+                    </button>
+                    <button type="button" class="btn btn-primary" id="generateContentBtn">
+                        <i class="fas fa-plus-circle me-2"></i>Generate Content Fields
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form id="contentForm">
+            {% csrf_token %}
+            <!-- Dynamic Subject Inputs Container -->
+            <div class="subjects-container" id="contentContainer">
+                <div class="form-card">
+                    <h3 class="form-section-title">Content Details</h3>
+                    <div id="contentInputs">
+                        <!-- Content input fields will be generated here -->
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-submit" id="submitBtn">
+                            <i class="fas fa-save me-2"></i>Create Content
+                        </button>
+                        <button type="reset" class="btn btn-reset" id="resetBtn">
+                            <i class="fas fa-redo me-2"></i>Reset Form
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const form = $('#subjectForm');
+    const contentForm = $("#contentForm");
+    const course = $("#course");
+    const semester = $("#semester");
+    const subject = $("#subject");
+    const contentCount = $("#contentCount");
+    const csrftoken = getCookie("csrftoken");
+    const generateBtn = $('#generateContentBtn');
+    const contentContainer = $('#contentContainer');
+    const contentInputs = $('#contentInputs');
+    const submitBtn = $('#submitBtn');
+
+    generateBtn.on('click', function () {
+
+        // jQuery me value lene ka sahi tareeqa
+        const contentInputCount = parseInt($("#contentCount").val());
+
+        if (isNaN(contentInputCount) || contentInputCount < 1 || contentInputCount > 10) {
+            showMessage('Please enter a valid number between 1 and 10', 'danger');
+            return;
+        }
+
+        // Clear previous inputs
+        contentInputs.empty();
+
+        // Create subject input fields
+        for (let i = 1; i <= contentInputCount; i++) {
+
+            const contentCard = $(`
+            <div class="subject-input-card animate__animated animate__fadeIn" 
+                 style="animation-delay: ${i * 0.1}s">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="contentName${i}" class="form-label">Comtent Name</label>
+                        <input type="text" class="form-control" 
+                               id="contentName${i}" 
+                               placeholder="Enter content name" required>
+                    </div>
+                </div>
+            </div>
+        `);
+            contentInputs.append(contentCard);
+        }
+        // Show container
+        contentContainer.show();
+    });
+
+    // Submit form
+    submitBtn.on('click', function (e) {
+        e.preventDefault();
+
+        let isValid = true;
+
+        let form = $(this).closest('form'); // ✅ button se form pakda
+
+        // form ke sab inputs & selects
+        form.find("input, select").each(function () {
+            let value = $(this).val();
+
+            if (value === null || value.trim() === "") {
+                isValid = false;
+                $(this).css("border", "1px solid red");
+            } else {
+                $(this).css("border", "");
+            }
+        });
+
+        if (!isValid) {
+            showMessage("All Fields are Required", "danger");
+            return;
+        }
+
+        // ✅ Array banaya
+        let contentData = [];
+
+        // ✅ jQuery each
+        $('.subject-input-card').each(function (index) {
+            console.log(index)
+            contentData.push({
+                name: $(`#contentName${index + 1}`).val(),
+            });
+
+        });
+
+        console.log({ content: contentData });
+
+        $.ajax({
+            url: `/subject/${subject.val()}/`,
+            type: "PATCH",
+            data: JSON.stringify({
+                content: contentData
+            }),
+            headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json"
+            },
+            success: function (response) {
+                console.log(response.data)
+                showMessage(response.success || "Content Uploaded SuccessFully!", "success");
+                resetForm();
+            },
+            error: function (xhr) {
+                let errorMessage = "An error occurred while uploading the details.";
+
+                if (xhr.status === 404) {
+                    errorMessage = "Server endpoint not found. Please check the URL.";
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.detail) {
+                            errorMessage = response.detail;
+                        } else if (response.error) {
+                            errorMessage = response.error;
+                        }
+                    } catch (e) {
+                        errorMessage = xhr.responseText.substring(0, 100);
+                    }
+                }
+
+                showMessage(errorMessage, "danger");
+                resetForm();
+            }
+        })
+    });
+
+    // Reset form function
+    function resetForm() {
+        form[0].reset();
+        contentForm[0].reset();
+        semester.prop('disabled', true);
+        contentCount.prop('disabled', true);
+        subject.prop('disabled', true);
+        contentContainer.hide();
+    };
+
+    $(document).on("click", '#resetBtn',
+        function () {
+            form[0].reset();
+            contentForm[0].reset();
+            semester.prop('disabled', true);
+            subject.prop('disabled', true);
+            contentCount.prop('disabled', true);
+        });
+
+    // FOR FETCH THE SEMESTERS
+    $("#course").on("change", function () {
+        console.log(course.val())
+        $.ajax({
+            url: "/subject/course_details/",
+            type: "GET",
+            data: {
+                course_id: course.val()
+            },
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                console.log(response)
+                semester.prop("disabled", false);
+
+                semester.empty();
+                semester.append('<option value="">Select Semester</option>')
+                for (let i = 1; i < response.data.semesters + 1; i++) {
+                    semester.append(`<option value="${i}">Semester - ${i}</option>`);
+                }
+            },
+            error: function (xhr) {
+                let errorMessage = "An error occurred while uploading the details.";
+
+                if (xhr.status === 404) {
+                    errorMessage = "Server endpoint not found. Please check the URL.";
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.detail) {
+                            errorMessage = response.detail;
+                        } else if (response.error) {
+                            errorMessage = response.error;
+                        }
+                    } catch (e) {
+                        errorMessage = xhr.responseText.substring(0, 100);
+                    }
+                }
+
+                showMessage(errorMessage, "danger");
+                resetForm();
+            }
+        })
+    });
+
+    // FOR FETCH THE SUBJECT DETAILS
+    $("#semester").on("change", function () {
+        console.log(subject.val())
+        $.ajax({
+            url: "/subject/subject_details/",
+            type: "GET",
+            data: {
+                course_id: course.val(),
+                semester: semester.val()
+            },
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                console.log(response)
+                subject.prop("disabled", false);
+                contentCount.prop("disabled", false);
+
+                subject.empty();
+                subject.append('<option value="">Select Subject</option>')
+                response.data.forEach(function (sub) {
+                    subject.append(`<option value="${sub.id}">${sub.name} (${sub.code})</option>`);
+                });
+            },
+            error: function (xhr) {
+                let errorMessage = "An error occurred while uploading the details.";
+
+                if (xhr.status === 404) {
+                    errorMessage = "Server endpoint not found. Please check the URL.";
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.detail) {
+                            errorMessage = response.detail;
+                        } else if (response.error) {
+                            errorMessage = response.error;
+                        }
+                    } catch (e) {
+                        errorMessage = xhr.responseText.substring(0, 100);
+                    }
+                }
+
+                showMessage(errorMessage, "danger");
+                resetForm();
+            }
+        })
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    // for showing messages:
+    let messageShow = document.querySelector('#messageContainer')
+    function showMessage(message, type) {
+        // Additional check - if message is null/empty, don't show
+        if (!message || message === 'null' || message.trim() === '') {
+            if (messageShow) {
+                messageShow.innerHTML = '';
+            }
+            return;
+        }
+
+        const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+        if (messageShow !== null) {
+            messageShow.innerHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert" id="alertMessage">
+                ${message}
+                <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+        };
+
+        // Auto-remove message after 5 seconds
+        setTimeout(() => {
+            if (messageShow) {
+                messageShow.innerHTML = '';
+            }
+        }, 5000);
+    };
+</script>
+{% endblock %}

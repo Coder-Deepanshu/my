@@ -1,0 +1,499 @@
+{% extends "Base/base.html" %}
+
+{% block title %}FeeStructure{% endblock %}
+
+{% block content %}
+<div class="fixed-message-container" id="messageContainer"></div>
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1>College Structure Management</h1>
+        <p>Create and manage academic courses efficiently</p>
+    </div>
+</section>
+
+<div class="content-container">
+    <ul class="nav nav-tabs" id="courseTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button"
+                role="tab" aria-controls="create" aria-selected="true">
+                <i class="fas fa-plus-circle"></i> Create Structure
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button"
+                role="tab" aria-controls="manage" aria-selected="false">
+                <i class="fas fa-edit"></i> Manage Structure
+            </button>
+        </li>
+    </ul>
+
+    <!-- Alert Messages from Django -->
+    {% include "common/message.html" %}
+
+    <div class="tab-content" id="courseTabsContent">
+        <!-- Create Structure Tab -->
+        <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+            <div class="form-container">
+                <form id="Form">
+                    {% csrf_token %}
+
+                    <div class="form-section">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="course" class="form-label"><i class="fas fa-book"></i>Course</label>
+                                <input type="text" id="searchBox" placeholder="Search Options..." class="form-control">
+                                <select class="form-select" id="course" name="course" required>
+                                    <option value="All" selected>Select Course</option>
+                                    {% for course in courses %}
+                                    <option value="{{ course.id }}">{{ course.name }} {{ course.level }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="semester" class="form-label"><i class="fas fa-book"></i>Semester</label>
+                                <select class="form-select" id="semester" name="semester" disabled>
+                                    <option value="" selected disabled>Select Semester</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2 mb-3">
+                                <label for="bulkSemester" class="form-label"><i class="fas fa-book"></i>Semester <i
+                                        style="color: red;">*bulk</i></label>
+                                <input type="text" class="form-control" id="bulkSemester" name="bulkSemester" required
+                                    placeholder="Semester">
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label for="due_date" class="form-label"><i class="fas fa-code"></i>Due Date</label>
+                                <input type="date" class="form-control" id="due_date" name="due_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                        <button type="submit" id="submitBtn" class="btn btn-primary">Create Structure</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Manage department Tab -->
+        <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+            <div class="table-container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3><i class="fas fa-list"></i> All Structure</h3>
+                    <div class="d-flex gap-2">
+                        <div class="d-flex">
+                            <input type="text" class="form-control me-2" id="searchInput"
+                                placeholder="Search (Name, Code, Type)">
+                            <button type="button" class="btn btn-outline-secondary" id="clearSearch">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="department-table" id="structureTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Level</th>
+                                <th>Type</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="structureTableBody">
+                            <!-- Table data will be loaded via AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Section -->
+                <div class="pagination" id="pagination">
+                    <button id="prev-btn" class="btn btn-outline-primary" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span id="pageInfo" class="mx-3">Loading...</span>
+                    <button id="next-btn" class="btn btn-outline-primary" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- write action code here -->
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    // SUBMIT FORM
+    const Form = $("#Form");
+    const searchInput = $("#searchInput");
+    const clearSearch = $("#clearSearch");
+    const prevBtn = $("#prev-btn");
+    const nextBtn = $("#next-btn");
+
+    let currentPage = 1;
+    let searchTerm = '';
+
+    $("#searchBox").keyup(function () {
+        var keyword = $(this).val();
+
+        $.ajax({
+            url: "/common/search_course/",
+            method: "GET",
+            data: { q: keyword },
+            success: function (response) {
+                $("#course").empty();
+                $("#semester").prop("disabled", true)
+                $("#course").html("<option value='All' selected disabled>Select Course</option>");
+
+                if (response.data) {
+                    response.data.forEach(function (item) {
+                        $("#course").append(`<option value='${item.id}'>${item.name} - ${item.level}</option>`)
+                    });
+                } else {
+                    $("#course").append("<option value='NO' selected disabled>No Record Found</option>")
+                }
+            },
+            error: function (xhr) {
+                let errorMessage = "Error fetching course.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+            }
+        })
+    })
+
+    $("#course").on("change", function () {
+        if ($("#course").val() === "All") {
+            $("#semester").prop("disabled", true);
+            $("#bulkSemester").prop("disabled", false);
+            $("#semester").prop("required", false);
+            $("#bulkSemester").prop("required", true);
+            $("#semester").empty();
+            $("#semester").html("<option value=''>Select Semester</option>")
+            $("#bulkSemester").val("");
+            return;
+        }
+
+        $.ajax({
+            url: "/common/semester/",
+            type: "GET",
+            data: { course_id: $("#course").val() },
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            success: function (response) {
+                $("#semester").prop("disabled", false);
+                $("#bulkSemester").prop("disabled", true);
+                $("#semester").prop("required", true);
+                $("#bulkSemester").prop("required", false);
+                $("#semester").empty();
+                $("#bulkSemester").val("");
+
+                $("#semester").html("<option value=''>Select Semester</option>")
+                for (let i = 1; i < response.semesters + 1; i++) {
+                    console.log(i)
+                    $("#semester").append(`<option value="${i}">Semester - ${i}</option>"`)
+                }
+            },
+            error: function (xhr) {
+                let errorMessage = "Error creating structure.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+            }
+        })
+    })
+
+    // Form Submit
+    Form.on("submit", function (e) {
+        e.preventDefault();
+
+        const course = $("#course");
+        const semester = $("#semester");
+        const bulkSemester = $("#bulkSemester");
+        const due_date = $("#due_date");
+
+        const dic = {
+            course: course.val(),
+            due_date: due_date.val()
+        }
+
+        let URL = "";
+
+        // FOR HANDLE THE BULK OR SINGLE
+        if (semester.val()) {
+            dic["semester"] = semester.val();
+            URL = "/feeStructure/"
+            submitForm(URL, dic);
+
+        } else {
+            dic["semester"] = bulkSemester.val();
+
+            var ids = [];
+            $("#course option").each(function () {
+                var val = $(this).val();
+                if (val !== "All") {
+                    ids.push(val);
+                }
+            });
+
+            dic["course_list"] = ids;
+
+            URL = "/feeStructure/bulk/"
+            submitForm(URL, dic);
+        }
+        console.log(dic);
+    });
+
+    // for submit the data into backend
+    function submitForm(url_path, dic) {
+        $.ajax({
+            url: url_path,
+            type: "POST",
+            data: JSON.stringify(dic),
+            contentType: "application/json",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            success: function (response) {
+                if (response.message) {
+                    showMessage(response.message, 'success');
+                } else {
+                    showMessage("Fee Strcuture Created Successfully!", 'success');
+                }
+                Form.trigger("reset");
+                $("#semester").empty;
+                $("#semester").prop("disabled", true);
+                $("#bulkSemester").prop("disabled", false);
+            },
+            error: function (xhr) {
+                let errorMessage = "Error creating Structure.";
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else {
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+                Form.trigger("reset");
+                $("#semester").empty;
+                $("#semester").prop("disabled", true);
+                $("#bulkSemester").prop("disabled", false);
+            }
+        });
+    }
+
+    // // SEARCH AND PAGINATION
+
+    // // Search
+    // searchInput.on("keyup", function () {
+    //     searchTerm = searchInput.val().trim();
+    //     currentPage = 1;
+    //     loadCourse();
+    // });
+
+    // clearSearch.on("click", function () {
+    //     searchInput.val('');
+    //     searchTerm = '';
+    //     currentPage = 1;
+    //     loadCourse();
+    // });
+
+    // searchInput.on("keypress", function (e) {
+    //     if (e.which === 13) {
+    //         searchTerm = searchInput.val().trim();
+    //         currentPage = 1;
+    //         loadCourse();
+    //     }
+    // });
+
+    // // Pagination
+    // prevBtn.on("click", function () {
+    //     if (currentPage > 1) {
+    //         currentPage--;
+    //         loadCourse();
+    //     }
+    // });
+
+    // nextBtn.on("click", function () {
+    //     currentPage++;
+    //     loadCourse();
+    // });
+
+    // // Initial load
+    // loadCourse();
+
+    // // Now searchTerm properly passed as parameter
+    // function loadCourse() {
+
+    //     let url = `/course/?page=${currentPage}`;
+
+    //     if (searchTerm) {
+    //         url += `&search=${encodeURIComponent(searchTerm)}`;
+    //     }
+
+    //     $.ajax({
+    //         url: url,
+    //         type: 'GET',
+    //         success: function (response) {
+    //             console.log(response)
+    //             let rows = "";
+    //             let courseData = {};
+
+    //             response.results.forEach(function (cs) {
+    //                 courseData[cs.id] = cs
+    //                 sessionStorage.setItem("courseData", JSON.stringify(courseData));
+
+    //                 let statusIcon = cs.status === true ?
+    //                     '<i class="fas fa-check-circle text-success"></i>' :
+    //                     '<i class="fas fa-times-circle text-danger"></i>';
+
+    //                 rows += `
+    //                     <tr>
+    //                         <td>${cs.id}</td>
+    //                         <td>${cs.name}</td>
+    //                         <td>${cs.level}</td>
+    //                         <td>${cs.type}</td>
+    //                         <td>${cs.department_name}</td>
+    //                         <td>${statusIcon}</td>
+    //                         <td>
+    //                             <div class="action-buttons">
+    //                                 <button class="btn-action btn-view" id="view" data-id="${cs.id}">
+    //                                     <i class="fas fa-eye"></i>
+    //                                 </button>
+    //                                 <button class="btn-action btn-edit" id="edit" data-id="${cs.id}">
+    //                                     <i class="fas fa-edit"></i>
+    //                                 </button>
+    //                                 <button class="btn-action btn-delete" id="delete" data-id="${cs.id}">
+    //                                     <i class="fas fa-trash"></i>
+    //                                 </button>
+    //                             </div>
+    //                         </td>
+    //                     </tr>
+    //                 `;
+    //             });
+
+    //             $("#structureTableBody").empty()
+    //             $("#structureTableBody").html(rows);
+
+    //             // Pagination control
+    //             $("#prev-btn").prop('disabled', !response.previous);
+    //             $("#next-btn").prop('disabled', !response.next);
+
+    //             // Better page calculation
+    //             const pageSize = response.results.length || 1;
+    //             const totalPages = Math.ceil(response.count / pageSize);
+
+    //             $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
+    //         },
+    //         error: function () {
+    //             showMessage("Error loading departments", "danger");
+    //         }
+    //     });
+    // }
+
+    // // ACTION MODALS
+    // const deleteModal = $("#deleteModal");
+    // const viewModal = $("#viewCourseOverlay");
+    // const editModal = $("#updateOverlay");
+
+    // // DELETE
+    // $(document).on("click", "#delete", function () {
+    //     $("#objectId").val(this.dataset.id)
+    //     deleteModal.show();
+    // })
+
+    // // VIEW
+    // $(document).on("click", "#view", function () {
+    //     let id = this.dataset.id;
+    //     let courseData = JSON.parse(sessionStorage.getItem("courseData"))
+    //     console.log(courseData);
+    //     viewModal.show();
+    // })
+
+    // // EDIT
+    // $(document).on("click", "#edit", function () {
+    //     let id = this.dataset.id;
+    //     let courseData = JSON.parse(sessionStorage.getItem("courseData"))
+    //     console.log(courseData);
+    //     editModal.show();
+    // })
+
+    // // DELETE CONFIRMATION
+    // $("#deleteConfirm").on("click", function () {
+    //     $.ajax({
+    //         url: `/course/${$("#objectId").val()}/`,
+    //         type: "DELETE",
+    //         headers: {
+    //             "X-CSRFToken": getCookie("csrftoken")
+    //         },
+    //         success: function () {
+    //             showMessage("Structure deleted successfully!", 'success');
+    //             closeModal("deleteModal");
+    //             loadCourse();
+    //         },
+    //         error: function (xhr) {
+    //             let errorMessage = "Error deleting department.";
+
+    //             if (xhr.responseJSON) {
+    //                 if (xhr.responseJSON.detail) {
+    //                     errorMessage = xhr.responseJSON.detail;
+    //                 } else {
+    //                     let errors = [];
+    //                     for (let field in xhr.responseJSON) {
+    //                         errors.push(`${field}: ${xhr.responseJSON[field]}`);
+    //                     }
+    //                     errorMessage = errors.join(', ');
+    //                 }
+    //             }
+    //             showMessage(errorMessage, "danger");
+    //             closeModal("deleteModal");
+    //         }
+    //     });
+    // });
+
+    // // FOR CLOSE THE CONTAINER
+    // function closeModal(conId) {
+    //     const container = $(`#${conId}`)
+    //     container.hide()
+    // }
+</script>
+{% endblock %}

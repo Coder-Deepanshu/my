@@ -1,0 +1,372 @@
+{% extends "Base/CreationBase.html" %}
+
+{% block title %}Subject{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/subjectCreation.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+
+        <!-- Messages will appear here -->
+        <div id="messageContainer"></div>
+        <!-- Alert Messages -->
+        {% if messages %}
+        <div id="alertContainer">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                <i
+                    class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- Page Header -->
+        <div class="page-header animate__animated animate__fadeIn">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">Create New Subjects</h1>
+                    <p class="page-subtitle">Add subjects to your academic curriculum</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="student-info">
+                        <div class="student-avatar">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h5 class="mb-1">{{ detail.name }}</h5>
+                        <p class="mb-0">{{ detail.position }} • College ID: {{ detail.college_id }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subject Creation Form -->
+        <div class="form-card animate__animated animate__fadeIn">
+            <h3 class="form-section-title">Course Information</h3>
+
+            <form id="subjectForm">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="course" class="form-label">Course</label>
+                        <select class="form-select" id="course" required>
+                            <option value="" selected disabled>Select Course</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }} {{ course.level }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="semester" class="form-label">Semester</label>
+                        <select class="form-select" id="semester" required disabled>
+                            <option value="" selected disabled>Select Semester</option>
+                            <!-- result loaded here -->
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="subjectCount" class="form-label">Number of Subjects</label>
+                        <input type="number" class="form-control" id="subjectCount" min="1" max="10"
+                            placeholder="Enter number of subjects" required disabled>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="reset" class="btn btn-reset" id="resetBtn">
+                        <i class="fas fa-redo me-2"></i>Reset Form
+                    </button>
+                    <button type="button" class="btn btn-primary" id="generateSubjectsBtn">
+                        <i class="fas fa-plus-circle me-2"></i>Generate Subject Fields
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form id="subjectSubmitForm">
+            {% csrf_token %}
+            <!-- Dynamic Subject Inputs Container -->
+            <div class="subjects-container" id="subjectsContainer">
+                <div class="form-card">
+                    <h3 class="form-section-title">Subject Details</h3>
+                    <div id="subjectInputs">
+                        <!-- Subject input fields will be generated here -->
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-submit" id="submitBtn">
+                            <i class="fas fa-save me-2"></i>Create Subjects
+                        </button>
+                        <button type="reset" class="btn btn-reset" id="resetBtn">
+                            <i class="fas fa-redo me-2"></i>Reset Form
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const form = $('#subjectForm');
+    const submitForm = $("#subjectSubmitForm");
+    const course = $("#course");
+    const semester = $("#semester");
+    const subjectCount = $("#subjectCount");
+    const csrftoken = getCookie("csrftoken");
+    const generateBtn = $('#generateSubjectsBtn');
+    const subjectCountInput = $('#subjectCount');
+    const subjectsContainer = $('#subjectsContainer');
+    const subjectInputs = $('#subjectInputs');
+    const submitBtn = $('#submitBtn');
+
+    generateBtn.on('click', function () {
+
+        // jQuery me value lene ka sahi tareeqa
+        const subjectCount = parseInt(subjectCountInput.val());
+
+        if (isNaN(subjectCount) || subjectCount < 1 || subjectCount > 10) {
+            showMessage('Please enter a valid number between 1 and 10', 'danger');
+            return;
+        }
+
+        // Clear previous inputs
+        subjectInputs.empty();
+
+        // Create subject input fields
+        for (let i = 1; i <= subjectCount; i++) {
+
+            const subjectCard = $(`
+            <div class="subject-input-card animate__animated animate__fadeIn" 
+                 style="animation-delay: ${i * 0.1}s">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="subjectName${i}" class="form-label">Subject Name</label>
+                        <input type="text" class="form-control" 
+                               id="subjectName${i}" 
+                               placeholder="Enter subject name" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="subjectCode${i}" class="form-label">Subject Code</label>
+                        <input type="text" class="form-control" 
+                               id="subjectCode${i}" 
+                               placeholder="Enter subject code" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="subjectDepartment${i}" class="form-label">Department</label>
+                        <select class="form-select" id="subjectDepartment${i}" required>
+                            <option value="">Select Department</option>
+                            {% for dep in departments %}
+                                <option value="{{ dep.id }}">{{ dep.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `);
+            subjectInputs.append(subjectCard);
+        }
+        // Show container
+        subjectsContainer.show();
+    });
+
+    // Submit form
+    submitBtn.on('click', function (e) {
+        e.preventDefault();
+
+        let isValid = true;
+
+        let form = $(this).closest('form'); // ✅ button se form pakda
+
+        // form ke sab inputs & selects
+        form.find("input, select").each(function () {
+            let value = $(this).val();
+
+            if (value === null || value.trim() === "") {
+                isValid = false;
+                $(this).css("border", "1px solid red");
+            } else {
+                $(this).css("border", "");
+            }
+        });
+
+        if (!isValid) {
+            showMessage("All Fields are Required", "danger");
+            return;
+        }
+
+        // ✅ Array banaya
+        let subjectData = [];
+
+        // ✅ jQuery each
+        $('.subject-input-card').each(function (index) {
+            console.log(index)
+            subjectData.push({
+                course: parseInt($('#course').val()),
+                department: $(`#subjectDepartment${index + 1}`).val(),
+                name: $(`#subjectName${index + 1}`).val(),
+                code: $(`#subjectCode${index + 1}`).val(),
+                semester: parseInt($('#semester').val()),
+            });
+
+        });
+
+        console.log(subjectData);
+
+        $.ajax({
+            url: "/subject/subject_create/",
+            type: "POST",
+            data: JSON.stringify(subjectData),
+            headers: {
+                "X-CSRFToken": csrftoken,
+                "Content-Type": "application/json"
+            },
+            success: function (response) {
+                console.log(response.data)
+                showMessage(response.success, "success");
+                resetForm();
+            },
+            error: function (xhr) {
+                let errorMessage = "An error occurred while uploading the details.";
+
+                if (xhr.status === 404) {
+                    errorMessage = "Server endpoint not found. Please check the URL.";
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.detail) {
+                            errorMessage = response.detail;
+                        } else if (response.error) {
+                            errorMessage = response.error;
+                        }
+                    } catch (e) {
+                        errorMessage = xhr.responseText.substring(0, 100);
+                    }
+                }
+
+                showMessage(errorMessage, "danger");
+                resetForm();
+            }
+        })
+    });
+
+
+    // Reset form function
+    function resetForm() {
+        form[0].reset();
+        submitForm[0].reset();
+        semester.prop('disabled', true);
+        subjectCount.prop('disabled', true);
+        subjectsContainer.hide();
+    };
+
+    $(document).on("click", '#resetBtn',
+        function () {
+            form[0].reset();
+            submitForm[0].reset();
+            semester.prop('disabled', true);
+            subjectCount.prop('disabled', true);
+        });
+
+    $("#course").on("change", function () {
+        console.log(course.val())
+        $.ajax({
+            url: "/subject/course_details/",
+            type: "GET",
+            data: {
+                course_id: course.val()
+            },
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                console.log(response)
+                semester.prop("disabled", false);
+                subjectCount.prop("disabled", false);
+
+                semester.empty();
+                semester.append('<option value="">Select Semester</option>')
+                for (let i=1; i<response.data.semesters+1; i++){
+                    semester.append(`<option value="${i}">Semester - ${i}</option>`);
+                }
+            },
+            error: function (xhr) {
+                let errorMessage = "An error occurred while uploading the details.";
+
+                if (xhr.status === 404) {
+                    errorMessage = "Server endpoint not found. Please check the URL.";
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.detail) {
+                            errorMessage = response.detail;
+                        } else if (response.error) {
+                            errorMessage = response.error;
+                        }
+                    } catch (e) {
+                        errorMessage = xhr.responseText.substring(0, 100);
+                    }
+                }
+
+                showMessage(errorMessage, "danger");
+                resetForm();
+            }
+        })
+    })
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    // for showing messages:
+    let messageShow = document.querySelector('#messageContainer')
+    function showMessage(message, type) {
+        // Additional check - if message is null/empty, don't show
+        if (!message || message === 'null' || message.trim() === '') {
+            if (messageShow) {
+                messageShow.innerHTML = '';
+            }
+            return;
+        }
+
+        const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+        if (messageShow !== null) {
+            messageShow.innerHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert" id="alertMessage">
+                ${message}
+                <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+        };
+
+        // Auto-remove message after 5 seconds
+        setTimeout(() => {
+            if (messageShow) {
+                messageShow.innerHTML = '';
+            }
+        }, 5000);
+    };
+</script>
+{% endblock %}

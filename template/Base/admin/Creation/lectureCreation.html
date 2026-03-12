@@ -1,0 +1,498 @@
+{% extends "Base/CreationBase.html" %}
+
+{% block title %}Subject{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/subjectCreation.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+
+        <!-- Messages will appear here -->
+        <div id="messageContainer"></div>
+        <!-- Alert Messages -->
+        {% if messages %}
+        <div id="alertContainer">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                <i
+                    class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- Page Header -->
+        <div class="page-header animate__animated animate__fadeIn">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">Create New Lecture</h1>
+                    <p class="page-subtitle">Add lecture to your academic curriculum</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="student-info">
+                        <div class="student-avatar">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h5 class="mb-1">{{ detail.name }}</h5>
+                        <p class="mb-0">{{ detail.position }} • College ID: {{ detail.college_id }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lecture Creation Form -->
+        <form id="subjectForm">
+            {% csrf_token %}
+            <div class="form-card animate__animated animate__fadeIn">
+                <h3 class="form-section-title">Course Information</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="course" class="form-label">Course</label>
+                        <select class="form-select" id="course" required>
+                            <option value="all" selected disabled>Select Course</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }} {{ course.level }}
+                            </option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="semester" class="form-label">Semester</label>
+                        <select class="form-select" id="semester" disabled required>
+                            <option value="">Select Semester</option>
+                            <!-- result loaded here -->
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label for="lectureCount" class="form-label">Number of Lecture</label>
+                        <input type="number" class="form-control" id="lectureCount" min="1" max="10"
+                            placeholder="Enter number of lecture" required disabled>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="lectureTime" class="form-label">Time Per Lecture</label>
+                        <input type="number" class="form-control" id="lectureTime" required disabled>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="intervalTime" class="form-label">Time of Interval</label>
+                        <input type="number" class="form-control" id="intervalTime" required disabled>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="intervalOccur" class="form-label">Interval Occur</label>
+                        <input type="number" class="form-control" id="intervalOccur" required disabled>
+                    </div>
+
+                    <!-- lecture starting -->
+                    <input type="hidden" name="csrfmiddlewaretoken" id="start" disabled>
+                    <!-- lecture Session -->
+                    <input type="hidden" id="session" name="csrfmiddlewaretoken" disabled>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <button type="reset" class="btn btn-reset" id="resetBtn">
+                        <i class="fas fa-redo me-2"></i>Reset Form
+                    </button>
+                    <button type="button" class="btn btn-primary" id="generateLectureBtn">
+                        <i class="fas fa-plus-circle me-2"></i>Generate Lecture Fields
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Lecture Inputs Container -->
+            <div class="lecture-container" id="lectureContainer" style="display: none;">
+                <div class="form-card">
+                    <h3 class="form-section-title">Lecture Details</h3>
+                    <div id="lectureInputs">
+                        <!-- Lecture input fields will be generated here -->
+                    </div>
+
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-submit" id="submitBtn">
+                            <i class="fas fa-save me-2"></i>Create Lecture
+                        </button>
+                        <button type="reset" class="btn btn-reset" id="resetBtn">
+                            <i class="fas fa-redo me-2"></i>Reset Form
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const form = document.querySelector('#subjectForm');
+    const course = $('#course');
+    const semester = $('#semester');
+    const lectureCount = $('#lectureCount');
+    const lectureTime = $("#lectureTime");
+    const intervalTime = $("#intervalTime");
+    const intervalOccur = $("#intervalOccur");
+    const session = $("#session");
+    const start = $("#start");
+    let timetable = '';
+    const csrftoken = getCookie('csrftoken');
+    const lectureContainer = document.getElementById("lectureContainer");
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const lectureInputs = document.getElementById('lectureInputs');
+        const generateLectureBtn = document.getElementById("generateLectureBtn");
+
+        generateLectureBtn.addEventListener('click', function () {
+            const lectureCountValue = parseInt(lectureCount.val());
+
+            if (isNaN(lectureCountValue) || lectureCountValue < 1 || lectureCountValue > 10) {
+                showMessage('Please enter a valid number between 1 and 10', 'danger')
+                return;
+            }
+
+            timetable = generateTimetable({
+                startTime: start.val(),
+                totalLectures: lectureCount.val(),
+                lectureTime: parseInt(lectureTime.val()),
+                intervalAfter: parseInt(intervalOccur.val()),
+                intervalTime: parseInt(intervalTime.val()),
+                session: session.val()
+            })
+
+            // Clear previous inputs
+            lectureInputs.innerHTML = '';
+
+            timetable.forEach(function (lec, index) {
+                const subjectCard = document.createElement('div');
+                subjectCard.className = 'lecture-input-card animate__animated animate__fadeIn';
+                subjectCard.style.animationDelay = `${index * 0.1}s`;
+
+                const startTime24h = convertTo24Hour(lec.start_time);
+                const endTime24h = convertTo24Hour(lec.end_time);
+
+                subjectCard.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Type</label>
+                            <input type="text" class="form-control" value="${lec.type}" readonly disabled>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" value="${lec.name}" readonly disabled>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Start Time</label>
+                            <input type="text" class="form-control" value="${lec.start_time}" readonly disabled>
+                            <input type="hidden" name="start_time_${index}" value="${lec.start_time}" name="csrfmiddlewaretoken">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">End Time</label>
+                            <input type="text" class="form-control" value="${lec.end_time}" readonly disabled>
+                            <input type="hidden" name="end_time_${index}" value="${lec.end_time}" name="csrfmiddlewaretoken">
+                        </div>
+                    </div>
+                `;
+                lectureInputs.appendChild(subjectCard);
+            });
+            lectureContainer.style.display = "block";
+        });
+        const submitBtn = $("#submitBtn");
+
+        submitBtn.on("click", function (e) {
+            e.preventDefault();
+            let isValid = true;
+            let errorMsg = "";
+
+            // form ke sab inputs & selects
+            $(this).find("input, select, time").each(function () {
+                let value = $(this).val();
+                if (value === null || value.trim() === "") {
+                    isValid = false;
+                    $(this).css("border", "1px solid red");
+                } else {
+                    $(this).css("border", "");
+                }
+            });
+
+            if (!isValid) {
+                showMessage("All Fields are Required", "danger");
+                return;
+            }
+
+            let lectureData = [];
+
+            timetable.forEach(function (lec) {
+                lectureData.push({
+                    course: course.val(),
+                    semester: semester.val(),
+                    name: lec.name,
+                    type: lec.type,
+                    start_time: lec.start_time,
+                    end_time: lec.end_time
+                })
+            })
+
+            $.ajax({
+                url: "/lecture/create_lectures/",
+                type: "POST",
+                data: JSON.stringify(lectureData),
+                headers: {
+                    "X-CSRFToken": csrftoken,
+                    "Content-Type": "application/json"
+                },
+                success: function (response) {
+                    showMessage(response.success || "Lecture created successfully!", "success");
+                    resetForm();
+                },
+                error: function (xhr) {
+                    let errorMsg = "Something went wrong!";
+                    try {
+                        const errorData = JSON.parse(xhr.responseText);
+                        if (errorData.lecture) {
+                            errorMsg = errorData.lecture[0];
+                        } else if (errorData.error) {
+                            errorMsg = errorData.error;
+                        }
+                    } catch (e) {
+                        errorMsg = xhr.responseText || "Server error";
+                    }
+
+                    showMessage(errorMsg + " " + xhr.responseText, "danger");
+                    console.error(xhr.responseText)
+                    resetForm();
+                }
+            })
+        })
+    });
+
+    function convertTo24Hour(timeStr) {
+        if (!timeStr) return '';
+
+        let time = timeStr.toString().trim().toUpperCase();
+        let [timePart, meridian] = time.split(' ');
+        let [hours, minutes] = timePart.split(':').map(Number);
+
+        if (meridian === 'PM' && hours !== 12) {
+            hours += 12;
+        }
+        if (meridian === 'AM' && hours === 12) {
+            hours = 0;
+        }
+
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+
+    // For RESET THE FORM
+    $(document).on('click', "#resetBtn", function () {
+        resetForm()
+        showMessage("Form Reset Successfully !", "success")
+    });
+
+    // Reset form function
+    function resetForm() {
+        form.reset();
+        if (lectureContainer) {
+            lectureContainer.style.display = 'none';
+        }
+        if (lectureInputs) {
+            lectureInputs.innerHTML = '';
+        }
+        semester.prop("disabled", true);
+        lectureCount.prop("disabled", true);
+    }
+
+    // FOR FILL LECTURE DETAILS AUTOMATIC
+    function lectureDetails(course_id) {
+        $.ajax({
+            url: "/lecture/lecture_details/",
+            type: "GET",
+            data: {
+                course_id: course_id
+            },
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                console.log("Success", response);
+                if (response.length === 0) {
+                    console.log("No Student Found !");
+                    return;
+                }
+                semester.prop("disabled", false);
+                lectureCount.prop("disabled", false);
+
+                semester.empty();
+                // default select
+                semester.append('<option value="">Select Semester</option>')
+                for (let i=1; i<response.data.semesters+1; i++){
+                    semester.append(`<option value="${i}">Semester - ${i}</option>`);
+                }
+
+                lectureTime.val(response.lectureTime);
+                intervalTime.val(response.intervalTime);
+                intervalOccur.val(response.intervalOccur);
+                start.val(response.start);
+                session.val(response.at);
+            },
+            error: function (xhr) {
+                console.error("Error", xhr.responseText);
+                if (xhr.status === 404) {
+                    alert("API URL galat hai!")
+                }
+            }
+        });
+    };
+
+    // ON CHANGING THE COURSE OPTION
+    $("#course").on("change", function () {
+        let course_id = $("#course").val();
+        if (course_id) {
+            lectureDetails(course_id)
+        }
+    })
+
+    // for showing messages:
+    let messageShow = document.getElementById('messageContainer');
+    function showMessage(message, type) {
+        // Additional check - if message is null/empty, don't show
+        if (!message || message === 'null' || message.trim() === '') {
+            if (messageShow) {
+                messageShow.innerHTML = '';
+            }
+            return;
+        }
+
+        const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+        if (messageShow !== null) {
+            messageShow.innerHTML = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert" id="alertMessage">
+            ${message}
+            <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
+        };
+
+        // Auto-remove message after 5 seconds
+        setTimeout(() => {
+            if (messageShow) {
+                messageShow.innerHTML = '';
+            }
+        }, 5000);
+    };
+
+    // create timetable for lectures
+    function generateTimetable({
+        startTime,          // "10:00 AM"
+        totalLectures,      // 5
+        lectureTime,    // 45
+        intervalAfter,      // 2 (after which lecture interval should come)
+        intervalTime,   // 15
+        session             // "morning" / "evening"
+    }) {
+
+        function timeToMinutes(time) {
+            if (!time) return 0;
+
+            let timeStr = time.toString().trim().toUpperCase();
+            let meridian = "AM";
+
+            // Check if AM/PM is present
+            if (timeStr.includes("AM") || timeStr.includes("PM")) {
+                let parts = timeStr.split(" ");
+                meridian = parts[1];
+                [h, m] = parts[0].split(":").map(Number);
+            } else {
+                // If no AM/PM, assume it's already in 24h format
+                [h, m] = timeStr.split(":").map(Number);
+                meridian = h >= 12 ? "PM" : "AM";
+            }
+
+            if (meridian === "PM" && h !== 12) h += 12;
+            if (meridian === "AM" && h === 12) h = 0;
+
+            return h * 60 + m;
+        }
+
+        function minutesToTime(mins) {
+            let h = Math.floor(mins / 60) % 24;
+            let m = mins % 60;
+            let meridian = h >= 12 ? "PM" : "AM";
+
+            h = h % 12;
+            if (h === 0) h = 12;
+
+            return `${h}:${m.toString().padStart(2, "0")} ${meridian}`;
+        }
+
+        // Validate inputs
+        if (!startTime || totalLectures <= 0 || lectureTime <= 0) {
+            console.error("Invalid input parameters");
+            return [];
+        }
+
+        // Validate intervalAfter
+        if (intervalAfter < 1 || intervalAfter > totalLectures) {
+            intervalAfter = 0; // No interval if invalid
+        }
+
+        let timetable = [];
+        let currentTime = timeToMinutes(startTime);
+
+        for (let i = 1; i <= totalLectures; i++) {
+            // 🔹 Lecture
+            let lectureStart = currentTime;
+            let lectureEnd = lectureStart + lectureTime;
+
+            timetable.push({
+                type: "lecture",
+                name: `Lecture ${i}`,
+                start_time: minutesToTime(lectureStart),
+                end_time: minutesToTime(lectureEnd)
+            });
+
+            currentTime = lectureEnd;
+
+            // 🔹 Interval
+            if (i === intervalAfter) {
+                let intervalStart = currentTime;
+                let intervalEnd = intervalStart + intervalTime;
+
+                timetable.push({
+                    type: "interval",
+                    name: "Interval",
+                    start_time: minutesToTime(intervalStart),
+                    end_time: minutesToTime(intervalEnd)
+                });
+
+                currentTime = intervalEnd;
+            }
+        }
+
+        return timetable;
+    }
+
+</script>
+{% endblock %}

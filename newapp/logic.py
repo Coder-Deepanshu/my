@@ -1,14 +1,14 @@
 from django.utils.timezone import now as django_now
 from datetime import timedelta, datetime
-from .models import QR_code, Leave, Faculty_and_Admin_Attedance, Admin, Faculty
-from .redis_client import redis_client
+from .models import QR_code, Leave, Faculty_and_Admin_Attedance
+# from .redis_client import redis_client
 from .serializers import LeaveSerializer
 
 def process_qr_and_leaves():
-    # Redis lock (duplicate run se bachne ke liye)
-    if redis_client.get("qr_job_running"):
-        return
-    redis_client.setex("qr_job_running", 300, 1)  # 5 min lock
+    # # Redis lock (duplicate run se bachne ke liye)
+    # if redis_client.get("qr_job_running"):
+    #     return
+    # redis_client.setex("qr_job_running", 300, 1)  # 5 min lock
 
     print("🔄 Background job started")
     current_datetime = django_now()
@@ -130,15 +130,15 @@ def process_qr_and_leaves():
             print(f'❌ Error processing {user_type} {college_id}: {str(e)}')
             return False
 
-    # Process all admins
-    admin_ids = Admin.objects.values_list('college_id', flat=True)
-    for admin_id in admin_ids:
-        process_user(admin_id, 'Admin')
+    # # Process all admins
+    # admin_ids = Admin.objects.values_list('college_id', flat=True)
+    # for admin_id in admin_ids:
+    #     process_user(admin_id, 'Admin')
     
-    # Process all faculty
-    faculty_ids = Faculty.objects.values_list('college_id', flat=True)
-    for faculty_id in faculty_ids:
-        process_user(faculty_id, 'Faculty')
+    # # Process all faculty
+    # faculty_ids = Faculty.objects.values_list('college_id', flat=True)
+    # for faculty_id in faculty_ids:
+    #     process_user(faculty_id, 'Faculty')
     
     # Mark QR codes as processed
     expired_qrs.update(processed=True)

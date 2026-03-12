@@ -1,1262 +1,542 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "Base/base2.html" %}
 
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}Login{% endblock %}
 
-    <!-- SEO Meta Tags -->
-    <title>Login | Edutrack - Education Management System | Student Faculty Admin Portal</title>
-    <meta name="description"
-        content="Secure login portal for Edutrack Education Management System. Access student, faculty, and admin dashboards with institutional credentials.">
-    <meta name="keywords"
-        content="edutrack login, education management system, student portal, faculty login, admin login, college login, educational institution login, LMS login">
-    <meta name="author" content="Edutrack Education Management System">
-    <meta name="robots" content="index, follow">
+{% load static %}
 
-    <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:title" content="Login | Edutrack - Education Management System">
-    <meta property="og:description"
-        content="Secure access to Edutrack Education Management System for students, faculty, and administrators.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://edutrack.com/login">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/Home/login.css' %}">
+{% endblock %}
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://edutrack.com/login">
+{% block content %}
+<!-- Toast Notifications Container -->
+<div class="toast-container" id="toastContainer"></div>
 
-    <!-- Schema.org Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Edutrack Login Portal",
-        "description": "Secure login portal for education management system",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "Web",
-        "browserRequirements": "Requires JavaScript. Works in all modern browsers.",
-        "author": {
-            "@type": "Organization",
-            "name": "Edutrack",
-            "url": "https://edutrack.com"
-        },
-        "offers": {
-            "@type": "Offer",
-            "category": "EducationalService"
-        },
-        "audience": {
-            "@type": "Audience",
-            "audienceType": "Students, Faculty, Administrators"
-        }
-    }
-    </script>
+<!-- Modal Spinner (Full screen) -->
+<div class="modal-spinner" id="modalSpinner">
+    <div class="modal-spinner-content">
+        <div class="modal-spinner-icon">
+            <div class="spinner"></div>
+        </div>
+        <h3 class="modal-spinner-title" id="modalSpinnerTitle">Loading...</h3>
+        <p class="modal-spinner-subtitle" id="modalSpinnerSubtitle">Please wait while we process your request</p>
+    </div>
+</div>
 
-    <!-- Preload Critical Resources -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
-    <link rel="preload" href="{% static 'css/main/login.css' %}" as="style">
+<div class="main-container">
+    <!-- main card -->
+    <div class="form-container">
+        <!-- form body -->
+        <form id="myForm">
+            <!-- Step 1: College ID Verification -->
+            <div class="id-verification-card" id="step1Container">
+                <div class="modal-title">
+                    <i class="fas fa-id-card me-3"></i>
+                    College ID Verification
+                </div>
 
-    <!-- CSS Dependencies -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-        integrity="sha512-c42qTSw/wPZ3/5LBzD+Bw5f7bSF2oxou6wEb+I/lqeaKV5FDIfMvvRp772y4jcJLKuGUOpbJMdg/BTl50fJYAw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="{% static 'css/main/login.css' %}">
+                <div class="info-note-modern">
+                    <i class="fas fa-shield-alt"></i>
+                    <p class="mb-0">Enter your institutional ID provided by admin. This step confirms your affiliation
+                        with EduTrack.</p>
+                </div>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-    <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
+                <div class="mb-4">
+                    <label class="form-label-custom">
+                        <i class="far fa-id-badge"></i>College ID
+                    </label>
+                    <input type="text" class="form-control input-field" id="userID" placeholder="e.g., FAC-2025-042">
+                    <div class="form-text mt-2">
+                        <i class="fas fa-lock me-1"></i>Your ID is encrypted and secure
+                    </div>
+                </div>
 
-    <!-- Additional Meta Tags -->
-    <meta name="theme-color" content="#4361ee">
-    <meta name="msapplication-TileColor" content="#4361ee">
-    <meta name="application-name" content="Edutrack">
-    <meta name="apple-mobile-web-app-title" content="Edutrack">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <!-- Security Headers (Meta equivalents) -->
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="{% static 'manifest.json' %}">
-
-    <!-- Preconnect to critical origins -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <!-- Scripts with async/defer -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"
-        integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-
-    <!-- Additional SEO: Breadcrumb Schema -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://edutrack.com/"
-            },
-            {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Login",
-                "item": "https://edutrack.com/login"
-            }
-        ]
-    }
-    </script>
-
-    <!-- Local Business Schema (for Educational Institution) -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "EducationalOrganization",
-        "name": "Edutrack",
-        "description": "Comprehensive Education Management System",
-        "url": "https://edutrack.com",
-        "logo": "https://edutrack.com/static/logo.png",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "123 Education Street",
-            "addressLocality": "Learning City",
-            "addressRegion": "LC",
-            "postalCode": "12345",
-            "addressCountry": "IN"
-        },
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "+1-555-123-4567",
-            "contactType": "customer service",
-            "email": "info@edutrack.com",
-            "availableLanguage": ["English", "Hindi"]
-        }
-    }
-    </script>
-
-    <!-- Additional CSS for better semantic structure -->
-    <style>
-        /* SEO Enhancement: Semantic heading hierarchy */
-        .visually-hidden {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        /* SEO Enhancement: Better focus for accessibility */
-        *:focus {
-            outline: 2px solid #4361ee;
-            outline-offset: 2px;
-        }
-
-        /* SEO Enhancement: Print styles */
-        @media print {
-            .no-print {
-                display: none !important;
-            }
-
-            body {
-                font-size: 12pt;
-                line-height: 1.5;
-            }
-
-            a[href]:after {
-                content: " (" attr(href) ")";
-                font-size: 90%;
-            }
-        }
-
-        /* SEO Enhancement: Skip to main content link */
-        .skip-to-content {
-            position: absolute;
-            top: -40px;
-            left: 0;
-            background: #4361ee;
-            color: white;
-            padding: 8px;
-            text-decoration: none;
-            z-index: 1001;
-        }
-
-        .skip-to-content:focus {
-            top: 0;
-        }
-    </style>
-</head>
-
-<body itemscope itemtype="https://schema.org/WebPage">
-    <!-- Skip to main content link for accessibility -->
-    <a href="#main-content" class="skip-to-content visually-hidden">Skip to main content</a>
-
-    <!-- Header with Schema markup -->
-    <header class="header" role="banner" itemscope itemtype="https://schema.org/WPHeader">
-        <nav class="navbar navbar-expand-lg navbar-light py-3" role="navigation" aria-label="Main navigation">
-            <div class="container">
-                <a class="navbar-brand" href="{% url 'home' %}" itemprop="url">
-                    <i class="fas fa-graduation-cap me-2" aria-hidden="true"></i>
-                    <span itemprop="name">Edutrack</span>
-                </a>
-
-                <!-- Hidden heading for screen readers -->
-                <h1 class="visually-hidden">Edutrack Education Management System Login</h1>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                <button type="button" class="btn-verify" id="submitIDBtn">
+                    <span class="spinner-container" id="verifyBtnSpinner" style="display: none;">
+                        <span class="spinner spinner-sm white"></span>
+                        <span>Verifying...</span>
+                    </span>
+                    <span id="verifyBtnText">
+                        <i class="fas fa-arrow-right me-2"></i>Verify & Continue
+                    </span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto" role="menubar">
-                        <li class="nav-item" role="none">
-                            <a class="nav-link" href="{% url 'home' %}" role="menuitem" itemprop="url">Home</a>
-                        </li>
-                        <li class="nav-item" role="none">
-                            <a class="nav-link" href="{% url 'feature' %}" role="menuitem" itemprop="url">Features</a>
-                        </li>
-                        <li class="nav-item" role="none">
-                            <a class="nav-link" href="{% url 'success_stories' %}" role="menuitem"
-                                itemprop="url">About</a>
-                        </li>
-                        <li class="nav-item" role="none">
-                            <a class="nav-link" href="{% url 'pricing' %}" role="menuitem" itemprop="url">Courses</a>
-                        </li>
-                        <li class="nav-item" role="none">
-                            <a class="nav-link" href="{% url 'contact' %}" role="menuitem" itemprop="url">Contact</a>
-                        </li>
-                    </ul>
-                    <div class="ms-lg-3 mt-3 mt-lg-0">
-                        <a href="{% url 'login' %}" class="btn btn-outline-primary me-2" role="button"
-                            aria-current="page">Login</a>
-                        <a href="{% url 'new_enroll' %}" class="btn btn-primary" role="button">Enroll Now</a>
-                    </div>
+                <!-- Progress Bar Example (can be shown during verification) -->
+                <div class="progress-container" id="verifyProgress" style="display: none;">
+                    <div class="progress-bar" style="width: 0%;" id="verifyProgressBar"></div>
                 </div>
+
+                <p class="text-center mt-4 mb-0">
+                    <a href="#">Don't have an ID? Contact registrar</a>
+                </p>
             </div>
-        </nav>
-    </header>
 
-    <!-- Main Content with Schema markup -->
-    <main id="main-content" role="main" itemprop="mainContentOfPage">
-        <!-- userID Modal -->
-        <div class="userIDModal show" id="userIDModal" tabindex="-1" role="dialog" aria-labelledby="collegeIDModalLabel"
-            aria-modal="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title" id="collegeIDModalLabel">
-                            <i class="fas fa-id-card" aria-hidden="true"></i>
-                            College ID Verification
-                        </h2>
-                    </div>
-
-                    <!-- Display Django messages -->
-                    {% if messages %}
-                    <div class="messages" role="alert" aria-live="polite">
-                        {% for message in messages %}
-                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} animate__animated animate__fadeIn"
-                            role="alert">
-                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %} me-2"
-                                aria-hidden="true"></i>{{ message }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
-                    <div class="modal-body">
-                        <!-- Professional Note -->
-                        <div class="info-note" role="note">
-                            <i class="fas fa-info-circle" aria-hidden="true"></i>
-                            <p>Enter your college ID to proceed with account login. This helps us verify your
-                                institutional credentials securely.</p>
-                        </div>
-
-                        <form id="userIDForm" method="POST" role="form" aria-label="College ID verification form">
-                            {% csrf_token %}
-                            <div class="mb-4">
-                                <label for="userID" class="form-label">
-                                    <i class="fas fa-university" style="color: var(--gray);margin-right: 10px;"
-                                        aria-hidden="true"></i>
-                                    College ID
-                                </label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="userID"
-                                        placeholder="Enter your college ID" required aria-required="true"
-                                        aria-describedby="userIDHelp">
-                                </div>
-                                <div id="userIDHelp" class="form-text text-muted text-start mt-2">
-                                    <small><i class="fas fa-shield-alt me-1" aria-hidden="true"></i> Your information is
-                                        secure and encrypted</small>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="text-center mt-4 animate__animated animate__fadeIn">
-                            <p class="mb-0">Don't have an account? <a href="#" class="text-primary">Contact your
-                                    institution</a></p>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="submitIDBtn"
-                            aria-label="Verify College ID and continue">
-                            <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
-                            Verify & Continue
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Login Section with Schema markup -->
-        <section class="login-section" itemscope itemtype="https://schema.org/WebApplication">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="login-container">
-                        <div class="login-right">
-                            <h1 class="login-title animate__animated animate__fadeIn" itemprop="name">Sign In to
-                                Edutrack</h1>
-                            <p class="login-subtitle animate__animated animate__fadeIn" itemprop="description">
-                                Enter your credentials to access your account
-                            </p>
-
-                            <!-- Role Selection -->
-                            <div class="role-selection animate__animated animate__fadeIn" role="radiogroup"
-                                aria-label="Select your role">
-                                <div class="role-btn student active" data-role="student" role="radio"
-                                    aria-checked="true" tabindex="0">
-                                    <i class="fas fa-user-graduate" aria-hidden="true"></i>
-                                    <span>Student</span>
-                                </div>
-                                <div class="role-btn faculty" data-role="faculty" role="radio" aria-checked="false"
-                                    tabindex="0">
-                                    <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
-                                    <span>Faculty</span>
-                                </div>
-                                <div class="role-btn admin" data-role="admin" role="radio" aria-checked="false"
-                                    tabindex="0">
-                                    <i class="fas fa-user-cog" aria-hidden="true"></i>
-                                    <span>Admin</span>
-                                </div>
-                            </div>
-
-                            <!-- Login Form with Schema markup -->
-                            <form method="POST" id="loginForm" action="{% url 'login' %}" role="form"
-                                aria-label="Login form" itemscope itemtype="https://schema.org/LoginAction">
-                                {% csrf_token %}
-                                <input type="hidden" name="role" id="role" value="student">
-
-                                <div class="mb-3 animate__animated animate__fadeIn">
-                                    <label for="id_username" class="form-label">Username</label>
-                                    <div class="input-group">
-                                        <input type="text" name="username" id="id_username" class="form-control"
-                                            placeholder="Enter your username" required aria-required="true"
-                                            itemprop="identifier">
-                                        <span class="input-group-text" aria-hidden="true">
-                                            <i class="fas fa-user"></i>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3 animate__animated animate__fadeIn">
-                                    <label for="id_password" class="form-label">Password</label>
-                                    <div class="input-group">
-                                        <input type="password" name="password" id="id_password" class="form-control"
-                                            placeholder="Enter your password" required aria-required="true"
-                                            itemprop="password">
-                                        <span class="input-group-text" role="button" tabindex="0"
-                                            aria-label="Toggle password visibility">
-                                            <i class="fas fa-lock"></i>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <!-- fingerprint device id value input -->
-                                <input type="hidden" id="fingerprint" name="fingerprint">
-
-                                <div class="mb-3 form-check animate__animated animate__fadeIn">
-                                    <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
-                                    <label class="form-check-label" for="rememberMe">Remember me</label>
-                                    <a href="#" class="float-end" data-bs-toggle="modal"
-                                        data-bs-target="#forgotPasswordModal"
-                                        aria-label="Forgot password? Click to recover">
-                                        Forgot password?
-                                    </a>
-                                </div>
-
-                                <button type="submit" class="login-btn student animate__animated animate__fadeIn"
-                                    aria-label="Sign in to your account" itemprop="potentialAction">
-                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i> Sign In
-                                </button>
-
-                                <!-- Hidden schema data -->
-                                <meta itemprop="target" content="{% url 'login' %}">
-                            </form>
-
-                            <!-- Login Help Text for SEO -->
-                            <div class="mt-4 text-center" style="display: none;" aria-hidden="true">
-                                <p>Edutrack Login Portal provides secure access to educational resources for students,
-                                    faculty members, and administrative staff. Our education management system login
-                                    ensures data protection and user authentication through advanced security measures.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Help Button with accessibility -->
-    <div class="help-btn floating" data-bs-toggle="modal" data-bs-target="#needHelpModal" role="button"
-        aria-label="Need help with login?" tabindex="0">
-        <i class="fas fa-question" aria-hidden="true"></i>
-    </div>
-
-    <!-- Footer with Schema markup -->
-    <footer class="footer" role="contentinfo" itemscope itemtype="https://schema.org/WPFooter">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <h3 class="footer-title" itemprop="name">Edutrack</h3>
-                    <p itemprop="description">Comprehensive education management system designed to streamline
-                        operations and enhance learning outcomes.</p>
-                    <div class="footer-social" role="list" aria-label="Social media links">
-                        <a href="#" role="listitem" aria-label="Facebook"><i class="fab fa-facebook-f"
-                                aria-hidden="true"></i></a>
-                        <a href="#" role="listitem" aria-label="Twitter"><i class="fab fa-twitter"
-                                aria-hidden="true"></i></a>
-                        <a href="#" role="listitem" aria-label="Instagram"><i class="fab fa-instagram"
-                                aria-hidden="true"></i></a>
-                        <a href="#" role="listitem" aria-label="LinkedIn"><i class="fab fa-linkedin-in"
-                                aria-hidden="true"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
-                    <h4 class="footer-title">Quick Links</h4>
-                    <ul class="footer-links" role="list">
-                        <li role="listitem"><a href="{% url 'home' %}">Home</a></li>
-                        <li role="listitem"><a href="{% url 'feature' %}">Features</a></li>
-                        <li role="listitem"><a href="{% url 'pricing' %}">Courses</a></li>
-                        <li role="listitem"><a href="{% url 'success_stories' %}">About Us</a></li>
-                        <li role="listitem"><a href="{% url 'contact' %}">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
-                    <h4 class="footer-title">Features</h4>
-                    <ul class="footer-links" role="list">
-                        <li role="listitem"><a href="#">Student Management</a></li>
-                        <li role="listitem"><a href="#">Fee Management</a></li>
-                        <li role="listitem"><a href="#">Attendance</a></li>
-                        <li role="listitem"><a href="#">Timetable</a></li>
-                        <li role="listitem"><a href="#">Reports</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 col-md-4">
-                    <h4 class="footer-title">Contact Us</h4>
-                    <ul class="footer-links" role="list" itemprop="address" itemscope
-                        itemtype="https://schema.org/PostalAddress">
-                        <li role="listitem">
-                            <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
-                            <span itemprop="streetAddress">123 Education St</span>,
-                            <span itemprop="addressLocality">Learning City</span>
-                        </li>
-                        <li role="listitem">
-                            <i class="fas fa-phone me-2" aria-hidden="true"></i>
-                            <span itemprop="telephone">+1 (555) 123-4567</span>
-                        </li>
-                        <li role="listitem">
-                            <i class="fas fa-envelope me-2" aria-hidden="true"></i>
-                            <span itemprop="email">info@edutrack.com</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; <span itemprop="copyrightYear">2025</span> Edutrack. All rights reserved.</p>
-                <div class="footer-bottom-links" style="display: none;" aria-hidden="true">
-                    <a href="/privacy-policy">Privacy Policy</a> |
-                    <a href="/terms-of-service">Terms of Service</a> |
-                    <a href="/accessibility">Accessibility</a> |
-                    <a href="/sitemap.xml">Sitemap</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Forgot Password Modal -->
-    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true" role="dialog"
-        aria-labelledby="forgotPasswordModalLabel">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="forgotPasswordModalLabel">
-                        <i class="fas fa-key me-2" aria-hidden="true"></i>Password Recovery
+            <!-- Step 2: Login Section -->
+            <section class="login-section" id="step2Container" style="display: none;">
+                <div class="login-card">
+                    <h2 class="login-title">
+                        <i class="fas fa-lock me-2"></i>Sign In
                     </h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Enter your college ID to recover your account credentials.</p>
-                    <form id="forgotPasswordForm" method="POST" role="form" aria-label="Password recovery form">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="collegeId" class="form-label">College ID</label>
-                            <input type="text" class="form-control" id="collegeId" placeholder="Enter your college ID"
-                                required>
+                    <p class="login-subtitle">Use your credentials to access your account</p>
+
+                    <!-- Role Selector -->
+                    <div class="role-selection" id="roleSelector">
+                        <div class="role-btn student active" data-role="student">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Student</span>
                         </div>
-                    </form>
-                    <div id="recoveryResult" class="mt-3" style="display: none;" role="alert" aria-live="polite"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="recoverPasswordBtn">Recover Password</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Need Help Modal -->
-    <div class="modal fade" id="needHelpModal" tabindex="-1" aria-hidden="true" role="dialog"
-        aria-labelledby="needHelpModalLabel">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="needHelpModalLabel">
-                        <i class="fas fa-question-circle me-2" aria-hidden="true"></i>Login Help
-                    </h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info" role="note">
-                        <i class="fas fa-info-circle me-2" aria-hidden="true"></i>Please use the following credentials
-                        format to login:
-                    </div>
-                    <div class="mb-3">
-                        <h3 class="h6"><i class="fas fa-user me-2 text-primary" aria-hidden="true"></i>Username</h3>
-                        <p class="text-muted">Your username is your email address registered with the college (e.g.,
-                            john.doe@college.edu)</p>
-                    </div>
-                    <div class="mb-3">
-                        <h3 class="h6"><i class="fas fa-lock me-2 text-primary" aria-hidden="true"></i>Password</h3>
-                        <p class="text-muted">Your password is your registered phone number without country code (e.g.,
-                            9876543210)</p>
-                    </div>
-                    <div class="alert alert-warning" role="alert">
-                        <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>If you're still having
-                        trouble, please contact your institution's admin department.
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Status Overlay -->
-    <div id="overlay" class="overlay" aria-hidden="true" role="alertdialog" aria-live="assertive" aria-modal="true">
-        <div id="statusCard" class="status-card" role="document">
-            <!-- Animated Background -->
-            <div class="status-bg" aria-hidden="true">
-                <div class="bg-circle bg-circle-1"></div>
-                <div class="bg-circle bg-circle-2"></div>
-                <div class="bg-circle bg-circle-3"></div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="status-content">
-                <div class="circle-wrap" aria-hidden="true">
-                    <div id="dotted" class="dotted-circle">
-                        <div id="dottedRing" class="dotted-ring"></div>
-                        <div id="statusIcon" class="status-icon">
-                            <div class="loading-dots">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
+                        <div class="role-btn faculty" data-role="faculty">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Faculty</span>
+                        </div>
+                        <div class="role-btn admin" data-role="admin">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Admin</span>
+                        </div>
+                        <div class="role-btn superadmin" data-role="superadmin">
+                            <i class="fas fa-user-cog"></i>
+                            <span>SuperAdmin</span>
                         </div>
                     </div>
+                    <input type="hidden" id="role" value="student">
+
+                    <!-- Login Form -->
+                    <div class="mb-3">
+                        <label class="form-label-custom">
+                            <i class="fas fa-user"></i>Username
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="text" class="form-control" id="id_username" placeholder="Enter your username">
+                            <span class="input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label-custom">
+                            <i class="fas fa-lock"></i>Password
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="password" class="form-control" id="id_password"
+                                placeholder="Enter your password">
+                            <span class="input-group-text" id="togglePwd">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                Keep me signed in
+                            </label>
+                        </div>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#forgotModal">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <button type="button" class="login-btn student" id="loginBtn">
+                        <span class="spinner-container" id="loginBtnSpinner" style="display: none;">
+                            <span class="btn-spinner"></span>
+                            <span>Signing in...</span>
+                        </span>
+                        <span id="loginBtnText">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </span>
+                    </button>
                 </div>
-                <div id="statusTitle" class="status-title">Verifying Account</div>
-                <div id="statusSub" class="status-sub">Please wait while we verify your credentials</div>
+            </section>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn-outline-modern" id="resetBtn">
+                    <i class="fas fa-undo me-2"></i>Reset
+                </button>
+                <div>
+                    <button type="button" class="btn-next" id="nextBtn">
+                        Next <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Help Button -->
+<div class="help-btn" id="helpBtn" title="Need help?">
+    <i class="fas fa-question"></i>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="forgotModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                <p>A password reset link will be sent to your registered email address.</p>
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <!-- JavaScript with defer attribute -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"
-        defer></script>
+{% block extra_js %}
+<script>
+    // ========== SPINNER UTILITY FUNCTIONS ==========
 
-    <!-- Structured Data for Login Action -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "LoginAction",
-        "name": "Edutrack Login",
-        "target": "{% url 'login' %}",
-        "actionStatus": "PotentialActionStatus",
-        "agent": {
-            "@type": "Audience",
-            "audienceType": ["Students", "Faculty", "Administrators"]
+    // Toast notification system
+    const Toast = {
+        container: document.getElementById('toastContainer'),
+
+        show: function (type, title, message, duration = 5000) {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification ${type}`;
+
+            let icon = '';
+            switch (type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-exclamation-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle"></i>';
+            }
+
+            toast.innerHTML = `
+            <div class="toast-icon ${type}">${icon}</div>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <div class="toast-close"><i class="fas fa-times"></i></div>
+        `;
+
+            // Add close functionality
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.remove();
+            });
+
+            // Auto remove after duration
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, duration);
+
+            this.container.appendChild(toast);
+        },
+
+        success: function (title, message, duration) {
+            this.show('success', title, message, duration);
+        },
+
+        error: function (title, message, duration) {
+            this.show('error', title, message, duration);
+        },
+
+        warning: function (title, message, duration) {
+            this.show('warning', title, message, duration);
+        },
+
+        info: function (title, message, duration) {
+            this.show('info', title, message, duration);
+        }
+    };
+
+    // Modal Spinner
+    const ModalSpinner = {
+        element: document.getElementById('modalSpinner'),
+        title: document.getElementById('modalSpinnerTitle'),
+        subtitle: document.getElementById('modalSpinnerSubtitle'),
+
+        show: function (title = 'Loading...', subtitle = 'Please wait while we process your request') {
+            this.title.textContent = title;
+            this.subtitle.textContent = subtitle;
+            this.element.classList.add('show');
+        },
+
+        hide: function () {
+            this.element.classList.remove('show');
+        },
+
+        update: function (title, subtitle) {
+            if (title) this.title.textContent = title;
+            if (subtitle) this.subtitle.textContent = subtitle;
+        }
+    };
+
+    // Button spinner controller
+    function setButtonLoading(button, isLoading, loadingText = 'Loading...') {
+        const spinner = button.querySelector('.spinner-container');
+        const text = button.querySelector('span:not(.spinner-container)');
+
+        if (isLoading) {
+            button.disabled = true;
+            if (spinner) spinner.style.display = 'inline-flex';
+            if (text) text.style.display = 'none';
+        } else {
+            button.disabled = false;
+            if (spinner) spinner.style.display = 'none';
+            if (text) text.style.display = 'inline';
         }
     }
-    </script>
 
-    <!-- Inline JavaScript (remains exactly the same as your original) -->
-    <script>
-        // Your original JavaScript code remains completely unchanged here
-        // Role selection functionality
+    // Progress bar controller
+    function updateProgress(progressBar, percent) {
+        progressBar.style.width = percent + '%';
+    }
+
+    // ========== MAIN APPLICATION CODE ==========
+
+    (function () {
+        // DOM Elements
         const roleBtns = document.querySelectorAll('.role-btn');
-        const roleInput = document.getElementById('role');
-        const loginBtn = document.querySelector('.login-btn');
+        const loginBtn = document.getElementById('loginBtn');
+        const roleHidden = document.getElementById('role');
+        const step1Container = document.getElementById('step1Container');
+        const step2Container = document.getElementById('step2Container');
+        const verifyBtn = document.getElementById('submitIDBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const togglePwd = document.getElementById('togglePwd');
+        const pwdInput = document.getElementById('id_password');
+        const helpBtn = document.getElementById('helpBtn');
+        const verifyProgress = document.getElementById('verifyProgress');
+        const verifyProgressBar = document.getElementById('verifyProgressBar');
 
-        roleBtns.forEach(btn => {
-            btn.addEventListener('click', function () {
-                // Remove active class from all buttons
-                roleBtns.forEach(b => b.classList.remove('active'));
-
-                // Add active class to clicked button
-                this.classList.add('active');
-
-                // Update the role value
-                const role = this.getAttribute('data-role');
-                roleInput.value = role;
-
-                // Update login button style based on role
-                loginBtn.className = 'login-btn';
-
-                if (role === 'admin') {
-                    loginBtn.classList.add('admin');
-                } else if (role === 'faculty') {
-                    loginBtn.classList.add('faculty');
-                } else {
-                    loginBtn.classList.add('student');
+        // Role Selection
+        function setRole(role) {
+            roleBtns.forEach(btn => {
+                const r = btn.dataset.role;
+                btn.classList.remove('active', 'student', 'faculty', 'admin');
+                if (r === role) {
+                    btn.classList.add('active', r);
                 }
             });
-        });
 
-        // Function to get CSRF token from cookies
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
+            if (loginBtn) {
+                loginBtn.className = `login-btn ${role}`;
             }
-            return cookieValue;
+
+            if (roleHidden) {
+                roleHidden.value = role;
+            }
         }
 
-        // Forgot password functionality
-        document.getElementById('recoverPasswordBtn').addEventListener('click', function () {
-            const collegeId = document.getElementById('collegeId').value;
-            const resultDiv = document.getElementById('recoveryResult');
+        // roleBtns.forEach(btn => {
+        //     btn.addEventListener('click', function () {
+        //         setRole(this.dataset.role);
+        //     });
+        // });
 
-            if (!collegeId) {
-                resultDiv.style.display = 'block';
-                resultDiv.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle me-2"></i>Please enter your College ID
-                </div>
-            `;
+        // Step Navigation
+        function showStep(step) {
+            if (step === 1) {
+                step1Container.style.display = 'block';
+                step2Container.style.display = 'none';
+            } else {
+                step1Container.style.display = 'none';
+                step2Container.style.display = 'block';
+                step2Container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // Verify ID with spinner and progress
+        verifyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            const userId = document.getElementById('userID').value.trim();
+            if (!userId) {
+                Toast.error('Error', 'Please enter your College ID');
+                return;
+            }
+
+            verify(userId);
+        });
+
+        function verify(userId) {
+            // Show button spinner
+            setButtonLoading(verifyBtn, true, 'Verifying...');
+
+            // Show progress bar
+            verifyProgress.style.display = 'block';
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 10;
+                updateProgress(verifyProgressBar, progress);
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                }
+            }, 150);
+
+            // // Simulate verification with modal spinner
+            ModalSpinner.show('Verifying ID', 'Checking institutional registry...');
+
+            $.ajax({
+                url: "/login/verify_college_id/",
+                method: "GET",
+                data: { college_id: userId },
+                success: function (response) {
+                    console.log(response);
+                    setTimeout(() => {
+                        // Hide modal spinner
+                        ModalSpinner.hide();
+
+                        // Hide button spinner
+                        setButtonLoading(verifyBtn, false);
+
+                        // Hide progress bar after completion
+                        setTimeout(() => {
+                            verifyProgress.style.display = 'none';
+                        }, 500);
+                        // Show success toast
+                        if (response.person === "Other") {
+                            Toast.error('Error!', 'Enter Valid College ID!');
+                            document.getElementById('userID').value = '';
+                        } else {
+                            let role = response.person;
+                            Toast.success('Success!', 'ID verified successfully. Redirecting to login...');
+                            document.getElementById('userID').value = '';
+                            setRole(role.toLowerCase());
+
+                            setTimeout(() => {
+                                showStep(2);
+                            }, 1000);
+                        }
+                    }, 2000);
+
+                },
+                error: function (xhr) {
+                    let errorMessage = "Error showing department.";
+
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.detail) {
+                            errorMessage = xhr.responseJSON.detail;
+                        } else {
+                            let errors = [];
+                            for (let field in xhr.responseJSON) {
+                                errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                            }
+                            errorMessage = errors.join(', ');
+                        }
+                    }
+                }
+            });
+        }
+
+        // Next button
+        nextBtn.addEventListener('click', () => {
+            const userId = document.getElementById('userID').value.trim();
+            if (!userId) {
+                Toast.warning('Warning', 'Please enter your College ID first');
+                return;
+            }
+            verify(userId);
+        });
+
+        // Reset button
+        resetBtn.addEventListener('click', () => {
+            document.getElementById('userID').value = '';
+            document.getElementById('id_username').value = '';
+            document.getElementById('id_password').value = '';
+            document.getElementById('rememberMe').checked = false;
+            Toast.info('Reset', 'All fields have been cleared');
+        });
+
+        // Toggle password visibility
+        togglePwd.addEventListener('click', function () {
+            const icon = this.querySelector('i');
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                pwdInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        // Login button with spinner
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('id_username').value.trim();
+            const password = document.getElementById('id_password').value.trim();
+            const role = roleHidden.value;
+
+            if (!username || !password) {
+                Toast.error('Error', 'Please enter both username and password');
                 return;
             }
 
             // Show loading state
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `
-            <div class="text-center py-3">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2">Searching for your account...</p>
-            </div>
-        `;
+            setButtonLoading(loginBtn, true, 'Signing in...');
 
-            // Create form data for POST request
-            const formData = new FormData();
-            formData.append('collegeId', collegeId);
+            // Simulate login with modal spinner
+            ModalSpinner.show('Signing In', `Authenticating as ${role}...`);
+            console.log(username, password);
+            $.ajax({
+                url: "/login/verify_login_details/",
+                method: "GET",
+                data: { username: username, password: password },
+                success: function (response) {
+                    console.log(response);
+                    setTimeout(() => {
+                        ModalSpinner.hide();
+                        setButtonLoading(loginBtn, false);
 
-            // Make AJAX call to your Django view
-            fetch('{% url "forgot_password" %}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': getCookie('csrftoken')
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        resultDiv.innerHTML = `
-                    <div class="alert alert-success">
-                        <h6><i class="fas fa-check-circle me-2"></i>Account Recovery Information</h6>
-                        <p><strong>Username:</strong> ${data.username}</p>
-                        <p><strong>User ID:</strong> ${data.user_id}</p>
-                        <p><strong>Password:</strong> ${data.password}</p>
-                    </div>
-                `;
-                    } else {
-                        resultDiv.innerHTML = `
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle me-2"></i>${data.error || 'No account found with the provided College ID'}
-                    </div>
-                `;
-                    }
-                })
-                .catch(error => {
-                    resultDiv.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle me-2"></i>An error occurred while processing your request. Please try again.
-                </div>
-            `;
-                    console.error('Error:', error);
-                });
-        });
+                        // Show success message
+                        Toast.success('Welcome!', `Successfully signed in as ${role}`);
 
-        // Toggle password visibility
-        document.querySelectorAll('.input-group-text').forEach(el => {
-            if (el.querySelector('i.fa-lock')) {
-                el.addEventListener('click', function () {
-                    const passwordInput = document.getElementById('id_password');
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-
-                    // Toggle eye icon
-                    this.querySelector('i').classList.toggle('fa-eye');
-                    this.querySelector('i').classList.toggle('fa-eye-slash');
-                });
-            }
-        });
-
-        // Form submission with animation
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            // Show loading animation
-            showLoginOverlay();
-
-            // Form data collect karein
-            const formData = new FormData(this);
-
-            // AJAX request bhejein
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': getCookie('csrftoken')
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        if (data.otp_required) {
-                            // OTP required - redirect to OTP page
-                            showSuccess(data.message || 'OTP sent to your email');
-                            setTimeout(() => {
-                                window.location.href = data.redirect_url;
-                            }, 3000);
-                        } else {
-                            // Direct login successful
-                            showSuccess(data.message || 'Login successful!');
-                            setTimeout(() => {
-                                window.location.href = data.redirect_url;
-                            }, 3000);
-                        }
-                    } else {
-                        showError(data.error || 'Login failed!');
-                    }
-                })
-                .catch(error => {
-                    showError('An error occurred. Please try again.');
-                    console.error('Error:', error);
-                });
-        });
-
-        // Updated overlay functions
-        function showLoginOverlay() {
-            const overlay = document.getElementById('overlay');
-            const statusTitle = document.getElementById('statusTitle');
-            const statusSub = document.getElementById('statusSub');
-            const statusIcon = document.getElementById('statusIcon');
-            const dottedRing = document.getElementById('dottedRing');
-
-            overlay.style.display = 'flex';
-            overlay.classList.add('show');
-            overlay.setAttribute('aria-hidden', 'false');
-
-            statusCard.classList.remove('success', 'error');
-            statusTitle.textContent = 'Signing In';
-            statusSub.textContent = 'Please wait while we authenticate your credentials';
-            statusIcon.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
-            dottedRing.style.animation = 'rotate 8s linear infinite';
-        }
-
-        // Initialize animations
-        document.addEventListener('DOMContentLoaded', function () {
-            // Animate elements with delay
-            const animatedElements = document.querySelectorAll('.animate__animated');
-            animatedElements.forEach((element, index) => {
-                element.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
-
-        // for submit the user id to verify
-        const submitIDBtn = document.querySelector('#submitIDBtn');
-        const form = document.querySelector('#userIDForm');
-
-        submitIDBtn.addEventListener('click', () => {
-            const userID = document.querySelector('#userID')
-
-            console.log(userID.value)
-            showOverlay();
-            fetch('/verify_collegeID/', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken")
+                        // Simulate redirect
+                        setTimeout(() => {
+                            window.location.href = response.page;
+                            console.log(response.page)
+                        }, 1000);
+                    }, 2000);
+                    document.getElementById('id_username').value = '';
+                    document.getElementById('id_password').value = '';
                 },
-                body: JSON.stringify({ 'userID': userID.value })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    const userIDModal = document.querySelector('#userIDModal');
-                    if (data.error) {
-                        form.reset();
-                        showError(data.error);
-                        userIDModal.style.display = 'flex';
-                    } else if (data.success) {
-                        form.reset();
-                        showSuccess(data.success);
-                        userIDModal.style.display = 'none';
-                    }
-                })
-        });
+                error: function (xhr) {
+                    let errorMessage = "Error.";
 
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+                    if (xhr.responseJSON) {
+                        if (xhr.responseJSON.detail) {
+                            errorMessage = xhr.responseJSON.detail;
+                        } else {
+                            let errors = [];
+                            for (let field in xhr.responseJSON) {
+                                errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                            }
+                            errorMessage = errors.join(', ');
+                        }
                     }
                 }
-            }
-            return cookieValue;
-        };
-
-        const overlay = document.getElementById('overlay');
-        const statusCard = document.getElementById('statusCard');
-        const statusTitle = document.getElementById('statusTitle');
-        const statusSub = document.getElementById('statusSub');
-        const statusIcon = document.getElementById('statusIcon');
-        const dottedRing = document.getElementById('dottedRing');
-
-        function showOverlay() {
-            overlay.classList.add('show');
-            overlay.setAttribute('aria-hidden', 'false');
-            statusCard.classList.remove('success', 'error');
-            statusTitle.textContent = 'Verifying Account';
-            statusSub.textContent = 'Please wait while we verify your credentials';
-            statusIcon.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
-            dottedRing.style.animation = 'rotate 8s linear infinite';
-        }
-
-        function showSuccess(message) {
-            statusCard.classList.remove('error');
-            statusCard.classList.add('success');
-            statusTitle.textContent = 'Verified Successfully';
-            statusSub.textContent = message || 'Your account has been verified successfully';
-            dottedRing.style.animation = 'none';
-
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                overlay.setAttribute('aria-hidden', 'true');
-                // if (redirectUrl) window.location.href = redirectUrl;
-            }, 3000);
-        }
-
-        function showError(message) {
-            statusCard.classList.remove('success');
-            statusCard.classList.add('error');
-            statusTitle.textContent = 'Verification Failed';
-            statusSub.textContent = message || 'Unable to verify your account. Please try again.';
-            dottedRing.style.animation = 'none';
-
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                overlay.setAttribute('aria-hidden', 'true');
-            }, 3000);
-        }
-
-        // STABLE DEVICE FINGERPRINT SYSTEM
-        // Persistent Storage Key
-        const FINGERPRINT_STORAGE_KEY = 'edutrack_device_fingerprint_v2';
-
-        // Main Stable Fingerprint Generator
-        async function generateStableFingerprint() {
-            try {
-                // Pehle localStorage se check karo
-                let storedFingerprint = localStorage.getItem(FINGERPRINT_STORAGE_KEY);
-
-                if (storedFingerprint) {
-                    console.log("Using stored fingerprint:", storedFingerprint);
-                    return storedFingerprint;
-                }
-
-                // Naya fingerprint generate karo
-                console.log("Generating new stable fingerprint...");
-
-                const fingerprintComponents = await Promise.all([
-                    getHardwareFingerprint(),
-                    getCanvasFingerprint(),
-                    getWebGLFingerprint(),
-                    getSystemFingerprint(),
-                    generatePersistentUUID()
-                ]);
-
-                const combinedString = fingerprintComponents.join('|');
-                const finalFingerprint = hashSHA256(combinedString);
-
-                // localStorage me save karo (10 years ke liye)
-                localStorage.setItem(FINGERPRINT_STORAGE_KEY, finalFingerprint);
-
-                console.log("New fingerprint generated:", finalFingerprint);
-                return finalFingerprint;
-
-            } catch (error) {
-                console.error("Fingerprint generation failed:", error);
-                return generateFallbackFingerprint();
-            }
-        }
-
-        // Hardware-based Fingerprint (Most Stable)
-        async function getHardwareFingerprint() {
-            const components = [];
-
-            // CPU Cores (rarely changes)
-            components.push('cpu_cores:' + (navigator.hardwareConcurrency || 'unknown'));
-
-            // Device Memory (rarely changes)
-            components.push('ram:' + (navigator.deviceMemory || 'unknown'));
-
-            // Architecture
-            components.push('platform:' + (navigator.platform || 'unknown'));
-
-            // Max Touch Points
-            components.push('touch_points:' + (navigator.maxTouchPoints || 'unknown'));
-
-            return components.join('|');
-        }
-
-        // Advanced Canvas Fingerprint (Very Stable)
-        function getCanvasFingerprint() {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-
-                canvas.width = 240;
-                canvas.height = 60;
-
-                // Complex drawing for stability
-                ctx.textBaseline = 'alphabetic';
-                ctx.font = '14px "Arial", "Helvetica", sans-serif';
-
-                // Background gradient
-                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-                gradient.addColorStop(0, '#ff0000');
-                gradient.addColorStop(0.5, '#00ff00');
-                gradient.addColorStop(1, '#0000ff');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Complex text rendering
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText('BrowserFingerprintStable2024', 10, 20);
-
-                ctx.fillStyle = 'rgba(255, 255, 0, 0.7)';
-                ctx.fillText('EdutrackDeviceID', 15, 40);
-
-                // Shapes and paths
-                ctx.beginPath();
-                ctx.arc(200, 30, 15, 0, Math.PI * 2);
-                ctx.strokeStyle = '#ff00ff';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                return canvas.toDataURL();
-
-            } catch (error) {
-                return 'canvas_fallback_' + Math.random().toString(36).substr(2, 9);
-            }
-        }
-
-        // WebGL Fingerprint (Hardware Specific - Very Stable)
-        function getWebGLFingerprint() {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-
-                if (!gl) return 'webgl_not_supported';
-
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                const vendor = gl.getParameter(debugInfo ? debugInfo.UNMASKED_VENDOR_WEBGL : gl.VENDOR);
-                const renderer = gl.getParameter(debugInfo ? debugInfo.UNMASKED_RENDERER_WEBGL : gl.RENDERER);
-
-                // Additional WebGL parameters for stability
-                const version = gl.getParameter(gl.VERSION);
-                const shadingLanguageVersion = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
-
-                return `webgl:${vendor}|${renderer}|${version}|${shadingLanguageVersion}`;
-
-            } catch (error) {
-                return 'webgl_error';
-            }
-        }
-
-        // System Information (Relatively Stable)
-        function getSystemFingerprint() {
-            const components = [];
-
-            // Timezone (rarely changes for same location)
-            components.push('timezone:' + Intl.DateTimeFormat().resolvedOptions().timeZone);
-
-            // Language (rarely changes)
-            components.push('language:' + navigator.language);
-
-            // Screen properties (relatively stable)
-            components.push('color_depth:' + screen.colorDepth);
-            components.push('pixel_ratio:' + (window.devicePixelRatio || 1));
-
-            // Browser features (stable)
-            components.push('cookies:' + navigator.cookieEnabled);
-            components.push('java:' + (navigator.javaEnabled ? navigator.javaEnabled() : false));
-
-            return components.join('|');
-        }
-
-        // Generate Persistent UUID (Fallback)
-        function generatePersistentUUID() {
-            let uuid = localStorage.getItem('edutrack_persistent_uuid');
-
-            if (!uuid) {
-                // Cryptographically strong UUID generate karo
-                uuid = 'edutrack_' +
-                    Date.now().toString(36) +
-                    Math.random().toString(36).substr(2, 9) +
-                    performance.now().toString(36).replace('.', '');
-
-                localStorage.setItem('edutrack_persistent_uuid', uuid);
-            }
-
-            return uuid;
-        }
-
-        // Advanced Hash Function (SHA-256 simulation)
-        function hashSHA256(str) {
-            // Simple SHA-256 simulation for fingerprint
-            // Production me proper crypto library use karo
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash;
-            }
-
-            // Additional processing for better distribution
-            const baseHash = Math.abs(hash).toString(16);
-            const timestamp = Date.now().toString(36);
-
-            return 'edt_' + baseHash + '_' + timestamp;
-        }
-
-        // Fallback Fingerprint
-        function generateFallbackFingerprint() {
-            let fallbackId = localStorage.getItem('edutrack_fallback_id');
-
-            if (!fallbackId) {
-                fallbackId = 'fallback_' +
-                    navigator.platform + '_' +
-                    navigator.hardwareConcurrency + '_' +
-                    Date.now().toString(36);
-
-                localStorage.setItem('edutrack_fallback_id', fallbackId);
-            }
-
-            return fallbackId;
-        }
-
-        // Collect Additional Device Info for Server
-        function collectDeviceInfo() {
-            const deviceInfo = {
-                screen_resolution: screen.width + 'x' + screen.height,
-                user_agent: navigator.userAgent,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                language: navigator.language,
-                platform: navigator.platform,
-                hardware_concurrency: navigator.hardwareConcurrency || 'unknown',
-                device_memory: navigator.deviceMemory || 'unknown',
-                cookie_enabled: navigator.cookieEnabled,
-                touch_support: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-                pixel_ratio: window.devicePixelRatio || 1,
-                localStorage_support: !!window.localStorage,
-                session_storage_support: !!window.sessionStorage,
-                timestamp: new Date().toISOString()
-            };
-
-            // Hidden fields me add karo
-            const form = document.getElementById('loginForm');
-
-            // Pehle existing device info fields remove karo
-            const existingFields = form.querySelectorAll('input[name^="device_"]');
-            existingFields.forEach(field => field.remove());
-
-            // New fields add karo
-            for (const [key, value] of Object.entries(deviceInfo)) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = `device_${key}`;
-                input.value = value;
-                form.appendChild(input);
-            }
-        }
-
-        // Initialize Fingerprint on Page Load
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log("Initializing stable device fingerprint...");
-
-            generateStableFingerprint().then(fp => {
-                document.getElementById('fingerprint').value = fp;
-                console.log("Stable Device Fingerprint Ready:", fp);
-
-                // Additional backup storage
-                sessionStorage.setItem('current_fingerprint', fp);
-
-            }).catch(error => {
-                console.error("Fingerprint initialization failed:", error);
-                document.getElementById('fingerprint').value = generateFallbackFingerprint();
             });
         });
 
-        // Form Submission Handler
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            // Device info collect karo
-            collectDeviceInfo();
-
-            // Fingerprint verify karo
-            const fingerprint = document.getElementById('fingerprint').value;
-            if (!fingerprint) {
-                console.warn("No fingerprint found, generating...");
-                generateStableFingerprint().then(fp => {
-                    document.getElementById('fingerprint').value = fp;
-                    console.log("Fingerprint generated for submission:", fp);
-                });
-            }
-
-            console.log("Submitting login with fingerprint:", fingerprint);
+        // Help button with toast
+        helpBtn.addEventListener('click', () => {
+            Toast.info('Help Guide', '1. Enter College ID\n2. Verify\n3. Select role\n4. Sign in', 8000);
         });
 
-        // Recovery Mechanism - Agar fingerprint lost ho jaye
-        function recoverFingerprint() {
-            const storedFP = localStorage.getItem(FINGERPRINT_STORAGE_KEY);
-            const persistentUUID = localStorage.getItem('edutrack_persistent_uuid');
-            const fallbackID = localStorage.getItem('edutrack_fallback_id');
+        // Initialize
+        showStep(1);
+        setRole('student');
 
-            if (storedFP) {
-                return storedFP;
-            } else if (persistentUUID) {
-                return hashSHA256(persistentUUID + '|' + getSystemFingerprint());
-            } else if (fallbackID) {
-                return fallbackID;
-            } else {
-                return generateStableFingerprint();
-            }
-        }
-
-        // Periodic Fingerprint Validation (Optional)
-        setInterval(() => {
-            const currentFP = document.getElementById('fingerprint').value;
-            const storedFP = localStorage.getItem(FINGERPRINT_STORAGE_KEY);
-
-            if (currentFP !== storedFP && storedFP) {
-                console.warn("Fingerprint mismatch detected, recovering...");
-                document.getElementById('fingerprint').value = storedFP;
-            }
-        }, 30000); // Every 30 seconds check karo
-
-        // Existing form submission handler ko modify karo
-        const originalFormSubmit = document.getElementById('loginForm').onsubmit;
-        document.getElementById('loginForm').onsubmit = function (e) {
-            // Pehle device info collect karo
-            collectDeviceInfo();
-
-            // Fingerprint ensure karo
-            if (!document.getElementById('fingerprint').value) {
-                generateStableFingerprint().then(fp => {
-                    document.getElementById('fingerprint').value = fp;
-                    // Form submit karo
-                    if (originalFormSubmit) {
-                        originalFormSubmit.call(this, e);
-                    } else {
-                        this.submit();
-                    }
-                });
-                return false;
-            }
-
-            if (originalFormSubmit) {
-                return originalFormSubmit.call(this, e);
-            }
-        };
-    </script>
-
-    <!-- Additional SEO Enhancement: Sitemap hint for crawlers -->
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
-
-    <!-- Additional SEO: hreflang for multilingual support (if applicable) -->
-    <link rel="alternate" hreflang="en" href="https://edutrack.com/login">
-    <link rel="alternate" hreflang="hi" href="https://edutrack.com/hi/login">
-
-    <!-- Additional SEO: Preload hero image (if any) -->
-    {% comment %}
-    <link rel="preload" as="image" href="{% static 'images/login-hero.jpg' %}" type="image/jpeg">
-    {% endcomment %}
-</body>
-
-</html>
+        // Show welcome toast
+        setTimeout(() => {
+            Toast.success('Welcome to EduTrack', 'Please verify your College ID to continue');
+        }, 500);
+    })();
+</script>
+{% endblock %}

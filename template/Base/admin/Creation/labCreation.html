@@ -1,0 +1,316 @@
+{% extends "Base/CreationBase.html" %}
+
+{% block title %}Subject{% endblock %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/labCreation.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="container">
+
+        <!-- Messages will appear here -->
+        <div id="messageContainer"></div>
+        <!-- Alert Messages -->
+        {% if messages %}
+        <div id="alertContainer">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}">
+                <i
+                    class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- Page Header -->
+        <div class="page-header animate__animated animate__fadeIn">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">Create New Labs</h1>
+                    <p class="page-subtitle">Add labs to your academic curriculum</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="student-info">
+                        <div class="student-avatar">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h5 class="mb-1">{{ detail.name }}</h5>
+                        <p class="mb-0">{{ detail.position }} • College ID: {{ detail.college_id }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Labs Creation Form -->
+
+        <div class="form-card animate__animated animate__fadeIn">
+            <h3 class="form-section-title">Labs Information</h3>
+
+            <!--Excel File importing Form -->
+            <form id="excelFile" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-10 mb-3">
+                        <label for="excelLab" class="form-label">Excel File</label>
+                        <input type="file" class="form-control" id="excelLab" name="excelLab" accept=".xlsx,.xls"
+                            placeholder="Choose Excel File">
+                    </div>
+                    <div class="col-md-2 mb-3 import-btn-container">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="button" class="btn btn-primary" id="importLabBtn">
+                                <i class="fas fa-file-import me-2"></i>Import Labs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+
+            <form id="labForm">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="labName" class="form-label">Lab Name</label>
+                        <input type="text" class="form-control" id="labName" name="labName"
+                            placeholder="Enter name of Lab" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="labNumber" class="form-label">Lab Number</label>
+                        <input type="text" class="form-control" id="labNumber" name="roomNumber"
+                            placeholder="Enter room number" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="labType" class="form-label">Lab Type</label>
+                        <select class="form-select" id="labType" name="labType" required>
+                            <option value="">Select Type</option>
+                            <option value="Laboratory">Laboratory</option>
+                            <option value="Classroom">Classroom</option>
+                            <option value="Lecture Room">Lecture Room</option>
+                            <option value="Seminar Hall">Seminar Hall</option>
+                            <option value="Room">Room</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="labCapacity" class="form-label">Capacity</label>
+                        <input type="number" class="form-control" id="labCapacity" name="labCapacity" min="1" max="1000"
+                            placeholder="Enter capacity of lab" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="labFacility" class="form-label">Facilities</label>
+                        <input type="text" class="form-control" id="labFacility" name="labFacility"
+                            placeholder="Enter lab facilities" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="labFloor" class="form-label">Floor</label>
+                        <input type="number" class="form-control" id="labFloor" name="labFloor" min="0" max="50"
+                            placeholder="Enter floor number" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="labStatus" class="form-label">Status</label>
+                        <select class="form-select" id="labStatus" name="labStatus" required>
+                            <option value="">Select Status</option>
+                            <option value="Available">Available</option>
+                            <option value="Occupied">Occupied</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4 action-buttons">
+                    <button type="reset" class="btn btn-reset">
+                        <i class="fas fa-redo me-2"></i>Reset Form
+                    </button>
+                    <button type="submit" class="btn btn-submit">
+                        <i class="fas fa-plus-circle me-2"></i>Create Labs
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const importLabBtn = $("#importLabBtn");
+    const csrftoken = getCookie('csrftoken');
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    importLabBtn.on("click", function (e) {
+        e.preventDefault();
+
+        let fileInput = document.getElementById("excelLab");
+        let file = fileInput.files[0];
+
+        if (!file) {
+            showMessage("Excel File is not Choosen !", "danger");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append('file', file);
+
+        $.ajax({
+            url: "/labs/import-excel/",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                resetExcelForm();
+                if (response && response.message) {
+                    showMessage(response.message + ` (Added: ${response.added}, Skipped: ${response.skipped})`, 'success');
+                } else {
+                    showMessage("Excel File Uploaded Successfully!", 'success');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                console.error("Response:", xhr.responseText);
+
+                let errorMessage = "An error occurred while uploading the file.";
+
+                if (xhr.status === 404) {
+                    errorMessage = "Server endpoint not found. Please check the URL.";
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.detail) {
+                            errorMessage = response.detail;
+                        } else if (response.error) {
+                            errorMessage = response.error;
+                        }
+                    } catch (e) {
+                        errorMessage = xhr.responseText.substring(0, 100);
+                    }
+                }
+
+                showMessage(errorMessage, "danger");
+                resetExcelForm();
+            }
+        });
+    });
+
+    // EXCEL FILE FORM RESET
+    const ExcelForm = $("#excelFile");
+    function resetExcelForm() {
+        ExcelForm[0].reset();
+    }
+
+    const labForm = $("#labForm");
+    function resetLabForm() {
+        labForm[0].reset();
+    }
+
+    // Lab form submission 
+    $("#labForm").on("submit", function (e) {
+        e.preventDefault();
+
+        const formData = {
+            name: $("#labName").val(),
+            number: $("#labNumber").val(),
+            type: $("#labType").val(),
+            capacity: $("#labCapacity").val(),
+            facility: $("#labFacility").val(),
+            status: $("#labStatus").val(),
+            floor: $("#labFloor").val()
+        }
+
+        $.ajax({
+            url: "/labs/",
+            type: "POST",
+            data: formData,
+            headers: {
+                "X-CSRFToken": csrftoken
+            },
+            success: function (response) {
+                showMessage("Lab created successfully!", 'success');
+                $("#labForm")[0].reset();
+            },
+            error: function (xhr) {
+                let errorMessage = "Error creating lab.";
+                if (xhr.responseJSON) {
+                    // Django validation errors को handle करें
+                    if (xhr.responseJSON.detail) {
+                        errorMessage = xhr.responseJSON.detail;
+                    } else if (typeof xhr.responseJSON === 'object') {
+                        // Field errors को format करें
+                        let errors = [];
+                        for (let field in xhr.responseJSON) {
+                            errors.push(`${field}: ${xhr.responseJSON[field]}`);
+                        }
+                        errorMessage = errors.join(', ');
+                    }
+                }
+                showMessage(errorMessage, "danger");
+            }
+        });
+    });
+
+    // for showing messages:
+    let messageShow = document.getElementById('messageContainer');
+    function showMessage(message, type) {
+        // Check if message is valid
+        if (!message) {
+            if (messageShow) {
+                messageShow.innerHTML = '';
+            }
+            return;
+        }
+
+        // Convert message to string if it's not already
+        if (typeof message !== 'string') {
+            message = String(message);
+        }
+
+        // Trim only if it's a string
+        message = message.trim();
+
+        const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+        if (messageShow !== null) {
+            messageShow.innerHTML = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert" id="alertMessage">
+                    ${message}
+                    <button type="button" class="btn-close" id="closeMessageBtn" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+        }
+
+        // Auto-remove message after 5 seconds
+        setTimeout(() => {
+            if (messageShow) {
+                messageShow.innerHTML = '';
+            }
+        }, 5000);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,1381 @@
+{% extends "Base/base2.html" %}
+
+{% block title %}Login | EduTrack{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ========== EXISTING STYLES (Same as before) ========== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --primary-light: #3b82f6;
+        --primary-soft: #dbeafe;
+        --secondary: #64748b;
+        --accent: #7c3aed;
+        --light: #f8fafc;
+        --dark: #0f172a;
+        --gray: #475569;
+        --light-gray: #f1f5f9;
+        --border-light: #e2e8f0;
+        --student-color: #2563eb;
+        --faculty-color: #b45309;
+        --admin-color: #b91c1c;
+        --success: #059669;
+        --error: #dc2626;
+        --warning: #d97706;
+        --card-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.03);
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+        background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        color: var(--dark);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Header Styles */
+    .header {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 1.8rem;
+    }
+
+    .nav-link {
+        color: var(--dark);
+        font-weight: 500;
+        margin: 0 10px;
+        transition: var(--transition);
+    }
+
+    .nav-link:hover {
+        color: var(--primary);
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+        padding: 8px 20px;
+        border-radius: 6px;
+        transition: var(--transition);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    /* Main container */
+    .main-container {
+        flex: 1;
+        padding: 2rem 1.5rem 3rem;
+        max-width: 1000px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    /* Form card */
+    .form-container {
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        border: 1px solid var(--border-light);
+    }
+
+    /* Navigation steps */
+    .form-nav {
+        padding: 1.5rem 2.5rem;
+        background: var(--light);
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .nav-steps {
+        display: flex;
+        gap: 3rem;
+        justify-content: center;
+    }
+
+    .nav-step {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--secondary);
+        font-weight: 500;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .nav-step.active {
+        color: var(--primary);
+    }
+
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 2px solid var(--border-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--gray);
+        transition: var(--transition);
+    }
+
+    .nav-step.active .step-icon {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .nav-step:hover .step-icon {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .nav-step.active:hover .step-icon {
+        background: var(--primary-dark);
+        border-color: var(--primary-dark);
+        color: white;
+    }
+
+    .step-title {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    /* Step 1 - ID Verification */
+    .id-verification-card {
+        padding: 2rem;
+        margin: 1rem;
+        background: var(--light);
+        border-radius: 20px;
+        border: 1px solid var(--border-light);
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-title i {
+        color: var(--primary);
+    }
+
+    .info-note-modern {
+        background: #fefce8;
+        border: 1px solid #fde047;
+        border-radius: 16px;
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        margin: 1.5rem 0 2rem;
+    }
+
+    .info-note-modern i {
+        color: #eab308;
+        font-size: 1.4rem;
+    }
+
+    .input-field {
+        background: white;
+        border: 2px solid var(--border-light);
+        padding: 0.9rem 1.5rem !important;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: var(--transition);
+    }
+
+    .input-field:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--primary-soft);
+        outline: none;
+    }
+
+    .btn-verify {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.9rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        width: 100%;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    .btn-verify:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-verify:active {
+        transform: translateY(0);
+    }
+
+    .btn-verify:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Step 2 - Login Section */
+    .login-section {
+        padding: 1.5rem;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .login-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .login-title i {
+        color: var(--primary);
+    }
+
+    .login-subtitle {
+        color: var(--gray);
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Role Selection */
+    .role-selection {
+        display: flex;
+        gap: 12px;
+        margin: 0 0 2rem 0;
+    }
+
+    .role-btn {
+        flex: 1;
+        border: 2px solid var(--border-light);
+        border-radius: 12px;
+        padding: 1rem 0.5rem;
+        background: white;
+        font-weight: 600;
+        color: var(--gray);
+        transition: var(--transition);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .role-btn i {
+        font-size: 1.5rem;
+    }
+
+    .role-btn.student:hover:not(.active) {
+        border-color: var(--student-color);
+        background: #eef2ff;
+        color: var(--student-color);
+    }
+
+    .role-btn.faculty:hover:not(.active) {
+        border-color: var(--faculty-color);
+        background: #fff7ed;
+        color: var(--faculty-color);
+    }
+
+    .role-btn.admin:hover:not(.active) {
+        border-color: var(--admin-color);
+        background: #fee2e2;
+        color: var(--admin-color);
+    }
+
+    .role-btn.active.student {
+        border-color: var(--student-color);
+        background: #eef2ff;
+        color: var(--student-color);
+    }
+
+    .role-btn.active.faculty {
+        border-color: var(--faculty-color);
+        background: #fff7ed;
+        color: var(--faculty-color);
+    }
+
+    .role-btn.active.admin {
+        border-color: var(--admin-color);
+        background: #fee2e2;
+        color: var(--admin-color);
+    }
+
+    .role-btn.active.student:hover {
+        background: #dbeafe;
+        border-color: var(--student-color);
+        color: var(--student-color);
+    }
+
+    .role-btn.active.faculty:hover {
+        background: #ffedd5;
+        border-color: var(--faculty-color);
+        color: var(--faculty-color);
+    }
+
+    .role-btn.active.admin:hover {
+        background: #fecaca;
+        border-color: var(--admin-color);
+        color: var(--admin-color);
+    }
+
+    /* Form Groups */
+    .form-label-custom {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+        display: block;
+    }
+
+    .form-label-custom i {
+        color: var(--primary);
+        margin-right: 8px;
+    }
+
+    .input-group-modern {
+        display: flex;
+        align-items: center;
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: var(--transition);
+        background: white;
+    }
+
+    .input-group-modern:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--primary-soft);
+    }
+
+    .input-group-modern input {
+        flex: 1;
+        border: none;
+        padding: 0.9rem 1.2rem;
+        font-size: 1rem;
+        background: transparent;
+    }
+
+    .input-group-modern input:focus {
+        outline: none;
+    }
+
+    .input-group-modern .input-group-text {
+        background: transparent;
+        border: none;
+        color: var(--gray);
+        padding: 0 1.2rem;
+        cursor: pointer;
+    }
+
+    .input-group-modern .input-group-text:hover {
+        color: var(--primary);
+    }
+
+    /* Login Button */
+    .login-btn {
+        width: 100%;
+        border: none;
+        border-radius: 8px;
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 1rem;
+        color: white;
+        transition: var(--transition);
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+    .login-btn.student {
+        background: var(--student-color);
+    }
+
+    .login-btn.faculty {
+        background: var(--faculty-color);
+    }
+
+    .login-btn.admin {
+        background: var(--admin-color);
+    }
+
+    .login-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        filter: brightness(110%);
+        box-shadow: 0 8px 16px -4px currentColor;
+    }
+
+    .login-btn:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .login-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        padding: 1.5rem 2rem;
+        background: var(--light);
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-outline-modern {
+        border: 2px solid var(--border-light);
+        background: white;
+        border-radius: 8px;
+        padding: 0.7rem 2rem;
+        font-weight: 600;
+        color: var(--gray);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-outline-modern:hover {
+        background: var(--light-gray);
+        border-color: var(--secondary);
+        color: var(--dark);
+    }
+
+    .btn-next {
+        background: var(--primary);
+        border: none;
+        border-radius: 8px;
+        padding: 0.7rem 2rem;
+        font-weight: 600;
+        color: white;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-next:hover:not(:disabled) {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-next:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .btn-next:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* ========== NEW SPINNER COMPONENT ========== */
+    
+    /* Toast Notification Container */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 350px;
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideIn 0.3s ease;
+        border-left: 4px solid transparent;
+        cursor: pointer;
+    }
+
+    .toast-notification.success {
+        border-left-color: var(--success);
+    }
+
+    .toast-notification.error {
+        border-left-color: var(--error);
+    }
+
+    .toast-notification.warning {
+        border-left-color: var(--warning);
+    }
+
+    .toast-notification.info {
+        border-left-color: var(--primary);
+    }
+
+    .toast-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .toast-icon.success {
+        background: rgba(5, 150, 105, 0.1);
+        color: var(--success);
+    }
+
+    .toast-icon.error {
+        background: rgba(220, 38, 38, 0.1);
+        color: var(--error);
+    }
+
+    .toast-icon.warning {
+        background: rgba(217, 119, 6, 0.1);
+        color: var(--warning);
+    }
+
+    .toast-icon.info {
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--primary);
+    }
+
+    .toast-content {
+        flex: 1;
+    }
+
+    .toast-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--dark);
+    }
+
+    .toast-message {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-top: 2px;
+    }
+
+    .toast-close {
+        color: var(--gray);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .toast-close:hover {
+        color: var(--dark);
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* Inline Spinner */
+    .spinner-container {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(37, 99, 235, 0.2);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    .spinner-sm {
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
+    }
+
+    .spinner-lg {
+        width: 30px;
+        height: 30px;
+        border-width: 4px;
+    }
+
+    .spinner.white {
+        border-color: rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+    }
+
+    .spinner.success {
+        border-top-color: var(--success);
+    }
+
+    .spinner.error {
+        border-top-color: var(--error);
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Modal Spinner (Full screen overlay) */
+    .modal-spinner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+    }
+
+    .modal-spinner.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-spinner-content {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        text-align: center;
+        max-width: 300px;
+        width: 90%;
+        transform: scale(0.9);
+        transition: 0.3s;
+    }
+
+    .modal-spinner.show .modal-spinner-content {
+        transform: scale(1);
+    }
+
+    .modal-spinner-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-spinner-icon .spinner {
+        width: 50px;
+        height: 50px;
+        border-width: 5px;
+    }
+
+    .modal-spinner-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .modal-spinner-subtitle {
+        color: var(--gray);
+        font-size: 0.95rem;
+    }
+
+    /* Button spinner */
+    .btn-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+        margin-right: 8px;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+        width: 100%;
+        height: 4px;
+        background: var(--light-gray);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: var(--primary);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+
+    /* Pulse Animation */
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    /* Checkbox styling */
+    .form-check-input {
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .form-check-label {
+        cursor: pointer;
+        color: var(--gray);
+    }
+
+    /* Links */
+    a {
+        color: var(--primary);
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    /* Help Button */
+    .help-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 56px;
+        height: 56px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        cursor: pointer;
+        transition: var(--transition);
+        z-index: 1000;
+    }
+
+    .help-btn:hover {
+        transform: scale(1.1);
+        background: var(--primary-dark);
+        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Footer */
+    .footer {
+        background: var(--dark);
+        color: #e2e8f0;
+        padding: 2.5rem 0 1rem;
+        margin-top: 3rem;
+    }
+
+    .footer-title {
+        font-weight: 700;
+        color: white;
+    }
+
+    .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: 0.2s;
+    }
+
+    .footer-links a:hover {
+        color: white;
+    }
+
+    .footer-social a {
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+        transition: 0.2s;
+    }
+
+    .footer-social a:hover {
+        background: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .nav-steps {
+            gap: 1rem;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .role-selection {
+            flex-direction: column;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-actions div {
+            width: 100%;
+        }
+        
+        .btn-next,
+        .btn-outline-modern {
+            width: 100%;
+        }
+
+        .toast-container {
+            top: 10px;
+            right: 10px;
+            left: 10px;
+            max-width: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Toast Notifications Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modal Spinner (Full screen) -->
+<div class="modal-spinner" id="modalSpinner">
+    <div class="modal-spinner-content">
+        <div class="modal-spinner-icon">
+            <div class="spinner"></div>
+        </div>
+        <h3 class="modal-spinner-title" id="modalSpinnerTitle">Loading...</h3>
+        <p class="modal-spinner-subtitle" id="modalSpinnerSubtitle">Please wait while we process your request</p>
+    </div>
+</div>
+
+<div class="main-container">
+    <!-- main card -->
+    <div class="form-container">
+        <!-- steps navigation -->
+        <div class="form-nav">
+            <div class="nav-steps">
+                <div class="nav-step active" data-step="1">
+                    <div class="step-icon">1</div>
+                    <span class="step-title">College ID</span>
+                </div>
+                <div class="nav-step" data-step="2">
+                    <div class="step-icon">2</div>
+                    <span class="step-title">Secure Login</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- form body -->
+        <form id="myForm">
+            <!-- Step 1: College ID Verification -->
+            <div class="id-verification-card" id="step1Container">
+                <div class="modal-title">
+                    <i class="fas fa-id-card me-3"></i>
+                    College ID Verification
+                </div>
+                
+                <div class="info-note-modern">
+                    <i class="fas fa-shield-alt"></i>
+                    <p class="mb-0">Enter your institutional ID provided by admin. This step confirms your affiliation with EduTrack.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label-custom">
+                        <i class="far fa-id-badge"></i>College ID
+                    </label>
+                    <input type="text" class="form-control input-field" id="userID" 
+                           placeholder="e.g., FAC-2025-042" value="FAC-2025-042">
+                    <div class="form-text mt-2">
+                        <i class="fas fa-lock me-1"></i>Your ID is encrypted and secure
+                    </div>
+                </div>
+                
+                <button type="button" class="btn-verify" id="submitIDBtn">
+                    <span class="spinner-container" id="verifyBtnSpinner" style="display: none;">
+                        <span class="spinner spinner-sm white"></span>
+                        <span>Verifying...</span>
+                    </span>
+                    <span id="verifyBtnText">
+                        <i class="fas fa-arrow-right me-2"></i>Verify & Continue
+                    </span>
+                </button>
+                
+                <!-- Progress Bar Example (can be shown during verification) -->
+                <div class="progress-container" id="verifyProgress" style="display: none;">
+                    <div class="progress-bar" style="width: 0%;" id="verifyProgressBar"></div>
+                </div>
+                
+                <p class="text-center mt-4 mb-0">
+                    <a href="#">Don't have an ID? Contact registrar</a>
+                </p>
+            </div>
+
+            <!-- Step 2: Login Section -->
+            <section class="login-section" id="step2Container" style="display: none;">
+                <div class="login-card">
+                    <h2 class="login-title">
+                        <i class="fas fa-lock me-2"></i>Sign In
+                    </h2>
+                    <p class="login-subtitle">Use your credentials to access your account</p>
+
+                    <!-- Role Selector -->
+                    <div class="role-selection" id="roleSelector">
+                        <div class="role-btn student active" data-role="student">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Student</span>
+                        </div>
+                        <div class="role-btn faculty" data-role="faculty">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Faculty</span>
+                        </div>
+                        <div class="role-btn admin" data-role="admin">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Admin</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="role" value="student">
+
+                    <!-- Login Form -->
+                    <div class="mb-3">
+                        <label class="form-label-custom">
+                            <i class="fas fa-user"></i>Username
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="text" class="form-control" id="id_username" 
+                                   placeholder="Enter your username" value="jdoe">
+                            <span class="input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label-custom">
+                            <i class="fas fa-lock"></i>Password
+                        </label>
+                        <div class="input-group-modern">
+                            <input type="password" class="form-control" id="id_password" 
+                                   placeholder="Enter your password" value="password123">
+                            <span class="input-group-text" id="togglePwd">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                Keep me signed in
+                            </label>
+                        </div>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#forgotModal">
+                            Forgot password?
+                        </a>
+                    </div>
+                    
+                    <button type="button" class="login-btn student" id="loginBtn">
+                        <span class="spinner-container" id="loginBtnSpinner" style="display: none;">
+                            <span class="btn-spinner"></span>
+                            <span>Signing in...</span>
+                        </span>
+                        <span id="loginBtnText">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn-outline-modern" id="resetBtn">
+                    <i class="fas fa-undo me-2"></i>Reset
+                </button>
+                <div>
+                    <button type="button" class="btn-next" id="nextBtn">
+                        Next <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Help Button -->
+<div class="help-btn" id="helpBtn" title="Need help?">
+    <i class="fas fa-question"></i>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="forgotModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                <p>A password reset link will be sent to your registered email address.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ========== SPINNER UTILITY FUNCTIONS ==========
+
+// Toast notification system
+const Toast = {
+    container: document.getElementById('toastContainer'),
+    
+    show: function(type, title, message, duration = 5000) {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        
+        let icon = '';
+        switch(type) {
+            case 'success':
+                icon = '<i class="fas fa-check-circle"></i>';
+                break;
+            case 'error':
+                icon = '<i class="fas fa-exclamation-circle"></i>';
+                break;
+            case 'warning':
+                icon = '<i class="fas fa-exclamation-triangle"></i>';
+                break;
+            default:
+                icon = '<i class="fas fa-info-circle"></i>';
+        }
+        
+        toast.innerHTML = `
+            <div class="toast-icon ${type}">${icon}</div>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+            <div class="toast-close"><i class="fas fa-times"></i></div>
+        `;
+        
+        // Add close functionality
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.remove();
+        });
+        
+        // Auto remove after duration
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, duration);
+        
+        this.container.appendChild(toast);
+    },
+    
+    success: function(title, message, duration) {
+        this.show('success', title, message, duration);
+    },
+    
+    error: function(title, message, duration) {
+        this.show('error', title, message, duration);
+    },
+    
+    warning: function(title, message, duration) {
+        this.show('warning', title, message, duration);
+    },
+    
+    info: function(title, message, duration) {
+        this.show('info', title, message, duration);
+    }
+};
+
+// Modal Spinner
+const ModalSpinner = {
+    element: document.getElementById('modalSpinner'),
+    title: document.getElementById('modalSpinnerTitle'),
+    subtitle: document.getElementById('modalSpinnerSubtitle'),
+    
+    show: function(title = 'Loading...', subtitle = 'Please wait while we process your request') {
+        this.title.textContent = title;
+        this.subtitle.textContent = subtitle;
+        this.element.classList.add('show');
+    },
+    
+    hide: function() {
+        this.element.classList.remove('show');
+    },
+    
+    update: function(title, subtitle) {
+        if (title) this.title.textContent = title;
+        if (subtitle) this.subtitle.textContent = subtitle;
+    }
+};
+
+// Button spinner controller
+function setButtonLoading(button, isLoading, loadingText = 'Loading...') {
+    const spinner = button.querySelector('.spinner-container');
+    const text = button.querySelector('span:not(.spinner-container)');
+    
+    if (isLoading) {
+        button.disabled = true;
+        if (spinner) spinner.style.display = 'inline-flex';
+        if (text) text.style.display = 'none';
+    } else {
+        button.disabled = false;
+        if (spinner) spinner.style.display = 'none';
+        if (text) text.style.display = 'inline';
+    }
+}
+
+// Progress bar controller
+function updateProgress(progressBar, percent) {
+    progressBar.style.width = percent + '%';
+}
+
+// ========== MAIN APPLICATION CODE ==========
+
+(function() {
+    // DOM Elements
+    const roleBtns = document.querySelectorAll('.role-btn');
+    const loginBtn = document.getElementById('loginBtn');
+    const roleHidden = document.getElementById('role');
+    const step1Container = document.getElementById('step1Container');
+    const step2Container = document.getElementById('step2Container');
+    const navSteps = document.querySelectorAll('.nav-step');
+    const verifyBtn = document.getElementById('submitIDBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const togglePwd = document.getElementById('togglePwd');
+    const pwdInput = document.getElementById('id_password');
+    const helpBtn = document.getElementById('helpBtn');
+    const verifyProgress = document.getElementById('verifyProgress');
+    const verifyProgressBar = document.getElementById('verifyProgressBar');
+
+    // Role Selection
+    function setRole(role) {
+        roleBtns.forEach(btn => {
+            const r = btn.dataset.role;
+            btn.classList.remove('active', 'student', 'faculty', 'admin');
+            if (r === role) {
+                btn.classList.add('active', r);
+            }
+        });
+        
+        if (loginBtn) {
+            loginBtn.className = `login-btn ${role}`;
+        }
+        
+        if (roleHidden) {
+            roleHidden.value = role;
+        }
+    }
+
+    roleBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            setRole(this.dataset.role);
+        });
+    });
+
+    // Step Navigation
+    function showStep(step) {
+        if (step === 1) {
+            step1Container.style.display = 'block';
+            step2Container.style.display = 'none';
+            navSteps[0].classList.add('active');
+            navSteps[1].classList.remove('active');
+        } else {
+            step1Container.style.display = 'none';
+            step2Container.style.display = 'block';
+            navSteps[0].classList.remove('active');
+            navSteps[1].classList.add('active');
+            step2Container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    // Verify ID with spinner and progress
+    verifyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        const userId = document.getElementById('userID').value.trim();
+        if (!userId) {
+            Toast.error('Error', 'Please enter your College ID');
+            return;
+        }
+
+        // Show button spinner
+        setButtonLoading(verifyBtn, true, 'Verifying...');
+        
+        // Show progress bar
+        verifyProgress.style.display = 'block';
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 10;
+            updateProgress(verifyProgressBar, progress);
+            if (progress >= 100) {
+                clearInterval(progressInterval);
+            }
+        }, 150);
+
+        // Simulate verification with modal spinner
+        ModalSpinner.show('Verifying ID', 'Checking institutional registry...');
+        
+        setTimeout(() => {
+            // Hide modal spinner
+            ModalSpinner.hide();
+            
+            // Hide button spinner
+            setButtonLoading(verifyBtn, false);
+            
+            // Hide progress bar after completion
+            setTimeout(() => {
+                verifyProgress.style.display = 'none';
+            }, 500);
+            
+            // Show success toast
+            Toast.success('Success!', 'ID verified successfully. Redirecting to login...');
+            
+            setTimeout(() => {
+                showStep(2);
+            }, 1000);
+        }, 2000);
+    });
+
+    // Next button
+    nextBtn.addEventListener('click', () => {
+        const userId = document.getElementById('userID').value.trim();
+        if (!userId) {
+            Toast.warning('Warning', 'Please enter your College ID first');
+            return;
+        }
+        showStep(2);
+    });
+
+    // Reset button
+    resetBtn.addEventListener('click', () => {
+        document.getElementById('userID').value = '';
+        document.getElementById('id_username').value = '';
+        document.getElementById('id_password').value = '';
+        document.getElementById('rememberMe').checked = false;
+        Toast.info('Reset', 'All fields have been cleared');
+    });
+
+    // Toggle password visibility
+    togglePwd.addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        if (pwdInput.type === 'password') {
+            pwdInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            pwdInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+
+    // Login button with spinner
+    loginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('id_username').value.trim();
+        const password = document.getElementById('id_password').value.trim();
+        const role = roleHidden.value;
+
+        if (!username || !password) {
+            Toast.error('Error', 'Please enter both username and password');
+            return;
+        }
+
+        // Show loading state
+        setButtonLoading(loginBtn, true, 'Signing in...');
+
+        // Simulate login with modal spinner
+        ModalSpinner.show('Signing In', `Authenticating as ${role}...`);
+
+        setTimeout(() => {
+            ModalSpinner.hide();
+            setButtonLoading(loginBtn, false);
+            
+            // Show success message
+            Toast.success('Welcome!', `Successfully signed in as ${role}`);
+            
+            // Simulate redirect
+            setTimeout(() => {
+                alert(`🔐 Login simulation complete\nRole: ${role}\nUsername: ${username}\nIn production, you would be redirected.`);
+            }, 1000);
+        }, 2000);
+    });
+
+    // Help button with toast
+    helpBtn.addEventListener('click', () => {
+        Toast.info('Help Guide', '1. Enter College ID\n2. Verify\n3. Select role\n4. Sign in', 8000);
+    });
+
+    // Initialize
+    showStep(1);
+    setRole('student');
+    
+    // Show welcome toast
+    setTimeout(() => {
+        Toast.success('Welcome to EduTrack', 'Please verify your College ID to continue');
+    }, 500);
+})();
+</script>
+{% endblock %}

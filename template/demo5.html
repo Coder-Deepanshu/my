@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Student Fees Dashboard · EduTrack</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-light: #eef2ff;
+            --primary-dark: #3a56d4;
+            --secondary: #4cc9f0;
+            --accent: #7209b7;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light-gray: #f1f5f9;
+            --border-light: #e2e8f0;
+            --card-shadow: 0 20px 30px -10px rgba(0,20,50,0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: var(--dark);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Section */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header-left h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .header-left p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .student-info-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-light);
+        }
+
+        .student-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .student-details h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .student-details .student-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .student-details .student-meta i {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 35px -12px rgba(67, 97, 238, 0.2);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .stat-icon.total-fees { background: var(--primary-light); color: var(--primary); }
+        .stat-icon.paid { background: var(--success-light); color: var(--success); }
+        .stat-icon.due { background: var(--warning-light); color: var(--warning); }
+        .stat-icon.fine { background: var(--danger-light); color: var(--danger); }
+        .stat-icon.scholarship { background: #f3e8ff; color: var(--accent); }
+
+        .stat-content h4 {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .stat-content .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-content .stat-sub {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* Semester Filter */
+        .semester-filter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .semester-tab {
+            padding: 10px 24px;
+            border-radius: 40px;
+            background: white;
+            border: 1px solid var(--border-light);
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .semester-tab:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .semester-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 8px 16px -4px rgba(67, 97, 238, 0.3);
+        }
+
+        .summary-badge {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--border-light);
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .summary-badge i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Fees Table Card */
+        .fees-table-card {
+            background: white;
+            border-radius: 28px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-light);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .card-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .card-header h2 i {
+            color: var(--primary);
+            margin-right: 10px;
+        }
+
+        .print-btn {
+            background: var(--primary-light);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 40px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .print-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 18px;
+        }
+
+        .fees-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .fees-table thead th {
+            background: var(--light-gray);
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .fees-table tbody td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .fees-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .fees-table tbody tr:hover {
+            background: var(--primary-light);
+        }
+
+        .semester-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .amount {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .amount.due {
+            color: var(--warning);
+        }
+
+        .amount.paid {
+            color: var(--success);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .status-paid {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .status-due {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .status-overdue {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .status-partial {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-light);
+        }
+
+        .summary-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-card h3 i {
+            color: var(--primary);
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--border-light);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-label {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .breakdown-value {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .breakdown-value.positive {
+            color: var(--success);
+        }
+
+        .breakdown-value.negative {
+            color: var(--danger);
+        }
+
+        .total-row {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid var(--border-light);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Fine Items */
+        .fine-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .fine-item:last-child {
+            border-bottom: none;
+        }
+
+        .fine-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--danger-light);
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .fine-details {
+            flex: 1;
+        }
+
+        .fine-details h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .fine-details p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .fine-amount {
+            font-weight: 700;
+            color: var(--danger);
+        }
+
+        /* Scholarship Items */
+        .scholarship-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .scholarship-item:last-child {
+            border-bottom: none;
+        }
+
+        .scholarship-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: #f3e8ff;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .scholarship-details {
+            flex: 1;
+        }
+
+        .scholarship-details h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .scholarship-details p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .scholarship-amount {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Payment History */
+        .payment-history {
+            background: white;
+            border-radius: 28px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-light);
+            margin-top: 25px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: 16px;
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            background: var(--primary-light);
+            transform: translateX(5px);
+        }
+
+        .history-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 14px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .history-details {
+            flex: 1;
+        }
+
+        .history-details h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .history-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .history-amount {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .history-status {
+            padding: 4px 12px;
+            border-radius: 30px;
+            background: var(--success-light);
+            color: var(--success);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Download Button */
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px -5px var(--primary);
+        }
+
+        .download-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px -8px var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .student-info-card {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-tabs {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+
+            .semester-tab {
+                white-space: nowrap;
+            }
+
+            .summary-badge {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-left h1 {
+                font-size: 1.8rem;
+            }
+
+            .student-info-card {
+                padding: 15px;
+            }
+
+            .student-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .student-meta {
+                flex-direction: column;
+                gap: 5px !important;
+            }
+
+            .stat-card {
+                padding: 18px;
+            }
+
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .stat-content .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Page Header with Student Info -->
+        <div class="page-header">
+            <div class="header-left">
+                <h1>Fee Management</h1>
+                <p>View and manage your semester-wise fees, fines & scholarships</p>
+            </div>
+            
+            <div class="student-info-card">
+                <div class="student-avatar">RJ</div>
+                <div class="student-details">
+                    <h3>Rahul Jain</h3>
+                    <div class="student-meta">
+                        <span><i class="fas fa-id-card"></i> STU-2024-0042</span>
+                        <span><i class="fas fa-graduation-cap"></i> B.Tech CSE</span>
+                        <span><i class="fas fa-calendar"></i> 2024-2028</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total-fees">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Total Fees</h4>
+                    <div class="stat-value">₹4,86,000</div>
+                    <div class="stat-sub">8 semesters</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon paid">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Paid Amount</h4>
+                    <div class="stat-value">₹2,98,500</div>
+                    <div class="stat-sub">61% completed</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon due">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Due Amount</h4>
+                    <div class="stat-value">₹1,87,500</div>
+                    <div class="stat-sub">including fines</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon scholarship">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Scholarship</h4>
+                    <div class="stat-value">₹45,000</div>
+                    <div class="stat-sub">Merit + Sports</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon fine">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Total Fines</h4>
+                    <div class="stat-value">₹4,500</div>
+                    <div class="stat-sub">2 pending fines</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Semester Filter -->
+        <div class="semester-filter">
+            <div class="filter-tabs">
+                <button class="semester-tab active" data-semester="all">All Semesters</button>
+                <button class="semester-tab" data-semester="1">Semester 1</button>
+                <button class="semester-tab" data-semester="2">Semester 2</button>
+                <button class="semester-tab" data-semester="3">Semester 3</button>
+                <button class="semester-tab" data-semester="4">Semester 4</button>
+                <button class="semester-tab" data-semester="5">Semester 5</button>
+                <button class="semester-tab" data-semester="6">Semester 6</button>
+                <button class="semester-tab" data-semester="7">Semester 7</button>
+                <button class="semester-tab" data-semester="8">Semester 8</button>
+            </div>
+            <div class="summary-badge">
+                <i class="fas fa-file-invoice"></i> Academic Year: 2024-25
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Fees Table Section -->
+            <div class="fees-table-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-table"></i> Semester-wise Fee Breakdown</h2>
+                    <button class="print-btn" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print Statement
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="fees-table">
+                        <thead>
+                            <tr>
+                                <th>Semester</th>
+                                <th>Tuition Fee</th>
+                                <th>Lab Fee</th>
+                                <th>Library Fee</th>
+                                <th>Other Charges</th>
+                                <th>Fine</th>
+                                <th>Scholarship</th>
+                                <th>Net Payable</th>
+                                <th>Paid</th>
+                                <th>Due</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feesTableBody">
+                            <!-- Semester 1 -->
+                            <tr data-semester="1">
+                                <td><span class="semester-badge">Sem 1</span></td>
+                                <td class="amount">₹45,000</td>
+                                <td class="amount">₹8,000</td>
+                                <td class="amount">₹3,000</td>
+                                <td class="amount">₹2,000</td>
+                                <td class="amount due">₹0</td>
+                                <td class="amount">-₹5,000</td>
+                                <td class="amount">₹53,000</td>
+                                <td class="amount paid">₹53,000</td>
+                                <td class="amount">₹0</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <!-- Semester 2 -->
+                            <tr data-semester="2">
+                                <td><span class="semester-badge">Sem 2</span></td>
+                                <td class="amount">₹45,000</td>
+                                <td class="amount">₹8,000</td>
+                                <td class="amount">₹3,000</td>
+                                <td class="amount">₹2,500</td>
+                                <td class="amount due">₹500</td>
+                                <td class="amount">-₹5,000</td>
+                                <td class="amount">₹54,000</td>
+                                <td class="amount paid">₹54,000</td>
+                                <td class="amount">₹0</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <!-- Semester 3 -->
+                            <tr data-semester="3">
+                                <td><span class="semester-badge">Sem 3</span></td>
+                                <td class="amount">₹47,000</td>
+                                <td class="amount">₹9,000</td>
+                                <td class="amount">₹3,500</td>
+                                <td class="amount">₹2,500</td>
+                                <td class="amount due">₹0</td>
+                                <td class="amount">-₹7,500</td>
+                                <td class="amount">₹54,500</td>
+                                <td class="amount paid">₹54,500</td>
+                                <td class="amount">₹0</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <!-- Semester 4 -->
+                            <tr data-semester="4">
+                                <td><span class="semester-badge">Sem 4</span></td>
+                                <td class="amount">₹47,000</td>
+                                <td class="amount">₹9,000</td>
+                                <td class="amount">₹3,500</td>
+                                <td class="amount">₹3,000</td>
+                                <td class="amount due">₹1,000</td>
+                                <td class="amount">-₹7,500</td>
+                                <td class="amount">₹56,000</td>
+                                <td class="amount paid">₹50,000</td>
+                                <td class="amount due">₹6,000</td>
+                                <td><span class="status-badge status-partial">Partial</span></td>
+                            </tr>
+                            <!-- Semester 5 -->
+                            <tr data-semester="5">
+                                <td><span class="semester-badge">Sem 5</span></td>
+                                <td class="amount">₹50,000</td>
+                                <td class="amount">₹10,000</td>
+                                <td class="amount">₹4,000</td>
+                                <td class="amount">₹3,000</td>
+                                <td class="amount due">₹0</td>
+                                <td class="amount">-₹10,000</td>
+                                <td class="amount">₹57,000</td>
+                                <td class="amount paid">₹57,000</td>
+                                <td class="amount">₹0</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                            </tr>
+                            <!-- Semester 6 -->
+                            <tr data-semester="6">
+                                <td><span class="semester-badge">Sem 6</span></td>
+                                <td class="amount">₹50,000</td>
+                                <td class="amount">₹10,000</td>
+                                <td class="amount">₹4,000</td>
+                                <td class="amount">₹3,500</td>
+                                <td class="amount due">₹2,000</td>
+                                <td class="amount">-₹10,000</td>
+                                <td class="amount">₹59,500</td>
+                                <td class="amount paid">₹30,000</td>
+                                <td class="amount due">₹29,500</td>
+                                <td><span class="status-badge status-due">Due</span></td>
+                            </tr>
+                            <!-- Semester 7 -->
+                            <tr data-semester="7">
+                                <td><span class="semester-badge">Sem 7</span></td>
+                                <td class="amount">₹52,000</td>
+                                <td class="amount">₹11,000</td>
+                                <td class="amount">₹4,500</td>
+                                <td class="amount">₹4,000</td>
+                                <td class="amount due">₹0</td>
+                                <td class="amount">-₹10,000</td>
+                                <td class="amount">₹61,500</td>
+                                <td class="amount paid">₹0</td>
+                                <td class="amount due">₹61,500</td>
+                                <td><span class="status-badge status-overdue">Overdue</span></td>
+                            </tr>
+                            <!-- Semester 8 -->
+                            <tr data-semester="8">
+                                <td><span class="semester-badge">Sem 8</span></td>
+                                <td class="amount">₹52,000</td>
+                                <td class="amount">₹11,000</td>
+                                <td class="amount">₹4,500</td>
+                                <td class="amount">₹4,000</td>
+                                <td class="amount due">₹0</td>
+                                <td class="amount">-₹10,000</td>
+                                <td class="amount">₹61,500</td>
+                                <td class="amount paid">₹0</td>
+                                <td class="amount due">₹61,500</td>
+                                <td><span class="status-badge status-due">Due</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Side Summary Cards -->
+            <div class="summary-cards">
+                <!-- Semester Summary Card -->
+                <div class="summary-card">
+                    <h3><i class="fas fa-chart-pie"></i> Current Semester Summary (Sem 6)</h3>
+                    
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Tuition Fee</span>
+                        <span class="breakdown-value">₹50,000</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Lab Fee</span>
+                        <span class="breakdown-value">₹10,000</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Library Fee</span>
+                        <span class="breakdown-value">₹4,000</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Other Charges</span>
+                        <span class="breakdown-value">₹3,500</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Fine (Library Late)</span>
+                        <span class="breakdown-value negative">+₹2,000</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Scholarship</span>
+                        <span class="breakdown-value positive">-₹10,000</span>
+                    </div>
+                    
+                    <div class="breakdown-item total-row">
+                        <span class="breakdown-label">Net Payable</span>
+                        <span class="breakdown-value">₹59,500</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Paid Amount</span>
+                        <span class="breakdown-value paid">₹30,000</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span class="breakdown-label">Due Amount</span>
+                        <span class="breakdown-value due">₹29,500</span>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button class="download-btn" style="width: 100%; justify-content: center;">
+                            <i class="fas fa-download"></i> Download Challan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fines Card -->
+                <div class="summary-card">
+                    <h3><i class="fas fa-exclamation-circle" style="color: var(--danger);"></i> Pending Fines</h3>
+                    
+                    <div class="fine-item">
+                        <div class="fine-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="fine-details">
+                            <h4>Library Late Return</h4>
+                            <p>Due: 15 Mar 2026 · 5 days overdue</p>
+                        </div>
+                        <div class="fine-amount">₹500</div>
+                    </div>
+                    
+                    <div class="fine-item">
+                        <div class="fine-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div class="fine-details">
+                            <h4>ID Card Replacement</h4>
+                            <p>Applied on: 10 Feb 2026</p>
+                        </div>
+                        <div class="fine-amount">₹200</div>
+                    </div>
+                    
+                    <div class="fine-item">
+                        <div class="fine-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="fine-details">
+                            <h4>Exam Form Late Fee</h4>
+                            <p>Semester 6 · Due: 20 Mar 2026</p>
+                        </div>
+                        <div class="fine-amount">₹1,000</div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-light);">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Total Fines</span>
+                            <span class="breakdown-value negative">₹4,500</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Paid Fines</span>
+                            <span class="breakdown-value positive">₹1,200</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Pending Fines</span>
+                            <span class="breakdown-value due">₹3,300</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scholarships Card -->
+                <div class="summary-card">
+                    <h3><i class="fas fa-gift" style="color: var(--accent);"></i> Scholarships & Concessions</h3>
+                    
+                    <div class="scholarship-item">
+                        <div class="scholarship-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="scholarship-details">
+                            <h4>Merit Scholarship</h4>
+                            <p>Top 5% · Academic Year 2025-26</p>
+                        </div>
+                        <div class="scholarship-amount">₹25,000</div>
+                    </div>
+                    
+                    <div class="scholarship-item">
+                        <div class="scholarship-icon">
+                            <i class="fas fa-futbol"></i>
+                        </div>
+                        <div class="scholarship-details">
+                            <h4>Sports Quota</h4>
+                            <p>Cricket Team · 50% concession in sports fee</p>
+                        </div>
+                        <div class="scholarship-amount">₹15,000</div>
+                    </div>
+                    
+                    <div class="scholarship-item">
+                        <div class="scholarship-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="scholarship-details">
+                            <h4>Sibling Concession</h4>
+                            <p>10% tuition fee waiver</p>
+                        </div>
+                        <div class="scholarship-amount">₹5,000</div>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-light);">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Total Scholarship</span>
+                            <span class="breakdown-value" style="color: var(--accent);">₹45,000</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">This Semester</span>
+                            <span class="breakdown-value" style="color: var(--accent);">₹10,000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment History Section -->
+        <div class="payment-history">
+            <div class="card-header">
+                <h2><i class="fas fa-history"></i> Recent Payment History</h2>
+                <a href="#" style="color: var(--primary); text-decoration: none; font-weight: 500;">View All <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+            
+            <div class="history-list">
+                <div class="history-item">
+                    <div class="history-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="history-details">
+                        <h4>Semester 6 - Partial Payment</h4>
+                        <div class="history-meta">
+                            <span><i class="far fa-calendar"></i> 15 Feb 2026</span>
+                            <span><i class="far fa-clock"></i> 10:30 AM</span>
+                            <span>Transaction ID: TXN123456</span>
+                        </div>
+                    </div>
+                    <div class="history-amount">₹30,000</div>
+                    <div class="history-status">Success</div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="history-details">
+                        <h4>Semester 5 - Full Payment</h4>
+                        <div class="history-meta">
+                            <span><i class="far fa-calendar"></i> 10 Jan 2026</span>
+                            <span><i class="far fa-clock"></i> 2:15 PM</span>
+                            <span>Transaction ID: TXN123455</span>
+                        </div>
+                    </div>
+                    <div class="history-amount">₹57,000</div>
+                    <div class="history-status">Success</div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="history-details">
+                        <h4>Fine Payment - Library Late Fee</h4>
+                        <div class="history-meta">
+                            <span><i class="far fa-calendar"></i> 5 Jan 2026</span>
+                            <span><i class="far fa-clock"></i> 11:45 AM</span>
+                            <span>Transaction ID: TXN123454</span>
+                        </div>
+                    </div>
+                    <div class="history-amount">₹500</div>
+                    <div class="history-status">Success</div>
+                </div>
+
+                <div class="history-item">
+                    <div class="history-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="history-details">
+                        <h4>Semester 4 - Balance Payment</h4>
+                        <div class="history-meta">
+                            <span><i class="far fa-calendar"></i> 20 Dec 2025</span>
+                            <span><i class="far fa-clock"></i> 3:30 PM</span>
+                            <span>Transaction ID: TXN123453</span>
+                        </div>
+                    </div>
+                    <div class="history-amount">₹6,000</div>
+                    <div class="history-status">Success</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Semester Filter Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const semesterTabs = document.querySelectorAll('.semester-tab');
+            const tableRows = document.querySelectorAll('#feesTableBody tr');
+
+            // Filter function
+            function filterSemester(semester) {
+                tableRows.forEach(row => {
+                    if (semester === 'all' || row.dataset.semester === semester) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            // Add click handlers to tabs
+            semesterTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    semesterTabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Get semester value and filter
+                    const semester = this.dataset.semester;
+                    filterSemester(semester);
+                });
+            });
+
+            // Print functionality
+            window.print = function() {
+                window.print();
+            };
+
+            // Download Challan button
+            const downloadBtn = document.querySelector('.download-btn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    alert('Fee challan will be downloaded. This is a demo.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

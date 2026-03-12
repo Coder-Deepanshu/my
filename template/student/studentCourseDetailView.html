@@ -506,40 +506,75 @@
                 <!-- Semester 1 Content -->
                 <div class="semester-content animate__animated animate__fadeIn" id="semesterDiv">
                     {% for sub in subject %}
-                    <div class="course-card ">
+                    <div class="course-card">
                         <div class="course-header">
                             <div>
                                 <h3 class="course-title">{{ sub.name }}</h3>
                                 <p class="course-code">{{ sub.code }} • 4 Credits</p>
                             </div>
                             <div class="course-progress" style="margin-left: 10px;">
-                                <i class="fas fa-chart-line me-2"></i>95% Complete
+                                <i class="fas fa-chart-line me-2"></i>
+                                {% with total=sub.content|length %}
+                                {% with completed_count=sub.content|dictsortreversed:"status"|first %}
+                                {% if total > 0 %}
+                                {% widthratio completed_count total 100 %}%
+                                {% else %}
+                                0%
+                                {% endif %}
+                                {% endwith %}
+                                {% endwith %}
+                                Complete
                             </div>
                         </div>
 
                         <div class="progress-container">
                             <div class="progress-label">
                                 <span>Course Progress</span>
-                                <span>95%</span>
+                                <span>
+                                    {% with total=sub.content|length %}
+                                    {% with completed_count=sub.content|dictsortreversed:"status"|first %}
+                                    {% if total > 0 %}
+                                    {% widthratio completed_count total 100 %}%
+                                    {% else %}
+                                    0%
+                                    {% endif %}
+                                    {% endwith %}
+                                    {% endwith %}
+                                </span>
                             </div>
                             <div class="progress-bar">
-                                <div class="progress-fill completed" style="width: 95%"></div>
+                                {% with total=sub.content|length %}
+                                {% with completed_count=sub.content|dictsortreversed:"status"|first %}
+                                {% if total > 0 %}
+                                {% widthratio completed_count total 100 as progress %}
+                                {% else %}
+                                {% widthratio 0 1 100 as progress %}
+                                {% endif %}
+                                <div class="progress-fill completed" style="width: {{ progress }}%"></div>
+                                {% endwith %}
+                                {% endwith %}
                             </div>
                         </div>
 
                         <div class="topics-grid">
-                            <!-- Completed Topics -->
                             {% if sub.content %}
-                            {% for content in sub.content %}
-
-                            <div class="topic-card completed">
-                                <div class="topic-status completed">
+                            {% for item in sub.content %}
+                            {% if item.name %}
+                            <div class="topic-card {{ item.status|lower }}">
+                                <div class="topic-status {{ item.status|lower }}">
+                                    {% if item.status == "Completed" %}
                                     <i class="fas fa-check"></i>
+                                    {% elif item.status == "Ongoing" %}
+                                    <i class="fas fa-spinner"></i>
+                                    {% else %}
+                                    <i class="fas fa-clock"></i>
+                                    {% endif %}
                                 </div>
-                                <h4 class="topic-name">{{ content }}</h4>
+                                <h4 class="topic-name">{{ item.name }}</h4>
                                 <p class="topic-duration">8 Lectures • 12 Hours</p>
-                                <p class="topic-date">Completed: 15 Aug 2023</p>
+                                <p class="topic-date">Status: {{ item.status }}</p>
                             </div>
+                            {% endif %}
                             {% endfor %}
                             {% else %}
                             <div class="no-data-container">
@@ -551,16 +586,16 @@
                             {% endif %}
                         </div>
                     </div>
-                    {% endfor %}
-                    <!-- <div class="no-data-container">
+                    {% empty %}
+                    <div class="no-data-container">
                         <div class="no-data-icon">
                             <i class="fas fa-book-open"></i>
                         </div>
                         <h4 class="no-data-message">No subjects available for this semester</h4>
                         <p class="text-muted">Subjects will be added as the semester progresses</p>
-                    </div> -->
+                    </div>
+                    {% endfor %}
                 </div>
-
             </div>
 
             <!-- Status Legend -->
@@ -624,12 +659,24 @@
                 .then(data => {
                     if (data.subject && data.subject.length > 0) {
                         console.log(data.subject);
-                        semesterDiv.innerHTML = ''
+                        semesterDiv.innerHTML = '';
                         let subjects = '';
+
                         data.subject.forEach((value, index) => {
-                            // Create a unique ID without spaces/special chars
+                            // Calculate progress based on completed topics
+                            const totalTopics = value.contents.length;
+                            const completedTopics = value.contents.filter(content => content.status === 'Completed').length;
+                            const progressPercentage = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+
+                            // Create progress bar color based on progress
+                            let progressBarClass = 'completed';
+                            if (progressPercentage < 30) {
+                                progressBarClass = 'pending';
+                            } else if (progressPercentage < 70) {
+                                progressBarClass = 'ongoing';
+                            }
+
                             const subjectId = `subject-${semester}-${index}`;
-                            console.log(subjectId)
 
                             subjects += `
                     <div class="course-card">
@@ -639,17 +686,17 @@
                                 <p class="course-code">${value.code || 'ABCD'} • 4 Credits</p>
                             </div>
                             <div class="course-progress" style="margin-left: 10px;">
-                                <i class="fas fa-chart-line me-2"></i>95% Complete
+                                <i class="fas fa-chart-line me-2"></i>${progressPercentage}% Complete
                             </div>
                         </div>
 
                         <div class="progress-container">
                             <div class="progress-label">
                                 <span>Course Progress</span>
-                                <span>95%</span>
+                                <span>${progressPercentage}%</span>
                             </div>
                             <div class="progress-bar">
-                                <div class="progress-fill completed" style="width: 95%"></div>
+                                <div class="progress-fill ${progressBarClass}" style="width: ${progressPercentage}%"></div>
                             </div>
                         </div>
 
@@ -670,17 +717,30 @@
                                 if (value.contents && value.contents.length > 0) {
                                     let contentAll = '';
                                     value.contents.forEach(one => {
+                                        // Determine CSS class based on status
+                                        let statusClass = one.status.toLowerCase();
+                                        let statusIcon = 'fa-check';
+                                        let statusText = 'Completed';
+
+                                        if (one.status === 'Ongoing') {
+                                            statusIcon = 'fa-spinner';
+                                            statusText = 'Ongoing';
+                                        } else if (one.status === 'Pending') {
+                                            statusIcon = 'fa-clock';
+                                            statusText = 'Pending';
+                                        }
+
                                         contentAll += `
-                                <div class="topic-card completed">
-                                    <div class="topic-status completed">
-                                        <i class="fas fa-check"></i>
+                                <div class="topic-card ${statusClass}">
+                                    <div class="topic-status ${statusClass}">
+                                        <i class="fas ${statusIcon}"></i>
                                     </div>
-                                    <h4 class="topic-name" id="${one.content}"></h4>
+                                    <h4 class="topic-name">${one.content}</h4>
                                     <p class="topic-duration">8 Lectures • 12 Hours</p>
-                                    <p class="topic-date">Completed: 15 Aug 2023</p>
+                                    <p class="topic-date">Status: ${statusText}</p>
                                 </div>`;
                                     });
-
+                                    topicGrid.innerHTML = contentAll;
                                 } else {
                                     topicGrid.innerHTML = `
                             <div class="no-data-container">
@@ -717,4 +777,5 @@
         };
     </script>
 </body>
+
 </html>
